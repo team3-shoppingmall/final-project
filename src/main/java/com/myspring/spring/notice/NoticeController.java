@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value="/spring")
+@RequestMapping(value="/api/notice")
 public class NoticeController {
 	private NoticeService noticeService;
 	
@@ -25,31 +25,31 @@ public class NoticeController {
 		this.noticeService = noticeService;
 	}
 	
-	//°øÁö»çÇ× ¸ñ·Ï Ãâ·Â
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 	@GetMapping("/notice/list")
 	public List<NoticeVO> list() {
 		return noticeService.getAllMembers();
 	}
 	
-	//°øÁö»çÇ× °Ô½Ã¹° º¸±â
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô½Ã¹ï¿½ ï¿½ï¿½ï¿½ï¿½
 	@GetMapping("/notice/list/{noticeNo}")
 	public NoticeVO getMemberFindByID(@PathVariable("noticeNo") int noticeNo) {
 		return noticeService.getMemberFindByID(noticeNo);
 	}
 	
-	//°øÁö»çÇ× »èÁ¦
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	@DeleteMapping("/notice/deleteMember")
 	public ResponseEntity<?> deleteMamber(@RequestParam("noticeNo") int noticeNo) {
 		return noticeService.deleteMember(noticeNo);
 	}
 	
-	//°øÁö»çÇ× °Ô½Ã¹° ÀÛ¼º
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô½Ã¹ï¿½ ï¿½Û¼ï¿½
 	@PostMapping("/notice/insertMember")
 	public ResponseEntity<?> insertMember(@RequestBody NoticeVO noticeVO) {
 		return noticeService.insertMember(noticeVO);
 	}
 
-	//°øÁö»çÇ× ¼öÁ¤
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	@PatchMapping("/notice/updateMember")
 	public ResponseEntity<?> updateMember(@RequestParam("noticeNo") int noticeNo,@RequestParam("title") String title, @RequestParam("content") String content, @RequestParam("image") String image) {
 		return noticeService.updateMember(noticeNo, title, content, image);

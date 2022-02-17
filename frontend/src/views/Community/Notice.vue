@@ -1,5 +1,6 @@
 <template>
 <v-container>
+    {{contents}}
     <v-data-table :headers="headers" :items="contents" :items-per-page="5" :to="contents.noticeno" class="elevation-1"></v-data-table>
 </v-container>
 </template>
@@ -29,7 +30,7 @@ export default {
     },
     methods:{
         getNotice(){
-            axios.get(`/api/notice/`).then(res => {
+            axios.get(`/api/notice/notice/list`).then(res => {
                 let temp = res.data;
                 temp.foreach(element => {
                     this.contents.push(element);

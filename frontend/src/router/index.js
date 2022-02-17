@@ -1,44 +1,50 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Review from '../views/Review.vue'
-import Notice from '../views/Notice.vue'
-import FAQ from '../views/FAQ.vue'
-
+import Default from '../layouts/Default/Index.vue'
+import Authentication from '../layouts/Authentication/Index.vue'
+import About from '../views/About.vue'
+import SignIn from '../views/SignIn.vue'
+import SignUp from '../views/SignUp.vue'
+import Main from '../views/Main.vue'
 Vue.use(VueRouter)
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  },{
-    path: '/review',
-    name: 'Review',
-    component: Review
-  },{
-    path: '/FAQ',
-    name: 'FAQ',
-    component: FAQ
-  },{
-    path: '/notice',
-    name: 'Notice',
-    component: Notice
-  }
+    {
+        path: '/',
+        name: 'Default',
+        component: Default,
+        children: [
+            {
+                path: '/',
+                name: 'Main',
+                component: Main
+            }, {
+                path: '/about',
+                name: 'About',
+                component: About
+            }
+        ]
+    }, {
+        path: '/authentication',
+        name: 'Authentication',
+        component: Authentication,
+        children: [
+            {
+                path: 'signIn',
+                name: 'SignIn',
+                component: SignIn
+            }, {
+                path: 'signUp',
+                name: 'SignUp',
+                component: SignUp
+            }
+        ]
+    }
+
 ]
 
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes
-})
+const router = new VueRouter(
+    {mode: 'history', base: process.env.BASE_URL, routes}
+)
 
 export default router

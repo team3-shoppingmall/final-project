@@ -1,7 +1,7 @@
 <template>
-    <v-container>
-        dfdfdf
-    </v-container>
+  <v-container>
+      Main Page
+  </v-container>
 </template>
 
 <script>

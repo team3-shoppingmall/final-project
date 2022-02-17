@@ -1,10 +1,11 @@
 <template>
 <v-container>
-    <v-data-table :headers="headers" :items="contents" :items-per-page="5" class="elevation-1"></v-data-table>
+    <v-data-table :headers="headers" :items="contents" :items-per-page="5" :to="contents.noticeno" class="elevation-1"></v-data-table>
 </v-container>
 </template>
 
 <script>
+import axios from 'axios'
 export default {
     data() {
         return {
@@ -23,14 +24,22 @@ export default {
                     value: 'ID'
                 },
             ],
-            contents: [{
-                    noticeno: '16',
-                    title: '2022년 02월 07일 이전 개인정보 처리방침',
-                    ID: '슬로우엔드',
-                },
-            ],
+            contents: [],
         }
     },
+    methods:{
+        getNotice(){
+            axios.get(`/api/notice/`).then(res => {
+                let temp = res.data;
+                temp.foreach(element => {
+                    this.contents.push(element);
+                })
+            })
+        }
+    },
+    mounted(){
+        this.getNotice();
+    }
 }
 </script>
 

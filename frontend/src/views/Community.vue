@@ -1,18 +1,22 @@
 <template>
 <v-container>
-    <h3>{{UPPER(pagename)}}</h3>
     <v-row justify="center">
-        <v-col cols="auto">
-            <v-btn :to="'/community/notice'">notice</v-btn>
-        </v-col>
-        <v-col cols="auto">
-            <v-btn :to="'/community/review'">review</v-btn>
-        </v-col>
-        <v-col cols="auto">
-            <v-btn :to="'/community/faq'">FAQ</v-btn>
+        <v-col xs="12" sm="12" md="12" lg="9" xl="8">
+            <h3>{{UPPER(pagename)}}</h3>
+            <v-row justify="center">
+                <v-col cols="auto">
+                    <v-btn :to="'/community/notice'">notice</v-btn>
+                </v-col>
+                <v-col cols="auto">
+                    <v-btn :to="'/community/review'">review</v-btn>
+                </v-col>
+                <v-col cols="auto">
+                    <v-btn :to="'/community/faq'">FAQ</v-btn>
+                </v-col>
+            </v-row>
+            <router-view></router-view>
         </v-col>
     </v-row>
-    <router-view></router-view>
 </v-container>
 </template>
 

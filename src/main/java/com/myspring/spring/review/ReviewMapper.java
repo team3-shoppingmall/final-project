@@ -16,12 +16,9 @@ public interface ReviewMapper {
 	@Select("select * from reviewtable")
 	public List<ReviewVO> getAllreviews();
 	
-//	@Insert("insert into reviewtable values(#{content}, #{id}, #{image}, #{star})") 
-//	public int insertReview(@Param("content") String content,@Param("id") String id, 
-//							@Param("image") String image, @Param("star") int star);
 	//리뷰 작성
-	@Insert("insert into reviewtable values(#{in.content}, #{in.id}, #{in.image}, #{in.star})")
-	public ResponseEntity<?> insertReview(@Param("in") ReviewVO reviewVO);
+	@Insert("insert into reviewtable(content, id, image, star) values(#{in.content}, #{in.id}, #{in.image}, #{in.star})")
+	int insertReview(@Param("in") ReviewVO reviewVO);
 	
 	//리뷰 삭제
 	@Delete("delete from reviewtable where id = #{id}")

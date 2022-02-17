@@ -24,17 +24,15 @@ private ReviewMapper reviewMapper;
 		else
 			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
-	/*
-	 * public ResponseEntity<?> insertReview(String content, String id, String
-	 * image, int star) { int res = reviewMapper.insertReview(content, id, image,
-	 * star); if(res == 0) { return new
-	 * ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); }else { return new
-	 * ResponseEntity<>(HttpStatus.OK); } }
-	 */
 	
 	//리뷰 작성
 	public ResponseEntity<?> insertReview(ReviewVO reviewVO) {
-		return reviewMapper.insertReview(reviewVO);
+		int res = reviewMapper.insertReview(reviewVO);
+		if(res == 0) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}else {
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
 	}
 	
 	//리뷰 삭제

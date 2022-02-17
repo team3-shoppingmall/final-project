@@ -8,12 +8,20 @@
     </div>
 
     <v-row align="center" justify="space-between">
-        <v-col class="d-flex" cols="4">
-            <v-select :items="searches" v-model="selectedSearch"></v-select>
-            <v-text-field solo v-model="search"></v-text-field>
-            <v-btn x-large icon @click="searchNotice">검색</v-btn>
+        <v-col class="d-flex" cols="8" sm="7" md="5" lg="4" xl="3">
+            <v-row>
+                <v-col cols="4">
+                    <v-select :items="searches" v-model="selectedSearch"></v-select>
+                </v-col>
+                <v-col cols="7">
+                    <v-text-field solo v-model="search"></v-text-field>
+                </v-col>
+                <v-col cols="1">
+                    <v-btn x-large icon @click="searchNotice">검색</v-btn>
+                </v-col>
+            </v-row>
         </v-col>
-        <v-col class="d-flex" cols="3" sm="2" lg="1">
+        <v-col class="d-flex" cols="2" sm="2" md="2" lg="2" xl="1">
             <v-select :items="pages" label="Items per page" v-model="itemsPerPage"></v-select>
         </v-col>
     </v-row>

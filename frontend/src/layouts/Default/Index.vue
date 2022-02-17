@@ -30,7 +30,7 @@
     <v-main>
         <router-view />
     </v-main>
-    <v-footer>
+    <v-footer  color="primary lighten-1" padless>
         <Footer />
     </v-footer>
 </v-app>

@@ -1,21 +1,31 @@
 <template>
 <v-app>
-    <v-app-bar color="primary" app dark>
+    <v-app-bar color="primary" app dark height="100px">
         <v-app-bar-nav-icon></v-app-bar-nav-icon>
         <v-row>
             <v-col cols="10" align-self="center">
-                <v-row class="mx-10" justify="space-between">
-                    <v-col cols="auto" align-self="center">
-                        <v-btn v-for="(page, idx) in pages" :key="idx" :to="page.to">{{page.name}}</v-btn>
+                <v-row class="mx-10">
+                    <v-col cols="auto">
+                        <v-menu open-on-hover bottom offset-y v-for="(page ,idx) in pages" :key="idx">
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn color="primary" dark v-bind="attrs" v-on="on" :to="page.to" v-if="page.name != 'Community'">
+                                    {{page.name}}
+                                </v-btn>
+                                <v-btn color="primary" dark v-bind="attrs" v-on="on" v-if="page.name == 'Community'">
+                                    {{page.name}}
+                                </v-btn>
+                            </template>
+
+                            <v-list v-if="page.name=='Community'">
+                                <v-list-item v-for="(item, index) in page.items" :key="index" :to="item.to">
+                                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                                </v-list-item>
+                            </v-list>
+                        </v-menu>
                     </v-col>
                 </v-row>
             </v-col>
-            <v-col cols="2" align-self="center">
-                <!-- 색상 수정 방법 찾아서 하기 -->
-                <v-select :items="items" label="Solo field" dense solo hide-details></v-select>
-            </v-col>
         </v-row>
-        <!-- <router-link :to="'/about'" class="white">sdsdsd</router-link> -->
     </v-app-bar>
     <v-main>
         <router-view />
@@ -31,43 +41,55 @@ import Footer from '@/components/Footer.vue'
 export default {
     data() {
         return {
-            pages: [
-                {
+            pages: [{
+                name: 'MAIN',
+                to: '/',
+            }, {
                 name: 'ADMIN',
-                to: '/admin'
-            },{
+                to: '/admin',
+            }, {
                 name: 'BASKET',
-                to: '/basket'
-            },{
-                name: 'community',
-                to: '/community/notice'
-            },{
+                to: '/basket',
+            }, {
+                name: 'Community',
+                items: [{
+                        title: 'notice',
+                        to: '/community/notice',
+                    },
+                    {
+                        title: 'review',
+                        to: '/community/review',
+                    },
+                    {
+                        title: 'faq',
+                        to: '/community/faq',
+                    },
+                ],
+            }, {
                 name: 'MyPage',
-                to: '/myPage'
-            },{
-                name: 'ADMIN',
-                to: '/admin'
-            },{
-                name: 'ADMIN',
-                to: '/admin'
-            },{
-                name: 'ADMIN',
-                to: '/admin'
-            },{
-                name: 'ADMIN',
-                to: '/admin'
-            },{
-                name: 'ADMIN',
-                to: '/admin'
-            },{
-                name: 'ADMIN',
-                to: '/admin'
-            },{
-                name: 'ADMIN',
-                to: '/admin'
-            },
-            ],
-            items: ['Foo', 'Bar', 'Fizz', 'Buzz'],
+                to: '/myPage',
+            }, {
+                name: 'Payment',
+                to: '/payment',
+            }, {
+                name: 'ProductDetail',
+                to: '/productDetail',
+            }, {
+                name: 'ProductList',
+                to: '/productList',
+            }, {
+                name: 'ProductSearch',
+                to: '/productSearch',
+            }, {
+                name: 'WishList',
+                to: '/wishList',
+            }, {
+                name: 'SignIn',
+                to: '/authentication/signIn',
+            }, {
+                name: 'SignUp',
+                to: '/authentication/signUp',
+            }, ],
         }
     },
     components: {

@@ -1,7 +1,7 @@
 <template>
-  <v-container>
-      notice
-  </v-container>
+<v-container>
+    Notice Page
+</v-container>
 </template>
 
 <script>

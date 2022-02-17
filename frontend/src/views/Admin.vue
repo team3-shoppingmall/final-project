@@ -1,6 +1,6 @@
 <template>
 <v-container>
-    FAQ Page
+    Admin Page
 </v-container>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
 <v-container>
-    FAQ Page
+    WishList Page
 </v-container>
 </template>
 

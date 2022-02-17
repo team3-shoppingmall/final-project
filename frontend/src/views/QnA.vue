@@ -1,6 +1,6 @@
 <template>
 <v-container>
-    FAQ Page
+    QnA Page
 </v-container>
 </template>
 

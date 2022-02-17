@@ -5,6 +5,8 @@ module.exports = {
   },
   'extends': [
     'plugin:vue/essential',
+    // 'plugin:vue/base',
+    // 'plugin:vuetify/base',
     'eslint:recommended'
   ],
   parserOptions: {

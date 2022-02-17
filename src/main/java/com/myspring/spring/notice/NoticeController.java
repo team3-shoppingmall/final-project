@@ -25,31 +25,31 @@ public class NoticeController {
 		this.noticeService = noticeService;
 	}
 	
-	//°øÁö»çÇ× ¸ñ·Ï Ãâ·Â
+	//ê³µì§€ì‚¬í•­ ëª©ë¡ ì¶œë ¥
 	@GetMapping("/notice/list")
 	public List<NoticeVO> list() {
 		return noticeService.getAllMembers();
 	}
 	
-	//°øÁö»çÇ× °Ô½Ã¹° º¸±â
+	//ê³µì§€ì‚¬í•­ ê²Œì‹œë¬¼ ë³´ê¸°
 	@GetMapping("/notice/list/{noticeNo}")
 	public NoticeVO getMemberFindByID(@PathVariable("noticeNo") int noticeNo) {
 		return noticeService.getMemberFindByID(noticeNo);
 	}
 	
-	//°øÁö»çÇ× »èÁ¦
+	//ê³µì§€ì‚¬í•­ ì‚­ì œ
 	@DeleteMapping("/notice/deleteMember")
 	public ResponseEntity<?> deleteMamber(@RequestParam("noticeNo") int noticeNo) {
 		return noticeService.deleteMember(noticeNo);
 	}
 	
-	//°øÁö»çÇ× °Ô½Ã¹° ÀÛ¼º
+	//ê³µì§€ì‚¬í•­ ê²Œì‹œë¬¼ ì‘ì„±
 	@PostMapping("/notice/insertMember")
 	public ResponseEntity<?> insertMember(@RequestBody NoticeVO noticeVO) {
 		return noticeService.insertMember(noticeVO);
 	}
 
-	//°øÁö»çÇ× ¼öÁ¤
+	//ê³µì§€ì‚¬í•­ ìˆ˜ì •
 	@PatchMapping("/notice/updateMember")
 	public ResponseEntity<?> updateMember(@RequestParam("noticeNo") int noticeNo,@RequestParam("title") String title, @RequestParam("content") String content, @RequestParam("image") String image) {
 		return noticeService.updateMember(noticeNo, title, content, image);

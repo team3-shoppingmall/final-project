@@ -13,24 +13,24 @@ import org.springframework.http.ResponseEntity;
 @Mapper
 public interface NoticeMapper {
 
-	//°øÁö»çÇ× ¸ñ·Ï Ãâ·Â
+	//ê³µì§€ì‚¬í•­ ëª©ë¡ ì¶œë ¥
 	@Select("select * from noticetable")
 	public List<NoticeVO> getAllMembers();
 	
-	//°øÁö»çÇ× °Ô½Ã¹° º¸±â
+	//ê³µì§€ì‚¬í•­ ê²Œì‹œë¬¼ ë³´ê¸°
 	@Select("select * from noticetable where noticeNo = #{noticeNo}")
 	public NoticeVO getMemberFindByID(@Param("noticeNo") int noticeNo);
 
-	//°øÁö»çÇ× »èÁ¦
+	//ê³µì§€ì‚¬í•­ ì‚­ì œ
 	@Delete("delete from noticetable where noticeNo = #{noticeNo}")
 	public int deleteMember(@Param("noticeNo") int noticeNo);
 
-	//°øÁö»çÇ× °Ô½Ã¹° ÀÛ¼º
+	//ê³µì§€ì‚¬í•­ ê²Œì‹œë¬¼ ì‘ì„±
 	@Insert("insert into noticetable(title, content, id, image) "
 			+ "values(#{in.title}, #{in.content}, #{in.id}, #{in.image})")
 	public ResponseEntity<?> insertMember(@Param("in") NoticeVO noticeVO);
 
-	//°øÁö»çÇ× ¼öÁ¤
+	//ê³µì§€ì‚¬í•­ ìˆ˜ì •
 	@Update("update noticetable set title=#{title}, content=#{content}, image=#{image} where noticeNo=#{noticeNo}")
 	public int updateMember(@Param("noticeNo") int noticeNo, @Param("title") String title, @Param("content") String content, @Param("image") String image);
 

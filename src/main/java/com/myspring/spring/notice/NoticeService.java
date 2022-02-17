@@ -16,17 +16,17 @@ public class NoticeService {
 		this.noticeMapper = noticeMapper;
 	}
 	
-	//°øÁö»çÇ× ¸ñ·Ï Ãâ·Â
+	//ê³µì§€ì‚¬í•­ ëª©ë¡ ì¶œë ¥
 	public List<NoticeVO> getAllMembers() {
 		return noticeMapper.getAllMembers();
 	}
 	
-	//°øÁö»çÇ× °Ô½Ã¹° º¸±â
+	//ê³µì§€ì‚¬í•­ ê²Œì‹œë¬¼ ë³´ê¸°
 	public NoticeVO getMemberFindByID(int noticeNo) {
 		return noticeMapper.getMemberFindByID(noticeNo);
 	}
 
-	//°øÁö»çÇ× »èÁ¦
+	//ê³µì§€ì‚¬í•­ ì‚­ì œ
 	public ResponseEntity<?> deleteMember(int noticeNo) {
 		int res = noticeMapper.deleteMember(noticeNo);
 		
@@ -36,12 +36,12 @@ public class NoticeService {
 			return new ResponseEntity<>(res,HttpStatus.OK);
 	}
 
-	//°øÁö»çÇ× °Ô½Ã¹° ÀÛ¼º
+	//ê³µì§€ì‚¬í•­ ê²Œì‹œë¬¼ ì‘ì„±
 	public ResponseEntity<?> insertMember(NoticeVO noticeVO) {
 		return noticeMapper.insertMember(noticeVO);
 	}
 
-	//°øÁö»çÇ× ¼öÁ¤
+	//ê³µì§€ì‚¬í•­ ìˆ˜ì •
 	public ResponseEntity<?> updateMember(int noticeNo, String title, String content, String image) {
 		int res = noticeMapper.updateMember(noticeNo, title, content, image);
 		

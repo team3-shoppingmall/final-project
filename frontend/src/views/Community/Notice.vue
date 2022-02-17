@@ -1,7 +1,12 @@
 <template>
 <v-container>
-    {{contents}}
-    <v-data-table :headers="headers" :items="contents" :items-per-page="5" :to="contents.noticeno" class="elevation-1"></v-data-table>
+    <div>
+        <v-data-table :headers="headers" :items="contents" :page.sync="page" :items-per-page="itemsPerPage" hide-default-footer class="elevation-1" @page-count="pageCount = $event"></v-data-table>
+        <div class="text-center pt-2">
+            <v-pagination v-model="page" :length="pageCount"></v-pagination>
+            <v-text-field :value="itemsPerPage" label="Items per page" type="number" min="-1" max="15" @input="itemsPerPage = parseInt($event, 10)"></v-text-field>
+        </div>
+    </div>
 </v-container>
 </template>
 
@@ -10,11 +15,12 @@ import axios from 'axios'
 export default {
     data() {
         return {
+            page: 1,
+            pageCount: 0,
+            itemsPerPage: 10,
             headers: [{
                     text: '번호',
-                    align: 'start',
-                    sortable: false,
-                    value: 'noticeno',
+                    value: 'noticeNo',
                 },
                 {
                     text: '제목',
@@ -22,23 +28,20 @@ export default {
                 },
                 {
                     text: '작성자',
-                    value: 'ID'
+                    value: 'id'
                 },
             ],
             contents: [],
         }
     },
-    methods:{
-        getNotice(){
+    methods: {
+        getNotice() {
             axios.get(`/api/notice/notice/list`).then(res => {
-                let temp = res.data;
-                temp.foreach(element => {
-                    this.contents.push(element);
-                })
+                this.contents = res.data
             })
         }
     },
-    mounted(){
+    mounted() {
         this.getNotice();
     }
 }

@@ -25,31 +25,31 @@ public class NoticeController {
 		this.noticeService = noticeService;
 	}
 	
-	//�������� ��� ���
+	//공지사항 목록 출력
 	@GetMapping("/notice/list")
 	public List<NoticeVO> list() {
 		return noticeService.getAllMembers();
 	}
 	
-	//�������� �Խù� ����
+	//공지사항 게시물 보기
 	@GetMapping("/notice/list/{noticeNo}")
 	public NoticeVO getMemberFindByID(@PathVariable("noticeNo") int noticeNo) {
 		return noticeService.getMemberFindByID(noticeNo);
 	}
 	
-	//�������� ����
+	//공지사항 삭제
 	@DeleteMapping("/notice/deleteMember")
 	public ResponseEntity<?> deleteMamber(@RequestParam("noticeNo") int noticeNo) {
 		return noticeService.deleteMember(noticeNo);
 	}
 	
-	//�������� �Խù� �ۼ�
+	//공지사항 게시물 작성
 	@PostMapping("/notice/insertMember")
 	public ResponseEntity<?> insertMember(@RequestBody NoticeVO noticeVO) {
 		return noticeService.insertMember(noticeVO);
 	}
 
-	//�������� ����
+	//공지사항 수정
 	@PatchMapping("/notice/updateMember")
 	public ResponseEntity<?> updateMember(@RequestParam("noticeNo") int noticeNo,@RequestParam("title") String title, @RequestParam("content") String content, @RequestParam("image") String image) {
 		return noticeService.updateMember(noticeNo, title, content, image);

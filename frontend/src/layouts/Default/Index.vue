@@ -53,15 +53,15 @@ export default {
             }, {
                 name: 'Community',
                 items: [{
-                        title: 'notice',
+                        title: 'NOTICE',
                         to: '/community/notice',
                     },
                     {
-                        title: 'review',
+                        title: 'REVIEW',
                         to: '/community/review',
                     },
                     {
-                        title: 'faq',
+                        title: 'FAQ',
                         to: '/community/faq',
                     },
                 ],

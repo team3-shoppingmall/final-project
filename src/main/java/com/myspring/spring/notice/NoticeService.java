@@ -16,9 +16,20 @@ public class NoticeService {
 		this.noticeMapper = noticeMapper;
 	}
 	
+	//전체 개수 가져오기
+	public ResponseEntity<?> getCountAll() {
+		int res = noticeMapper.getCountAll();
+		
+		if (res == 0)
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(res,HttpStatus.OK);
+	}
+	
 	//공지사항 목록 출력
-	public List<NoticeVO> getAllMembers() {
-		return noticeMapper.getAllMembers();
+	public List<NoticeVO> getAllMembers(int page, int perPage) {
+		int start = (page-1)*perPage;
+		return noticeMapper.getAllMembers(start, perPage);
 	}
 	
 	//공지사항 게시물 보기

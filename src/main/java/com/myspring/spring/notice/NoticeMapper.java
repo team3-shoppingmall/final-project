@@ -13,9 +13,13 @@ import org.springframework.http.ResponseEntity;
 @Mapper
 public interface NoticeMapper {
 
+	//전체 개수 가져오기
+	@Select("select count(*) from noticetable")
+	public int getCountAll();
+	
 	//공지사항 목록 출력
-	@Select("select * from noticetable")
-	public List<NoticeVO> getAllMembers();
+	@Select("select * from noticetable order by noticeno desc limit #{start}, #{perPage}")
+	public List<NoticeVO> getAllMembers(@Param("start") int start, @Param("perPage") int perPage);
 	
 	//공지사항 게시물 보기
 	@Select("select * from noticetable where noticeNo = #{noticeNo}")

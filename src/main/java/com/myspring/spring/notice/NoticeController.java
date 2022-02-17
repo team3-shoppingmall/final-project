@@ -25,10 +25,16 @@ public class NoticeController {
 		this.noticeService = noticeService;
 	}
 	
+	//전체 개수 가져오기
+	@GetMapping("/getCountAll")
+	public ResponseEntity<?> getCountAll() {
+		return noticeService.getCountAll();
+	}
+	
 	//공지사항 목록 출력
-	@GetMapping("/notice/list")
-	public List<NoticeVO> list() {
-		return noticeService.getAllMembers();
+	@GetMapping("/getNotice")
+	public List<NoticeVO> list(@RequestParam("page") int page, @RequestParam("perPage") int perPage) {
+		return noticeService.getAllMembers(page, perPage);
 	}
 	
 	//공지사항 게시물 보기

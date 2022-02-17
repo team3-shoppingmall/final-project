@@ -4,9 +4,19 @@
         <v-data-table :headers="headers" :items="contents" :page.sync="page" :items-per-page="itemsPerPage" hide-default-footer class="elevation-1" @page-count="pageCount = $event"></v-data-table>
         <div class="text-center pt-2">
             <v-pagination v-model="page" :length="pageCount"></v-pagination>
-            <v-text-field :value="itemsPerPage" label="Items per page" type="number" min="-1" max="15" @input="itemsPerPage = parseInt($event, 10)"></v-text-field>
         </div>
     </div>
+
+    <v-row align="center" justify="space-between">
+        <v-col class="d-flex" cols="4">
+            <v-select :items="searches" v-model="selectedSearch"></v-select>
+            <v-text-field solo v-model="search"></v-text-field>
+            <v-btn x-large icon @click="searchNotice">검색</v-btn>
+        </v-col>
+        <v-col class="d-flex" cols="3" sm="2" lg="1">
+            <v-select :items="pages" label="Items per page" v-model="itemsPerPage"></v-select>
+        </v-col>
+    </v-row>
 </v-container>
 </template>
 
@@ -32,13 +42,56 @@ export default {
                 },
             ],
             contents: [],
+            pages: [5, 10, 15],
+            searches: [{
+                    text: '제목',
+                    value: 'title'
+                },
+                {
+                    text: '내용',
+                    value: 'content'
+                },
+                {
+                    text: '작성자',
+                    value: 'id'
+                }
+            ],
+            selectedSearch: 'title',
+            search: '',
         }
     },
     methods: {
         getNotice() {
-            axios.get(`/api/notice/notice/list`).then(res => {
-                this.contents = res.data
-            })
+            axios({
+                    method: 'get',
+                    url: `/api/notice/getNotice`,
+                    params: {
+                        page: this.page,
+                        perPage: this.itemsPerPage,
+                    }
+                })
+                .then(res => {
+                    this.contents = res.data;
+                    axios.get('/api/notice/getCountAll').then(res => {
+                        this.pageCount = Math.ceil(res.data / this.itemsPerPage);
+                    })
+                })
+        },
+        searchNotice() {
+            console.log(this.selectedSearch);
+            console.log(this.search);
+        }
+    },
+    watch: {
+        page() {
+            this.getNotice();
+        },
+        itemsPerPage() {
+            if (this.page == 1) {
+                this.getNotice();
+            } else {
+                this.page = 1;
+            }
         }
     },
     mounted() {

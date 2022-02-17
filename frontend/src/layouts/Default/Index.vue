@@ -1,6 +1,6 @@
 <template>
 <v-app>
-    <v-app-bar color="primary" app dark height="100px">
+    <v-app-bar color="primary" app dark height="60px">
         <v-app-bar-nav-icon></v-app-bar-nav-icon>
         <v-row>
             <v-col cols="10" align-self="center">

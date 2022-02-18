@@ -1,11 +1,11 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" @click:row="moveto"></v-data-table>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1"></v-data-table>
     </div>
 
     <v-row align="center" justify="space-between">
-        <v-col cols="8" sm="7" md="5" lg="4" xl="3">
+        <v-col class="d-flex" cols="8" sm="7" md="5" lg="4" xl="3">
             <v-row>
                 <v-col cols="4">
                     <v-select :items="searches" v-model="search"></v-select>
@@ -17,11 +17,6 @@
                     <v-btn icon @click="getNotice">검색</v-btn>
                 </v-col>
             </v-row>
-        </v-col>
-        <v-col cols="1">
-            <v-btn>
-                글쓰기
-            </v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -105,12 +100,6 @@ export default {
                         })
                 })
         },
-        moveto(event, {
-            item
-        }) {
-            this.$router.push(`/community/notice/noticePost/${item.noticeNo}`)
-        }
-
     },
     watch: {
         options: {

@@ -18,6 +18,9 @@ public interface QnaMapper {
 	@Select("select count(*) from qna where ${search} like CONCAT('%',#{searchWord},'%')")
 	int getCount(@Param("search") String search, @Param("searchWord") String searchWord);
 	
+	@Select("select * from qna where qnaNo = #{qnaNo}")
+	QnaVO getQna(@Param("qnaNo") int qnaNo);
+	
 	// 문의 게시판 목록 조회
 	@Select("select * from qna where ${search} like CONCAT('%', #{searchWord}, '%') order by qnaNo desc limit #{start}, #{perPage}")
 	List<NoticeVO> getQna(int start, int perPage, String search, String searchWord);
@@ -61,11 +64,11 @@ public interface QnaMapper {
 
 	// 문의 삭제 & 댓글 삭제
 	@Delete("delete from qna where qnaNo = #{qnaNo}")
-	int deleteQna(@Param("qnaNo")int qnaNo,  String originalNo);
+	int deleteQna(@Param("qnaNo")int qnaNo);
 
 	// 댓글 삭제시 reply 업데이트
 	@Update("update qna set reply = false where qnaNo = #{originalNo}")
-	int updateReplyFalse(int qnaNo, @Param("originalNo") String originalNo);
+	int updateReplyFalse(@Param("originalNo") int originalNo);
 		
 	// 아이디로 문의 검색
 	@Select("select * from qna where id = #{id} order by qnaNo desc")

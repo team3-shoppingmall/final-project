@@ -45,9 +45,11 @@ insert into noticetable(title, content, id, image) values("test1", "content1", "
 insert into noticetable(title, content, id, image) values("test2", "content2", "admin29", "test2.png");
 insert into noticetable(title, content, id, image) values("test3", "content3", "admin30", "test3.png");
 insert into noticetable(title, content, id, image) values("test3", "content3", "admin31", "test3.png");
+insert into noticetable(title, content, id, image) values("test3", "content3", "admin31", "test3.png");
 
 commit;
 
-select * from noticetable order by noticeno desc limit 3,5;
+select * from noticetable order by noticeno desc limit 10,10;
 select * from noticetable order by noticeno desc;
-select * from noticetable where title like '%%' order by noticeno desc limit 1,5;
+select * from noticetable where title like '%1%' order by noticeno desc limit 0,10;
+select * from noticetable where title like '%1%' order by noticeno desc limit #{start}, #{perPage}

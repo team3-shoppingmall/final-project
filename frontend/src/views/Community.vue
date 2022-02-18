@@ -2,7 +2,7 @@
 <v-container>
     <v-row justify="center">
         <v-col xs="12" sm="12" md="12" lg="9" xl="8">
-            <h3>{{UPPER(pagename)}}</h3>
+            <h3>{{pagename}}</h3>
             <v-row justify="center">
                 <v-col cols="auto">
                     <v-btn :to="'/community/notice'">notice</v-btn>
@@ -30,12 +30,22 @@ export default {
     methods: {
         currentURL() {
             let link = document.location.href;
-            link = link.substring(32, link.length);
-            this.pagename = link;
+            let pageList = [{
+                text: '공지사항',
+                value: 'notice',
+            }, {
+                text: '자주 묻는 질문',
+                value: 'faq',
+            }, {
+                text: '후기',
+                value: 'review',
+            },]
+            for (let i = 0; i < pageList.length; i++) {
+                if (link.indexOf(pageList[i].value) != -1) {
+                    this.pagename = pageList[i].text;
+                }
+            }
         },
-        UPPER(word) {
-            return word.toUpperCase();
-        }
     },
     computed: {},
     watch: {

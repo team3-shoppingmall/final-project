@@ -26,6 +26,7 @@ import SignUp from '../views/SignUp.vue'
 Vue.use(VueRouter)
 
 const routes = [
+
     {
         path: '/',
         name: 'Default',
@@ -43,69 +44,58 @@ const routes = [
                 path: '/productSearch',
                 name: 'ProductSearch',
                 component: ProductSearch
-            },
-            {
+            }, {
                 path: '/productDetail',
                 name: 'ProductDetail',
                 component: ProductDetail
-            },
-            {
+            }, {
                 path: '/basket',
                 name: 'Basket',
                 component: Basket
-            },
-            {
+            }, {
                 path: '/payment',
                 name: 'Payment',
                 component: Payment
-            },
-            {
+            }, {
                 path: '/myPage',
                 name: 'MyPage',
                 component: MyPage
-            },
-            {
+            }, {
                 path: '/wishList',
                 name: 'WishList',
                 component: WishList
-            },
-            {
+            }, {
                 path: '/community',
                 name: 'Community',
                 component: Community,
-                children:[
+                children: [
                     {
                         path: 'notice',
                         name: 'Notice',
-                        component: Notice,
-                    },
-                    {
+                        component: Notice
+                    }, {
                         path: 'review',
                         name: 'Review',
-                        component: Review,
-                    },
-                    {
+                        component: Review
+                    }, {
                         path: 'faq',
                         name: 'FAQ',
-                        component: FAQ,
+                        component: FAQ
                     }
                 ]
-            },
-            {
+            }, {
                 path: '/qna',
                 name: 'QnA',
                 component: QnA
-            },
-            {
+            }, {
                 path: '/question',
                 name: 'Question',
                 component: Question
-            },
-            {
+            }, {
                 path: '/admin',
                 name: 'Admin',
                 component: Admin
-            },
+            }
         ]
     }, {
         path: '/authentication',
@@ -123,11 +113,12 @@ const routes = [
             }
         ]
     }
-
 ]
 
-const router = new VueRouter(
-    {mode: 'history', base: process.env.BASE_URL, routes}
-)
+const router = new VueRouter({
+    mode: 'history',
+    base: process.env.BASE_URL,
+    routes
+},)
 
 export default router

@@ -76,7 +76,7 @@
                 </v-row>
                 <v-divider class="mt-8"></v-divider>
                 <v-row class="my-5" justify="center">
-                     <v-btn class="primary text-h5 pa-3" height="100%">돌아가기</v-btn>
+                    <v-btn class="primary text-h5 pa-3" height="100%" @click="goBack">돌아가기</v-btn>
                     <v-btn class="primary text-h5 pa-3 ml-5" height="100%">가입하기</v-btn>
                 </v-row>
             </v-form>
@@ -87,7 +87,14 @@
 
 <script>
 export default {
-
+    methods: {
+        goBack() {
+            this.$router.push('/');
+        }
+    },
+    mounted() {
+        window.scrollTo(0, 0)
+    }
 }
 </script>
 

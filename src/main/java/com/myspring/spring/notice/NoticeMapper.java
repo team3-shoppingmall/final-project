@@ -23,6 +23,7 @@ public interface NoticeMapper {
 
 //	현재 #{search} 부분에 오류 있으니 title로 바꿔서 확인할 것
 //	오류 수정한다면 이렇게 해도 되지만 안되면 검색 별로 전부 다른 mapper를 만들어야 함
+  
 	// 공지사항 목록 출력
 	@Select("select * from noticetable where ${search} like CONCAT('%', #{searchWord}, '%') order by noticeno desc limit #{start}, #{perPage}")
 	public List<NoticeVO> getNotice(@Param("start") int start, @Param("perPage") int perPage,

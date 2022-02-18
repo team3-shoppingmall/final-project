@@ -87,10 +87,11 @@ public class QnaController {
 	}
 
 	// 문의 삭제 & 댓글 삭제
+	// 댓글 삭제시 originalNo 없이 삭제할때
+	// reply ture -> false
 	@DeleteMapping("/deleteqna")
-	public ResponseEntity<?> deleteQna(@RequestParam("qnaNo") int qnaNo,
-			@RequestParam(value="originalNo", required=false) String originalNo) {
-		return qnaService.deleteQna(qnaNo, originalNo);
+	public ResponseEntity<?> deleteQna(@RequestParam("qnaNo") int qnaNo) {
+		return qnaService.deleteQna(qnaNo);
 	}
 
 	// 아이디로 문의 검색

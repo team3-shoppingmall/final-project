@@ -1,28 +1,22 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :items="contents" :page.sync="page" :items-per-page="itemsPerPage" hide-default-footer class="elevation-1" @page-count="pageCount = $event"></v-data-table>
-        <div class="text-center pt-2">
-            <v-pagination v-model="page" :length="pageCount"></v-pagination>
-        </div>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1"></v-data-table>
     </div>
 
     <v-row align="center" justify="space-between">
         <v-col class="d-flex" cols="8" sm="7" md="5" lg="4" xl="3">
             <v-row>
                 <v-col cols="4">
-                    <v-select :items="searches" v-model="selectedSearch"></v-select>
+                    <v-select :items="searches" v-model="search"></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field solo v-model="search"></v-text-field>
+                    <v-text-field v-model="searchWord"></v-text-field>
                 </v-col>
-                <v-col cols="1">
-                    <v-btn x-large icon @click="searchNotice">검색</v-btn>
+                <v-col cols="1" class="mt-3">
+                    <v-btn icon @click="getNotice">검색</v-btn>
                 </v-col>
             </v-row>
-        </v-col>
-        <v-col class="d-flex" cols="2" sm="2" md="2" lg="2" xl="1">
-            <v-select :items="pages" label="Items per page" v-model="itemsPerPage"></v-select>
         </v-col>
     </v-row>
 </v-container>
@@ -33,24 +27,26 @@ import axios from 'axios'
 export default {
     data() {
         return {
-            page: 1,
-            pageCount: 0,
-            itemsPerPage: 10,
+            totalContents: 0,
+            contents: [],
+            options: {},
+            loading: true,
             headers: [{
                     text: '번호',
                     value: 'noticeNo',
+                    sortable: false
                 },
                 {
                     text: '제목',
-                    value: 'title'
+                    value: 'title',
+                    sortable: false
                 },
                 {
                     text: '작성자',
-                    value: 'id'
+                    value: 'id',
+                    sortable: false
                 },
             ],
-            contents: [],
-            pages: [5, 10, 15],
             searches: [{
                     text: '제목',
                     value: 'title'
@@ -64,47 +60,52 @@ export default {
                     value: 'id'
                 }
             ],
-            selectedSearch: 'title',
-            search: '',
+            search: 'title',
+            searchWord: '',
         }
     },
     methods: {
         getNotice() {
+            this.loading = true
+            const {
+                page,
+                itemsPerPage
+            } = this.options
             axios({
                     method: 'get',
                     url: `/api/notice/getNotice`,
                     params: {
-                        page: this.page,
-                        perPage: this.itemsPerPage,
+                        page: page,
+                        perPage: itemsPerPage,
+                        search: this.search,
+                        searchWord: this.searchWord,
                     }
                 })
                 .then(res => {
                     this.contents = res.data;
-                    axios.get('/api/notice/getCountAll').then(res => {
-                        this.pageCount = Math.ceil(res.data / this.itemsPerPage);
-                    })
+                    this.loading = false
+                    axios({
+                            method: 'get',
+                            url: '/api/notice/getCount',
+                            params: {
+                                search: this.search,
+                                searchWord: this.searchWord,
+                            }
+                        })
+                        .then(res => {
+                            this.totalContents = res.data;
+                        })
                 })
         },
-        searchNotice() {
-            console.log(this.selectedSearch);
-            console.log(this.search);
-        }
     },
     watch: {
-        page() {
-            this.getNotice();
+        options: {
+            handler() {
+                this.getNotice()
+            },
+            deep: true,
         },
-        itemsPerPage() {
-            if (this.page == 1) {
-                this.getNotice();
-            } else {
-                this.page = 1;
-            }
-        }
     },
-    mounted() {
-        this.getNotice();
-    }
 }
 </script>
 

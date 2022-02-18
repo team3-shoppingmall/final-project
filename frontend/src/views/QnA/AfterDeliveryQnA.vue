@@ -18,6 +18,9 @@
                 </v-col>
             </v-row>
         </v-col>
+        <v-col cols="auto">
+            <v-btn :to="'/writePost/AfterDeliveryQnA'">글쓰기</v-btn>
+        </v-col>
     </v-row>
 </v-container>
 </template>
@@ -41,11 +44,17 @@ export default {
                     text: '제목',
                     value: 'title',
                     sortable: false,
-                    width: '60%'
+                    width: '70%'
                 },
                 {
                     text: '작성자',
                     value: 'id',
+                    sortable: false,
+                    width: '10%'
+                },
+                {
+                    text: '작성일',
+                    value: 'regdate',
                     sortable: false,
                     width: '10%'
                 },

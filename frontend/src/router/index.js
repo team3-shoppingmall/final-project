@@ -19,6 +19,8 @@ import NoticePost from '../views/Community/NoticePost.vue'
 import Review from '../views/Community/Review.vue'
 import FAQ from '../views/Community/FAQ.vue'
 
+import WritePost from '../views/WritePost.vue'
+
 import QnA from '../views/QnA.vue'
 import ProductQnA from '../views/QnA/ProductQnA.vue'
 import DeliveryQnA from '../views/QnA/DeliveryQnA.vue'
@@ -79,13 +81,11 @@ const routes = [
                         path: 'notice',
                         name: 'Notice',
                         component: Notice,
-                        children:[                            
-                            {
-                                path: 'noticePost/:id',
-                                name: 'NoticePost',
-                                component: NoticePost,
-                            },
-                        ]
+                    },
+                    {
+                        path: 'noticePost/:id',
+                        name: 'NoticePost',
+                        component: NoticePost,
                     },
                     {
                         path: 'review',
@@ -94,10 +94,16 @@ const routes = [
                     }, {
                         path: 'faq',
                         name: 'FAQ',
-                        component: FAQ
-                    }
+                        component: FAQ,
+                    },
                 ]
-            }, {
+            },
+            {
+                path: '/writePost/:id',
+                name: 'WritePost',
+                component: WritePost,
+            },
+            {
                 path: '/qna',
                 name: 'QnA',
                 component: QnA,

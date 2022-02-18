@@ -18,6 +18,9 @@
                 </v-col>
             </v-row>
         </v-col>
+        <v-col cols="auto">
+            <v-btn :to="'/writePost/ProductQnA'">글쓰기</v-btn>
+        </v-col>
     </v-row>
 </v-container>
 </template>
@@ -38,6 +41,12 @@ export default {
                     width: '10%'
                 },
                 {
+                    text: '상품명',
+                    value: 'productname',
+                    sortable: false,
+                    width: '10%'
+                },
+                {
                     text: '제목',
                     value: 'title',
                     sortable: false,
@@ -49,10 +58,20 @@ export default {
                     sortable: false,
                     width: '10%'
                 },
+                {
+                    text: '작성일',
+                    value: 'regdate',
+                    sortable: false,
+                    width: '10%'
+                },
             ],
             searches: [{
                     text: '제목',
                     value: 'title'
+                },
+                {
+                    text: '상품명',
+                    value: 'productname'
                 },
                 {
                     text: '내용',

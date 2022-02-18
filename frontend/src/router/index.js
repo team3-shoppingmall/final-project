@@ -16,9 +16,10 @@ import Admin from '../views/Admin.vue'
 import Community from '../views/Community.vue'
 import Notice from '../views/Community/Notice.vue'
 import NoticePost from '../views/Community/NoticePost.vue'
-import WritePost from '../views/Community/WritePost.vue'
 import Review from '../views/Community/Review.vue'
 import FAQ from '../views/Community/FAQ.vue'
+
+import WritePost from '../views/WritePost.vue'
 
 import QnA from '../views/QnA.vue'
 import ProductQnA from '../views/QnA/ProductQnA.vue'
@@ -92,11 +93,6 @@ const routes = [
                         component: NoticePost,
                     },
                     {
-                        path: 'writePost/:id',
-                        name: 'WritePost',
-                        component: WritePost,
-                    },
-                    {
                         path: 'review',
                         name: 'Review',
                         component: Review,
@@ -107,6 +103,11 @@ const routes = [
                         component: FAQ,
                     },
                 ]
+            },
+            {
+                path: '/writePost/:id',
+                name: 'WritePost',
+                component: WritePost,
             },
             {
                 path: '/qna',

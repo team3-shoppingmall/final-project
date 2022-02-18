@@ -39,10 +39,7 @@ export default {
             }, {
                 text: '후기',
                 value: 'review',
-            }, {
-                text: '글쓰기',
-                value: 'writePost',
-            }, ]
+            },]
             for (let i = 0; i < pageList.length; i++) {
                 if (link.indexOf(pageList[i].value) != -1) {
                     this.pagename = pageList[i].text;

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface NoticeMapper {
 
 	// 전체 개수 가져오기
-	@Select("select count(*) from noticetable where #{search} like CONCAT('%',#{searchWord},'%')")
+	@Select("select count(*) from noticetable where ${search} like CONCAT('%',#{searchWord},'%')")
 	public int getCount(@Param("search") String search, @Param("searchWord") String searchWord);
 
 //	// 공지사항 목록 출력
@@ -25,7 +25,7 @@ public interface NoticeMapper {
 	// 공지사항 목록 출력
 //	현재 #{search} 부분에 오류 있으니 title로 바꿔서 확인할 것
 //	오류 수정한다면 이렇게 해도 되지만 안되면 검색 별로 전부 다른 mapper를 만들어야 함
-	@Select("select * from noticetable where #{search} like CONCAT('%', #{searchWord}, '%') order by noticeno desc limit #{start}, #{perPage}")
+	@Select("select * from noticetable where ${search} like CONCAT('%', #{searchWord}, '%') order by noticeno desc limit #{start}, #{perPage}")
 	public List<NoticeVO> getNotice(@Param("start") int start, @Param("perPage") int perPage,
 			@Param("search") String search, @Param("searchWord") String searchWord);
 

@@ -7,6 +7,11 @@
             </td>
         </template>
     </v-data-table>
+    <v-row justify="end" class="mt-2">
+        <v-col cols="auto">
+            <v-btn :to="'/writePost/faq'">글쓰기</v-btn>
+        </v-col>
+    </v-row>
 </v-container>
 </template>
 

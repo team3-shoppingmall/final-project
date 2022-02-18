@@ -18,10 +18,8 @@
                 </v-col>
             </v-row>
         </v-col>
-        <v-col cols="1">
-            <v-btn>
-                글쓰기
-            </v-btn>
+        <v-col cols="auto">
+            <v-btn :to="'/writePost/notice'">글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -108,7 +106,7 @@ export default {
         moveto(event, {
             item
         }) {
-            this.$router.push(`/community/notice/noticePost/${item.noticeNo}`)
+            this.$router.push(`/community/noticePost/${item.noticeNo}`)
         }
 
     },
@@ -123,6 +121,5 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
 </style>

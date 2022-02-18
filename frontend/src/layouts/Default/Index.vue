@@ -84,10 +84,10 @@ export default {
                 name: 'WishList',
                 to: '/wishList',
             }, {
-                name: 'SignIn',
+                name: 'Sign In',
                 to: '/authentication/signIn',
             }, {
-                name: 'SignUp',
+                name: 'Sign Up',
                 to: '/authentication/signUp',
             }, ],
         }

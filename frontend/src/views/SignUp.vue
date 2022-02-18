@@ -61,7 +61,7 @@
                 </v-simple-table>
                 <v-row class="mt-16">
                     <v-col class="py-0">
-                        <v-text class="text-h5 ">약관동의</v-text>
+                        <div class="text-h5 ">약관동의</div>
                         <v-divider class="my-2"></v-divider>
                         <v-checkbox v-model="agreement1" hide-details><template v-slot:label>
                                 <div class="black--text">(필수)사이트 이용 약관 동의</div>
@@ -76,7 +76,7 @@
                 </v-row>
                 <v-divider class="mt-8"></v-divider>
                 <v-row class="my-5" justify="center">
-                     <v-btn class="primary text-h5 pa-3" height="100%">돌아가기</v-btn>
+                    <v-btn class="primary text-h5 pa-3" height="100%" @click="goBack">돌아가기</v-btn>
                     <v-btn class="primary text-h5 pa-3 ml-5" height="100%">가입하기</v-btn>
                 </v-row>
             </v-form>
@@ -87,7 +87,14 @@
 
 <script>
 export default {
-
+    methods: {
+        goBack() {
+            this.$router.push('/');
+        }
+    },
+    mounted() {
+        window.scrollTo(0, 0)
+    }
 }
 </script>
 

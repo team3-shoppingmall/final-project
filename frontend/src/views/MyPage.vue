@@ -32,22 +32,18 @@
                     </tr>
                 </tbody>
             </v-simple-table>
-            <v-row class="mt-10 justify-space-around">
-                <v-btn>ORDER</v-btn>
-                <v-btn>PROFILE</v-btn>
-                <v-btn>WISH LIST</v-btn>
-                <v-btn>POINT</v-btn>
-                <v-btn>BOARD</v-btn>
-            </v-row>
-
+            <MyPageButton class="mt-10" />
         </v-col>
     </v-row>
 </v-container>
 </template>
 
 <script>
+import MyPageButton from '@/components/MyPageButton.vue'
 export default {
-
+    components: {
+        MyPageButton
+    }
 }
 </script>
 

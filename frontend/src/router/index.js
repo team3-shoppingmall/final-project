@@ -8,10 +8,15 @@ import ProductSearch from '../views/ProductSearch.vue'
 import ProductDetail from '../views/ProductDetail.vue'
 import Basket from '../views/Basket.vue'
 import Payment from '../views/Payment.vue'
-import MyPage from '../views/MyPage.vue'
-import WishList from '../views/WishList.vue'
 import Question from '../views/Question.vue'
 import Admin from '../views/Admin.vue'
+
+import MyPage from '../views/MyPage.vue'
+import Order from '../views/MyPage/Order.vue'
+import Profile from '../views/MyPage/Profile.vue'
+import Wishlist from '../views/MyPage/Wishlist.vue'
+import Point from '../views/MyPage/Point.vue'
+import Board from '../views/MyPage/Board.vue'
 
 import Community from '../views/Community.vue'
 import Notice from '../views/Community/Notice.vue'
@@ -68,10 +73,6 @@ const routes = [
                 path: '/myPage',
                 name: 'MyPage',
                 component: MyPage
-            }, {
-                path: '/wishList',
-                name: 'WishList',
-                component: WishList
             }, {
                 path: '/community',
                 name: 'Community',
@@ -135,10 +136,36 @@ const routes = [
                 name: 'Question',
                 component: Question
             }, {
+                path: '/order',
+                name: 'Order',
+                component: Order
+            },
+            {
+                path: '/profile',
+                name: 'Profile',
+                component: Profile
+            },
+            {
+                path: '/wishlist',
+                name: 'Wishlist',
+                component: Wishlist
+            },
+            {
+                path: '/point',
+                name: 'Point',
+                component: Point
+            },
+            {
+                path: '/board',
+                name: 'Board',
+                component: Board
+            },
+            {
                 path: '/admin',
                 name: 'Admin',
                 component: Admin
-            }
+            },
+
         ]
     }, {
         path: '/authentication',

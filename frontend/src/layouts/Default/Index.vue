@@ -64,6 +64,22 @@ export default {
                         title: 'FAQ',
                         to: '/community/faq',
                     },
+                    {
+                        title: '상품문의',
+                        to: '/qna/productQnA',
+                    },
+                    {
+                        title: '배송문의',
+                        to: '/qna/deliveryQnA',
+                    },
+                    {
+                        title: '배송 전 변경/취소',
+                        to: '/qna/beforeDeliveryQnA',
+                    },
+                    {
+                        title: '배송 후 교환/반품',
+                        to: '/qna/afterDeliveryQnA',
+                    },
                 ],
             }, {
                 name: 'MyPage',

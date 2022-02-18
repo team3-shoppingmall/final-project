@@ -45,28 +45,28 @@ public class NoticeController {
 	}
 
 	// 공지사항 게시물 보기
-	@GetMapping("/notice/list/{noticeNo}")
-	public NoticeVO getMemberFindByID(@PathVariable("noticeNo") int noticeNo) {
-		return noticeService.getMemberFindByID(noticeNo);
+	@GetMapping("/list/{noticeNo}")
+	public ResponseEntity<?> getNoticeFindByID(@PathVariable("noticeNo") int noticeNo) {
+		return noticeService.getNoticeFindByID(noticeNo);
 	}
 
 	// 공지사항 삭제
-	@DeleteMapping("/notice/deleteMember")
-	public ResponseEntity<?> deleteMamber(@RequestParam("noticeNo") int noticeNo) {
-		return noticeService.deleteMember(noticeNo);
+	@DeleteMapping("/deleteNotice")
+	public ResponseEntity<?> deleteNotice(@RequestParam("noticeNo") int noticeNo) {
+		return noticeService.deleteNotice(noticeNo);
 	}
 
 	// 공지사항 게시물 작성
-	@PostMapping("/notice/insertMember")
-	public ResponseEntity<?> insertMember(@RequestBody NoticeVO noticeVO) {
-		return noticeService.insertMember(noticeVO);
+	@PostMapping("/insertNotice")
+	public ResponseEntity<?> insertNotice(@RequestBody NoticeVO noticeVO) {
+		return noticeService.insertNotice(noticeVO);
 	}
 
 	// 공지사항 수정
-	@PatchMapping("/notice/updateMember")
-	public ResponseEntity<?> updateMember(@RequestParam("noticeNo") int noticeNo, @RequestParam("title") String title,
+	@PatchMapping("/updateNotice")
+	public ResponseEntity<?> updateNotice(@RequestParam("noticeNo") int noticeNo, @RequestParam("title") String title,
 			@RequestParam("content") String content, @RequestParam("image") String image) {
-		return noticeService.updateMember(noticeNo, title, content, image);
+		return noticeService.updateNotice(noticeNo, title, content, image);
 	}
 
 }

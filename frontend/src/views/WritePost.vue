@@ -11,7 +11,7 @@
                             <tr>
                                 <td style="width:10%"> 제목 </td>
                                 <td>
-                                    <v-select v-model="titleSelected" :items="productTitles" v-if="!admin"></v-select>
+                                    <v-select v-model="titleSelected" :items="defaultItems"></v-select>
                                     <!-- <v-select v-model="titleSelected" :items="productTitles" v-if="!admin && pageID == 'productQnA'"></v-select>
                                     <v-select v-model="titleSelected" :items="deliveryTtles" v-if="!admin && pageID == 'deliveryQnA'"></v-select>
                                     <v-select v-model="titleSelected" :items="beforeDeliveryTtles" v-if="!admin && pageID == 'beforeDeliveryQnA'"></v-select>
@@ -116,16 +116,15 @@ export default {
                     content: '주소 변경 문의 관련 text',
                 }
             ],
-            deliveryTtles: [{
-                    text: '제목을 선택해주세요',
-                    value: 'default',
-                    content: '',
-                }, {
-                    text: '배송 문의입니다',
-                    value: 'delivery',
-                    content: '배송 문의 관련 text',
-                },
-            ],
+            deliveryTitles: [{
+                text: '제목을 선택해주세요',
+                value: 'default',
+                content: '',
+            }, {
+                text: '배송 문의입니다',
+                value: 'delivery',
+                content: '배송 문의 관련 text',
+            }, ],
             beforeDeliveryTtles: [{
                     text: '제목을 선택해주세요',
                     value: 'default',
@@ -167,6 +166,7 @@ export default {
                 }
             ],
             titleSelected: 'default',
+            defaultItems: [],
             content: '',
             secret: true,
             rules: [v => v.length <= 600 || 'Max 600 characters'],
@@ -211,16 +211,23 @@ export default {
             // // 비밀글 여부
             // console.log(this.secret);
 
+        },
+        setSelectItems(){
+              if (this.$route.params.id == 'productQnA')
+            this.defaultItems = this.productTitles;
+        else if (this.$route.params.id == 'deliveryQnA')
+            this.defaultItems = this.deliveryTitles;
         }
     },
+
     watch: {
         titleSelected: {
-            handler() {
-            }
+            handler() {}
         }
     },
     mounted() {
         this.currentURL();
+      this.setSelectItems();
     }
 }
 </script>

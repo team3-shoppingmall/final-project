@@ -2,7 +2,7 @@ drop database if exists springdb;
 create database springdb;
 use springdb;
 
-create table qna(
+create table qnatable(
 	qnaNo bigint not null primary key auto_increment,
     productNo int,
     type varchar(200) not null,
@@ -16,4 +16,4 @@ create table qna(
 
 commit;
 
-select * from qna;
+select * from qnatable;

@@ -31,6 +31,7 @@ import ProductQnA from '../views/QnA/ProductQnA.vue'
 import DeliveryQnA from '../views/QnA/DeliveryQnA.vue'
 import BeforeDeliveryQnA from '../views/QnA/BeforeDeliveryQnA.vue'
 import AfterDeliveryQnA from '../views/QnA/AfterDeliveryQnA.vue'
+import QnAPost from '../views/QnAPost.vue'
 
 import Authentication from '../layouts/Authentication/Index.vue'
 import SignIn from '../views/SignIn.vue'
@@ -130,6 +131,11 @@ const routes = [
                         component: AfterDeliveryQnA,
                     }
                 ]
+            },
+            {
+                path: 'qna/:id',
+                name: 'QnAPost',
+                component: QnAPost,
             },
             {
                 path: '/question',

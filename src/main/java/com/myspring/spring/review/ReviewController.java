@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value="/spring")
+@RequestMapping(value="/api/review")
 public class ReviewController {
 	private ReviewService reviewService;
 	
@@ -20,29 +20,46 @@ public class ReviewController {
 	public ReviewController(ReviewService reviewService) {
 		this.reviewService = reviewService;
 	}
+	// 전체 개수 가져오기
+	@GetMapping("/getCount")
+	public ResponseEntity<?> getCount(@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
+		return reviewService.getCount(search, searchWord);
+	}
 	
-	//리뷰 리스트보기
-	@GetMapping("/review/list")
-	public ResponseEntity<?> getAllreview() {
-		return reviewService.getAllreviews();
+	//리뷰 전체보기
+	@GetMapping("/getReview")
+	public ResponseEntity<?> getAllreviews(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
+		return reviewService.getAllreviews(page, perPage, search, searchWord);
 	}
 	
 	//리뷰 작성
-	@PostMapping("/review/insert")
+	@PostMapping("/insert")
 	public ResponseEntity<?> insertReview(@RequestBody ReviewVO reviewVO) {
 		return reviewService.insertReview(reviewVO);
 	}
 	
 	//리뷰 삭제
-	@DeleteMapping("/review/delete")
+	@DeleteMapping("/delete")
 	public ResponseEntity<?> deleteReview(@RequestParam("id") String id) {
 		return reviewService.deleteReview(id);
 	}
 	
 	//리뷰 상세보기
-	@GetMapping("/review/view/{reviewNo}")
-	public ReviewVO getReviewFindByID(@PathVariable("reviewNo") int reviewNo) {
-		return reviewService.getReviewFindByID(reviewNo);
+	@GetMapping("/detail/{reviewNo}")
+	public ResponseEntity<?> getReviewFindByID(@PathVariable("reviewNo") int reviewNo) {
+		return reviewService.getFindByReviewNo(reviewNo);
 	}
 	
+	// 리뷰 검색 by content
+	@GetMapping("/searchByContent")
+	public ResponseEntity<?> searchReviewByContent(@RequestParam("content") String content) {
+		return reviewService.searchReviewByContent(content);
+	}
+	// 리뷰 검색 by id
+	@GetMapping("/searchById")
+	public ResponseEntity<?> searchReviewByid(@RequestParam("id") String id) {
+		return reviewService.searchReviewByid(id);
+	}
+	// 리뷰 정렬 by star
 }

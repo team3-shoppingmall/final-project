@@ -11,32 +11,21 @@ import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface FaqMapper {
-    @Select("select * from faq")
+	//전체 조회시 최신순으로 나오게 역순으로 조회
+    @Select("select * from faqtable order by faqNo desc")
 	List<FaqVO> getFaqAll();
     
-    @Select("select * from faq where type = #{type}")
+    @Select("select * from faqtable where type = #{type}")
 	List<FaqVO> getFaqByType(@Param("type") String type);
     
-    @Select("select * from faq where type in ('product', 'productNotice')")
-	List<FaqVO> getFaqProductAll();
-    
-    @Select("select * from faq where type in ('delivery', 'deliveryNotice')")
-	List<FaqVO> getFaqDeliveryAll();
-    
-    @Select("select * from faq where type in ('exchage', 'exchangeNotice')")
-	List<FaqVO> getFaqExchangeAll();
-    
-    @Select("select * from faq where type in ('etc', 'etcNotice')")
-	List<FaqVO> getFaqEtcAll();
-    
-    @Insert("insert into faq values(#{in.faqNo}, #{in.type}, #{in.title}, #{in.content}")
+    @Insert("insert into faqtable values(#{in.faqNo}, #{in.type}, #{in.title}, #{in.content})")
 	int insertFaq(@Param("in") FaqVO faqVO);
      
-    @Update("update faq set type = #{type}, title = #{title}, content = #{content}")
+    @Update("update faqtable set type = #{type}, title = #{title}, content = #{content} where faqNo = #{faqNo}") 
 	int updateFaq(@Param("faqNo") int faqNo, @Param("type") String type, @Param("title") String title, 
 			@Param("content") String content);
    
-    @Delete("delete from faq where faqNo = #{faqNo}")
+    @Delete("delete from faqtable where faqNo = #{faqNo}")
 	int deleteFaq(int faqNo);
 
 

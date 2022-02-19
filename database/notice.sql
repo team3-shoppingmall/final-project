@@ -45,6 +45,7 @@ insert into noticetable(title, content, id, image) values("test1", "content1", "
 insert into noticetable(title, content, id, image) values("test2", "content2", "admin29", "test2.png");
 insert into noticetable(title, content, id, image) values("test3", "content3", "admin30", "test3.png");
 insert into noticetable(title, content, id, image) values("test3", "content3", "admin31", "test3.png");
+insert into noticetable(title, content, id, image) values("test3", "content3", "admin31", "test3.png");
 
 commit;
 

@@ -46,7 +46,7 @@
         </v-col>
     </v-row>
     <v-row class="text-h2 font-weight-medium" justify="center">
-        BEW
+        NEW
     </v-row>
     <v-row class="my-10" justify="center">
         <v-col cols="9">

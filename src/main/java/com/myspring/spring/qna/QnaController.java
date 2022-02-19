@@ -33,7 +33,7 @@ public class QnaController {
 	@GetMapping("/getQnaPage")
 	public ResponseEntity<?> getQna(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
 			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-		return qnaService.getQna(page, perPage, search, searchWord);
+		return qnaService.getQnaWithSearch(page, perPage, search, searchWord);
 	}
 
 	// 문의 전체 조회

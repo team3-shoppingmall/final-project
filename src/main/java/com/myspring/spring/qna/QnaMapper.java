@@ -23,7 +23,7 @@ public interface QnaMapper {
 	
 	// 문의 게시판 목록 조회
 	@Select("select * from qna where ${search} like CONCAT('%', #{searchWord}, '%') order by qnaNo desc limit #{start}, #{perPage}")
-	List<NoticeVO> getQna(int start, int perPage, String search, String searchWord);
+	List<NoticeVO> getQnaWithSearch(int start, int perPage, String search, String searchWord);
 	
 	// 문의 전체 조회
 	@Select("select * from qna order by qnaNo desc")
@@ -75,7 +75,7 @@ public interface QnaMapper {
 	List<QnaVO> searchQnaById(@Param("id") String id);
 
 	// 내용으로 문의 검색
-	@Select("select * from qna where content like '%${content}%' order by qnaNo desc")
+	@Select("select * from qna where content like CONCAT('%', #{content}, '%') order by qnaNo desc")
 	List<QnaVO> searchQnaByContent(@Param("content") String content);
 
 //	//기간으로 문의 검색(최근 일주일)

@@ -11,12 +11,8 @@
                             <tr>
                                 <td style="width:10%"> 제목 </td>
                                 <td>
-                                    <v-select v-model="titleSelected" :items="defaultItems"></v-select>
-                                    <!-- <v-select v-model="titleSelected" :items="productTitles" v-if="!admin && pageID == 'productQnA'"></v-select>
-                                    <v-select v-model="titleSelected" :items="deliveryTtles" v-if="!admin && pageID == 'deliveryQnA'"></v-select>
-                                    <v-select v-model="titleSelected" :items="beforeDeliveryTtles" v-if="!admin && pageID == 'beforeDeliveryQnA'"></v-select>
-                                    <v-select v-model="titleSelected" :items="afterDeliveryTtles" v-if="!admin && pageID == 'afterDeliveryQnA'"></v-select> -->
-                                    <v-text-field v-if="admin"></v-text-field>
+                                    <v-select v-model="titleSelected" :items="titles" v-if="!admin"></v-select>
+                                    <v-text-field v-model="titleDetail" v-if="admin"></v-text-field>
                                 </td>
                             </tr>
                             <tr>
@@ -63,8 +59,8 @@
                         </tbody>
                     </template>
                 </v-simple-table>
-                <v-divider class="mt-8"></v-divider>
-                <v-row justify="end">
+                <v-divider></v-divider>
+                <v-row justify="end" class="mt-3">
                     <v-col cols="auto">
                         <v-btn @click="form">작성</v-btn>
                     </v-col>
@@ -87,6 +83,7 @@ export default {
         return {
             pageID: '',
             admin: false,
+            titles: [],
             productTitles: [{
                     text: '제목을 선택해주세요',
                     value: 'default',
@@ -100,21 +97,7 @@ export default {
                     text: '일반 문의입니다',
                     value: 'general',
                     content: '일반 문의 관련 text',
-                }, {
-                    text: '주문 취소 문의입니다',
-                    value: 'cancel',
-                    content: '주문 취소 문의 관련 text',
                 },
-                {
-                    text: '상품 변경 문의입니다',
-                    value: 'change',
-                    content: '상품 변경 문의 관련 text',
-                },
-                {
-                    text: '주소 변경 문의입니다',
-                    value: 'changeAddress',
-                    content: '주소 변경 문의 관련 text',
-                }
             ],
             deliveryTitles: [{
                 text: '제목을 선택해주세요',
@@ -125,7 +108,7 @@ export default {
                 value: 'delivery',
                 content: '배송 문의 관련 text',
             }, ],
-            beforeDeliveryTtles: [{
+            beforeDeliveryTitles: [{
                     text: '제목을 선택해주세요',
                     value: 'default',
                     content: '',
@@ -145,7 +128,7 @@ export default {
                     content: '주소 변경 문의 관련 text',
                 }
             ],
-            afterDeliveryTtles: [{
+            afterDeliveryTitles: [{
                     text: '제목을 선택해주세요',
                     value: 'default',
                     content: '',
@@ -166,7 +149,7 @@ export default {
                 }
             ],
             titleSelected: 'default',
-            defaultItems: [],
+            titleDetail: '',
             content: '',
             secret: true,
             rules: [v => v.length <= 600 || 'Max 600 characters'],
@@ -174,11 +157,11 @@ export default {
     },
     methods: {
         currentURL() {
-            this.pageID = this.$route.params.id;
             let pageList = ['notice', 'faq']
             for (let i = 0; i < pageList.length; i++) {
                 if (this.pageID.indexOf(pageList[i]) != -1) {
                     this.admin = true;
+                    this.titleSelected = 'notice';
                 }
             }
         },
@@ -190,7 +173,6 @@ export default {
             }
         },
         form() {
-            console.log(this.pageID);
             if (this.pageID != 'notice' && this.pageID != 'faq') {
                 if (this.titleSelected == 'default') {
                     alert('제목을 선택해주세요')
@@ -200,34 +182,49 @@ export default {
             // // notice or faq인지 여부 찾기
             // console.log(this.pageID);
 
+            // // notice or faq일 경우 제목 보내는 용도
+            // console.log(this.titleDetail);
+
             // // 아닐 경우 어떤 종류의 문의인지 찾기
             // console.log(this.titleSelected);
 
             // // 현재 내용
             // console.log(this.content);
 
-            // 파일은 찾아보시거나 일단 임시로 넣어서 실험하시면 됩니다
+            // 파일은 방법 찾아보시거나 일단 임시로 넣어서 실험하시면 됩니다
 
             // // 비밀글 여부
             // console.log(this.secret);
 
         },
-        setSelectItems(){
-              if (this.$route.params.id == 'productQnA')
-            this.defaultItems = this.productTitles;
-        else if (this.$route.params.id == 'deliveryQnA')
-            this.defaultItems = this.deliveryTitles;
+        setSelectItems() {
+            if (this.pageID == 'productQnA') {
+                this.titles = this.productTitles;
+            } else if (this.pageID == 'deliveryQnA') {
+                this.titles = this.deliveryTitles;
+            } else if (this.pageID == 'beforeDeliveryQnA') {
+                this.titles = this.beforeDeliveryTitles;
+            } else if (this.pageID == 'afterDeliveryQnA') {
+                this.titles = this.afterDeliveryTitles;
+            }
         }
     },
 
     watch: {
         titleSelected: {
-            handler() {}
+            handler() {
+                for (let i = 0; i < this.titles.length; i++) {
+                    if (this.titleSelected == this.titles[i].value) {
+                        this.content = this.titles[i].content;
+                    }
+                }
+            }
         }
     },
     mounted() {
+        this.pageID = this.$route.params.id;
         this.currentURL();
-      this.setSelectItems();
+        this.setSelectItems();
     }
 }
 </script>

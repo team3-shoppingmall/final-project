@@ -2,7 +2,7 @@
 <v-container>
     <v-row justify="center">
         <v-col xs="12" sm="12" md="12" lg="9" xl="8">
-            <h3>{{pagename}}</h3>
+            <div class="text-h3 justify-center">{{pagename}}</div>
             <v-row justify="center">
                 <v-col cols="auto">
                     <v-btn :to="'/community/notice'">notice</v-btn>

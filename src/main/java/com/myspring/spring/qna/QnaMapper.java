@@ -23,7 +23,7 @@ public interface QnaMapper {
 	
 	// 문의 게시판 목록 조회
 	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') order by qnaNo desc limit #{start}, #{perPage}")
-	List<NoticeVO> getQnaWithSearch(int start, int perPage, String search, String searchWord);
+	List<QnaVO> getQnaWithSearch(@Param("start") int start, @Param("perPage") int perPage, @Param("search") String search, @Param("searchWord") String searchWord);
 	
 	// 문의 전체 조회
 	@Select("select * from qnatable order by qnaNo desc")
@@ -50,7 +50,7 @@ public interface QnaMapper {
 	List<QnaVO> getQnaAfterDeliveryAll();
 	
 	// 문의 등록 & 댓글 등록
-	@Insert("insert into qnatable values(#{in.qnaNo}, #{in.productNo}, #{in.type}, #{in.originalNo}, #{in.reply}, #{in.content}, #{in.id}, #{in.regdate}, #{in.secret}, #{in.image})")
+	@Insert("insert into qnatable values(#{in.qnaNo}, #{in.productNo}, #{in.type}, #{in.originalNo}, #{in.reply}, #{in.content}, #{in.id}, #{in.regDate}, #{in.secret}, #{in.image})")
 	int insertQna(@Param("in") QnaVO qnaVO);
 	
 	// 댓글 등록시 reply 업데이트
@@ -79,15 +79,15 @@ public interface QnaMapper {
 	List<QnaVO> searchQnaByContent(@Param("content") String content);
 
 //	//기간으로 문의 검색(최근 일주일)
-//	@Select("select * from qnatable where regdate between DATE_ADD(NOW(), INTERVAL -1 WEEK) and NOW()")
+//	@Select("select * from qnatable where regDate between DATE_ADD(NOW(), INTERVAL -1 WEEK) and NOW()")
 //	List<QnaVO> searchQnaByWeek();
 //
 //	//기간으로 문의 검색(최근 한달)
-//	@Select("select * from qnatable where regdate between DATE_ADD(NOW(), INTERVAL -1 MONTH) and NOW()")
+//	@Select("select * from qnatable where regDate between DATE_ADD(NOW(), INTERVAL -1 MONTH) and NOW()")
 //	List<QnaVO> searchQnaByMonth();
 //
 //	//기간으로 문의 검색(최근 세달)
-//	@Select("select * from qnatable where regdate between DATE_ADD(NOW(), INTERVAL -3 MONTH) and NOW()")
+//	@Select("select * from qnatable where regDate between DATE_ADD(NOW(), INTERVAL -3 MONTH) and NOW()")
 //	List<QnaVO> searchQnaByMonths();
 	
 

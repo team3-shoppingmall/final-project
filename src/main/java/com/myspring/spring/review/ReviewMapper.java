@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 public interface ReviewMapper {
 	
 	// 전체 개수 가져오기
-	@Select("select count(*) from noticetable where ${search} like CONCAT('%',#{searchWord},'%')")
+	@Select("select count(*) from reviewtable where ${search} like CONCAT('%',#{searchWord},'%')")
 	public int getCount(@Param("search") String search, @Param("searchWord") String searchWord);
 		
 	//리뷰 전체보기

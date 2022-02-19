@@ -1,15 +1,11 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" @click:row="moveto" disable-sort>
-            <template #[`item.id`]="{item}">
-                <hideId :id="item.id" />
-            </template>
-        </v-data-table>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1"></v-data-table>
     </div>
 
     <v-row align="center" justify="space-between">
-        <v-col cols="8" sm="7" md="5" lg="4" xl="3">
+        <v-col class="d-flex" cols="8" sm="7" md="5" lg="4" xl="3">
             <v-row>
                 <v-col cols="4">
                     <v-select :items="searches" v-model="search"></v-select>
@@ -22,20 +18,13 @@
                 </v-col>
             </v-row>
         </v-col>
-        <v-col cols="auto">
-            <v-btn :to="'/writePost/notice'">글쓰기</v-btn>
-        </v-col>
     </v-row>
 </v-container>
 </template>
 
 <script>
 import axios from 'axios'
-import hideId from '@/components/hideId.vue'
 export default {
-    components: {
-        hideId,
-    },
     data() {
         return {
             totalContents: 0,
@@ -45,21 +34,20 @@ export default {
             headers: [{
                     text: '번호',
                     value: 'noticeNo',
-                    width: '10%',
-                    align: 'center',
-                    divider: true
+                    sortable: false,
+                    width: '10%'
                 },
                 {
                     text: '제목',
                     value: 'title',
-                    width: '60%',
-                    divider: true
+                    sortable: false,
+                    width: '60%'
                 },
                 {
                     text: '작성자',
                     value: 'id',
-                    width: '10%',
-                    align: 'center'
+                    sortable: false,
+                    width: '10%'
                 },
             ],
             searches: [{
@@ -112,12 +100,6 @@ export default {
                         })
                 })
         },
-        moveto(event, {
-            item
-        }) {
-            this.$router.push(`/community/noticePost/${item.noticeNo}`)
-        },
-
     },
     watch: {
         options: {
@@ -130,16 +112,6 @@ export default {
 }
 </script>
 
-<style scoped>
-table td {
-    border-right: 1px solid #dddddd;
-}
+<style>
 
-table td:last-child {
-    border-right: none
-}
-
-header.content {
-    text-align: center;
-}
 </style>

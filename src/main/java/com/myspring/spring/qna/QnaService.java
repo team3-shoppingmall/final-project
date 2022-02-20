@@ -123,7 +123,7 @@ public class QnaService {
 
 	// 문의 삭제 & 댓글 삭제
 	public ResponseEntity<?> deleteQna(int qnaNo) {
-		// 있으면 답글, 없으면 원글
+		// OriginalNo 있으면 답글, 없으면 원글
 		QnaVO res = qnaMapper.getQna(qnaNo);
 
 		// 문의 삭제

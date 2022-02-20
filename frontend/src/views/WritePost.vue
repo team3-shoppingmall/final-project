@@ -212,11 +212,11 @@ export default {
             // console.log(this.secret);
 
         },
-        setSelectItems(){
-              if (this.$route.params.id == 'productQnA')
-            this.defaultItems = this.productTitles;
-        else if (this.$route.params.id == 'deliveryQnA')
-            this.defaultItems = this.deliveryTitles;
+        setSelectItems() {
+            if (this.$route.params.id == 'productQnA')
+                this.defaultItems = this.productTitles;
+            else if (this.$route.params.id == 'deliveryQnA')
+                this.defaultItems = this.deliveryTitles;
         }
     },
 
@@ -227,7 +227,7 @@ export default {
     },
     mounted() {
         this.currentURL();
-      this.setSelectItems();
+        this.setSelectItems();
     }
 }
 </script>

@@ -33,7 +33,7 @@ public class QnaController {
 	@GetMapping("/getQnaPage")
 	public ResponseEntity<?> getQna(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
 			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-		return qnaService.getQna(page, perPage, search, searchWord);
+		return qnaService.getQnaWithSearch(page, perPage, search, searchWord);
 	}
 
 	// 문의 전체 조회
@@ -55,13 +55,13 @@ public class QnaController {
 	}
 
 	// 배송 문의 카테고리 전체 조회
-	@GetMapping("/deliveryQnA")
+	@GetMapping("/getdeliveryAll")
 	public ResponseEntity<?> getQnaDeliveryAll() {
 		return qnaService.getQnaDeliveryAll();
 	}
 
 	// 배송 전 변경&취소 카테고리 전체 조회
-	@GetMapping("/beforeDeliveryQnA")
+	@GetMapping("/getbeforedeliveryAll")
 	public ResponseEntity<?> getQnaBeforeDeliveryAll() {
 		return qnaService.getQnaBeforeDeliveryAll();
 	}

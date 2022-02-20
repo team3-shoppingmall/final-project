@@ -1,7 +1,11 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" @click:row="moveto"></v-data-table>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" @click:row="moveto" disable-sort>
+            <template #[`item.id`]="{item}">
+                <hideId :id="item.id" />
+            </template>
+        </v-data-table>
     </div>
 
     <v-row align="center" justify="space-between">
@@ -27,7 +31,11 @@
 
 <script>
 import axios from 'axios'
+import hideId from '@/components/hideId.vue'
 export default {
+    components: {
+        hideId,
+    },
     data() {
         return {
             totalContents: 0,
@@ -37,20 +45,21 @@ export default {
             headers: [{
                     text: '번호',
                     value: 'noticeNo',
-                    sortable: false,
-                    width: '10%'
+                    width: '10%',
+                    align: 'center',
+                    divider: true
                 },
                 {
                     text: '제목',
                     value: 'title',
-                    sortable: false,
-                    width: '60%'
+                    width: '60%',
+                    divider: true
                 },
                 {
                     text: '작성자',
                     value: 'id',
-                    sortable: false,
-                    width: '10%'
+                    width: '10%',
+                    align: 'center'
                 },
             ],
             searches: [{
@@ -107,7 +116,7 @@ export default {
             item
         }) {
             this.$router.push(`/community/noticePost/${item.noticeNo}`)
-        }
+        },
 
     },
     watch: {
@@ -122,4 +131,15 @@ export default {
 </script>
 
 <style scoped>
+table td {
+    border-right: 1px solid #dddddd;
+}
+
+table td:last-child {
+    border-right: none
+}
+
+header.content {
+    text-align: center;
+}
 </style>

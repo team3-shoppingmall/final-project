@@ -1,11 +1,24 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1"></v-data-table>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" @click:row="moveto" item-key="qnaNo" disable-sort>
+            <template #[`item.id`]="{item}">
+                <hideId :id="item.id" />
+            </template>
+            <template #[`item.regDate`]="{item}">
+                <dateDisplay :regDate="item.regDate" />
+            </template>
+            <template #[`item.type`]="{item}">
+                <qnaTitleDisplay :type="item.type" />
+            </template>
+            <template #[`item.productno`]="{item}">
+                <productNameDisplay :productno="item.productno" />
+            </template>
+        </v-data-table>
     </div>
 
     <v-row align="center" justify="space-between">
-        <v-col class="d-flex" cols="8" sm="7" md="5" lg="4" xl="3">
+        <v-col cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
                 <v-col cols="4">
                     <v-select :items="searches" v-model="search"></v-select>
@@ -14,7 +27,7 @@
                     <v-text-field v-model="searchWord"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon @click="getNotice">검색</v-btn>
+                    <v-btn icon @click="getQnA">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -27,7 +40,17 @@
 
 <script>
 import axios from 'axios'
+import hideId from '@/components/hideId.vue'
+import dateDisplay from '@/components/dateDisplay.vue'
+import qnaTitleDisplay from '@/components/qnaTitleDisplay.vue'
+import productNameDisplay from '@/components/productNameDisplay.vue'
 export default {
+    components: {
+        hideId,
+        dateDisplay,
+        qnaTitleDisplay,
+        productNameDisplay,
+    },
     data() {
         return {
             totalContents: 0,
@@ -36,58 +59,55 @@ export default {
             loading: true,
             headers: [{
                     text: '번호',
-                    value: 'noticeNo',
-                    sortable: false,
-                    width: '10%'
+                    value: 'qnaNo',
+                    width: '10%',
+                    divider: true,
+                    align: 'center'
                 },
                 {
                     text: '상품명',
-                    value: 'productname',
-                    sortable: false,
-                    width: '10%'
+                    value: 'productno',
+                    width: '10%',
+                    divider: true
                 },
                 {
                     text: '제목',
-                    value: 'title',
-                    sortable: false,
-                    width: '60%'
+                    value: 'type',
+                    width: '60%',
+                    divider: true
                 },
                 {
                     text: '작성자',
                     value: 'id',
-                    sortable: false,
-                    width: '10%'
+                    width: '10%',
+                    divider: true
                 },
                 {
                     text: '작성일',
-                    value: 'regdate',
-                    sortable: false,
-                    width: '10%'
+                    value: 'regDate',
+                    width: '10%',
+                    divider: true,
+                    align: 'center'
                 },
             ],
             searches: [{
-                    text: '제목',
-                    value: 'title'
-                },
-                {
                     text: '상품명',
                     value: 'productname'
-                },
-                {
-                    text: '내용',
-                    value: 'content'
+                }, {
+                    text: '제목',
+                    value: 'title'
                 },
                 {
                     text: '작성자',
                     value: 'id'
                 }
             ],
-            search: 'title',
+            search: 'id',
             searchWord: '',
         }
     },
     methods: {
-        getNotice() {
+        getQnA() {
             this.loading = true
             const {
                 page,
@@ -95,7 +115,7 @@ export default {
             } = this.options
             axios({
                     method: 'get',
-                    url: `/api/notice/getNotice`,
+                    url: `/api/qna/getQnaPage`,
                     params: {
                         page: page,
                         perPage: itemsPerPage,
@@ -108,7 +128,7 @@ export default {
                     this.loading = false
                     axios({
                             method: 'get',
-                            url: '/api/notice/getCount',
+                            url: '/api/qna/getCount',
                             params: {
                                 search: this.search,
                                 searchWord: this.searchWord,
@@ -119,11 +139,16 @@ export default {
                         })
                 })
         },
+        moveto(event, {
+            item
+        }) {
+            this.$router.push(`/qna/${item.qnaNo}`)
+        },
     },
     watch: {
         options: {
             handler() {
-                this.getNotice()
+                this.getQnA()
             },
             deep: true,
         },

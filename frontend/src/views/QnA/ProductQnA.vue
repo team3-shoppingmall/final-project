@@ -11,6 +11,9 @@
             <template #[`item.type`]="{item}">
                 <qnaTitleDisplay :type="item.type" />
             </template>
+            <template #[`item.productno`]="{item}">
+                <productNameDisplay :productno="item.productno" />
+            </template>
         </v-data-table>
     </div>
 
@@ -40,11 +43,13 @@ import axios from 'axios'
 import hideId from '@/components/hideId.vue'
 import dateDisplay from '@/components/dateDisplay.vue'
 import qnaTitleDisplay from '@/components/qnaTitleDisplay.vue'
+import productNameDisplay from '@/components/productNameDisplay.vue'
 export default {
     components: {
         hideId,
         dateDisplay,
         qnaTitleDisplay,
+        productNameDisplay,
     },
     data() {
         return {
@@ -61,7 +66,7 @@ export default {
                 },
                 {
                     text: '상품명',
-                    value: 'productname',
+                    value: 'productno',
                     width: '10%',
                     divider: true
                 },

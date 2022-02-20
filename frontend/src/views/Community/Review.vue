@@ -6,7 +6,9 @@
                 <tbody>
                     <tr v-for="item in items" :key="item.reviewNo">
                         <td style="text-align: center;">{{ item.reviewNo }}</td>
-                        <td>{{ item.productname }}</td>
+                        <td>
+                            <productNameDisplay :productno="item.productno" />
+                        </td>
                         <td style="text-align: center;" class="pa-1">
                             <v-rating hover length="5" readonly size="10" :value="item.star"></v-rating>
                         </td>
@@ -45,10 +47,12 @@
 import axios from 'axios'
 import hideId from '@/components/hideId.vue'
 import dateDisplay from '@/components/dateDisplay.vue'
+import productNameDisplay from '@/components/productNameDisplay.vue'
 export default {
     components: {
         hideId,
         dateDisplay,
+        productNameDisplay,
     },
     data() {
         return {
@@ -65,7 +69,7 @@ export default {
                 },
                 {
                     text: '상품명',
-                    value: 'productname',
+                    value: 'productno',
                     width: '10%',
                     align: 'center',
                     divider: true

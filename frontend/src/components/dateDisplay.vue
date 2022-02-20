@@ -1,7 +1,6 @@
 <template>
   <span>
-      {{year}}/{{month}}/{{day}}<br>
-      {{hour}}:{{minute}}:{{second}}
+      {{year}}/{{month}}/{{day}} {{hour}}:{{minute}}:{{second}}
   </span>
 </template>
 

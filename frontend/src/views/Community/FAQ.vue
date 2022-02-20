@@ -24,13 +24,13 @@
             </td>
         </template>
         <template #[`item.type`]="{item}">
-            <faqTypeDisplay :type="item.type" />
+            <FAQTypeDisplay :type="item.type" />
         </template>
         <template #[`item.icon`]="{}">
             Q
         </template>
         <template #[`item.actions`]="{item}" v-if="admin">
-            <v-btn small>
+            <v-btn small @click="updateFAQ(item.noticeNo)">
                 <!-- <v-icon>{{ icons.mdiPencil }}</v-icon> -->
                 수정
             </v-btn>
@@ -54,10 +54,10 @@ import axios from 'axios'
 //     mdiPencil,
 //     mdiDelete,
 // } from '@mdi/js'
-import faqTypeDisplay from '@/components/faqTypeDisplay.vue'
+import FAQTypeDisplay from '@/components/FAQTypeDisplay.vue'
 export default {
     components: {
-        faqTypeDisplay,
+        FAQTypeDisplay,
     },
     data() {
         return {
@@ -130,6 +130,9 @@ export default {
         },
         deleteFAQ(num) {
             console.log(num);
+        },
+        updateFAQ(num) {
+            this.$router.push(`/updatePost/faq/${num}`);
         }
     },
     watch: {

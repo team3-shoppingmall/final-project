@@ -13,13 +13,13 @@
                 <tr>
                     <td style="width:10%"> 작성자 </td>
                     <td>
-                        <hideId :id="'ididididid'" />
+                        <HideId :id="'ididididid'" />
                     </td>
                 </tr>
                 <tr>
                     <td style="width:10%"> 작성일 </td>
                     <td>
-                        <dateDisplay :regDate="'2022-02-18T15:00:00.000+00:00'" />
+                        <DateDisplay :regDate="'2022-02-18T15:00:00.000+00:00'" />
                     </td>
                 </tr>
                 <tr>
@@ -59,13 +59,13 @@
     <v-divider></v-divider>
     <v-row justify="end" class="mt-3">
         <v-col cols="auto">
-            <v-btn @click="moveto">목록</v-btn>
+            <v-btn @click="moveToBefore">목록</v-btn>
         </v-col>
         <v-col cols="auto">
-            <v-btn @click="moveto">수정</v-btn>
+            <v-btn @click="moveToUpdate">수정</v-btn>
         </v-col>
         <v-col cols="auto">
-            <v-btn @click="moveto">삭제</v-btn>
+            <v-btn @click="deleteNotice">삭제</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -73,12 +73,12 @@
 
 <script>
 // import axios from 'axios'
-import hideId from '@/components/hideId.vue'
-import dateDisplay from '@/components/dateDisplay.vue'
+import HideId from '@/components/HideId.vue'
+import DateDisplay from '@/components/DateDisplay.vue'
 export default {
     components: {
-        hideId,
-        dateDisplay,
+        HideId,
+        DateDisplay,
     },
     data() {
         return {
@@ -96,7 +96,16 @@ export default {
     methods: {
         getNotice() {
             this.pageID = this.$route.params.id;
-        }
+        },
+        moveToBefore() {
+            this.$router.go(-1);
+        },
+        moveToUpdate() {
+            this.$router.push(`/updatePost/notice/${this.pageID}`)
+        },
+        deleteNotice(){
+            console.log(this.pageID);
+        },
     },
     mounted() {
         this.getNotice();

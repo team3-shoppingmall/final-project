@@ -61,6 +61,7 @@ export default {
                     text: '제목',
                     value: 'title',
                     width: '60%',
+                    align: 'center',
                     divider: true
                 },
                 {

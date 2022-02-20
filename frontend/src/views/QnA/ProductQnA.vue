@@ -68,32 +68,35 @@ export default {
                     text: '번호',
                     value: 'qnaNo',
                     width: '10%',
+                    align: 'center',
                     divider: true,
-                    align: 'center'
                 },
                 {
                     text: '상품명',
                     value: 'productno',
                     width: '10%',
+                    align: 'center',
                     divider: true
                 },
                 {
                     text: '제목',
                     value: 'type',
                     width: '60%',
+                    align: 'center',
                     divider: true
                 },
                 {
                     text: '작성자',
                     value: 'id',
                     width: '10%',
+                    align: 'center',
                     divider: true
                 },
                 {
                     text: '작성일',
                     value: 'regDate',
                     width: '10%',
-                    align: 'center'
+                    align: 'center',
                 },
             ],
             searches: [{

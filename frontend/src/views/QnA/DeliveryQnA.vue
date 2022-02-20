@@ -64,14 +64,15 @@ export default {
                     value: 'qnaNo',
                     sortable: false,
                     width: '10%',
-                    divider: true,
                     align: 'center',
+                    divider: true,
                 },
                 {
                     text: '제목',
                     value: 'type',
                     sortable: false,
                     width: '70%',
+                    align: 'center',
                     divider: true,
                 },
                 {
@@ -79,6 +80,7 @@ export default {
                     value: 'id',
                     sortable: false,
                     width: '10%',
+                    align: 'center',
                     divider: true,
                 },
                 {

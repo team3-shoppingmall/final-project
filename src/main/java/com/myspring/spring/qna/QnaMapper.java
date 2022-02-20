@@ -29,6 +29,10 @@ public interface QnaMapper {
 	@Select("select * from qnatable order by qnaNo desc")
 	List<QnaVO> getQnaAll();
 	
+	// qnaNo로 1개 문의 가져오기
+	@Select("select * from qna where qnaNo = #{qnaNo}")
+	QnaVO getQnaByQnaNo(@Param("qnaNo") int qnaNo);
+		
 	// type별 문의 조회
 	@Select("select * from qnatable where type = #{type} order by qnaNo desc")
 	List<QnaVO> getQnaByType(@Param("type") String type);

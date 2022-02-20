@@ -1,18 +1,25 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" @click:row="moveto" item-key="qnaNo" disable-sort>
-            <template #[`item.id`]="{item}">
-                <hideId :id="item.id" />
-            </template>
-            <template #[`item.regDate`]="{item}">
-                <dateDisplay :regDate="item.regDate" />
-            </template>
-            <template #[`item.type`]="{item}">
-                <qnaTitleDisplay :type="item.type" />
-            </template>
-            <template #[`item.productno`]="{item}">
-                <productNameDisplay :productno="item.productno" />
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" disable-sort>
+            <template v-slot:body="{ items }">
+                <tbody>
+                    <tr v-for="item in items" :key="item.qnaNo" @click="moveto(item)">
+                        <td style="text-align: center;">{{ item.qnaNo }}</td>
+                        <td>
+                            <ProductNameDisplay :productno="item.productno" />
+                        </td>
+                        <td>
+                            <QnATitleDisplay :type="item.type" />
+                        </td>
+                        <td>
+                            <HideId :id="item.id" />
+                        </td>
+                        <td>
+                            <DateDisplay :regDate="item.regDate" />
+                        </td>
+                    </tr>
+                </tbody>
             </template>
         </v-data-table>
     </div>
@@ -40,16 +47,16 @@
 
 <script>
 import axios from 'axios'
-import hideId from '@/components/hideId.vue'
-import dateDisplay from '@/components/dateDisplay.vue'
-import qnaTitleDisplay from '@/components/qnaTitleDisplay.vue'
-import productNameDisplay from '@/components/productNameDisplay.vue'
+import HideId from '@/components/HideId.vue'
+import DateDisplay from '@/components/DateDisplay.vue'
+import QnATitleDisplay from '@/components/QnATitleDisplay.vue'
+import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
 export default {
     components: {
-        hideId,
-        dateDisplay,
-        qnaTitleDisplay,
-        productNameDisplay,
+        HideId,
+        DateDisplay,
+        QnATitleDisplay,
+        ProductNameDisplay,
     },
     data() {
         return {
@@ -86,7 +93,6 @@ export default {
                     text: '작성일',
                     value: 'regDate',
                     width: '10%',
-                    divider: true,
                     align: 'center'
                 },
             ],
@@ -139,9 +145,7 @@ export default {
                         })
                 })
         },
-        moveto(event, {
-            item
-        }) {
+        moveto(item) {
             this.$router.push(`/qna/${item.qnaNo}`)
         },
     },
@@ -156,6 +160,12 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+table td {
+    border-right: 1px solid #dddddd;
+}
 
+table td:last-child {
+    border-right: none
+}
 </style>

@@ -67,14 +67,14 @@
                 </v-simple-table>
                 <v-divider></v-divider>
                 <v-row justify="end" class="mt-3">
-                    <v-col cols="auto" v-if="sendPostNum == '' || sendPostNum == undefined">
+                    <v-col cols="auto" v-if="num == '' || num == undefined">
                         <v-btn @click="form">작성</v-btn>
                     </v-col>
-                    <v-col cols="auto" v-if="sendPostNum != '' && sendPostNum != undefined">
+                    <v-col cols="auto" v-if="num != '' && num != undefined">
                         <v-btn @click="formUpdate">수정</v-btn>
                     </v-col>
                     <v-col cols="auto">
-                        <v-btn @click="moveto">취소</v-btn>
+                        <v-btn @click="moveToBefore">취소</v-btn>
                     </v-col>
                 </v-row>
             </v-form>
@@ -88,7 +88,6 @@
 // import axios from 'axios'
 
 export default {
-    props: ['sendType', 'sendPostNum'],
     data() {
         return {
             pageID: '',
@@ -165,6 +164,7 @@ export default {
                 value: 'etc',
             }, ],
             rules: [v => v.length <= 600 || 'Max 600 characters'],
+            num: '',
             titleSelected: 'default',
             titleDetail: '',
             faqTypeSelected: '',
@@ -234,6 +234,9 @@ export default {
         formUpdate() {
             // this.sendType => 게시글 종류(notice, faq, qna(product, delivery) 등)
         },
+        moveToBefore() {
+            this.$router.go(-1);
+        },
     },
 
     watch: {
@@ -248,11 +251,12 @@ export default {
         }
     },
     mounted() {
-        if (this.sendPostNum != '' && this.sendPostNum != undefined) {
+        this.pageID = this.$route.params.id;
+        this.num = this.$route.params.num;
+        if (this.num != '' && this.num != undefined) {
             // 기존 정보 가져와서 넣어주기
             // 만약 sendType이 notice나 faq면 관리자이니 admin true로 변경
         } else {
-            this.pageID = this.$route.params.id;
             this.currentURL();
         }
     }

@@ -29,21 +29,20 @@
         <template #[`item.icon`]="{}">
             Q
         </template>
-        <template #[`item.actions`]="{}" v-if="admin">
-            <!-- <v-btn small>
-                <v-icon>{{ icons.mdiPencil }}</v-icon>
+        <template #[`item.actions`]="{item}" v-if="admin">
+            <v-btn small>
+                <!-- <v-icon>{{ icons.mdiPencil }}</v-icon> -->
+                수정
             </v-btn>
-            <v-btn small @click="delete(item.qnaNo)">
-                <v-icon> {{ icons.mdiDelete }} </v-icon>
-            </v-btn> -->
+            <v-btn small @click="deleteFAQ(item.noticeNo)">
+                삭제
+                <!-- <v-icon> {{ icons.mdiDelete }} </v-icon> -->
+            </v-btn>
         </template>
     </v-data-table>
     <v-row justify="end" class="mt-2">
         <v-col cols="auto">
             <v-btn :to="'/writePost/faq'">글쓰기</v-btn>
-        </v-col>
-        <v-col cols="auto">
-            <v-btn :to="'/writePost/updatefaq'">수정</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -83,13 +82,13 @@ export default {
                     text: '제목',
                     value: 'title',
                     sortable: false,
-                    width: '80%',
+                    width: '70%',
                 },
                 {
                     text: '',
                     value: 'actions',
                     sortable: false,
-                    width: '5%',
+                    width: '15%',
                 },
                 {
                     text: '',
@@ -129,6 +128,9 @@ export default {
                 return 'primary'
             }
         },
+        deleteFAQ(num) {
+            console.log(num);
+        }
     },
     watch: {
         options: {

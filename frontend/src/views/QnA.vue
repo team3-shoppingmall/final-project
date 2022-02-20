@@ -2,7 +2,7 @@
 <v-container>
     <v-row justify="center">
         <v-col xs="12" sm="12" md="12" lg="9" xl="8">
-            <div class="text-h3">{{pagename}}</div>
+            <div class="text-h3 justify-center">{{pagename}}</div>
             <v-row justify="center">
                 <v-col cols="auto">
                     <v-btn :to="'/qna/productQnA'">상품문의</v-btn>

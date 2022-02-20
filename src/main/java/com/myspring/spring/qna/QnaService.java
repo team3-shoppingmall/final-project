@@ -30,9 +30,9 @@ public class QnaService {
 	}
 
 	// 문의게시판 목록 출력
-	public ResponseEntity<?> getQna(int page, int perPage, String search, String searchWord) {
+	public ResponseEntity<?> getQnaWithSearch(int page, int perPage, String search, String searchWord) {
 		int start = (page - 1) * perPage;
-		List<NoticeVO> res = qnaMapper.getQna(start, perPage, search, searchWord);
+		List<QnaVO> res = qnaMapper.getQnaWithSearch(start, perPage, search, searchWord);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else

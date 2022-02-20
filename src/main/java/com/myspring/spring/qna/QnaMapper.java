@@ -18,9 +18,6 @@ public interface QnaMapper {
 	@Select("select count(*) from qna where ${search} like CONCAT('%',#{searchWord},'%')")
 	int getCount(@Param("search") String search, @Param("searchWord") String searchWord);
 	
-	@Select("select * from qna where qnaNo = #{qnaNo}")
-	QnaVO getQna(@Param("qnaNo") int qnaNo);
-	
 	// 문의 게시판 목록 조회
 	@Select("select * from qna where ${search} like CONCAT('%', #{searchWord}, '%') order by qnaNo desc limit #{start}, #{perPage}")
 	List<NoticeVO> getQna(int start, int perPage, String search, String searchWord);
@@ -29,6 +26,10 @@ public interface QnaMapper {
 	@Select("select * from qna order by qnaNo desc")
 	List<QnaVO> getQnaAll();
 	
+	// qnaNo로 1개 문의 가져오기
+	@Select("select * from qna where qnaNo = #{qnaNo}")
+	QnaVO getQnaByQnaNo(@Param("qnaNo") int qnaNo);
+		
 	// type별 문의 조회
 	@Select("select * from qna where type = #{type} order by qnaNo desc")
 	List<QnaVO> getQnaByType(@Param("type") String type);

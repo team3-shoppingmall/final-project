@@ -55,13 +55,13 @@ public class QnaController {
 	}
 
 	// 배송 문의 카테고리 전체 조회
-	@GetMapping("/getdeliveryAll")
+	@GetMapping("/deliveryQnA")
 	public ResponseEntity<?> getQnaDeliveryAll() {
 		return qnaService.getQnaDeliveryAll();
 	}
 
 	// 배송 전 변경&취소 카테고리 전체 조회
-	@GetMapping("/getbeforedeliveryAll")
+	@GetMapping("/beforeDeliveryQnA")
 	public ResponseEntity<?> getQnaBeforeDeliveryAll() {
 		return qnaService.getQnaBeforeDeliveryAll();
 	}
@@ -78,6 +78,7 @@ public class QnaController {
 		return qnaService.insertQna(qnaVO);
 	}
 
+	//문의글 수정 시 댓글이 있으면 수정 불가
 	// 문의 수정 & 댓글 수정
 	@PatchMapping("/updateqna")
 	public ResponseEntity<?> updateQna(@RequestParam("qnaNo") int qnaNo, @RequestParam("type") String type,
@@ -88,7 +89,7 @@ public class QnaController {
 
 	// 문의 삭제 & 댓글 삭제
 	// 댓글 삭제시 originalNo 없이 삭제할때
-	// reply ture -> false
+	// reply true -> false
 	@DeleteMapping("/deleteqna")
 	public ResponseEntity<?> deleteQna(@RequestParam("qnaNo") int qnaNo) {
 		return qnaService.deleteQna(qnaNo);

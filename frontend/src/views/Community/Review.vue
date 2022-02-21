@@ -6,16 +6,18 @@
                 <tbody>
                     <tr v-for="item in items" :key="item.reviewNo">
                         <td style="text-align: center;">{{ item.reviewNo }}</td>
-                        <td>{{ item.productname }}</td>
+                        <td>
+                            <ProductNameDisplay :productno="item.productno" />
+                        </td>
                         <td style="text-align: center;" class="pa-1">
                             <v-rating hover length="5" readonly size="10" :value="item.star"></v-rating>
                         </td>
                         <td>{{ item.content }}</td>
                         <td>
-                            <hideId :id="item.id" />
+                            <HideId :id="item.id" />
                         </td>
                         <td style="text-align: center;">
-                            <dateDisplay :regDate="item.regDate" />
+                            <DateDisplay :regDate="item.regDate" />
                         </td>
                     </tr>
                 </tbody>
@@ -43,12 +45,14 @@
 
 <script>
 import axios from 'axios'
-import hideId from '@/components/hideId.vue'
-import dateDisplay from '@/components/dateDisplay.vue'
+import HideId from '@/components/HideId.vue'
+import DateDisplay from '@/components/DateDisplay.vue'
+import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
 export default {
     components: {
-        hideId,
-        dateDisplay,
+        HideId,
+        DateDisplay,
+        ProductNameDisplay,
     },
     data() {
         return {
@@ -65,7 +69,7 @@ export default {
                 },
                 {
                     text: '상품명',
-                    value: 'productname',
+                    value: 'productno',
                     width: '10%',
                     align: 'center',
                     divider: true

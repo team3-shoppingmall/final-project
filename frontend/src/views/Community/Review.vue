@@ -156,6 +156,8 @@ export default {
                         })
                 })
         },
+        //deleteReview(num) {
+            //console.log(num);
         deleteReview() {
             axios({
                     method: 'delete',

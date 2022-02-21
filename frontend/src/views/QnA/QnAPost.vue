@@ -62,16 +62,16 @@
             <v-divider></v-divider>
             <v-row justify="end" class="mt-3">
                 <v-col cols="auto">
-                    <v-btn @click="moveToBefore">목록</v-btn>
+                    <v-btn @click="moveToBefore" outlined>목록</v-btn>
                 </v-col>
                 <v-col cols="auto" v-if="admin">
-                    <v-btn @click="moveToReply">답글</v-btn>
+                    <v-btn @click="moveToReply" outlined>답글</v-btn>
                 </v-col>
                 <v-col cols="auto">
-                    <v-btn @click="moveToUpdate">수정</v-btn>
+                    <v-btn @click="moveToUpdate" outlined>수정</v-btn>
                 </v-col>
                 <v-col cols="auto">
-                    <v-btn @click="deleteQnA">삭제</v-btn>
+                    <v-btn @click="deleteQnA" outlined>삭제</v-btn>
                 </v-col>
             </v-row>
         </v-col>

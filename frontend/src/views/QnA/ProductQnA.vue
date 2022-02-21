@@ -40,7 +40,7 @@
             </v-row>
         </v-col>
         <v-col cols="auto">
-            <v-btn :to="'/writePost/productQnA'">글쓰기</v-btn>
+            <v-btn :to="'/writePost/productQnA'" outlined>글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>

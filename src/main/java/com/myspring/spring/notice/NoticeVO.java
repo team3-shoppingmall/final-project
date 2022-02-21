@@ -1,6 +1,6 @@
 package com.myspring.spring.notice;
 
-public class NoticeVO extends NoticeCommonVO {
+public class NoticeVO {
 
 	private int noticeNo; 
 	private String title;

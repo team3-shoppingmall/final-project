@@ -27,17 +27,18 @@
             <FAQTypeDisplay :type="item.type" />
         </template>
         <template #[`item.icon`]="{}">
-            Q
+            <v-icon>mdi-quora</v-icon>
         </template>
-        <template #[`item.actions`]="{item}" v-if="admin">
-            <v-btn small @click="updateFAQ(item.noticeNo)">
-                <!-- <v-icon>{{ icons.mdiPencil }}</v-icon> -->
-                수정
-            </v-btn>
-            <v-btn small @click="deleteFAQ(item.noticeNo)">
-                삭제
-                <!-- <v-icon> {{ icons.mdiDelete }} </v-icon> -->
-            </v-btn>
+        <template #[`item.title`]="{item}">
+            <v-row justify="space-between">
+                <v-col>
+                    <div class="text-left">{{item.title}}</div>
+                </v-col>
+                <v-col cols="auto">
+                    <v-icon @click="updateFAQ(item.noticeNo)">mdi-pencil</v-icon>
+                    <v-icon @click="deleteFAQ(item.noticeNo)">mdi-delete</v-icon>
+                </v-col>
+            </v-row>
         </template>
     </v-data-table>
     <v-row justify="end" class="mt-2">
@@ -51,7 +52,7 @@
 <script>
 import axios from 'axios'
 // import {
-//     mdiPencil,
+//     mdiAccount ,
 //     mdiDelete,
 // } from '@mdi/js'
 import FAQTypeDisplay from '@/components/FAQTypeDisplay.vue'
@@ -72,23 +73,20 @@ export default {
                     value: 'icon',
                     sortable: false,
                     width: '5%',
+                    align: 'center',
                 }, {
                     text: '종류',
                     value: 'type',
                     sortable: false,
                     width: '10%',
+                    align: 'center',
                 },
                 {
                     text: '제목',
                     value: 'title',
                     sortable: false,
-                    width: '70%',
-                },
-                {
-                    text: '',
-                    value: 'actions',
-                    sortable: false,
-                    width: '15%',
+                    width: '85%',
+                    align: 'center',
                 },
                 {
                     text: '',

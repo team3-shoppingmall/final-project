@@ -89,7 +89,14 @@
                         <v-btn @click="qnaForm" outlined>QNA 작성</v-btn>
                     </v-col>
                     <v-col cols="auto" v-if="num != '' && num != undefined">
-                        <v-btn @click="qnaFormUpdate" outlined>QNA 수정</v-btn>
+                        <v-btn @click="qnaFormUpdate" outlined>QNA 수정</v-btn>                        
+                    </v-col>
+                    
+                    <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
+                        <v-btn @click="faqForm" outlined>FAQ 작성</v-btn>
+                    </v-col>
+                    <v-col cols="auto" v-if="num != '' && num != undefined">
+                        <v-btn @click="faqFormUpdate" outlined>FAQ 수정</v-btn>                        
                     </v-col>
                     <v-col cols="auto">
                         <v-btn @click="moveToBefore" outlined>취소</v-btn>

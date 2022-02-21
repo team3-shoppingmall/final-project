@@ -77,6 +77,16 @@
                     <v-col cols="auto" v-if="num != '' && num != undefined">
                         <v-btn @click="formUpdate">수정</v-btn>
                     </v-col>
+
+                    <!-- notice part-->
+                     <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
+                        <v-btn @click="form">작성</v-btn>
+                    </v-col>
+                    <v-col cols="auto" v-if="num != '' && num != undefined">
+                        <v-btn @click="formUpdate">수정</v-btn>
+                    </v-col>
+                    <!-- /notice part-->
+
                     <v-col cols="auto">
                         <v-btn @click="moveToBefore">취소</v-btn>
                     </v-col>
@@ -217,6 +227,25 @@ export default {
                     alert('제목을 선택해주세요')
                 }
             }
+            
+            // axios({
+            //     method: 'post',
+            //     url: `/api/notice/insertNotice`,
+            //     data: {
+            //         title: "",
+            //         content: "",
+            //         id: "admin123",
+            //         image: "",
+                    
+            //     }
+            // }).then((res) => {
+            //     console.log(res.data);
+            //     console.log(res.data, res.status);
+            //     alert("공지사항 등록 완료");
+            //     this.$router.go(-1);
+            // }).catch((err) => {
+            //     console.log(err);
+            // })
 
             // // notice or faq or qna관련
             // console.log(this.titleSelected);
@@ -263,7 +292,9 @@ export default {
         }
     },
     mounted() {
+        //notice faq등 뭔지
         this.pageID = this.$route.params.id;
+        //게시글 번호
         this.num = this.$route.params.num;
         this.originalNo = this.$route.params.original;
         if (this.num != '' && this.num != undefined) {

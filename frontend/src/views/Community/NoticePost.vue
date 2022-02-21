@@ -106,6 +106,8 @@ export default {
         deleteNotice(){
             console.log(this.pageID);
         },
+       
+        
     },
     mounted() {
         this.getNotice();

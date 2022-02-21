@@ -72,10 +72,10 @@
                         <v-btn @click="form">답변 작성</v-btn>
                     </v-col>
                     <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
-                        <v-btn @click="form">작성</v-btn>
+                        <v-btn @click="qnaform">작성</v-btn>
                     </v-col>
                     <v-col cols="auto" v-if="num != '' && num != undefined">
-                        <v-btn @click="formUpdate">수정</v-btn>
+                        <v-btn @click="qnaformUpdate">수정</v-btn>
                     </v-col>
                     <v-col cols="auto">
                         <v-btn @click="moveToBefore">취소</v-btn>

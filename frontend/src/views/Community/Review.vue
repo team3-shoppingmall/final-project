@@ -1,10 +1,10 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" disable-sort>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" disable-sort >
             <template v-slot:body="{ items }">
                 <tbody>
-                    <tr v-for="item in items" :key="item.reviewNo">
+                    <tr v-for="item in items" :key="item.reviewNo" @click="move(item)">
                         <td style="text-align: center;">{{ item.reviewNo }}</td>
                         <td>
                             <productNameDisplay :productno="item.productno" />
@@ -116,6 +116,10 @@ export default {
         }
     },
     methods: {
+        move(item){
+            console.log(item);
+            this.$router.push('/')
+        },
         getReview() {
             this.loading = true
             const {

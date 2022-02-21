@@ -78,7 +78,7 @@
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 import QnATitleDisplay from '@/components/QnATitleDisplay.vue'
@@ -112,9 +112,31 @@ export default {
         },
         moveToUpdate() {
             this.$router.push(`/updatePost/notice/${this.pageID}`)
+            // axios({
+            //     method: 'patch',
+            //     url: `/api/qna/updateqna`,
+            //     params: {
+            //         qnaNo : this.pageID,
+            //         type : this.type,
+            //         content : this.content,
+            //         secret : ,
+            //         image: ""
+            //     }
+            // })
         },
         deleteQnA(){
             console.log(this.pageID);
+            axios({
+                method: 'delete',
+                url: `/api/qna/deleteqna`,
+                params: {
+                    qnaNo: this.pageID
+                }
+            }).then((res)=>{
+                console.log(res.data);
+            }).catch((err)=>{
+                console.log(err);
+            })
         },
     },
     mounted() {

@@ -1,5 +1,6 @@
 package com.myspring.spring.qna;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,6 +41,11 @@ public class QnaController {
 	@GetMapping("/getqnaAll")
 	public ResponseEntity<?> getQnaAll() {
 		return qnaService.getQnaAll();
+	}
+	
+	@GetMapping("/getqnabyqnaNo")
+	public ResponseEntity<?> getQnaByQnaNo(@RequestParam("qnaNo") int qnaNo){
+		return qnaService.getQnaByQnaNo(qnaNo);
 	}
 
 	// type별 문의 조회

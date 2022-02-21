@@ -180,6 +180,15 @@ public class QnaService {
 			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
+	public ResponseEntity<?> getQnaByQnaNo(int qnaNo) {
+		System.out.println(qnaNo);
+		QnaVO res = qnaMapper.getQnaByQnaNo(qnaNo);
+		if (res == null)
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
 //	//기간으로 문의 검색(일주일)
 //	public ResponseEntity<?> searchQnaByWeek() {
 //		List<QnaVO> res = qnaMapper.searchQnaByWeek();

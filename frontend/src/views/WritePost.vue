@@ -85,7 +85,7 @@
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
 
 export default {
     data() {
@@ -212,7 +212,25 @@ export default {
                     alert('제목을 선택해주세요')
                 }
             }
-
+            axios({
+                method: 'post',
+                url: `/api/qna/insertqna`,
+                data: {
+                    type: this.titleSelected,
+                    originalNo: null,
+                    reply: false,
+                    content: this.content,
+                    id: "user123",
+                    secret: this.secret,
+                    image: "",
+                }
+            }).then((res)=>{
+                console.log(res.data);
+            }).catch((err)=>{
+                console.log(err);
+            })
+            
+           
             // // notice or faq or qna관련
             // console.log(this.titleSelected);
 

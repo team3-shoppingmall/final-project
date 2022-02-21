@@ -10,7 +10,6 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-import com.myspring.spring.notice.NoticeVO;
 
 @Mapper
 public interface QnaMapper {
@@ -18,6 +17,7 @@ public interface QnaMapper {
 	@Select("select count(*) from qnatable where ${search} like CONCAT('%',#{searchWord},'%')")
 	int getCount(@Param("search") String search, @Param("searchWord") String searchWord);
 	
+	// 게시판 목록 출력
 	@Select("select * from qnatable where qnaNo = #{qnaNo}")
 	QnaVO getQna(@Param("qnaNo") int qnaNo);
 	
@@ -54,7 +54,7 @@ public interface QnaMapper {
 	List<QnaVO> getQnaAfterDeliveryAll();
 	
 	// 문의 등록 & 댓글 등록
-	@Insert("insert into qnatable values(#{in.qnaNo}, #{in.productNo}, #{in.type}, #{in.originalNo}, #{in.reply}, #{in.content}, #{in.id}, #{in.regDate}, #{in.secret}, #{in.image})")
+	@Insert("insert into qnatable(type, originalNo, reply, content, id, secret, image) values(#{in.type}, #{in.originalNo}, #{in.reply}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
 	int insertQna(@Param("in") QnaVO qnaVO);
 	
 	// 댓글 등록시 reply 업데이트

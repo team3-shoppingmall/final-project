@@ -1,3 +1,4 @@
+import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loader
 import Vue from 'vue';
 import Vuetify from 'vuetify/lib/framework';
 
@@ -13,5 +14,8 @@ export default new Vuetify({
                 // success: '#4CAF50', warning: '#FB8C00',
             }
         }
-    }
+    },
+    icons: {
+        iconfont: 'mdiSvg', // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4' || 'faSvg'
+      },
 });

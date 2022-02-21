@@ -1,9 +1,17 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" @click:row="moveto" disable-sort>
-            <template #[`item.id`]="{item}">
-                <hideId :id="item.id" />
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" disable-sort>
+            <template v-slot:body="{ items }">
+                <tbody>
+                    <tr v-for="item in items" :key="item.noticeNo" @click="moveto(item)">
+                        <td style="text-align: center;">{{ item.noticeNo }}</td>
+                        <td>{{ item.title }}</td>
+                        <td>
+                            <HideId :id="item.id" />
+                        </td>
+                    </tr>
+                </tbody>
             </template>
         </v-data-table>
     </div>
@@ -31,10 +39,10 @@
 
 <script>
 import axios from 'axios'
-import hideId from '@/components/hideId.vue'
+import HideId from '@/components/HideId.vue'
 export default {
     components: {
-        hideId,
+        HideId,
     },
     data() {
         return {
@@ -53,6 +61,7 @@ export default {
                     text: '제목',
                     value: 'title',
                     width: '60%',
+                    align: 'center',
                     divider: true
                 },
                 {
@@ -65,10 +74,6 @@ export default {
             searches: [{
                     text: '제목',
                     value: 'title'
-                },
-                {
-                    text: '내용',
-                    value: 'content'
                 },
                 {
                     text: '작성자',
@@ -112,9 +117,7 @@ export default {
                         })
                 })
         },
-        moveto(event, {
-            item
-        }) {
+        moveto(item) {
             this.$router.push(`/community/noticePost/${item.noticeNo}`)
         },
 

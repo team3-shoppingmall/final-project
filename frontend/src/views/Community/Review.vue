@@ -7,17 +7,17 @@
                     <tr v-for="item in items" :key="item.reviewNo" @click="move(item)">
                         <td style="text-align: center;">{{ item.reviewNo }}</td>
                         <td>
-                            <productNameDisplay :productno="item.productno" />
+                            <ProductNameDisplay :productno="item.productno" />
                         </td>
                         <td style="text-align: center;" class="pa-1">
                             <v-rating hover length="5" readonly size="10" :value="item.star"></v-rating>
                         </td>
                         <td>{{ item.content }}</td>
                         <td>
-                            <hideId :id="item.id" />
+                            <HideId :id="item.id" />
                         </td>
                         <td style="text-align: center;">
-                            <dateDisplay :regDate="item.regDate" />
+                            <DateDisplay :regDate="item.regDate" />
                         </td>
                     </tr>
                 </tbody>
@@ -45,14 +45,14 @@
 
 <script>
 import axios from 'axios'
-import hideId from '@/components/hideId.vue'
-import dateDisplay from '@/components/dateDisplay.vue'
-import productNameDisplay from '@/components/productNameDisplay.vue'
+import HideId from '@/components/HideId.vue'
+import DateDisplay from '@/components/DateDisplay.vue'
+import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
 export default {
     components: {
-        hideId,
-        dateDisplay,
-        productNameDisplay,
+        HideId,
+        DateDisplay,
+        ProductNameDisplay,
     },
     data() {
         return {

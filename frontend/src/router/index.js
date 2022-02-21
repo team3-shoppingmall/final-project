@@ -106,6 +106,11 @@ const routes = [
                 component: WritePost,
             },
             {
+                path: '/updatePost/:id/:num',
+                name: 'UpdatePost',
+                component: WritePost,
+            },
+            {
                 path: '/qna',
                 name: 'QnA',
                 component: QnA,

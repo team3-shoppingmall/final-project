@@ -92,8 +92,7 @@ public class QnaController {
 	// reply true -> false
 	@DeleteMapping("/deleteqna")
 	public ResponseEntity<?> deleteQna(@RequestParam("qnaNo") int qnaNo) {
-		System.out.println(qnaNo);
-		return qnaService.deleteQna(qnaNo);
+		eturn qnaService.deleteQna(qnaNo);
 	}
 
 	// 아이디로 문의 검색

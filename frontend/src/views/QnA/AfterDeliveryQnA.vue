@@ -35,7 +35,7 @@
             </v-row>
         </v-col>
         <v-col cols="auto">
-            <v-btn :to="'/writePost/afterDeliveryQnA'">글쓰기</v-btn>
+            <v-btn :to="'/writePost/afterDeliveryQnA'" outlined>글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -95,6 +95,10 @@ export default {
                     value: 'title'
                 },
                 {
+                    text: '내용',
+                    value: 'content'
+                },
+                {
                     text: '작성자',
                     value: 'id'
                 }
@@ -110,9 +114,10 @@ export default {
                 page,
                 itemsPerPage
             } = this.options
+            
             axios({
                     method: 'get',
-                    url: `/api/qna/getQnaPage`,
+                    url: `/api/qna/getafterdeliveryAll`,
                     params: {
                         page: page,
                         perPage: itemsPerPage,

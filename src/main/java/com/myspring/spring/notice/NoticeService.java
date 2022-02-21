@@ -54,6 +54,16 @@ public class NoticeService {
 			 return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
+	// 공지사항 게시물 작성
+	public ResponseEntity<?> insertNotice(NoticeVO noticeVO) {
+		int res = noticeMapper.insertNotice(noticeVO);
+		
+		if (res == 0)
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+	
 	// 공지사항 삭제
 	public ResponseEntity<?> deleteNotice(int noticeNo) {
 		int res = noticeMapper.deleteNotice(noticeNo);
@@ -64,16 +74,16 @@ public class NoticeService {
 			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
-	// 공지사항 게시물 작성
-	public ResponseEntity<?> insertNotice(NoticeVO noticeVO) {
-		int res = noticeMapper.insertNotice(noticeVO);
-		
-		if (res == 0)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
-
+	//공지사항 수정
+		public ResponseEntity<?> updateNotice(NoticeVO noticeVO) {
+			int res = noticeMapper.updateNotice(noticeVO);
+			
+			if (res == 0)
+				return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+			else
+				return new ResponseEntity<>(res, HttpStatus.OK);
+		}
+	
 //	// 공지사항 수정
 //	public ResponseEntity<?> updateNotice(int noticeNo, String title, String content, String image) {
 //		int res = noticeMapper.updateNotice( noticeNo, title, content, image);
@@ -84,14 +94,6 @@ public class NoticeService {
 //			return new ResponseEntity<>(res, HttpStatus.OK);
 //	}
 	
-	public ResponseEntity<?> updateNotice(NoticeVO noticeVO) {
-		int res = noticeMapper.updateNotice(noticeVO);
-		
-		if (res == 0)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
 
 	// 게시글 페이징 출력
 	public ResponseEntity<?> selectNoticeList(NoticeVO noticeVO) {

@@ -9,6 +9,16 @@ public class NoticeVO extends NoticeCommonVO {
 	private String image;
 	
 	
+	public NoticeVO(int noticeNo, String title, String content, String id, String image) {
+		super();
+		this.noticeNo = noticeNo;
+		this.title = title;
+		this.content = content;
+		this.id = id;
+		this.image = image;
+	}
+	
+	
 	public int getNoticeNo() {
 		return noticeNo;
 	}

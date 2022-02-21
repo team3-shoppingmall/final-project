@@ -13,7 +13,7 @@ public class NoticeCommonVO {
 	private int pageSize;
 	
 	//검색 키워드
-	private String searchKeyword;
+	private String searchWord;
 	
 	//검색 유형
 	private String searchType;
@@ -35,11 +35,11 @@ public class NoticeCommonVO {
 	}
 
 	public String getSearchWord() {
-		return searchKeyword;
+		return searchWord;
 	}
 
 	public void setSearchWord(String searchWord) {
-		this.searchKeyword = searchWord;
+		this.searchWord = searchWord;
 	}
 
 //	public int getStart() {
@@ -88,14 +88,6 @@ public class NoticeCommonVO {
 
 	public void setPageSize(int pageSize) {
 		this.pageSize = pageSize;
-	}
-
-	public String getSearchKeyword() {
-		return searchKeyword;
-	}
-
-	public void setSearchKeyword(String searchKeyword) {
-		this.searchKeyword = searchKeyword;
 	}
 
 	public String getSearchType() {

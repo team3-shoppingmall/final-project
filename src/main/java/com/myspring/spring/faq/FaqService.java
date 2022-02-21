@@ -33,42 +33,6 @@ public class FaqService {
 			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 	
-	//상품관련 전체 조회
-	public ResponseEntity<?> getFaqProductAll() {
-		List<FaqVO> res = faqMapper.getFaqProductAll();
-		if(res == null)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
-	
-	//배송관련 전체 조회
-	public ResponseEntity<?> getFaqDeliveryAll() {
-		List<FaqVO> res = faqMapper.getFaqDeliveryAll();
-		if(res == null)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
-	
-	//교환/반품관련 전체 조회
-	public ResponseEntity<?> getFaqExchangeAll() {
-		List<FaqVO> res = faqMapper.getFaqExchangeAll();
-		if(res == null)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
-	
-	//기타관련 전체 조회
-	public ResponseEntity<?> getFaqEtcAll() {
-		List<FaqVO> res = faqMapper.getFaqEtcAll();
-		if(res == null)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
-	
 	//faq 등록
 	public ResponseEntity<?> insertFaq(FaqVO faqVO) {
 		int res = faqMapper.insertFaq(faqVO);

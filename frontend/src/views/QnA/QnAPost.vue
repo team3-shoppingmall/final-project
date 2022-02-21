@@ -81,7 +81,7 @@
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 import QnATitleDisplay from '@/components/QnATitleDisplay.vue'
@@ -121,6 +121,17 @@ export default {
         },
         deleteQnA() {
             console.log(this.pageID);
+            axios({
+                 method: 'delete',
+                    url: `/api/qna/deleteqna`,
+                    params: {
+                       qnaNo: this.pageID,
+                    }
+            }).then((res)=>{
+                console.log(res.data);
+            }).catch((err)=>{
+                console.log(err);
+            })
         },
     },
     mounted() {

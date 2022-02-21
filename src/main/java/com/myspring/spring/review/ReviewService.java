@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.myspring.spring.notice.NoticeVO;
+
 @Service
 public class ReviewService {
 private ReviewMapper reviewMapper;
@@ -47,13 +49,23 @@ private ReviewMapper reviewMapper;
 	}
 	
 	//리뷰 삭제
-	public ResponseEntity<?> deleteReview(String id) {
-		int res = reviewMapper.deleteReview(id);
+	public ResponseEntity<?> deleteReview(int reviewNo) {
+		int res = reviewMapper.deleteReview(reviewNo);
 		if(res == 0) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}else {
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
+	}
+	
+	//리뷰 수정
+	public ResponseEntity<?> updateReview(ReviewVO reviewVO) {
+		int res = reviewMapper.updateReview(reviewVO);
+		
+		if (res == 0)
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 	
 	//리뷰 상세보기

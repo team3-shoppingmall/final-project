@@ -69,16 +69,16 @@
                 <v-divider></v-divider>
                 <v-row justify="end" class="mt-3">
                     <v-col cols="auto" v-if="originalNo != undefined">
-                        <v-btn @click="form">답변 작성</v-btn>
+                        <v-btn @click="form" outlined>답변 작성</v-btn>
                     </v-col>
                     <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
-                        <v-btn @click="form">작성</v-btn>
+                        <v-btn @click="form" outlined>작성</v-btn>
                     </v-col>
                     <v-col cols="auto" v-if="num != '' && num != undefined">
-                        <v-btn @click="formUpdate">수정</v-btn>
+                        <v-btn @click="formUpdate" outlined>수정</v-btn>
                     </v-col>
                     <v-col cols="auto">
-                        <v-btn @click="moveToBefore">취소</v-btn>
+                        <v-btn @click="moveToBefore" outlined>취소</v-btn>
                     </v-col>
                 </v-row>
             </v-form>
@@ -271,6 +271,7 @@ export default {
             // 만약 sendType이 notice나 faq면 관리자이니 admin true로 변경
         } else if (this.originalNo != '' && this.originalNo != undefined) {
             this.admin = true;
+            this.titleSelected = 'reply';
         } else {
             this.currentURL();
         }

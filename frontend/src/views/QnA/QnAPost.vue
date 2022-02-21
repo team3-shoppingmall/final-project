@@ -117,7 +117,7 @@ export default {
             this.$router.push(`/replyPost/qna/${this.pageID}`)
         },
         moveToUpdate() {
-            this.$router.push(`/updatePost/notice/${this.pageID}`)
+            this.$router.push(`/updatePost/qna/${this.pageID}`)
         },
         deleteQnA() {
             console.log(this.pageID);

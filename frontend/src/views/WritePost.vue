@@ -15,10 +15,16 @@
                                     <v-text-field v-model="titleDetail" v-if="admin"></v-text-field>
                                 </td>
                             </tr>
+                            <tr v-if="this.pageID == 'faq'">
+                                <td style="width:10%"> 종류 </td>
+                                <td>
+                                    <v-select v-model="faqTypeSelected" :items="faqType"></v-select>
+                                </td>
+                            </tr>
                             <tr>
                                 <td> 내용 </td>
                                 <td>
-                                    <v-textarea counter name="input-7-1" rows="11" v-model="content" :rules="rules"></v-textarea>
+                                    <v-textarea counter rows="11" v-model="content" :rules="rules"></v-textarea>
                                 </td>
                             </tr>
                             <tr>
@@ -47,7 +53,7 @@
                                     <v-file-input accept="image/*"></v-file-input>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr v-if="!admin">
                                 <td> 비밀글 </td>
                                 <td>
                                     <v-radio-group v-model="secret" row>
@@ -61,11 +67,14 @@
                 </v-simple-table>
                 <v-divider></v-divider>
                 <v-row justify="end" class="mt-3">
-                    <v-col cols="auto">
+                    <v-col cols="auto" v-if="num == '' || num == undefined">
                         <v-btn @click="form">작성</v-btn>
                     </v-col>
+                    <v-col cols="auto" v-if="num != '' && num != undefined">
+                        <v-btn @click="formUpdate">수정</v-btn>
+                    </v-col>
                     <v-col cols="auto">
-                        <v-btn @click="moveto">취소</v-btn>
+                        <v-btn @click="moveToBefore">취소</v-btn>
                     </v-col>
                 </v-row>
             </v-form>
@@ -83,85 +92,110 @@ export default {
         return {
             pageID: '',
             admin: false,
-            titles: [],
-            productTitles: [{
+            titles: [{
                     text: '제목을 선택해주세요',
                     value: 'default',
                     content: '',
+                    type: 'all',
+                    disabled: true,
                 }, {
                     text: '상품 문의입니다',
                     value: 'product',
                     content: '상품 문의 관련 text',
+                    type: 'productQnA',
                 },
                 {
                     text: '일반 문의입니다',
                     value: 'general',
                     content: '일반 문의 관련 text',
-                },
-            ],
-            deliveryTitles: [{
-                text: '제목을 선택해주세요',
-                value: 'default',
-                content: '',
-            }, {
-                text: '배송 문의입니다',
-                value: 'delivery',
-                content: '배송 문의 관련 text',
-            }, ],
-            beforeDeliveryTitles: [{
-                    text: '제목을 선택해주세요',
-                    value: 'default',
-                    content: '',
+                    type: 'productQnA',
+                }, {
+                    text: '배송 문의입니다',
+                    value: 'delivery',
+                    content: '배송 문의 관련 text',
+                    type: 'deliveryQnA',
                 }, {
                     text: '주문 취소 문의입니다',
                     value: 'cancel',
                     content: '주문 취소 문의 관련 text',
+                    type: 'beforeDeliveryQnA',
                 },
                 {
                     text: '상품 변경 문의입니다',
                     value: 'change',
                     content: '상품 변경 문의 관련 text',
+                    type: 'beforeDeliveryQnA',
                 },
                 {
                     text: '주소 변경 문의입니다',
                     value: 'changeAddress',
                     content: '주소 변경 문의 관련 text',
-                }
-            ],
-            afterDeliveryTitles: [{
-                    text: '제목을 선택해주세요',
-                    value: 'default',
-                    content: '',
+                    type: 'beforeDeliveryQnA',
                 }, {
                     text: '반품 문의입니다',
                     value: 'return',
                     content: '반품 문의 관련 text',
+                    type: 'afterDeliveryQnA',
                 },
                 {
                     text: '교환 문의입니다',
                     value: 'exchange',
                     content: '교환 문의 관련 text',
+                    type: 'afterDeliveryQnA',
                 },
                 {
                     text: '불량 상품/오배송 문의입니다',
                     value: 'error',
                     content: '불량 상품/오배송 문의 관련 text',
+                    type: 'afterDeliveryQnA',
                 }
             ],
+            faqType: [{
+                text: '상품 관련',
+                value: 'product',
+            }, {
+                text: '배송 관련',
+                value: 'delivery',
+            }, {
+                text: '교환/반품 관련',
+                value: 'return',
+            }, {
+                text: '기타 관련',
+                value: 'etc',
+            }, ],
+            rules: [v => v.length <= 600 || 'Max 600 characters'],
+            num: '',
             titleSelected: 'default',
             titleDetail: '',
+            faqTypeSelected: '',
             content: '',
+            image1: '',
+            image2: '',
+            image3: '',
+            image4: '',
+            image5: '',
             secret: true,
-            rules: [v => v.length <= 600 || 'Max 600 characters'],
         }
     },
     methods: {
         currentURL() {
             let pageList = ['notice', 'faq']
             for (let i = 0; i < pageList.length; i++) {
-                if (this.pageID.indexOf(pageList[i]) != -1) {
+                if (this.pageID == pageList[i]) {
                     this.admin = true;
-                    this.titleSelected = 'notice';
+                    this.titleSelected = this.pageID;
+                }
+            }
+            if (this.admin == false) {
+                this.setSelectItems();
+            }
+        },
+        setSelectItems() {
+            if (this.pageID != '') {
+                for (let i = this.titles.length - 1; i > 0; i--) {
+                    if (this.pageID != this.titles[i].type) {
+                        this.titles.splice(i, 1);
+                    }
                 }
             }
         },
@@ -179,8 +213,8 @@ export default {
                 }
             }
 
-            // // notice or faq인지 여부 찾기
-            // console.log(this.pageID);
+            // // notice or faq or qna관련
+            // console.log(this.titleSelected);
 
             // // notice or faq일 경우 제목 보내는 용도
             // console.log(this.titleDetail);
@@ -197,17 +231,12 @@ export default {
             // console.log(this.secret);
 
         },
-        setSelectItems() {
-            if (this.pageID == 'productQnA') {
-                this.titles = this.productTitles;
-            } else if (this.pageID == 'deliveryQnA') {
-                this.titles = this.deliveryTitles;
-            } else if (this.pageID == 'beforeDeliveryQnA') {
-                this.titles = this.beforeDeliveryTitles;
-            } else if (this.pageID == 'afterDeliveryQnA') {
-                this.titles = this.afterDeliveryTitles;
-            }
-        }
+        formUpdate() {
+            // this.sendType => 게시글 종류(notice, faq, qna(product, delivery) 등)
+        },
+        moveToBefore() {
+            this.$router.go(-1);
+        },
     },
 
     watch: {
@@ -223,8 +252,13 @@ export default {
     },
     mounted() {
         this.pageID = this.$route.params.id;
-        this.currentURL();
-        this.setSelectItems();
+        this.num = this.$route.params.num;
+        if (this.num != '' && this.num != undefined) {
+            // 기존 정보 가져와서 넣어주기
+            // 만약 sendType이 notice나 faq면 관리자이니 admin true로 변경
+        } else {
+            this.currentURL();
+        }
     }
 }
 </script>

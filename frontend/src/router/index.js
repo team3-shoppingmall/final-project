@@ -31,7 +31,7 @@ import ProductQnA from '../views/QnA/ProductQnA.vue'
 import DeliveryQnA from '../views/QnA/DeliveryQnA.vue'
 import BeforeDeliveryQnA from '../views/QnA/BeforeDeliveryQnA.vue'
 import AfterDeliveryQnA from '../views/QnA/AfterDeliveryQnA.vue'
-import QnAPost from '../views/QnAPost.vue'
+import QnAPost from '../views/QnA/QnAPost.vue'
 
 import Authentication from '../layouts/Authentication/Index.vue'
 import SignIn from '../views/SignIn.vue'
@@ -106,6 +106,11 @@ const routes = [
                 component: WritePost,
             },
             {
+                path: '/updatePost/:id/:num',
+                name: 'UpdatePost',
+                component: WritePost,
+            },
+            {
                 path: '/qna',
                 name: 'QnA',
                 component: QnA,
@@ -133,7 +138,7 @@ const routes = [
                 ]
             },
             {
-                path: 'qna/:id',
+                path: '/qna/:id',
                 name: 'QnAPost',
                 component: QnAPost,
             },

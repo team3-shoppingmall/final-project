@@ -78,6 +78,14 @@
                         <v-btn @click="formUpdate" outlined>수정</v-btn>
                     </v-col>
                     
+                    
+                    <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
+                        <v-btn @click="reviewForm" outlined>review 작성</v-btn>
+                    </v-col>
+                    <v-col cols="auto" v-if="num != '' && num != undefined">
+                        <v-btn @click="reviewFormUpdate" outlined>review 수정</v-btn>                        
+                    </v-col>
+                    
                     <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
                         <v-btn @click="qnaForm" outlined>QNA 작성</v-btn>
                     </v-col>
@@ -89,7 +97,8 @@
                         <v-btn @click="faqForm" outlined>FAQ 작성</v-btn>
                     </v-col>
                     <v-col cols="auto" v-if="num != '' && num != undefined">
-                        <v-btn @click="faqFormUpdate" outlined>FAQ 수정</v-btn>                        
+                        <v-btn @click="faqFormUpdate" outlined>FAQ 수정</v-btn> 
+                        
                     </v-col>
                     <v-col cols="auto">
                         <v-btn @click="moveToBefore" outlined>취소</v-btn>
@@ -273,6 +282,23 @@ export default {
             // alert('완료');
             // this.$router.go(-1);
         },
+        reviewForm() {
+            axios({
+                    method: 'patch',
+                    url: `/api/review/update`,
+                    params: {
+                        content: this.content,
+                        image: this.image,
+                        star: this.star
+                    }
+                })
+                .then(res => {
+                    this.contents = res.data;
+                    this.loading = false
+                    alert("수정이 완료되었습니다.")
+                    this.$router.push(`/community/review`);
+                }),
+        },
         replyForm(){
               axios({
                 method: 'post',
@@ -336,8 +362,11 @@ export default {
         }
     },
     mounted() {
+        //notice faq review 중 뭔지
         this.pageID = this.$route.params.id;
+        //게시글 번호
         this.num = this.$route.params.num;
+        //qna 원글 번호
         this.originalNo = this.$route.params.original;
         if (this.num != '' && this.num != undefined) {
             // 기존 정보 가져와서 넣어주기

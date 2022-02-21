@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class ReviewVO {
 		private int reviewNo;
-		private int ProductNo;
+		private int productNo;
 		private String content;
 		private String id;
 		private Date regDate;
@@ -19,7 +19,7 @@ public class ReviewVO {
 		public ReviewVO(int reviewNo, int productNo, String content, String id, Date regDate, String image, int star) {
 			super();
 			this.reviewNo = reviewNo;
-			ProductNo = productNo;
+			productNo = productNo;
 			this.content = content;
 			this.id = id;
 			this.regDate = regDate;
@@ -38,12 +38,12 @@ public class ReviewVO {
 
 
 		public int getProductNo() {
-			return ProductNo;
+			return productNo;
 		}
 
 
 		public void setProductNo(int productNo) {
-			ProductNo = productNo;
+			productNo = productNo;
 		}
 
 
@@ -99,7 +99,7 @@ public class ReviewVO {
 
 		@Override
 		public String toString() {
-			return "ReviewVO [reviewNo=" + reviewNo + ", ProductNo=" + ProductNo + ", content=" + content + ", id=" + id
+			return "ReviewVO [reviewNo=" + reviewNo + ", productNo=" + productNo + ", content=" + content + ", id=" + id
 					+ ", regDate=" + regDate + ", image=" + image + ", star=" + star + "]";
 		}
 		

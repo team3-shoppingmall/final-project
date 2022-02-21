@@ -238,6 +238,10 @@ export default {
                     alert('제목을 선택해주세요')
                 }
             }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0c17c10a1d159a102d9d743f8cf4772a530e422b
             axios({
                 method: 'post',
                 url: `/api/qna/insertqna`,
@@ -257,7 +261,12 @@ export default {
             }).catch((err) => {
                 console.log(err);
             })
+<<<<<<< HEAD
 
+=======
+            
+           
+>>>>>>> 0c17c10a1d159a102d9d743f8cf4772a530e422b
             // // notice or faq or qna관련
             // console.log(this.titleSelected);
 
@@ -285,6 +294,10 @@ export default {
                     alert('제목을 선택해주세요')
                 }
             }
+<<<<<<< HEAD
+=======
+            
+>>>>>>> 0c17c10a1d159a102d9d743f8cf4772a530e422b
             // axios({
             //     method: 'post',
             //     url: /api/notice/insertNotice,
@@ -302,8 +315,13 @@ export default {
             //     this.$router.go(-1);
             // }).catch((err) => {
             //     console.log(err);
+<<<<<<< HEAD
             // })
 
+=======
+            // })            
+           
+>>>>>>> 0c17c10a1d159a102d9d743f8cf4772a530e422b
             // // notice or faq or qna관련
             // console.log(this.titleSelected);
 

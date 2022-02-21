@@ -9,7 +9,7 @@ create table qnatable(
     reply boolean default false,
     content varchar(2000) not null,
     id varchar(50) not null,
-    regDate date default (current_date),
+    regDate timestamp default (current_timestamp),
     secret boolean default false,
     image varchar(500) not null);
 

@@ -7,7 +7,12 @@
     </v-row>
     <v-row justify="center">
         <v-col cols="9">
-            <MyPageButton class="mt-5" />
+            <MyPageButton class="mt-0" />
+        </v-col>
+    </v-row>
+     <v-row justify="center">
+        <v-col cols="9">
+            <v-data-table headers="headers"></v-data-table>
         </v-col>
     </v-row>
 
@@ -17,6 +22,28 @@
 <script>
 import MyPageButton from '@/components/MyPageButton.vue'
 export default {
+      data() {
+        return {
+            headers: [
+                {
+                text: '번호',
+                value: 'no',
+                align:'center',
+            },{
+                text: '날짜',
+                value: 'date',
+                align:'center',
+            }, {
+                text: '포인트',
+                value: 'point',
+                align:'center',
+            }, {
+                text: '내용',
+                value: 'content',
+                align:'center',
+            }, ],
+        }
+    },
     components: {
         MyPageButton
     }

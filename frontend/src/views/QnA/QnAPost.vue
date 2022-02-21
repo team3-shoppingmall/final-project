@@ -62,16 +62,16 @@
             <v-divider></v-divider>
             <v-row justify="end" class="mt-3">
                 <v-col cols="auto">
-                    <v-btn @click="moveToBefore">목록</v-btn>
+                    <v-btn @click="moveToBefore" outlined>목록</v-btn>
                 </v-col>
                 <v-col cols="auto" v-if="admin">
-                    <v-btn @click="moveToReply">답글</v-btn>
+                    <v-btn @click="moveToReply" outlined>답글</v-btn>
                 </v-col>
                 <v-col cols="auto">
-                    <v-btn @click="moveToUpdate">수정</v-btn>
+                    <v-btn @click="moveToUpdate" outlined>수정</v-btn>
                 </v-col>
                 <v-col cols="auto">
-                    <v-btn @click="deleteQnA">삭제</v-btn>
+                    <v-btn @click="deleteQnA" outlined>삭제</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -81,7 +81,7 @@
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 import QnATitleDisplay from '@/components/QnATitleDisplay.vue'
@@ -121,6 +121,19 @@ export default {
         },
         deleteQnA() {
             console.log(this.pageID);
+            axios({
+                method: 'delete',
+                url: `/api/qna/deleteqna`,
+                params: {
+                    qnaNo: this.pageID
+                }
+            }).then((res)=>{
+                console.log(res.data);
+                alert("삭제 완료");
+                this.$router.go(-1);
+            }).catch((err)=>{
+                console.log(err);
+            })
         },
     },
     mounted() {

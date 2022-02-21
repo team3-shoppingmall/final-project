@@ -89,7 +89,7 @@ export default {
                 to: '/payment',
             }, {
                 name: 'ProductDetail',
-                to: '/productDetail',
+                to: '/productDetail/1',
             }, {
                 name: 'ProductList',
                 to: '/productList/skirt/mini',

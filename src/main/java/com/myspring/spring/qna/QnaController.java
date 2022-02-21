@@ -1,6 +1,5 @@
 package com.myspring.spring.qna;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -56,26 +55,30 @@ public class QnaController {
 
 	// 상품문의 카테고리 전체 조회
 	@GetMapping("/getproductAll")
-	public ResponseEntity<?> getQnaProductAll() {
-		return qnaService.getQnaProductAll();
+	public ResponseEntity<?> getQnaProductAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
+		return qnaService.getQnaProductAll(page, perPage, search, searchWord);
 	}
 
 	// 배송 문의 카테고리 전체 조회
 	@GetMapping("/getdeliveryAll")
-	public ResponseEntity<?> getQnaDeliveryAll() {
-		return qnaService.getQnaDeliveryAll();
+	public ResponseEntity<?> getQnaDeliveryAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
+		return qnaService.getQnaDeliveryAll(page, perPage, search, searchWord);
 	}
 
 	// 배송 전 변경&취소 카테고리 전체 조회
 	@GetMapping("/getbeforedeliveryAll")
-	public ResponseEntity<?> getQnaBeforeDeliveryAll() {
-		return qnaService.getQnaBeforeDeliveryAll();
+	public ResponseEntity<?> getQnaBeforeDeliveryAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
+		return qnaService.getQnaBeforeDeliveryAll(page, perPage, search, searchWord);
 	}
 
 	// 배송 후 교환&반품 카테고리 전체 조회
 	@GetMapping("/getafterdeliveryAll")
-	public ResponseEntity<?> getQnaAfterDeliveryAll() {
-		return qnaService.getQnaAfterDeliveryAll();
+	public ResponseEntity<?> getQnaAfterDeliveryAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
+		return qnaService.getQnaAfterDeliveryAll(page, perPage, search, searchWord);
 	}
 
 	// 문의 등록 & 댓글 등록

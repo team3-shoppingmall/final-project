@@ -58,8 +58,8 @@ public class QnaService {
 	}
 
 	// 상품문의 카테고리 전체 조회
-	public ResponseEntity<?> getQnaProductAll() {
-		List<QnaVO> res = qnaMapper.getQnaProductAll();
+	public ResponseEntity<?> getQnaProductAll(int page, int perPage, String search, String searchWord) {
+		List<QnaVO> res = qnaMapper.getQnaProductAll(page, perPage, search, searchWord);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
@@ -67,8 +67,8 @@ public class QnaService {
 	}
 
 	// 배송문의 카테고리 전체 조회
-	public ResponseEntity<?> getQnaDeliveryAll() {
-		List<QnaVO> res = qnaMapper.getQnaDelieveryAll();
+	public ResponseEntity<?> getQnaDeliveryAll(int page, int perPage, String search, String searchWord) {
+		List<QnaVO> res = qnaMapper.getQnaDelieveryAll(page, perPage, search, searchWord);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
@@ -76,8 +76,8 @@ public class QnaService {
 	}
 
 	// 배송 전 변경&취소 카테고리 전체 조회
-	public ResponseEntity<?> getQnaBeforeDeliveryAll() {
-		List<QnaVO> res = qnaMapper.getQnaBeforeDeliveryAll();
+	public ResponseEntity<?> getQnaBeforeDeliveryAll(int page, int perPage, String search, String searchWord) {
+		List<QnaVO> res = qnaMapper.getQnaBeforeDeliveryAll(page, perPage, search, searchWord);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
@@ -85,8 +85,8 @@ public class QnaService {
 	}
 
 	// 배송 후 교환&반품 카테고리 전체 조회
-	public ResponseEntity<?> getQnaAfterDeliveryAll() {
-		List<QnaVO> res = qnaMapper.getQnaAfterDeliveryAll();
+	public ResponseEntity<?> getQnaAfterDeliveryAll(int page, int perPage, String search, String searchWord) {
+		List<QnaVO> res = qnaMapper.getQnaAfterDeliveryAll(page, perPage, search, searchWord);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
@@ -114,52 +114,34 @@ public class QnaService {
 
 	// 문의 수정 & 댓글 수정
 	public ResponseEntity<?> updateQna(int qnaNo, String type, String content, boolean secret, String image) {
-		//reply값 받아오기 - reply가 true일 경우 update 불가능 
-		QnaVO res = qnaMapper.getQnaByQnaNo(qnaNo);
-		//문의 수정
-		int resQna = qnaMapper.updateQna(qnaNo, type, content, secret, image);
-		
-		//reply가 true일 경우 update불가하므로 오류 리턴
-		if(res.isReply() == true) {
+		int res = qnaMapper.updateQna(qnaNo, type, content, secret, image);
+		if (res == 0)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		//reply가 false면 update 가능
-		}else {
-			//문의 수정 실패시 오류 리턴
-			if(resQna == 0)
-				return new ResponseEntity<>(resQna, HttpStatus.INTERNAL_SERVER_ERROR);
-			//문의 수정 성공
-			else
-				return new ResponseEntity<>(resQna, HttpStatus.OK);	
-		}
+		else
+			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 	// 문의 삭제 & 댓글 삭제
 	public ResponseEntity<?> deleteQna(int qnaNo) {
 		// 있으면 답글, 없으면 원글
-		QnaVO res = qnaMapper.getQnaByQnaNo(qnaNo);
+		QnaVO res = qnaMapper.getQna(qnaNo);
 
 		// 문의 삭제
 		int resQna = qnaMapper.deleteQna(qnaNo);
-		// 삭제 실패 시 오류 리턴
+
+		int resReply;
+		if (res.getOriginalNo() != 0) {
+			resReply = qnaMapper.updateReplyFalse(res.getOriginalNo());
+			if (resReply == 0)
+				return new ResponseEntity<>(resReply, HttpStatus.INTERNAL_SERVER_ERROR);
+			else
+				return new ResponseEntity<>(resReply, HttpStatus.OK);
+		}
+			
 		if (resQna == 0)
 			return new ResponseEntity<>(resQna, HttpStatus.INTERNAL_SERVER_ERROR);
-		else {
-			// 삭제 성공 시 답글 여부 확인 후 삭제
-			int resReply;
-			if (res.getOriginalNo() != 0) {
-				resReply = qnaMapper.updateReplyFalse(res.getOriginalNo());
-
-				if (resReply == 0)
-					// updateReplyFalse 실패 시 오류 리턴
-					return new ResponseEntity<>(resReply, HttpStatus.INTERNAL_SERVER_ERROR);
-				else
-					// updateReplyFalse 성공 시 성공 리턴
-					return new ResponseEntity<>(resReply, HttpStatus.OK);
-			}
-			// 답글 패스 후 성공 리턴
+		else
 			return new ResponseEntity<>(resQna, HttpStatus.OK);
-		}
-
 	}
 
 	// 아이디로 문의 검색

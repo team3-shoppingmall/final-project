@@ -1,25 +1,26 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" disable-sort>
-            <template v-slot:body="{ items }">
-                <tbody>
-                    <tr v-for="item in items" :key="item.qnaNo" @click="moveto(item)">
-                        <td style="text-align: center;">{{ item.qnaNo }}</td>
-                        <td>
-                            <ProductNameDisplay :productno="item.productno" />
-                        </td>
-                        <td>
-                            <QnATitleDisplay :type="item.type" />
-                        </td>
-                        <td>
-                            <HideId :id="item.id" />
-                        </td>
-                        <td>
-                            <DateDisplay :regDate="item.regDate" />
-                        </td>
-                    </tr>
-                </tbody>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
+            <template #[`item.productno`]="{item}">
+                <div class="text-left">
+                    <ProductNameDisplay :productno="item.productno" />
+                </div>
+            </template>
+            <template #[`item.type`]="{item}">
+                <div class="text-left">
+                    <QnATitleDisplay :type="item.type" />
+                </div>
+            </template>
+            <template #[`item.id`]="{item}">
+                <div class="text-left">
+                    <HideId :id="item.id" />
+                </div>
+            </template>
+            <template #[`item.regDate`]="{item}">
+                <div>
+                    <DateDisplay :regDate="item.regDate" />
+                </div>
             </template>
         </v-data-table>
     </div>
@@ -107,6 +108,10 @@ export default {
                     value: 'title'
                 },
                 {
+                    text: '내용',
+                    value: 'content'
+                },
+                {
                     text: '작성자',
                     value: 'id'
                 }
@@ -124,7 +129,7 @@ export default {
             } = this.options
             axios({
                     method: 'get',
-                    url: `/api/qna/getQnaPage`,
+                    url: `/api/qna/getproductAll`,
                     params: {
                         page: page,
                         perPage: itemsPerPage,

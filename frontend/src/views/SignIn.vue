@@ -2,9 +2,9 @@
 <v-container>
     <v-row justify="center" style="height: 965px">
         <v-col cols="3" align-self="center">
-            <v-row class="mb-10" justify="center">
+            <!-- <v-row class="mb-10" justify="center">
                 <v-img :src="require(`@/assets/SignIn_Logo.png`)" max-height="300" max-width="450"></v-img>
-            </v-row>
+            </v-row> -->
             <v-form ref="form">
                 <v-text-field v-model="id" :rules="rules.id" counter="25" hint="This field uses counter prop" label="ID" required></v-text-field>
                 <v-text-field v-model="password" :rules="rules.pwd" label="PASSWORD" type="password" required></v-text-field>

@@ -64,6 +64,9 @@
                 <v-col cols="auto">
                     <v-btn @click="moveToBefore">목록</v-btn>
                 </v-col>
+                <v-col cols="auto" v-if="admin">
+                    <v-btn @click="moveToReply">답글</v-btn>
+                </v-col>
                 <v-col cols="auto">
                     <v-btn @click="moveToUpdate">수정</v-btn>
                 </v-col>
@@ -93,7 +96,7 @@ export default {
     data() {
         return {
             pageID: '',
-            admin: false,
+            admin: true,
             type: 'product',
             content: '',
             image1: '',
@@ -110,21 +113,13 @@ export default {
         moveToBefore() {
             this.$router.go(-1);
         },
+        moveToReply(){
+            this.$router.push(`/replyPost/qna/${this.pageID}`)
+        },
         moveToUpdate() {
             this.$router.push(`/updatePost/notice/${this.pageID}`)
-            // axios({
-            //     method: 'patch',
-            //     url: `/api/qna/updateqna`,
-            //     params: {
-            //         qnaNo : this.pageID,
-            //         type : this.type,
-            //         content : this.content,
-            //         secret : ,
-            //         image: ""
-            //     }
-            // })
         },
-        deleteQnA(){
+        deleteQnA() {
             console.log(this.pageID);
             axios({
                 method: 'delete',
@@ -134,6 +129,8 @@ export default {
                 }
             }).then((res)=>{
                 console.log(res.data);
+                alert("삭제 완료");
+                this.$router.go(-1);
             }).catch((err)=>{
                 console.log(err);
             })

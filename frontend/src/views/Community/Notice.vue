@@ -1,17 +1,16 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" disable-sort>
-            <template v-slot:body="{ items }">
-                <tbody>
-                    <tr v-for="item in items" :key="item.noticeNo" @click="moveto(item)">
-                        <td style="text-align: center;">{{ item.noticeNo }}</td>
-                        <td>{{ item.title }}</td>
-                        <td>
-                            <HideId :id="item.id" />
-                        </td>
-                    </tr>
-                </tbody>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" @click:row="moveto" disable-sort>
+            <template #[`item.title`]="{item}">
+                <div class="text-left">
+                    {{ item.title }}
+                </div>
+            </template>
+            <template #[`item.id`]="{item}">
+                <div class="text-left">
+                    <HideId :id="item.id" />
+                </div>
             </template>
         </v-data-table>
     </div>
@@ -134,15 +133,4 @@ export default {
 </script>
 
 <style scoped>
-table td {
-    border-right: 1px solid #dddddd;
-}
-
-table td:last-child {
-    border-right: none
-}
-
-header.content {
-    text-align: center;
-}
 </style>

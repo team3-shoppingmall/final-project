@@ -51,7 +51,7 @@ const routes = [
                 name: 'Main',
                 component: Main
             }, {
-                path: '/productList',
+                path: '/productList/:id/:sub',
                 name: 'ProductList',
                 component: ProductList
             }, {
@@ -103,6 +103,11 @@ const routes = [
             {
                 path: '/writePost/:id',
                 name: 'WritePost',
+                component: WritePost,
+            },
+            {
+                path: '/replyPost/:id/:original',
+                name: 'ReplyPost',
                 component: WritePost,
             },
             {

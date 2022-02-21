@@ -92,7 +92,7 @@ export default {
                 to: '/productDetail',
             }, {
                 name: 'ProductList',
-                to: '/productList',
+                to: '/productList/skirt/mini',
             }, {
                 name: 'ProductSearch',
                 to: '/productSearch',

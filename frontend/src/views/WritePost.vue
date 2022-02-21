@@ -2,13 +2,14 @@
 <v-container>
     <v-row justify="center">
         <v-col align-self="center" cols="7">
-            <div class="text-h3">글쓰기</div>
+            <div class="text-h3" v-if="originalNo == undefined">글쓰기</div>
+            <div class="text-h3" v-if="originalNo != undefined">답변</div>
             <v-divider class="my-5"></v-divider>
             <v-form ref="form">
                 <v-simple-table>
                     <template slot="default">
                         <tbody>
-                            <tr>
+                            <tr v-if="originalNo == undefined">
                                 <td style="width:10%"> 제목 </td>
                                 <td>
                                     <v-select v-model="titleSelected" :items="titles" v-if="!admin"></v-select>
@@ -27,28 +28,28 @@
                                     <v-textarea counter rows="11" v-model="content" :rules="rules"></v-textarea>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr v-if="originalNo == undefined">
                                 <td rowspan="5"> 파일 첨부 </td>
                                 <td>
                                     <v-file-input accept="image/*"></v-file-input>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr v-if="originalNo == undefined">
                                 <td>
                                     <v-file-input accept="image/*"></v-file-input>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr v-if="originalNo == undefined">
                                 <td>
                                     <v-file-input accept="image/*"></v-file-input>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr v-if="originalNo == undefined">
                                 <td>
                                     <v-file-input accept="image/*"></v-file-input>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr v-if="originalNo == undefined">
                                 <td>
                                     <v-file-input accept="image/*"></v-file-input>
                                 </td>
@@ -67,7 +68,10 @@
                 </v-simple-table>
                 <v-divider></v-divider>
                 <v-row justify="end" class="mt-3">
-                    <v-col cols="auto" v-if="num == '' || num == undefined">
+                    <v-col cols="auto" v-if="originalNo != undefined">
+                        <v-btn @click="form">답변 작성</v-btn>
+                    </v-col>
+                    <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
                         <v-btn @click="form">작성</v-btn>
                     </v-col>
                     <v-col cols="auto" v-if="num != '' && num != undefined">
@@ -148,7 +152,7 @@ export default {
                     value: 'error',
                     content: '불량 상품/오배송 문의 관련 text',
                     type: 'afterDeliveryQnA',
-                }
+                },
             ],
             faqType: [{
                 text: '상품 관련',
@@ -168,6 +172,7 @@ export default {
             titleSelected: 'default',
             titleDetail: '',
             faqTypeSelected: '',
+            originalNo: '',
             content: '',
             image1: '',
             image2: '',
@@ -230,9 +235,16 @@ export default {
             // // 비밀글 여부
             // console.log(this.secret);
 
+            //axios status==200 안으로 넣어야 함
+            // alert('완료');
+            // this.$router.go(-1);
         },
         formUpdate() {
             // this.sendType => 게시글 종류(notice, faq, qna(product, delivery) 등)
+
+            //axios status==200 안으로 넣어야 함
+            // alert('완료');
+            // this.$router.go(-1);
         },
         moveToBefore() {
             this.$router.go(-1);
@@ -253,9 +265,12 @@ export default {
     mounted() {
         this.pageID = this.$route.params.id;
         this.num = this.$route.params.num;
+        this.originalNo = this.$route.params.original;
         if (this.num != '' && this.num != undefined) {
             // 기존 정보 가져와서 넣어주기
             // 만약 sendType이 notice나 faq면 관리자이니 admin true로 변경
+        } else if (this.originalNo != '' && this.originalNo != undefined) {
+            this.admin = true;
         } else {
             this.currentURL();
         }

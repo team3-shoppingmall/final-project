@@ -58,8 +58,8 @@ public class QnaService {
 	}
 
 	// 상품문의 카테고리 전체 조회
-	public ResponseEntity<?> getQnaProductAll() {
-		List<QnaVO> res = qnaMapper.getQnaProductAll();
+	public ResponseEntity<?> getQnaProductAll(int page, int perPage, String search, String searchWord) {
+		List<QnaVO> res = qnaMapper.getQnaProductAll(page, perPage, search, searchWord);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
@@ -67,8 +67,8 @@ public class QnaService {
 	}
 
 	// 배송문의 카테고리 전체 조회
-	public ResponseEntity<?> getQnaDeliveryAll() {
-		List<QnaVO> res = qnaMapper.getQnaDelieveryAll();
+	public ResponseEntity<?> getQnaDeliveryAll(int page, int perPage, String search, String searchWord) {
+		List<QnaVO> res = qnaMapper.getQnaDelieveryAll(page, perPage, search, searchWord);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
@@ -76,8 +76,8 @@ public class QnaService {
 	}
 
 	// 배송 전 변경&취소 카테고리 전체 조회
-	public ResponseEntity<?> getQnaBeforeDeliveryAll() {
-		List<QnaVO> res = qnaMapper.getQnaBeforeDeliveryAll();
+	public ResponseEntity<?> getQnaBeforeDeliveryAll(int page, int perPage, String search, String searchWord) {
+		List<QnaVO> res = qnaMapper.getQnaBeforeDeliveryAll(page, perPage, search, searchWord);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
@@ -85,8 +85,8 @@ public class QnaService {
 	}
 
 	// 배송 후 교환&반품 카테고리 전체 조회
-	public ResponseEntity<?> getQnaAfterDeliveryAll() {
-		List<QnaVO> res = qnaMapper.getQnaAfterDeliveryAll();
+	public ResponseEntity<?> getQnaAfterDeliveryAll(int page, int perPage, String search, String searchWord) {
+		List<QnaVO> res = qnaMapper.getQnaAfterDeliveryAll(page, perPage, search, searchWord);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
@@ -156,6 +156,15 @@ public class QnaService {
 	// 내용으로 문의 검색
 	public ResponseEntity<?> searchQnaByContent(String content) {
 		List<QnaVO> res = qnaMapper.searchQnaByContent(content);
+		if (res == null)
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
+	public ResponseEntity<?> getQnaByQnaNo(int qnaNo) {
+		System.out.println(qnaNo);
+		QnaVO res = qnaMapper.getQnaByQnaNo(qnaNo);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else

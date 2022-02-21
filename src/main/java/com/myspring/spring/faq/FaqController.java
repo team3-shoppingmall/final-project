@@ -28,7 +28,7 @@ public class FaqController {
 	}
     
     //type별 문의 조회
-    @GetMapping("/get{type}")
+    @GetMapping("/get/{type}")
     public ResponseEntity<?> getFaqByType(@PathVariable("type") String type) {
     	return faqService.getFaqByType(type);
     }

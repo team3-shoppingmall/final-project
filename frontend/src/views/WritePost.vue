@@ -69,19 +69,27 @@
                 <v-divider></v-divider>
                 <v-row justify="end" class="mt-3">
                     <v-col cols="auto" v-if="originalNo != undefined">
+                        <v-btn @click="replyForm" outlined>답변 작성</v-btn>
+                    </v-col>
                     <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
                         <v-btn @click="form" outlined>작성</v-btn>
                     </v-col>
                     <v-col cols="auto" v-if="num != '' && num != undefined">
                         <v-btn @click="formUpdate" outlined>수정</v-btn>
                     </v-col>
-                        <v-btn @click="replyForm" outlined>답변 작성</v-btn>
-                    </v-col>
+                    
                     <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
                         <v-btn @click="qnaForm" outlined>QNA 작성</v-btn>
                     </v-col>
                     <v-col cols="auto" v-if="num != '' && num != undefined">
-                        <v-btn @click="qnaFormUpdate" outlined>QNA 수정</v-btn>
+                        <v-btn @click="qnaFormUpdate" outlined>QNA 수정</v-btn>                        
+                    </v-col>
+                    
+                    <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
+                        <v-btn @click="faqForm" outlined>FAQ 작성</v-btn>
+                    </v-col>
+                    <v-col cols="auto" v-if="num != '' && num != undefined">
+                        <v-btn @click="faqFormUpdate" outlined>FAQ 수정</v-btn>                        
                     </v-col>
                     <v-col cols="auto">
                         <v-btn @click="moveToBefore" outlined>취소</v-btn>

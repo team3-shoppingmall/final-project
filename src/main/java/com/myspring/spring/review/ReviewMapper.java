@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.http.ResponseEntity;
 
 @Mapper
@@ -26,8 +27,12 @@ public interface ReviewMapper {
 	public int insertReview(@Param("in") ReviewVO reviewVO);
 	
 	//리뷰 삭제
-	@Delete("delete from reviewtable where id = #{id}")
-	public int deleteReview(@Param("id") String id);
+	@Delete("delete from reviewtable where reviewNo = #{reviewNo}")
+	public int deleteReview(@Param("reviewNo") int reviewNo);
+	
+	//리뷰 수정
+	@Update("update reviewtable set content=#{content}, image=#{image}, star=#{star} where reviewNo = #{reviewNo}")
+	public int updateReview(ReviewVO reviewVO);
 	
 	//리뷰 상세보기
 	@Select("select * from reviewtable where reviewNo = #{reviewNo}")
@@ -40,6 +45,5 @@ public interface ReviewMapper {
 	//리뷰검색 by id
 	@Select("select * from reviewtable where id = #{id}")
 	public List<ReviewVO> searchReviewById(String id);
-
 
 }

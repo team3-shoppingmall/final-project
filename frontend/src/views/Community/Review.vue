@@ -156,9 +156,24 @@ export default {
                         })
                 })
         },
-        deleteReview(num) {
-            console.log(num);
+        //deleteReview(num) {
+            //console.log(num);
+        deleteReview() {
+            axios({
+                    method: 'delete',
+                    url: `/api/review/delete`,
+                    params: {
+                        reviewNo: this.reviewNo
+                    }
+                })
+                .then(res => {
+                    this.contents = res.data;
+                    this.loading = false
+                    alert("삭제가 완료되었습니다.")
+                    this.$router.push(`/community/review`);
+                })
         },
+
         updateReview(num) {
             this.$router.push(`/updatePost/review/${num}`);
         }

@@ -7,7 +7,7 @@ create table ReviewTable(
 	-- productNo int not null,				-- 상품번호 외래키
     content varchar(600) not null,          -- 내용
 	id varchar(50) not null,                -- 등록아이디
-    regDate date default (current_date_timestamp),    -- 등록날짜
+    regDate date default (current_timestamp()),    -- 등록날짜
 	image varchar(100),                     -- 사진이름
 	star int not null,                      -- 별점
 

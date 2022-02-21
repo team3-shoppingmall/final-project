@@ -9,13 +9,13 @@
                 <v-col>
                     <v-row>
                         <v-col v-for="count in 8" :key="count" cols="3">
-                            <v-card>
+                            <v-card @click="moveToDetail(product[0].productno)">
                                 <v-img max-height="300" max-width="auto" :src="`https://picsum.photos/seed/${randomNumber(count)}/300/250`"></v-img>
                                 <v-card-text>
                                     <div>{{product[0].productname}} - <span v-if="product[0].size != 0">{{product[0].size}} size</span><span v-if="product[0].size==0">{{product[0].color}} color</span></div>
-                                    <div v-if="discount != 0" class="text-decoration-line-through">{{product[0].price}}원</div>
-                                    <div v-if="discount == 0">{{product[0].price}}원</div>
-                                    <div>{{product[0].price*(100-product[0].discount)/100}}원</div>
+                                    <div v-if="product[0].discount != 0" class="text-decoration-line-through">{{product[0].price}}원</div>
+                                    <div v-if="product[0].discount == 0">{{product[0].price}}원</div>
+                                    <div v-if="product[0].discount != 0">{{product[0].price*(100-product[0].discount)/100}}원</div>
                                 </v-card-text>
                             </v-card>
                         </v-col>
@@ -42,13 +42,13 @@
                 <v-col>
                     <v-row>
                         <v-col v-for="count in 20" :key="count" cols="3">
-                            <v-card>
+                            <v-card @click="moveToDetail(product[0].productno)">
                                 <v-img max-height="300" max-width="auto" :src="`https://picsum.photos/seed/${randomNumber(count)}/300/250`"></v-img>
                                 <v-card-text>
                                     <div>{{product[0].productname}} - <span v-if="product[0].size != 0">{{product[0].size}} size</span><span v-if="product[0].size==0">{{product[0].color}} color</span></div>
-                                    <div v-if="discount != 0" class="text-decoration-line-through">{{product[0].price}}원</div>
-                                    <div v-if="discount == 0">{{product[0].price}}원</div>
-                                    <div>{{product[0].price*(100-product[0].discount)/100}}원</div>
+                                    <div v-if="product[0].discount != 0" class="text-decoration-line-through">{{product[0].price}}원</div>
+                                    <div v-if="product[0].discount == 0">{{product[0].price}}원</div>
+                                    <div v-if="product[0].discount != 0">{{product[0].price*(100-product[0].discount)/100}}원</div>
                                 </v-card-text>
                             </v-card>
                         </v-col>
@@ -84,6 +84,7 @@ export default {
             visibleLength: 5,
 
             product: [{
+                productno: 1,
                 imageName: '',
                 productname: '블랙트위드 스커트',
                 size: 3,
@@ -102,6 +103,9 @@ export default {
             if (this.selectedCategory == put) {
                 return 'primary'
             }
+        },
+        moveToDetail(num) {
+            this.$router.push(`/productDetail/${num}`)
         },
         randomNumber(count) {
             return Math.floor(Math.random() * 100) + count;

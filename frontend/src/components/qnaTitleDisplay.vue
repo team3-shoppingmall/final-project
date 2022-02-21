@@ -43,7 +43,11 @@ export default {
                 {
                     text: '불량 상품/오배송 문의입니다',
                     value: 'error',
-                }
+                },
+                {
+                    text: '답변합니다',
+                    value: 'reply',
+                },
             ],
         }
     },

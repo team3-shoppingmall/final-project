@@ -1,26 +1,33 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" disable-sort>
-            <template v-slot:body="{ items }">
-                <tbody>
-                    <tr v-for="item in items" :key="item.reviewNo">
-                        <td style="text-align: center;">{{ item.reviewNo }}</td>
-                        <td>
-                            <ProductNameDisplay :productno="item.productno" />
-                        </td>
-                        <td style="text-align: center;" class="pa-1">
-                            <v-rating hover length="5" readonly size="10" :value="item.star"></v-rating>
-                        </td>
-                        <td>{{ item.content }}</td>
-                        <td>
-                            <HideId :id="item.id" />
-                        </td>
-                        <td style="text-align: center;">
-                            <DateDisplay :regDate="item.regDate" />
-                        </td>
-                    </tr>
-                </tbody>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
+            <template #[`item.productno`]="{item}">
+                <div class="text-left">
+                    <ProductNameDisplay :productno="item.productno" />
+                </div>
+            </template>
+            <template #[`item.star`]="{item}">
+                <v-rating hover length="5" readonly size="10" :value="item.star"></v-rating>
+            </template>
+            <template #[`item.content`]="{item}">
+                <v-row justify="space-between">
+                    <v-col>
+                        <div class="text-left">{{ item.content }}</div>
+                    </v-col>
+                    <v-col cols="auto">
+                        <v-icon @click="updateReview(item.reviewNo)" v-if="admin">mdi-pencil</v-icon>
+                        <v-icon @click="deleteReview(item.reviewNo)" v-if="admin">mdi-delete</v-icon>
+                    </v-col>
+                </v-row>
+            </template>
+            <template #[`item.id`]="{item}">
+                <div class="text-left">
+                    <HideId :id="item.id" />
+                </div>
+            </template>
+            <template #[`item.regDate`]="{item}">
+                <DateDisplay :regDate="item.regDate" />
             </template>
         </v-data-table>
     </div>
@@ -56,13 +63,14 @@ export default {
     },
     data() {
         return {
+            admin: true,
             totalContents: 0,
             contents: [],
             options: {},
             loading: true,
             headers: [{
                     text: '번호',
-                    value: 'reviewno',
+                    value: 'reviewNo',
                     width: '10%',
                     align: 'center',
                     divider: true
@@ -99,7 +107,7 @@ export default {
                     text: '작성일',
                     value: 'regDate',
                     width: '10%',
-                    align: 'center'
+                    align: 'center',
                 },
             ],
             searches: [{
@@ -148,6 +156,25 @@ export default {
                         })
                 })
         },
+        deleteReview() {
+            axios({
+                    method: 'delete',
+                    url: `/api/review/delete`,
+                    params: {
+                        reviewNo: this.reviewNo
+                    }
+                })
+                .then(res => {
+                    this.contents = res.data;
+                    this.loading = false
+                    alert("삭제가 완료되었습니다.")
+                    this.$router.push(`/community/review`);
+                })
+        },
+
+        updateReview(num) {
+            this.$router.push(`/updatePost/review/${num}`);
+        }
     },
     watch: {
         options: {
@@ -161,11 +188,4 @@ export default {
 </script>
 
 <style scoped>
-table td {
-    border-right: 1px solid #dddddd;
-}
-
-table td:last-child {
-    border-right: none
-}
 </style>

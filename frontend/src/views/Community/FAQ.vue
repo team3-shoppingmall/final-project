@@ -17,7 +17,7 @@
             <v-btn @click="getFAQ('etc')" :color="colorPicker('etc')">기타관련</v-btn>
         </v-col>
     </v-row>
-    <v-data-table :headers="headers" :options.sync="options" :items="contents" :single-expand="true" hide-default-footer :expanded.sync="expanded" :loading="loading" show-expand class="elevation-1" @click:row="(item, slot) => slot.expand(!slot.isExpanded)">
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" :single-expand="true" hide-default-footer :expanded.sync="expanded" :loading="loading" disable-sort show-expand class="elevation-1" @click:row="(item, slot) => slot.expand(!slot.isExpanded)">
         <template v-slot:expanded-item="{ headers, item }">
             <td :colspan="headers.length">
                 {{ item.content }}
@@ -31,19 +31,19 @@
         </template>
         <template #[`item.title`]="{item}">
             <v-row justify="space-between">
-                <v-col>
+                <v-col cols="auto">
                     <div class="text-left">{{item.title}}</div>
                 </v-col>
                 <v-col cols="auto">
-                    <v-icon @click="updateFAQ(item.noticeNo)">mdi-pencil</v-icon>
-                    <v-icon @click="deleteFAQ(item.noticeNo)">mdi-delete</v-icon>
+                    <v-icon @click="updateFAQ(item.faqNo)">mdi-pencil</v-icon>
+                    <v-icon @click="deleteFAQ(item.faqNo)">mdi-delete</v-icon>
                 </v-col>
             </v-row>
         </template>
     </v-data-table>
     <v-row justify="end" class="mt-2">
         <v-col cols="auto">
-            <v-btn :to="'/writePost/faq'">글쓰기</v-btn>
+            <v-btn :to="'/writePost/faq'" outlined>글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -71,20 +71,17 @@ export default {
             headers: [{
                     text: '',
                     value: 'icon',
-                    sortable: false,
                     width: '5%',
                     align: 'center',
                 }, {
                     text: '종류',
                     value: 'type',
-                    sortable: false,
                     width: '10%',
                     align: 'center',
                 },
                 {
                     text: '제목',
                     value: 'title',
-                    sortable: false,
                     width: '85%',
                     align: 'center',
                 },
@@ -107,14 +104,8 @@ export default {
             this.search = selectedType;
             axios({
                     method: 'get',
-                    url: `/api/notice/getNotice`,
-                    params: {
-                        page: 1,
-                        perPage: 100,
-                        search: 'title',
-                        searchWord: '',
-                        // type: selectedType,
-                    }
+                    url: `/api/faq/get/${selectedType}`,
+                
                 })
                 .then(res => {
                     this.contents = res.data;

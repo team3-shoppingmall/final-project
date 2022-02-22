@@ -233,18 +233,18 @@ insert into reviewtable(productno, content, id, image, star) values(1,'후기내
 insert into reviewtable(productno, content, id, image, star) values(2,'후기내용5','tester', 'image5.jpg','1');
 -- 문의
 insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(1,'product', 1, true, '질문 내용', 'tester', true, 'image1.jpg');
-insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(2,'product', last_insert_id()+1, true, '질문 내용', 'tester',true, 'image1.jpg');
+insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(2,'product', last_insert_id()+1, false, '질문 내용', 'tester',true, 'image1.jpg');
 insert into qnatable(type, originalNo, content, id, secret, image) values('productReply', 1, '답변 내용', 'admin',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('general', last_insert_id()+1, true, '질문 내용', 'tester',true, 'image1.jpg');
+insert into qnatable(type, originalNo, reply, content, id, secret, image) values('general', last_insert_id()+1, false, '질문 내용', 'tester',true, 'image1.jpg');
 insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(1,'product', last_insert_id()+1, true, '질문 내용', 'tester',true, 'image1.jpg');
 insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(2,'product', last_insert_id()+1, true, '질문 내용', 'tester2',true, 'image1.jpg');
 insert into qnatable(type, originalNo, content, id, secret, image) values('productReply', 5, '답변 내용', 'admin',true, 'image1.jpg');
 insert into qnatable(type, originalNo, content, id, secret, image) values('productReply', 6, '답변 내용', 'admin',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('general', last_insert_id()+1, true, '질문 내용', 'tester',true, 'image1.jpg');
-insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(2,'product', last_insert_id()+1, true, '질문 내용', 'tester2',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('delivery', last_insert_id()+1, true, '질문 내용', 'tester2',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('cancel', last_insert_id()+1, true, '질문 내용', 'tester2',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('exchange', last_insert_id()+1, true, '질문 내용', 'tester2',true, 'image1.jpg');
+insert into qnatable(type, originalNo, reply, content, id, secret, image) values('general', last_insert_id()+1, false, '질문 내용', 'tester',true, 'image1.jpg');
+insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(2,'product', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
+insert into qnatable(type, originalNo, reply, content, id, secret, image) values('delivery', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
+insert into qnatable(type, originalNo, reply, content, id, secret, image) values('cancel', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
+insert into qnatable(type, originalNo, reply, content, id, secret, image) values('exchange', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
 -- 배너
 insert into bannertable(image, link) values('test1.jpg','testlin1k');
 insert into bannertable(image, link) values('test2.jpg','testlink2');

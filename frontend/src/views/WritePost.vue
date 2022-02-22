@@ -428,7 +428,7 @@ export default {
                 }
             }).then((res) => {
                 console.log(res.data, res.status);
-                alert("댓글 등록 완료");
+                alert("답변 등록 완료");
                 this.$router.go(-2);
             }).catch((err) => {
                 console.log(err);

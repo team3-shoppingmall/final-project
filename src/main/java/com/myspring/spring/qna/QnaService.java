@@ -17,13 +17,10 @@ public class QnaService {
 	}
 
 	// 카테고리별 전체 개수 가져오기
-	// product => 'general', 'product', 'productNotice', 'productReply',
-	// 'generalReply'
-	// beforeDelivery => 'cancel', 'change', 'changeaddress', 'cancelNotice',
-	// 'cancelReply', 'changeReply', 'changeaddressReply'
+	// product => 'general', 'product', 'productNotice', 'productReply', 'generalReply'
+	// beforeDelivery => 'cancel', 'change', 'changeaddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply'
 	// delivery => 'delivery', 'deliveryNotice', 'deliveryReply'
-	// afterDelivery => 'return', 'exchange', 'error', 'returnNotice',
-	// 'returnReply', 'exchangeReply', 'errorReply'
+	// afterDelivery => 'return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply'
 	public ResponseEntity<?> getCount(String search, String searchWord, String type) {
 		int res = 0;
 

@@ -3,7 +3,9 @@
     <v-row justify="center">
         <v-col align-self="center" cols="7">
             <div class="text-h3">문의</div>
-            <ProductDetailDisplay :productNo="qna.productNo" />
+            <div v-if="qna.productNo != 0 && qna.productNo != undefined">
+                <ProductDetailDisplay :productNo="qna.productNo" />
+            </div>
             <v-simple-table>
                 <template slot="default" v-if="dataLoaded">
                     <tbody>

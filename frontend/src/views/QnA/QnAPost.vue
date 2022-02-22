@@ -3,31 +3,31 @@
     <v-row justify="center">
         <v-col align-self="center" cols="7">
             <div class="text-h3">문의</div>
-            <ProductDetailDisplay :type="'product'" />
+            <ProductDetailDisplay :productNo="qna.productNo" />
             <v-simple-table>
-                <template slot="default">
+                <template slot="default" v-if="dataLoaded">
                     <tbody>
                         <tr>
                             <td style="width:10%"> 제목 </td>
                             <td>
-                                <QnATitleDisplay :type="type" />
+                                <QnATitleDisplay :type="qna.type" />
                             </td>
                         </tr>
                         <tr>
                             <td style="width:10%"> 작성자 </td>
                             <td>
-                                <HideId :id="'ididididid'" />
+                                <HideId :id="qna.id" />
                             </td>
                         </tr>
                         <tr>
                             <td style="width:10%"> 작성일 </td>
                             <td>
-                                <DateDisplay :regDate="'2022-02-18T15:00:00.000+00:00'" />
+                                <DateDisplay :regDate="qna.regDate" />
                             </td>
                         </tr>
                         <tr>
                             <td colspan="2">
-                                {{content}}
+                                {{qna.content}}
                             </td>
                         </tr>
                         <tr v-if="image1 != ''">
@@ -64,8 +64,8 @@
                 <v-col cols="auto">
                     <v-btn @click="moveToBefore" outlined>목록</v-btn>
                 </v-col>
-                <v-col cols="auto" v-if="admin">
-                    <v-btn @click="moveToReply" outlined>답글</v-btn>
+                <v-col cols="auto" v-if="admin && (qna.qnaNo == qna.originalNo)">
+                    <v-btn @click="moveToReply" outlined>답변</v-btn>
                 </v-col>
                 <v-col cols="auto">
                     <v-btn @click="moveToUpdate" outlined>수정</v-btn>
@@ -95,11 +95,10 @@ export default {
     },
     data() {
         return {
+            dataLoaded: false,
             pageID: '',
             admin: true,
-            type: '',
-            content: '',
-            reply: '',
+            qna: '',
             image1: '',
             image2: '',
             image3: '',
@@ -117,11 +116,12 @@ export default {
                     qnaNo: this.pageID
                 }
             }).then((res) => {
-                console.log(res.data);
-                this.content = res.data.content;
-                this.type = res.data.type;
-                this.id = res.data.id;
-                this.reply = res.data.reply;
+                if (res.status == 200) {
+                    this.qna = res.data;
+                    this.dataLoaded = true;
+                } else {
+                    console.log(res.status);
+                }
             }).catch((err) => {
                 console.log(err);
             })
@@ -131,26 +131,24 @@ export default {
             this.$router.go(-1);
         },
         moveToReply() {
-            if (this.reply == true)
+            if (this.qna.reply == true)
                 alert("이미 답변이 등록된 문의글입니다.");
-            else if (this.type.slice(this.type.length - 5, this.type.length) == 'Reply')
-                alert("답변입니다.")
             else
-                this.$router.push(`/replyPost/${this.type}/${this.pageID}`)
+                this.$router.push(`/replyPost/${this.qna.type}/${this.qna.qnaNo}`)
         },
         moveToUpdate() {
             if (this.reply == true)
                 alert("이미 답변이 완료된 문의글이므로 수정하실 수 없습니다.");
             else
-                this.$router.push(`/updatePost/qna/${this.pageID}`)
+                this.$router.push(`/updatePost/qna/${this.qna.qnaNo}`)
         },
         deleteQnA() {
-            console.log(this.pageID);
+            console.log(this.qna.qnaNo);
             axios({
                 method: 'delete',
                 url: `/api/qna/deleteqna`,
                 params: {
-                    qnaNo: this.pageID
+                    qnaNo: this.qna.qnaNo
                 }
             }).then(res => {
                 if (res.status == 200) {

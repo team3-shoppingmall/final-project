@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/api/member")
+@RequestMapping(value = "/api/basket")
 public class BasketController {
 	private BasketService productService;
 

@@ -1,14 +1,9 @@
 <template>
 <v-container>
-    <v-data-table
-        :headers="headers"
-        :options.sync="options"
-        :items="contents"
-        :server-items-length="totalContents"
-        :loading="loading"
-        item-key="reviewNo"
-        class="elevation-1"
-        disable-sort="disable-sort">
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort="disable-sort">
+        <template #top="{ }">
+            <div class="text-left text-h5 pa-2">후기내역</div>
+        </template>
         <template #[`item.productno`]="{item}">
             <div class="text-left">
                 <ProductNameDisplay :productno="item.productno" />
@@ -41,13 +36,13 @@
         <v-col class="d-flex" cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
                 <v-col cols="4">
-                    <v-select :items="searches" v-model="search"></v-select>
+                    <v-select :items="searches" v-model="search" hide-details="hide-details"></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord"></v-text-field>
+                    <v-text-field v-model="searchWord" hide-details="hide-details"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon="icon" @click="getReview">검색</v-btn>
+                    <v-btn @click="getReview" class="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -68,10 +63,13 @@ export default {
     },
     data() {
         return {
+
             admin: true,
             totalContents: 0,
             contents: [],
-            options: {},
+            options: {
+                itemsPerPage: 5
+            },
             loading: true,
             headers: [{
                 text: '번호',
@@ -155,7 +153,9 @@ export default {
             console.log(num);
         },
         updateReview(num) {
-            this.$router.push(`/updatePost/review/${num}`);
+            this
+                .$router
+                .push(`/updatePost/review/${num}`);
         }
     },
     watch: {

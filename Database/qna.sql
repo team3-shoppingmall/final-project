@@ -13,8 +13,16 @@ create table qnatable(
     secret boolean default false,
     image varchar(500) not null);
 
-insert into qnatable(type, reply, content, id, image) values('product', true, 'content1', 'user1','image1.jpg');
-insert into qnatable(type, originalNo, content, id, image) values('product', 1, 'content1', 'user1','image1.jpg');
+insert into qnatable(type, originalNo, reply, content, id, image) values('product', 1, true, 'content1', 'user1','image1.jpg');
+insert into qnatable(type, originalNo, reply, content, id, image) values('product', last_insert_id()+1, true, 'content1', 'user1','image1.jpg');
+insert into qnatable(type, originalNo, content, id, image) values('productReply', 1, 'content1', 'user1','image1.jpg');
+insert into qnatable(type, originalNo, reply, content, id, image) values('product', last_insert_id()+1, true, 'content1', 'user1','image1.jpg');
+insert into qnatable(type, originalNo, reply, content, id, image) values('product', last_insert_id()+1, true, 'content1', 'user1','image1.jpg');
+insert into qnatable(type, originalNo, reply, content, id, image) values('product', last_insert_id()+1, true, 'content1', 'user1','image1.jpg');
+insert into qnatable(type, originalNo, content, id, image) values('productReply', 3, 'content1', 'user1','image1.jpg');
+insert into qnatable(type, originalNo, content, id, image) values('productReply', 4, 'content1', 'user1','image1.jpg');
+insert into qnatable(type, originalNo, reply, content, id, image) values('product', last_insert_id()+1, true, 'content1', 'user1','image1.jpg');
+insert into qnatable(type, originalNo, reply, content, id, image) values('product', last_insert_id()+1, true, 'content1', 'user1','image1.jpg');
 
 commit;
 

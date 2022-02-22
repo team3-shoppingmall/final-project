@@ -252,17 +252,18 @@ export default {
                 url: `/api/qna/insertqna`,
                 data: {
                     type: this.titleSelected,
-                    originalNo: null,
                     reply: false,
                     content: this.content,
                     id: "user123",
                     secret: this.secret,
-                    image: "",
+                    image: "image1.jpg"
                 }
             }).then((res) => {
-                console.log(res.data, res.status);
-                alert("문의글 등록 완료");
-                this.$router.go(-1);
+               if(res.status == 200){
+                    console.log(res.data);
+                    alert("문의글이 등록되었습니다.");
+                    this.$router.go(-1);
+                }
             }).catch((err) => {
                 console.log(err);
             })
@@ -352,22 +353,21 @@ export default {
                 })
         },
         replyForm() {
+            console.log(this.pageID);
             axios({
                 method: 'post',
-                url: `/api/qna/insertqna`,
+                url: `/api/qna/insertReply`,
                 data: {
-                    type: this.titleSelected,
+                    type: this.pageID + 'Reply',
                     originalNo: this.originalNo,
-                    reply: false,
                     content: this.content,
                     id: "admin",
-                    secret: true,
-                    image: ""
+                    image: "image1.jpg"
                 }
             }).then((res) => {
                 console.log(res.data, res.status);
                 alert("댓글 등록 완료");
-                this.$router.go(-1);
+                this.$router.go(-2);
             }).catch((err) => {
                 console.log(err);
             })
@@ -389,9 +389,11 @@ export default {
                     image: ""
                 }
             }).then((res) => {
-                console.log(res.data, res.status);
-                alert("수정 완료");
-                this.$router.go(-1);
+                if(res.status == 200){
+                    console.log(res.data);
+                    alert("수정이 완료되었습니다.");
+                    this.$router.go(-1);
+                }
             }).catch((err) => {
                 console.log(err);
             })
@@ -414,13 +416,22 @@ export default {
         }
     },
     mounted() {
+       
         //notice faq review 중 뭔지
         this.pageID = this.$route.params.id;
         //게시글 번호
         this.num = this.$route.params.num;
         //qna 원글 번호
         this.originalNo = this.$route.params.original;
+        // 상세 페이지에서 상품 문의 했을 때 상품번호
+        this.productno = this.$route.params.productno;
         if (this.num != '' && this.num != undefined) {
+            if (this.pageID == 'notice' || this.pageID == 'faq') {
+                this.admin = true;
+            } else if (this.pageID == 'review') {
+                this.titleSelected = 'review';
+            }
+
             // 기존 정보 가져와서 넣어주기
             // 만약 sendType이 notice나 faq면 관리자이니 admin true로 변경
         } else if (this.originalNo != '' && this.originalNo != undefined) {

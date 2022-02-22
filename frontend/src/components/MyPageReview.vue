@@ -1,13 +1,16 @@
 <template>
 <v-container>
-    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort="disable-sort">
+        <template #top="{ }">
+            <div class="text-left text-h5 pa-2">후기내역</div>
+        </template>
         <template #[`item.productno`]="{item}">
             <div class="text-left">
                 <ProductNameDisplay :productno="item.productno" />
             </div>
         </template>
         <template #[`item.star`]="{item}">
-            <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" length="5" readonly size="10" :value="item.star"></v-rating>
+            <v-rating hover="hover" length="5" readonly="readonly" size="10" :value="item.star"></v-rating>
         </template>
         <template #[`item.content`]="{item}">
             <v-row justify="space-between">
@@ -29,18 +32,17 @@
             <DateDisplay :regDate="item.regDate" />
         </template>
     </v-data-table>
-    
     <v-row align="center" justify="space-between">
         <v-col class="d-flex" cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
                 <v-col cols="4">
-                    <v-select :items="searches" v-model="search"></v-select>
+                    <v-select :items="searches" v-model="search" hide-details="hide-details"></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord"></v-text-field>
+                    <v-text-field v-model="searchWord" hide-details="hide-details"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon="icon" @click="getReview">검색</v-btn>
+                    <v-btn @click="getReview" class="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -61,10 +63,13 @@ export default {
     },
     data() {
         return {
+
             admin: true,
             totalContents: 0,
             contents: [],
-            options: {},
+            options: {
+                itemsPerPage: 5
+            },
             loading: true,
             headers: [{
                 text: '번호',
@@ -144,26 +149,13 @@ export default {
                 })
             })
         },
-        //deleteReview(num) {
-        //console.log(num);
-        deleteReview() {
-            axios({
-                    method: 'delete',
-                    url: `/api/review/delete`,
-                    params: {
-                        reviewNo: this.reviewNo
-                    }
-                })
-                .then(res => {
-                    this.contents = res.data;
-                    this.loading = false
-                    alert("삭제가 완료되었습니다.")
-                    this.$router.push(`/community/review`);
-                })
+        deleteReview(num) {
+            console.log(num);
         },
-
         updateReview(num) {
-            this.$router.push(`/updatePost/review/${num}`);
+            this
+                .$router
+                .push(`/updatePost/review/${num}`);
         }
     },
     watch: {

@@ -9,7 +9,6 @@ import ProductDetail from '../views/ProductDetail.vue'
 import Basket from '../views/Basket.vue'
 import Payment from '../views/Payment.vue'
 import Question from '../views/Question.vue'
-import Admin from '../views/Admin.vue'
 
 import MyPage from '../views/MyPage.vue'
 import Order from '../views/MyPage/Order.vue'
@@ -37,13 +36,19 @@ import Authentication from '../layouts/Authentication/Index.vue'
 import SignIn from '../views/SignIn.vue'
 import SignUp from '../views/SignUp.vue'
 
+import Admin from '@/layouts/Admin/Index.vue'
+import Admin_Child1 from '@/views/Admin/Admin1.vue'
+import Admin_Child2 from '@/views/Admin/Admin2.vue'
+import Admin_Child3 from '@/views/Admin/Admin3.vue'
+import Admin_Child4 from '@/views/Admin/Admin4.vue'
+import Admin_Child5 from '@/views/Admin/Admin5.vue'
 Vue.use(VueRouter)
 
 const routes = [
 
     {
         path: '/',
-        name: 'Default',
+        // name: 'Default',
         component: Default,
         children: [
             {
@@ -181,12 +186,6 @@ const routes = [
                 name: 'Board',
                 component: Board
             },
-            {
-                path: '/admin',
-                name: 'Admin',
-                component: Admin
-            },
-
         ]
     }, {
         path: '/authentication',
@@ -203,7 +202,39 @@ const routes = [
                 component: SignUp
             }
         ]
-    }
+    },
+    {
+        path: '/admin',
+        name: 'Admin',
+        component: Admin,
+        children:[
+            {
+                path: 'admin1',
+                name: 'Admin1',
+                component: Admin_Child1,
+            },
+            {
+                path: 'admin2',
+                name: 'Admin2',
+                component: Admin_Child2,
+            },
+            {
+                path: 'admin3',
+                name: 'Admin3',
+                component: Admin_Child3,
+            },
+            {
+                path: 'admin4',
+                name: 'Admin4',
+                component: Admin_Child4,
+            },
+            {
+                path: 'admin5',
+                name: 'Admin5',
+                component: Admin_Child5,
+            }
+        ]
+    },
 ]
 
 const router = new VueRouter({

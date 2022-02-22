@@ -88,85 +88,89 @@
 </template>
 
 <script>
-import MyPageButton from '@/components/MyPageButton.vue'
-export default {
-    components: {
-        MyPageButton
-    },
-    data() {
-        return {
-            selected: [],
-            totalDesserts: 1,
-            desserts: [{
-                name: 'Frozen Yogurt1',
-                image: 1,
-                info: 159,
-                fat: 6.0,
-                carbs: 24,
-                protein: 4.0,
-                iron: '1%',
-                isCheck: false
-            }, {
-                name: 'Frozen Yogurt2',
-                image: 2,
-                info: 160,
-                fat: 6.0,
-                carbs: 24,
-                protein: 4.0,
-                iron: '1%',
-                isCheck: false
-            }],
-            loading: false,
-            options: {},
-            headers: [{
-                text: 'Dessert (100g serving)',
-                align: 'start',
-                sortable: false,
-                value: 'name'
-            }, {
-                text: 'image',
-                value: 'image',
-                width: '100px'
-            }, {
-                text: '상품정보',
-                value: 'info'
-            }, {
-                text: '판매자',
-                value: 'fat'
-            }, {
-                text: '적립금',
-                value: 'carbs'
-            }, {
-                text: '배송구분',
-                value: 'protein'
-            }, {
-                text: '배송비',
-                value: 'iron'
-            }, {
-                text: '합계',
-                value: 'iron'
-            }, {
-                text: '선택',
-                value: 'selection',
-                width: '120px'
-            }]
-        }
-    },
-    methods: {
-        moveTo() {
-            this
-                .$router
-                .push('/')
+    import MyPageButton from '@/components/MyPageButton.vue'
+    export default {
+        components: {
+            MyPageButton
         },
-        test() {
-            console.log("test")
+        data() {
+            return {
+                selected: [],
+                totalDesserts: 1,
+                desserts: [
+                    {
+                        name: 'Frozen Yogurt1',
+                        image: 1,
+                        info: 159,
+                        fat: 6.0,
+                        carbs: 24,
+                        protein: 4.0,
+                        iron: '1%',
+                        isCheck: false
+                    }, {
+                        name: 'Frozen Yogurt2',
+                        image: 2,
+                        info: 160,
+                        fat: 6.0,
+                        carbs: 24,
+                        protein: 4.0,
+                        iron: '1%',
+                        isCheck: false
+                    }
+                ],
+                loading: false,
+                options: {},
+                headers: [
+                    {
+                        text: 'Dessert (100g serving)',
+                        align: 'start',
+                        sortable: false,
+                        value: 'name'
+                    }, {
+                        text: 'image',
+                        value: 'image',
+                        width: '100px'
+                    }, {
+                        text: '상품정보',
+                        value: 'info'
+                    }, {
+                        text: '판매자',
+                        value: 'fat'
+                    }, {
+                        text: '적립금',
+                        value: 'carbs'
+                    }, {
+                        text: '배송구분',
+                        value: 'protein'
+                    }, {
+                        text: '배송비',
+                        value: 'iron'
+                    }, {
+                        text: '합계',
+                        value: 'iron'
+                    }, {
+                        text: '선택',
+                        value: 'selection',
+                        width: '120px'
+                    }
+                ]
+            }
+        },
+        methods: {
+            moveTo() {
+                this
+                    .$router
+                    .push('/')
+            },
+            test() {
+                console.log("test")
+            }
+            // selectAll(event) {     let checkAll = event.value;     if (checkAll) for (let
+            // i = 0; i < this.desserts.length; i++) { this.desserts[i].isCheck = true; }
+            // else         for (let i = 0; i < this.desserts.length; i++) {
+            // this.desserts[i].isCheck = false; } },
         }
-        // selectAll(event) {     let checkAll = event.value;     if (checkAll) for (let
-        // i = 0; i < this.desserts.length; i++) { this.desserts[i].isCheck = true; }
-        // else         for (let i = 0; i < this.desserts.length; i++) {
-        // this.desserts[i].isCheck = false; } },
     }
-}
 </script>
 
 <style></style>

@@ -2,6 +2,9 @@
 <v-container>
     <div>
         <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
+            <template #top="{ }">
+                <div class="text-left text-h5 pa-2">문의내역</div>
+            </template>
             <template #[`item.productno`]="{item}">
                 <div class="text-left">
                     <ProductNameDisplay :productno="item.productno" />
@@ -29,18 +32,18 @@
         <v-col cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
                 <v-col cols="4">
-                    <v-select :items="searches" v-model="search"></v-select>
+                    <v-select :items="searches" v-model="search" hide-details></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord"></v-text-field>
+                    <v-text-field v-model="searchWord" hide-details></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon @click="getQnA">검색</v-btn>
+                    <v-btn @click="getQnA" class="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
         <v-col cols="auto">
-            <v-btn :to="'/writePost/productQnA'" outlined>글쓰기</v-btn>
+            <v-btn class="primary mt-3" :to="'/writePost/productQnA'">글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -63,7 +66,9 @@ export default {
         return {
             totalContents: 0,
             contents: [],
-            options: {},
+            options: {
+                itemsPerPage: 5,
+            },
             loading: true,
             headers: [{
                     text: '번호',
@@ -108,17 +113,12 @@ export default {
                     value: 'title'
                 },
                 {
-                    text: '내용',
-                    value: 'content'
-                },
-                {
                     text: '작성자',
                     value: 'id'
                 }
             ],
             search: 'id',
             searchWord: '',
-           
         }
     },
     methods: {
@@ -128,11 +128,9 @@ export default {
                 page,
                 itemsPerPage
             } = this.options
-            let link = document.location.href;
-            link = link.slice(26, link.length-3);
             axios({
                     method: 'get',
-                    url: `/api/qna/getproductAll`,
+                    url: `/api/qna/getQnaPage`,
                     params: {
                         page: page,
                         perPage: itemsPerPage,
@@ -149,7 +147,6 @@ export default {
                             params: {
                                 search: this.search,
                                 searchWord: this.searchWord,
-                                type: link
                             }
                         })
                         .then(res => {

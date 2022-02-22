@@ -2,7 +2,7 @@
 <v-container style="min-height: 910px;">
     <v-row justify="center">
         <v-col cols="9">
-            <div class="text-h3">MY BOARD</div>
+            <div class="text-h3">BOARD</div>
         </v-col>
     </v-row>
     <v-row justify="center">
@@ -10,9 +10,15 @@
             <MyPageButton class="mt-0" />
         </v-col>
     </v-row>
-     <v-row justify="center">
+    <v-row justify="center">
         <v-col cols="9">
-            <v-data-table headers="headers"></v-data-table>
+            <MyPageReview class="mt-0" />
+        </v-col>
+    </v-row>
+    <v-divider class="my-5"></v-divider>
+    <v-row justify="center">
+        <v-col cols="9">
+            <MyPageQnA class="mt-0" />
         </v-col>
     </v-row>
 
@@ -21,35 +27,20 @@
 
 <script>
 import MyPageButton from '@/components/MyPageButton.vue'
+import MyPageReview from '@/components/MyPageReview.vue'
+import MyPageQnA from '@/components/MyPageQnA.vue'
 export default {
-      data() {
+    data() {
         return {
-            headers: [
-                {
-                text: '번호',
-                value: 'no',
-                align:'center',
-            },{
-                text: '날짜',
-                value: 'date',
-                align:'center',
-            }, {
-                text: '포인트',
-                value: 'point',
-                align:'center',
-            }, {
-                text: '내용',
-                value: 'content',
-                align:'center',
-            }, ],
+
         }
     },
     components: {
-        MyPageButton
+        MyPageButton,
+        MyPageReview,
+        MyPageQnA
     }
 }
 </script>
 
-<style>
-
-</style>
+<style></style>

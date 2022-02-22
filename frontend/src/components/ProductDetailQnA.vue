@@ -1,37 +1,32 @@
 <template>
 <v-container>
-    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
-        <template #[`item.productno`]="{item}">
-            <div class="text-left">
-                <ProductNameDisplay :productno="item.productno" />
-            </div>
-        </template>
-        <template #[`item.star`]="{item}">
-            <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" length="5" readonly size="10" :value="item.star"></v-rating>
-        </template>
-        <template #[`item.content`]="{item}">
-            <v-row justify="space-between">
-                <v-col>
-                    <div class="text-left">{{ item.content }}</div>
-                </v-col>
-                <v-col cols="auto">
-                    <v-icon @click="updateReview(item.reviewNo)" v-if="admin">mdi-pencil</v-icon>
-                    <v-icon @click="deleteReview(item.reviewNo)" v-if="admin">mdi-delete</v-icon>
-                </v-col>
-            </v-row>
-        </template>
-        <template #[`item.id`]="{item}">
-            <div class="text-left">
-                <HideId :id="item.id" />
-            </div>
-        </template>
-        <template #[`item.regDate`]="{item}">
-            <DateDisplay :regDate="item.regDate" />
-        </template>
-    </v-data-table>
+    <div>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
+            <template #[`item.productno`]="{item}">
+                <div class="text-left">
+                    <ProductNameDisplay :productno="item.productno" />
+                </div>
+            </template>
+            <template #[`item.type`]="{item}">
+                <div class="text-left">
+                    <QnATitleDisplay :type="item.type" />
+                </div>
+            </template>
+            <template #[`item.id`]="{item}">
+                <div class="text-left">
+                    <HideId :id="item.id" />
+                </div>
+            </template>
+            <template #[`item.regDate`]="{item}">
+                <div>
+                    <DateDisplay :regDate="item.regDate" />
+                </div>
+            </template>
+        </v-data-table>
+    </div>
 
     <v-row align="center" justify="space-between">
-        <v-col class="d-flex" cols="8" sm="7" md="6" lg="5" xl="4">
+        <v-col cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
                 <v-col cols="4">
                     <v-select :items="searches" v-model="search"></v-select>
@@ -40,9 +35,13 @@
                     <v-text-field v-model="searchWord"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon @click="getReview">검색</v-btn>
+                    <v-btn icon @click="getQnA">검색</v-btn>
                 </v-col>
             </v-row>
+        </v-col>
+        <v-col cols="auto">
+            <!-- <v-btn :to="`/writePost/product/${productno}`" outlined>글쓰기</v-btn> -->
+            <v-btn :to="`/writePost/product/1`" outlined>글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -52,26 +51,28 @@
 import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
+import QnATitleDisplay from '@/components/QnATitleDisplay.vue'
 import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
 export default {
     components: {
         HideId,
         DateDisplay,
+        QnATitleDisplay,
         ProductNameDisplay,
     },
+    props: ['productno'],
     data() {
         return {
-            admin: true,
             totalContents: 0,
             contents: [],
             options: {},
             loading: true,
             headers: [{
                     text: '번호',
-                    value: 'reviewNo',
+                    value: 'qnaNo',
                     width: '10%',
                     align: 'center',
-                    divider: true
+                    divider: true,
                 },
                 {
                     text: '상품명',
@@ -81,16 +82,9 @@ export default {
                     divider: true
                 },
                 {
-                    text: '별점',
-                    value: 'star',
-                    width: '10%',
-                    align: 'center',
-                    divider: true
-                },
-                {
-                    text: '후기',
-                    value: 'content',
-                    width: '45%',
+                    text: '제목',
+                    value: 'type',
+                    width: '60%',
                     align: 'center',
                     divider: true
                 },
@@ -111,6 +105,13 @@ export default {
             searches: [{
                     text: '상품명',
                     value: 'productname'
+                }, {
+                    text: '제목',
+                    value: 'title'
+                },
+                {
+                    text: '내용',
+                    value: 'content'
                 },
                 {
                     text: '작성자',
@@ -122,7 +123,7 @@ export default {
         }
     },
     methods: {
-        getReview() {
+        getQnA() {
             this.loading = true
             const {
                 page,
@@ -130,12 +131,13 @@ export default {
             } = this.options
             axios({
                     method: 'get',
-                    url: `/api/review/getReview`,
+                    url: `/api/qna/getproductAll`,
                     params: {
                         page: page,
                         perPage: itemsPerPage,
                         search: this.search,
                         searchWord: this.searchWord,
+                        // productNo: this.productNo,
                     }
                 })
                 .then(res => {
@@ -143,10 +145,11 @@ export default {
                     this.loading = false
                     axios({
                             method: 'get',
-                            url: '/api/review/getCount',
+                            url: '/api/qna/getCount',
                             params: {
                                 search: this.search,
                                 searchWord: this.searchWord,
+                                // productNo: this.productNo
                             }
                         })
                         .then(res => {
@@ -154,32 +157,14 @@ export default {
                         })
                 })
         },
-        //deleteReview(num) {
-        //console.log(num);
-        deleteReview() {
-            axios({
-                    method: 'delete',
-                    url: `/api/review/delete`,
-                    params: {
-                        reviewNo: this.reviewNo
-                    }
-                })
-                .then(res => {
-                    this.contents = res.data;
-                    this.loading = false
-                    alert("삭제가 완료되었습니다.")
-                    this.$router.push(`/community/review`);
-                })
+        moveto(item) {
+            this.$router.push(`/qna/${item.qnaNo}`)
         },
-
-        updateReview(num) {
-            this.$router.push(`/updatePost/review/${num}`);
-        }
     },
     watch: {
         options: {
             handler() {
-                this.getReview()
+                this.getQnA()
             },
             deep: true,
         },
@@ -188,4 +173,11 @@ export default {
 </script>
 
 <style scoped>
+table td {
+    border-right: 1px solid #dddddd;
+}
+
+table td:last-child {
+    border-right: none
+}
 </style>

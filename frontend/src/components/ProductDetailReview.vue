@@ -31,7 +31,7 @@
     </v-data-table>
 
     <v-row align="center" justify="space-between">
-        <v-col class="d-flex" cols="8" sm="7" md="6" lg="5" xl="4">
+        <v-col cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
                 <v-col cols="4">
                     <v-select :items="searches" v-model="search"></v-select>
@@ -44,7 +44,54 @@
                 </v-col>
             </v-row>
         </v-col>
+        <v-col cols="auto" class="mr-3">
+            <v-row>
+                <v-dialog v-model="dialog" persistent max-width="600px">
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn outlined v-bind="attrs" v-on="on">
+                            리뷰 작성하기
+                        </v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>
+                            <span class="text-h5">리뷰 작성</span>
+                        </v-card-title>
+                        <v-card-text>
+                            <v-container>
+                                <v-row>
+                                    <v-col cols="12">
+                                        상품 정보
+                                        <ProductDetailDisplay :type="'product'" />
+                                    </v-col>
+                                    <v-col cols="12">
+                                        별점
+                                        <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" hover length="5" size="64" v-model="star"></v-rating>
+                                    </v-col>
+                                    <v-col cols="12">
+                                        리뷰
+                                        <v-textarea counter rows="7" v-model="content" :rules="rules"></v-textarea>
+                                    </v-col>
+                                    <v-col cols="12">
+                                        <v-file-input accept="image/*"></v-file-input>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="blue darken-1" text @click="dialog = false">
+                                Close
+                            </v-btn>
+                            <v-btn color="blue darken-1" text @click="dialog = false">
+                                Save
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+            </v-row>
+        </v-col>
     </v-row>
+
 </v-container>
 </template>
 
@@ -53,19 +100,25 @@ import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
+import ProductDetailDisplay from '@/components/ProductDetailDisplay.vue'
 export default {
     components: {
         HideId,
         DateDisplay,
         ProductNameDisplay,
+        ProductDetailDisplay,
     },
+    props: ['productno'],
     data() {
         return {
             admin: true,
+            dialog: false,
             totalContents: 0,
             contents: [],
             options: {},
             loading: true,
+            star: 5,
+            rules: [v => v.length <= 600 || '600자 이하'],
             headers: [{
                     text: '번호',
                     value: 'reviewNo',
@@ -136,6 +189,7 @@ export default {
                         perPage: itemsPerPage,
                         search: this.search,
                         searchWord: this.searchWord,
+                        // productNo: this.productNo,
                     }
                 })
                 .then(res => {
@@ -147,6 +201,7 @@ export default {
                             params: {
                                 search: this.search,
                                 searchWord: this.searchWord,
+                                // productNo: this.productNo,
                             }
                         })
                         .then(res => {

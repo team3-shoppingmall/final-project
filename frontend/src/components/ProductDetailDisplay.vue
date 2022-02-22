@@ -1,7 +1,7 @@
 <template>
 <div>
     <!-- <span>{{ productname }}</span> -->
-    <span>상품정보</span>
+    <span>product</span>
 </div>
 </template>
 

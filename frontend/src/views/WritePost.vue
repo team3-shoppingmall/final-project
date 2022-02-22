@@ -143,6 +143,11 @@ export default {
                     text: '상품 문의입니다',
                     value: 'product',
                     content: '상품 문의 관련 text',
+                    type: 'product',
+                }, {
+                    text: '상품 문의입니다',
+                    value: 'product',
+                    content: '상품 문의 관련 text',
                     type: 'productQnA',
                 },
                 {
@@ -254,6 +259,7 @@ export default {
             if (this.pageID != 'notice' && this.pageID != 'faq') {
                 if (this.titleSelected == 'default') {
                     alert('제목을 선택해주세요')
+                    return;
                 }
             }
 
@@ -262,17 +268,18 @@ export default {
                 url: `/api/qna/insertqna`,
                 data: {
                     type: this.titleSelected,
-                    originalNo: null,
                     reply: false,
                     content: this.content,
                     id: "user123",
                     secret: this.secret,
-                    image: "",
+                    image: "image1.jpg"
                 }
             }).then((res) => {
-                console.log(res.data, res.status);
-                alert("문의글 등록 완료");
-                this.$router.go(-1);
+                if (res.status == 200) {
+                    console.log(res.data);
+                    alert("문의글이 등록되었습니다.");
+                    this.$router.go(-1);
+                }
             }).catch((err) => {
                 console.log(err);
             })
@@ -301,28 +308,28 @@ export default {
         noticeForm() {
             if (this.pageID != 'notice' && this.pageID != 'faq') {
                 if (this.titleSelected == 'default') {
-                    alert('제목을 선택해주세요')
+                    alert('제목을 선택해주세요');
                 }
             }
+            axios({
+                method: 'post',
+                url: `/api/notice/insertNotice`,
+                data: {
+                    title: this.titleDetail,
+                    content: this.content,
+                    id: "admin123",
+                    image: "",
+                }
+            }).then((res) => {
+                if (res.status == 200) {
+                    console.log(res.data, res.status);
+                    alert("공지사항 등록 완료");
+                    this.$router.go(-1);
+                }
+            }).catch((err) => {
+                console.log(err);
 
-            // axios({
-            //     method: 'post',
-            //     url: /api/notice/insertNotice,
-            //     data: {
-            //         title: "",
-            //         content: "",
-            //         id: "admin123",
-            //         image: "",
-
-            //     }
-            // }).then((res) => {
-            //     console.log(res.data);
-            //     console.log(res.data, res.status);
-            //     alert("공지사항 등록 완료");
-            //     this.$router.go(-1);
-            // }).catch((err) => {
-            //     console.log(err);
-
+            })
             // // notice or faq or qna관련
             // console.log(this.titleSelected);
 
@@ -359,6 +366,37 @@ export default {
                 })
             },
 
+        
+        noticeFormUpdate() {
+            if (this.pageID != 'notice' && this.pageID != 'faq') {
+                if (this.titleSelected == 'default') {
+                    alert('제목을 선택해주세요')
+                }
+            }
+            axios({
+                method: 'patch',
+                url: `/api/notice/updateNotice`,
+                params: {
+                    noticeNo: this.num,
+                    title: this.titleDetail,
+                    content: this.content,
+                    image: "",
+                }
+            }).then((res) => {
+                if (res.status == 200) {
+                    console.log(res.data, res.status);
+                    alert("공지사항 수정 완료");
+                    this.$router.go(-1);
+                }
+            }).catch((err) => {
+                console.log(err);
+            })
+        },
+
+        moveToBefore() {
+            this.$router.go(-1);
+        },
+
         reviewFormUpdate() {
             axios({
                     method: 'patch',
@@ -377,32 +415,50 @@ export default {
                 })
         },
         replyForm() {
+            console.log(this.pageID);
             axios({
                 method: 'post',
-                url: `/api/qna/insertqna`,
+                url: `/api/qna/insertReply`,
                 data: {
-                    type: this.titleSelected,
+                    type: this.pageID + 'Reply',
                     originalNo: this.originalNo,
-                    reply: false,
                     content: this.content,
                     id: "admin",
-                    secret: true,
-                    image: ""
+                    image: "image1.jpg"
                 }
             }).then((res) => {
                 console.log(res.data, res.status);
                 alert("댓글 등록 완료");
-                this.$router.go(-1);
+                this.$router.go(-2);
             }).catch((err) => {
                 console.log(err);
             })
         },
+        faqForm() {
+            axios.post('/api/faq/insertfaq', {
+                    type: this.faqTypeSelected,
+                    title: this.titleDetail,
+                    content: this.content
+                })
+
+                .then((res) => {
+                    console.log(res.data, res.status);
+                    alert("FAQ 등록 완료");
+                    this.$router.go(-1);
+                }).catch((err) => {
+                    console.log(err);
+                })
+
+        },
+
         qnaFormUpdate() {
+
             // this.sendType => 게시글 종류(notice, faq, qna(product, delivery) 등)
 
             //axios status==200 안으로 넣어야 함
             // alert('완료');
             // this.$router.go(-1);
+
             axios({
                 method: 'patch',
                 url: `/api/qna/updateqna`,
@@ -414,16 +470,35 @@ export default {
                     image: ""
                 }
             }).then((res) => {
+                if (res.status == 200) {
+                    console.log(res.data);
+                    alert("수정이 완료되었습니다.");
+                    this.$router.go(-1);
+                }
+            }).catch((err) => {
+                console.log(err);
+            })
+        },
+        //수정기능 완성 x
+        faqFormUpdate() {
+
+            axios({
+                method: 'patch',
+                url: `/api/faq/updatefaq`,
+                params: {
+                    faqNo: this.faqNo,
+                    type: this.faqTypeSelected,
+                    title: this.titleDetail,
+                    content: this.content,
+
+                }
+            }).then((res) => {
                 console.log(res.data, res.status);
                 alert("수정 완료");
                 this.$router.go(-1);
             }).catch((err) => {
                 console.log(err);
             })
-        },
-
-        moveToBefore() {
-            this.$router.go(-1);
         },
     },
 
@@ -439,7 +514,8 @@ export default {
         }
     },
     mounted() {
-           //notice faq review 중 뭔지
+
+        //notice faq review 중 뭔지
         this.pageID = this.$route.params.id;
         //게시글 번호
         this.num = this.$route.params.num;
@@ -462,6 +538,7 @@ export default {
         } else {
             this.currentURL();
         }
+
     }
 }
 </script>

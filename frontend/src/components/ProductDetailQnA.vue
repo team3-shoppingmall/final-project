@@ -40,7 +40,8 @@
             </v-row>
         </v-col>
         <v-col cols="auto">
-            <v-btn :to="'/writePost/productQnA'" outlined>글쓰기</v-btn>
+            <!-- <v-btn :to="`/writePost/product/${productno}`" outlined>글쓰기</v-btn> -->
+            <v-btn :to="`/writePost/product/1`" outlined>글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -59,6 +60,7 @@ export default {
         QnATitleDisplay,
         ProductNameDisplay,
     },
+    props: ['productno'],
     data() {
         return {
             totalContents: 0,
@@ -118,7 +120,6 @@ export default {
             ],
             search: 'id',
             searchWord: '',
-           
         }
     },
     methods: {
@@ -128,8 +129,6 @@ export default {
                 page,
                 itemsPerPage
             } = this.options
-            let link = document.location.href;
-            link = link.slice(26, link.length-3);
             axios({
                     method: 'get',
                     url: `/api/qna/getproductAll`,
@@ -138,6 +137,7 @@ export default {
                         perPage: itemsPerPage,
                         search: this.search,
                         searchWord: this.searchWord,
+                        // productNo: this.productNo,
                     }
                 })
                 .then(res => {
@@ -149,7 +149,7 @@ export default {
                             params: {
                                 search: this.search,
                                 searchWord: this.searchWord,
-                                type: link
+                                // productNo: this.productNo
                             }
                         })
                         .then(res => {

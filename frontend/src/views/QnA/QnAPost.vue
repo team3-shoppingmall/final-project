@@ -97,8 +97,9 @@ export default {
         return {
             pageID: '',
             admin: true,
-            type: 'product',
+            type: '',
             content: '',
+            reply:'',
             image1: '',
             image2: '',
             image3: '',
@@ -109,32 +110,57 @@ export default {
     methods: {
         getQnA() {
             this.pageID = this.$route.params.id;
+            axios({
+                method: 'get',
+                url: `/api/qna/getqnabyqnaNo`,
+                params: {
+                    qnaNo: this.pageID
+                }
+            }).then((res)=>{
+                console.log(res.data);
+                this.content = res.data.content;
+                this.type = res.data.type;
+                this.id = res.data.id;
+                this.reply = res.data.reply;
+            }).catch((err)=>{
+                console.log(err);
+            })
+
         },
         moveToBefore() {
             this.$router.go(-1);
         },
         moveToReply(){
-            this.$router.push(`/replyPost/qna/${this.pageID}`)
+            if(this.reply == true)
+                alert("이미 답변이 등록된 문의글입니다.");
+            else
+                this.$router.push(`/replyPost/${this.type}/${this.pageID}`)
         },
         moveToUpdate() {
-            this.$router.push(`/updatePost/qna/${this.pageID}`)
+            if(this.reply == true)
+                alert("이미 답변이 완료된 문의글이므로 수정하실 수 없습니다.");
+            else
+                this.$router.push(`/updatePost/qna/${this.pageID}`)
         },
         deleteQnA() {
-            console.log(this.pageID);
+            console.log(this.pageID);   
             axios({
                 method: 'delete',
                 url: `/api/qna/deleteqna`,
                 params: {
                     qnaNo: this.pageID
                 }
-            }).then((res)=>{
-                console.log(res.data);
-                alert("삭제 완료");
-                this.$router.go(-1);
+            }).then(res=> {
+                if(res.status == 200){
+                    console.log(res.data);
+                    alert("삭제되었습니다.");
+                    this.$router.go(-1);
+                }
             }).catch((err)=>{
                 console.log(err);
             })
         },
+        
     },
     mounted() {
         this.getQnA();

@@ -72,7 +72,7 @@
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 export default {
@@ -80,10 +80,10 @@ export default {
         HideId,
         DateDisplay,
     },
-    data() {
+    data() { //Vue component에서 사용할 변수들을 선언, data=key:value
         return {
             pageID: '',
-            admin: false,
+            admin: true,
             title: '공지사항 제목',
             content: '',
             image1: '',
@@ -93,7 +93,8 @@ export default {
             image5: '',
         }
     },
-    methods: {
+    methods: {  //Vue component에서 사용할 메서드를 선언, template에서 이벤트로 호출될 수 있음
+                //Router는 Vue component와 웹 경로를 연결해줌
         getNotice() {
             this.pageID = this.$route.params.id;
         },
@@ -105,11 +106,24 @@ export default {
         },
         deleteNotice(){
             console.log(this.pageID);
+            axios({
+                method:'delete',
+                url: `/api/notice/deleteNotice`,
+                params: {
+                    noticeNo: this.pageID
+                }
+            }).then((res) => {
+                console.log(res.data);
+                alert("공지사항 삭제 완료");
+                this.$router.go(-1);
+            }).catch((err) => {
+                console.log(err);
+            })
         },
        
         
     },
-    mounted() {
+    mounted() { //method를 호출하거나 DOM으로 <template>안에 있는 태그를 처리할 때 사용
         this.getNotice();
     }
 }

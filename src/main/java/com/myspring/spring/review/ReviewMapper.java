@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.springframework.http.ResponseEntity;
 
 @Mapper
 public interface ReviewMapper {
@@ -19,8 +18,12 @@ public interface ReviewMapper {
 		
 	//리뷰 전체보기
 	@Select("select * from reviewtable where ${search} like CONCAT('%', #{searchWord}, '%') order by reviewno desc limit #{start}, #{perPage}")
-	public List<ReviewVO> getAllreviews(@Param("start") int start, @Param("perPage") int perPage, 
+	public List<ReviewVO> getAllReviews(@Param("start") int start, @Param("perPage") int perPage, 
 				@Param("search") String search, @Param("searchWord") String searchWord);
+	
+	//리뷰 상세보기
+	@Select("select * from reviewtable where reviewNo = #{reviewNo}")
+	public ReviewVO getReview(int reviewNo);
 	
 	//리뷰 작성
 	@Insert("insert into reviewtable(content, id, image, star) values(#{in.content}, #{in.id}, #{in.image}, #{in.star})")
@@ -31,19 +34,8 @@ public interface ReviewMapper {
 	public int deleteReview(@Param("reviewNo") int reviewNo);
 	
 	//리뷰 수정
-	@Update("update reviewtable set content=#{content}, image=#{image}, star=#{star} where reviewNo = #{reviewNo}")
-	public int updateReview(ReviewVO reviewVO);
-	
-	//리뷰 상세보기
-	@Select("select * from reviewtable where reviewNo = #{reviewNo}")
-	public List<ReviewVO> getFindByReviewNo(int reviewNo);
-	
-	//리뷰검색 by content
-	@Select("select * from reviewtable where content like '%${content}%'")
-	public List<ReviewVO> searchReviewByContent(String content);
-	
-	//리뷰검색 by id
-	@Select("select * from reviewtable where id = #{id}")
-	public List<ReviewVO> searchReviewById(String id);
+	@Update("update reviewtable set content=#{content}, star=#{star} where reviewNo = #{reviewNo}")
+	public int updateReview(@Param("reviewNo") int reviewNo, @Param("content") String content, @Param("star") int star);
+//	@Param("image") String image, 
 
 }

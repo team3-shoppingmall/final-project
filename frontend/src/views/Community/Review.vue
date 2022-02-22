@@ -63,6 +63,7 @@ export default {
         return {
             admin: true,
             totalContents: 0,
+            reviewNo: '',
             contents: [],
             options: {},
             loading: true,
@@ -134,7 +135,7 @@ export default {
                 this.loading = false;
                 axios({
                     method: 'get',
-                    url: '/api/review/getCount',
+                    url: `/api/review/getAllReviews`,
                     params: {
                         search: this.search,
                         searchWord: this.searchWord
@@ -144,21 +145,21 @@ export default {
                 })
             })
         },
-        //deleteReview(num) {
-        //console.log(num);
-        deleteReview() {
+
+        deleteReview(num) {
             axios({
                     method: 'delete',
                     url: `/api/review/delete`,
                     params: {
-                        reviewNo: this.reviewNo
+                        reviewNo: num
                     }
                 })
                 .then(res => {
-                    this.contents = res.data;
-                    this.loading = false
+                    console.log(res.data);
+                    if(res.status == 200) {
                     alert("삭제가 완료되었습니다.")
-                    this.$router.push(`/community/review`);
+                    this.$router.go();
+                    }
                 })
         },
 

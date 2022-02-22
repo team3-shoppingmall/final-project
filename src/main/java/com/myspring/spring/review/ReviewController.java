@@ -28,10 +28,16 @@ public class ReviewController {
 	}
 	
 	//리뷰 전체보기
-	@GetMapping("/getReview")
-	public ResponseEntity<?> getAllreviews(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+	@GetMapping("/getAllReviews")
+	public ResponseEntity<?> getAllReviews(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
 			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-		return reviewService.getAllreviews(page, perPage, search, searchWord);
+		return reviewService.getAllReviews(page, perPage, search, searchWord);
+	}
+	
+	//리뷰 상세보기
+	@GetMapping("/detail")
+	public ResponseEntity<?> getReview(@RequestParam("reviewNo") int reviewNo){
+		return reviewService.getReview(reviewNo);
 	}
 	
 	//리뷰 작성
@@ -48,25 +54,17 @@ public class ReviewController {
 	
 	//리뷰 수정
 	@PatchMapping("/update")
-	public ResponseEntity<?> updateReview(@RequestBody ReviewVO reviewVO) {
-		return reviewService.updateReview(reviewVO);
+	public ResponseEntity<?> updateReview(@RequestParam("reviewNo") int reviewNo, @RequestParam("content") String content, @RequestParam("star") int star) {
+//		@RequestParam("image") String image, 
+		return reviewService.updateReview(reviewNo, content, star);
 	}
 	
 	//리뷰 상세보기
-	@GetMapping("/detail/{reviewNo}")
-	public ResponseEntity<?> getReviewFindByID(@PathVariable("reviewNo") int reviewNo) {
-		return reviewService.getFindByReviewNo(reviewNo);
-	}
-	
-	// 리뷰 검색 by content
-	@GetMapping("/searchByContent")
-	public ResponseEntity<?> searchReviewByContent(@RequestParam("content") String content) {
-		return reviewService.searchReviewByContent(content);
-	}
-	// 리뷰 검색 by id
-	@GetMapping("/searchById")
-	public ResponseEntity<?> searchReviewByid(@RequestParam("id") String id) {
-		return reviewService.searchReviewByid(id);
-	}
+	/*
+	 * @GetMapping("/detail/{reviewNo}") public ResponseEntity<?>
+	 * getReviewFindByID(@PathVariable("reviewNo") int reviewNo) { return
+	 * reviewService.getFindByReviewNo(reviewNo); }
+	 */
+
 	// 리뷰 정렬 by star
 }

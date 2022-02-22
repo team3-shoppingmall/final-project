@@ -1,5 +1,7 @@
 <template>
 <v-container>
+    <v-btn @click="test">테스트</v-btn>
+
     <v-row justify="center">
         <v-col align-self="center" cols="7">
             <div class="text-h3" v-if="originalNo == undefined">글쓰기</div>
@@ -214,7 +216,7 @@ export default {
             titleDetail: '',
             faqTypeSelected: '',
             originalNo: '',
-            star: '',
+            star:'',
             content: '',
             image1: '',
             image2: '',
@@ -349,6 +351,22 @@ export default {
             // alert('완료');
             // this.$router.go(-1);
         },
+        test() {
+            axios({
+                method: 'get',
+                url:`/api/review/detail`,
+                params: {
+                    reviewNo: this.num
+                }
+                }).then((res) => {
+                    if(res.status == 200){
+                    this.content = res.data.content;
+                    this.star = res.data.star;
+                    }
+                })
+            },
+
+        
         noticeFormUpdate() {
             if (this.pageID != 'notice' && this.pageID != 'faq') {
                 if (this.titleSelected == 'default') {
@@ -379,21 +397,21 @@ export default {
             this.$router.go(-1);
         },
 
-        reviewForm() {
+        reviewFormUpdate() {
             axios({
                     method: 'patch',
                     url: `/api/review/update`,
                     params: {
+                        reviewNo: this.num,
                         content: this.content,
-                        image: this.image,
                         star: this.star
                     }
                 })
-                .then(res => {
-                    this.contents = res.data;
-                    this.loading = false
+                .then((res) => {
+                    if(res.status == 200){
                     alert("수정이 완료되었습니다.")
-                    this.$router.push(`/community/review`);
+                    this.$router.go(-1);
+                    }
                 })
         },
         replyForm() {

@@ -19,7 +19,7 @@ public class ReviewVO {
 		public ReviewVO(int reviewNo, int productNo, String content, String id, Date regDate, String image, int star) {
 			super();
 			this.reviewNo = reviewNo;
-			productNo = productNo;
+			this.productNo = productNo;
 			this.content = content;
 			this.id = id;
 			this.regDate = regDate;
@@ -43,7 +43,7 @@ public class ReviewVO {
 
 
 		public void setProductNo(int productNo) {
-			productNo = productNo;
+			this.productNo = productNo;
 		}
 
 

@@ -1,5 +1,7 @@
 <template>
 <v-container>
+    <v-btn @click="test">테스트</v-btn>
+
     <v-row justify="center">
         <v-col align-self="center" cols="7">
             <div class="text-h3" v-if="originalNo == undefined">글쓰기</div>
@@ -9,7 +11,7 @@
                 <v-simple-table>
                     <template slot="default">
                         <tbody>
-                            <tr v-if="originalNo == undefined">
+                            <tr v-if="originalNo == undefined && pageID != 'review'">
                                 <td style="width:10%"> 제목 </td>
                                 <td>
                                     <v-select v-model="titleSelected" :items="titles" v-if="!admin"></v-select>
@@ -20,6 +22,12 @@
                                 <td style="width:10%"> 종류 </td>
                                 <td>
                                     <v-select v-model="faqTypeSelected" :items="faqType"></v-select>
+                                </td>
+                            </tr>
+                            <tr v-if="this.pageID == 'review'">
+                                <td style="width:10%"> 별점 </td>
+                                <td>
+                                    <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" hover length="5" size="64" v-model="star"></v-rating>
                                 </td>
                             </tr>
                             <tr>
@@ -54,7 +62,7 @@
                                     <v-file-input accept="image/*"></v-file-input>
                                 </td>
                             </tr>
-                            <tr v-if="!admin">
+                            <tr v-if="!admin && pageID != 'review'">
                                 <td> 비밀글 </td>
                                 <td>
                                     <v-radio-group v-model="secret" row>
@@ -196,12 +204,14 @@ export default {
                 text: '기타 관련',
                 value: 'etc',
             }, ],
-            rules: [v => v.length <= 600 || 'Max 600 characters'],
+            rules: [v => v.length <= 600 || '600자 이하'],
             num: '',
+            productno: '',
             titleSelected: 'default',
             titleDetail: '',
             faqTypeSelected: '',
             originalNo: '',
+            star:'',
             content: '',
             image1: '',
             image2: '',
@@ -334,21 +344,36 @@ export default {
             // alert('완료');
             // this.$router.go(-1);
         },
-        reviewForm() {
+        test() {
+            axios({
+                method: 'get',
+                url:`/api/review/detail`,
+                params: {
+                    reviewNo: this.num
+                }
+                }).then((res) => {
+                    if(res.status == 200){
+                    this.content = res.data.content;
+                    this.star = res.data.star;
+                    }
+                })
+            },
+
+        reviewFormUpdate() {
             axios({
                     method: 'patch',
                     url: `/api/review/update`,
                     params: {
+                        reviewNo: this.num,
                         content: this.content,
-                        image: this.image,
                         star: this.star
                     }
                 })
-                .then(res => {
-                    this.contents = res.data;
-                    this.loading = false
+                .then((res) => {
+                    if(res.status == 200){
                     alert("수정이 완료되었습니다.")
-                    this.$router.push(`/community/review`);
+                    this.$router.go(-1);
+                    }
                 })
         },
         replyForm() {
@@ -414,13 +439,21 @@ export default {
         }
     },
     mounted() {
-        //notice faq review 중 뭔지
+           //notice faq review 중 뭔지
         this.pageID = this.$route.params.id;
         //게시글 번호
         this.num = this.$route.params.num;
         //qna 원글 번호
         this.originalNo = this.$route.params.original;
+        // 상세 페이지에서 상품 문의 했을 때 상품번호
+        this.productno = this.$route.params.productno;
         if (this.num != '' && this.num != undefined) {
+            if (this.pageID == 'notice' || this.pageID == 'faq') {
+                this.admin = true;
+            } else if (this.pageID == 'review') {
+                this.titleSelected = 'review';
+            }
+
             // 기존 정보 가져와서 넣어주기
             // 만약 sendType이 notice나 faq면 관리자이니 admin true로 변경
         } else if (this.originalNo != '' && this.originalNo != undefined) {

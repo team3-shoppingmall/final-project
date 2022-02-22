@@ -1,9 +1,13 @@
 <template>
-<v-container>
+<v-container  style="min-height: 910px;">
     <v-row justify="center">
         <v-col cols="9">
-            <div class="text-h3 justify-center">MY PAGE</div>
-            <MyPageButton class="mt-0" />
+            <div class="text-h3">MY PAGE</div>
+            <MyPageButton class="mt-6 " />
+        </v-col>
+    </v-row>
+    <v-row justify="center">
+        <v-col cols="9">
             <v-simple-table>
                 <tbody>
                     <tr>
@@ -36,6 +40,7 @@
             </v-simple-table>
         </v-col>
     </v-row>
+
 </v-container>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" @click:row="moveto" disable-sort>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="noticeNo" class="elevation-1" @click:row="moveto" disable-sort>
             <template #[`item.title`]="{item}">
                 <div class="text-left">
                     {{ item.title }}

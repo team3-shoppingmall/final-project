@@ -123,7 +123,7 @@ export default {
             } = this.options;
             axios({
                 method: 'get',
-                url: `/api/review/getReview`,
+                url: `/api/review/getAllReviews`,
                 params: {
                     page: page,
                     perPage: itemsPerPage,
@@ -135,7 +135,7 @@ export default {
                 this.loading = false;
                 axios({
                     method: 'get',
-                    url: `/api/review/getAllReviews`,
+                    url: `/api/review/getCount`,
                     params: {
                         search: this.search,
                         searchWord: this.searchWord

@@ -1,5 +1,8 @@
 <template>
 <span>
+    <span v-if="title == '답변합니다'">
+        <v-icon>mdi-arrow-right-bottom</v-icon>
+    </span>
     {{title}}
 </span>
 </template>
@@ -65,10 +68,10 @@ export default {
     },
     computed: {
         title() {
-            for(let i=0;i<this.titles.length;i++){
-              if(this.type == this.titles[i].value){
-                return this.titles[i].text;
-              }
+            for (let i = 0; i < this.titles.length; i++) {
+                if (this.type == this.titles[i].value) {
+                    return this.titles[i].text;
+                }
             }
             return 'error';
         }

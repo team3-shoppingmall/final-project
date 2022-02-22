@@ -122,13 +122,15 @@ export default {
         deleteQnA() {
             console.log(this.pageID);
             axios({
-                 method: 'delete',
-                    url: `/api/qna/deleteqna`,
-                    params: {
-                       qnaNo: this.pageID,
-                    }
+                method: 'delete',
+                url: `/api/qna/deleteqna`,
+                params: {
+                    qnaNo: this.pageID
+                }
             }).then((res)=>{
                 console.log(res.data);
+                alert("삭제 완료");
+                this.$router.go(-1);
             }).catch((err)=>{
                 console.log(err);
             })

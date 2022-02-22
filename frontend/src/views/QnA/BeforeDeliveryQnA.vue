@@ -95,6 +95,10 @@ export default {
                     value: 'title'
                 },
                 {
+                    text: '내용',
+                    value: 'content'
+                },
+                {
                     text: '작성자',
                     value: 'id'
                 }
@@ -112,7 +116,7 @@ export default {
             } = this.options
             axios({
                     method: 'get',
-                    url: `/api/qna/getQnaPage`,
+                    url: `/api/qna/getbeforedeliveryAll`,
                     params: {
                         page: page,
                         perPage: itemsPerPage,

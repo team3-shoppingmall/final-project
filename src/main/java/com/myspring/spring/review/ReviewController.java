@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,8 +42,14 @@ public class ReviewController {
 	
 	//리뷰 삭제
 	@DeleteMapping("/delete")
-	public ResponseEntity<?> deleteReview(@RequestParam("id") String id) {
-		return reviewService.deleteReview(id);
+	public ResponseEntity<?> deleteReview(@RequestParam("reviewNo") int reviewNo) {
+		return reviewService.deleteReview(reviewNo);
+	}
+	
+	//리뷰 수정
+	@PatchMapping("/update")
+	public ResponseEntity<?> updateReview(@RequestBody ReviewVO reviewVO) {
+		return reviewService.updateReview(reviewVO);
 	}
 	
 	//리뷰 상세보기

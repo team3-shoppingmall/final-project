@@ -1,3 +1,5 @@
+-- drop database if exists springdb;
+-- create database springdb;
 use springdb;
 
 drop table if exists noticetable;

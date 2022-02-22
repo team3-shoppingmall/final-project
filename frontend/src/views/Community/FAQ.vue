@@ -35,8 +35,8 @@
                     <div class="text-left">{{item.title}}</div>
                 </v-col>
                 <v-col cols="auto">
-                    <v-icon @click="updateFAQ(item.noticeNo)">mdi-pencil</v-icon>
-                    <v-icon @click="deleteFAQ(item.noticeNo)">mdi-delete</v-icon>
+                    <v-icon @click="updateFAQ(item.faqNo)">mdi-pencil</v-icon>
+                    <v-icon @click="deleteFAQ(item.faqNo)">mdi-delete</v-icon>
                 </v-col>
             </v-row>
         </template>
@@ -104,14 +104,8 @@ export default {
             this.search = selectedType;
             axios({
                     method: 'get',
-                    url: `/api/notice/getNotice`,
-                    params: {
-                        page: 1,
-                        perPage: 100,
-                        search: 'title',
-                        searchWord: '',
-                        // type: selectedType,
-                    }
+                    url: `/api/faq/get/${selectedType}`,
+                
                 })
                 .then(res => {
                     this.contents = res.data;

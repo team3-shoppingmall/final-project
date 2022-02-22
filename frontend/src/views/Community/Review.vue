@@ -1,21 +1,13 @@
 <template>
 <v-container>
-    <v-data-table
-        :headers="headers"
-        :options.sync="options"
-        :items="contents"
-        :server-items-length="totalContents"
-        :loading="loading"
-        item-key="reviewNo"
-        class="elevation-1"
-        disable-sort="disable-sort">
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
         <template #[`item.productno`]="{item}">
             <div class="text-left">
                 <ProductNameDisplay :productno="item.productno" />
             </div>
         </template>
         <template #[`item.star`]="{item}">
-            <v-rating hover="hover" length="5" readonly="readonly" size="10" :value="item.star"></v-rating>
+            <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" length="5" readonly size="10" :value="item.star"></v-rating>
         </template>
         <template #[`item.content`]="{item}">
             <v-row justify="space-between">
@@ -37,6 +29,7 @@
             <DateDisplay :regDate="item.regDate" />
         </template>
     </v-data-table>
+    
     <v-row align="center" justify="space-between">
         <v-col class="d-flex" cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
@@ -152,7 +145,7 @@ export default {
             })
         },
         //deleteReview(num) {
-            //console.log(num);
+        //console.log(num);
         deleteReview() {
             axios({
                     method: 'delete',

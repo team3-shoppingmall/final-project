@@ -386,6 +386,21 @@ export default {
                 console.log(err);
             })
         },
+        faqForm() {
+            axios.post('/api/faq/insertfaq', {type: this.faqTypeSelected, title: this.titleDetail, content: this.content})
+          
+            
+            .then((res) => {
+                console.log(res.data, res.status);
+                alert("FAQ 등록 완료");
+                this.$router.go(-1);
+            }).catch((err) => {
+                console.log(err);
+            })
+
+           
+        },
+        
         qnaFormUpdate() {
             // this.sendType => 게시글 종류(notice, faq, qna(product, delivery) 등)
 
@@ -408,6 +423,27 @@ export default {
                     alert("수정이 완료되었습니다.");
                     this.$router.go(-1);
                 }
+            }).catch((err) => {
+                console.log(err);
+            })
+        },
+          //수정기능 완성 x
+          faqFormUpdate() {
+        
+            axios({
+                method: 'patch',
+                url: `/api/faq/updatefaq`,
+                params: {
+                    faqNo:this.faqNo,
+                    type: this.faqTypeSelected,
+                    title: this.titleDetail,
+                    content: this.content,
+                  
+                }
+            }).then((res) => {
+                console.log(res.data, res.status);
+                alert("수정 완료");
+                this.$router.go(-1);
             }).catch((err) => {
                 console.log(err);
             })
@@ -454,6 +490,7 @@ export default {
         } else {
             this.currentURL();
         }
+        
     }
 }
 </script>

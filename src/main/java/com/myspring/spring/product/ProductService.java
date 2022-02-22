@@ -16,24 +16,56 @@ public class ProductService {
 		this.productMapper = productMapper;
 	}
 
-	// 멤버 등록
-	public ResponseEntity<?> insertMember(ProductVO member) {
-		productMapper.insertMember(member);
-		return null;
-	}
-
-	// 전체 멤버 조회
-	public ResponseEntity<?> getAllmembers() {
-		List<ProductVO> res = productMapper.getAllMembers();
-		return new ResponseEntity<>(res, HttpStatus.OK);
-	}
-
-	// 아이디로 멤버 조회
-	public ResponseEntity<?> getMember(String id) {
-		ProductVO res = productMapper.getMember(id);
-		if (res != null)
-			return new ResponseEntity<>(res, HttpStatus.OK);
+	// 상품 리스트 조회
+	public ResponseEntity<?> getProductListByType(int page, int perPage, String type1, String type2) {
+		List<ProductVO> res = null;
+		int start = (page - 1) * perPage;
+		if (type2.equals("all")) {
+			res = productMapper.getProductListByType1(start, perPage, type1);
+		} else {
+			res = productMapper.getProductListByTypeAll(start, perPage, type1, type2);
+		}
+		if (res == null)
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
+
+	// 상품 리스트 전체 개수 조회
+	public ResponseEntity<?> getProductCountByType(String type1, String type2) {
+		int res = 0;
+		if (type2.equals("all")) {
+			res = productMapper.getProductCountByType1(type1);
+		} else {
+			res = productMapper.getCountByTypeAll(type1, type2);
+		}
+		if (res == 0)
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
+	// 많이 팔린 상품 조회
+	public ResponseEntity<?> getBestProductListByType(String type1, String type2) {
+		List<ProductVO> res = null;
+		if (type2.equals("all")) {
+			res = productMapper.getBestProductListByType1(type1);
+		} else {
+			res = productMapper.getBestProductListByTypeAll(type1, type2);
+		}
+		if (res == null)
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
+	// 상품 정보 조회
+	public ResponseEntity<?> getProductByNo(int productNo) {
+		ProductVO res = productMapper.getProductByNo(productNo);
+		if (res == null)
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
 }

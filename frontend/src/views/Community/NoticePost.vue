@@ -2,29 +2,23 @@
 <v-container>
     <div class="text-h3">문의</div>
     <v-simple-table>
-        <template slot="default">
+        <template slot="default" v-if="dataLoaded">
             <tbody>
                 <tr>
                     <td style="width:10%"> 제목 </td>
                     <td>
-                        {{title}}
+                        {{notice.title}}
                     </td>
                 </tr>
                 <tr>
                     <td style="width:10%"> 작성자 </td>
                     <td>
-                        <HideId :id="'ididididid'" />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width:10%"> 작성일 </td>
-                    <td>
-                        <DateDisplay :regDate="'2022-02-18T15:00:00.000+00:00'" />
+                        <HideId :id="notice.id" />
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        {{content}}
+                        {{notice.content}}
                     </td>
                 </tr>
                 <tr v-if="image1 != ''">
@@ -74,18 +68,16 @@
 <script>
 import axios from 'axios'
 import HideId from '@/components/HideId.vue'
-import DateDisplay from '@/components/DateDisplay.vue'
 export default {
     components: {
         HideId,
-        DateDisplay,
     },
     data() { //Vue component에서 사용할 변수들을 선언, data=key:value
         return {
+            dataLoaded: true,
             pageID: '',
             admin: true,
-            title: '공지사항 제목',
-            content: '',
+            notice: '',
             image1: '',
             image2: '',
             image3: '',
@@ -93,10 +85,12 @@ export default {
             image5: '',
         }
     },
-    methods: {  //Vue component에서 사용할 메서드를 선언, template에서 이벤트로 호출될 수 있음
-                //Router는 Vue component와 웹 경로를 연결해줌
+    methods: { //Vue component에서 사용할 메서드를 선언, template에서 이벤트로 호출될 수 있음
+        //Router는 Vue component와 웹 경로를 연결해줌
         getNotice() {
             this.pageID = this.$route.params.id;
+
+            // this.dataLoaded = true;
         },
         moveToBefore() {
             this.$router.go(-1);
@@ -104,10 +98,10 @@ export default {
         moveToUpdate() {
             this.$router.push(`/updatePost/notice/${this.pageID}`)
         },
-        deleteNotice(){
+        deleteNotice() {
             console.log(this.pageID);
             axios({
-                method:'delete',
+                method: 'delete',
                 url: `/api/notice/deleteNotice`,
                 params: {
                     noticeNo: this.pageID
@@ -120,8 +114,7 @@ export default {
                 console.log(err);
             })
         },
-       
-        
+
     },
     mounted() { //method를 호출하거나 DOM으로 <template>안에 있는 태그를 처리할 때 사용
         this.getNotice();

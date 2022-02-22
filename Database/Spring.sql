@@ -183,7 +183,7 @@ values('tester',1,1,'그레이지','S',1,38000,'피치베이지','유저','01098
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, amount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
 values('tester2',1,2,'소프트민트','M',1,38000,'credit','유저2','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, amount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester2',2,2,'피치베이지',null,2,59800,'credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('tester2',2,2,'피치베이지',null,4,59800,'credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 -- 포인트 내역
 insert into pointtable(id, point) values ('tester',-2000);
 insert into pointtable(id, point) values ('tester',500);
@@ -221,10 +221,10 @@ insert into noticetable(title, content, id, image) values("test3", "content3", "
 insert into noticetable(title, content, id, image) values("test3", "content3", "admin31", "test3.png");
 insert into noticetable(title, content, id, image) values("test3", "content3", "admin31", "test3.png");
 -- 자주 묻는 질문
-insert into faqtable(type, title, content) values('product', '자주 묻는 질문 제목입니다', '자주 묻는 질문 내용입니다');
-insert into faqtable(type, title, content) values('delivery', '자주 묻는 질문 제목입니다2', '자주 묻는 질문 내용입니다2');
-insert into faqtable(type, title, content) values('return', '자주 묻는 질문 제목입니다3', '자주 묻는 질문 내용입니다3');
-insert into faqtable(type, title, content) values('etc', '자주 묻는 질문 제목입니다4', '자주 묻는 질문 내용입니다4');
+insert into faqtable(type, title, content) values('product', '상품 관련 자주 묻는 질문 제목입니다', '상품 관련 자주 묻는 질문 내용입니다');
+insert into faqtable(type, title, content) values('delivery', '배송 관련 자주 묻는 질문 제목입니다', '배송 관련 자주 묻는 질문 내용입니다');
+insert into faqtable(type, title, content) values('return', '교환/반품 관련 자주 묻는 질문 제목입니다', '교환/반품 관련 자주 묻는 질문 내용입니다');
+insert into faqtable(type, title, content) values('etc', '기타 관련 자주 묻는 질문 제목입니다', '기타 관련 자주 묻는 질문 내용입니다');
 -- 후기
 insert into reviewtable(productno, content, id, image, star) values(1,'후기내용1','tester', 'image1.jpg','5');
 insert into reviewtable(productno, content, id, image, star) values(1,'후기내용2','tester2', 'image2.jpg','4');
@@ -268,3 +268,7 @@ select * from bannertable;
 
 -- 글 번호는 최신순이지만 답글이 원글 밑에 오도록 함
 -- select * from qnatable order by originalno desc, qnano asc;
+
+-- 많이 팔린 순으로 정렬
+-- select productno, sum(amount) from ordertable group by productno order by sum(amount) desc;
+-- select * from producttable left join ordertable on producttable.productno = ordertable.productno where type1 = 'skirt' group by ordertable.productno order by sum(ordertable.amount) desc limit 0,8;

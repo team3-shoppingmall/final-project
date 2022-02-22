@@ -51,10 +51,6 @@
 
 <script>
 import axios from 'axios'
-// import {
-//     mdiAccount ,
-//     mdiDelete,
-// } from '@mdi/js'
 import FAQTypeDisplay from '@/components/FAQTypeDisplay.vue'
 export default {
     components: {

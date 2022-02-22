@@ -2,9 +2,9 @@
 <v-container>
     <div>
         <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
-            <template #[`item.productno`]="{item}">
+            <template #[`item.productNo`]="{item}">
                 <div class="text-left">
-                    <ProductNameDisplay :productno="item.productno" />
+                    <ProductNameDisplay :productNo="item.productNo" />
                 </div>
             </template>
             <template #[`item.type`]="{item}">
@@ -74,15 +74,15 @@ export default {
                 },
                 {
                     text: '상품명',
-                    value: 'productno',
-                    width: '10%',
+                    value: 'productNo',
+                    width: '20%',
                     align: 'center',
                     divider: true
                 },
                 {
                     text: '제목',
                     value: 'type',
-                    width: '60%',
+                    width: '45%',
                     align: 'center',
                     divider: true
                 },
@@ -96,7 +96,7 @@ export default {
                 {
                     text: '작성일',
                     value: 'regDate',
-                    width: '10%',
+                    width: '15%',
                     align: 'center',
                 },
             ],
@@ -118,7 +118,7 @@ export default {
             ],
             search: 'id',
             searchWord: '',
-           
+
         }
     },
     methods: {
@@ -129,7 +129,7 @@ export default {
                 itemsPerPage
             } = this.options
             let link = document.location.href;
-            link = link.slice(26, link.length-3);
+            link = link.slice(26, link.length - 3);
             axios({
                     method: 'get',
                     url: `/api/qna/getproductAll`,
@@ -142,7 +142,6 @@ export default {
                 })
                 .then(res => {
                     this.contents = res.data;
-                    this.loading = false
                     axios({
                             method: 'get',
                             url: '/api/qna/getCount',
@@ -154,6 +153,7 @@ export default {
                         })
                         .then(res => {
                             this.totalContents = res.data;
+                            this.loading = false
                         })
                 })
         },

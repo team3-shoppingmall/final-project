@@ -118,6 +118,7 @@ export default {
             ],
             search: 'id',
             searchWord: '',
+           
         }
     },
     methods: {
@@ -127,6 +128,8 @@ export default {
                 page,
                 itemsPerPage
             } = this.options
+            let link = document.location.href;
+            link = link.slice(26, link.length-3);
             axios({
                     method: 'get',
                     url: `/api/qna/getproductAll`,
@@ -146,6 +149,7 @@ export default {
                             params: {
                                 search: this.search,
                                 searchWord: this.searchWord,
+                                type: link
                             }
                         })
                         .then(res => {

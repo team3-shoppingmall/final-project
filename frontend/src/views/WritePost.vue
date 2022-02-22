@@ -266,17 +266,18 @@ export default {
                 url: `/api/qna/insertqna`,
                 data: {
                     type: this.titleSelected,
-                    originalNo: null,
                     reply: false,
                     content: this.content,
                     id: "user123",
                     secret: this.secret,
-                    image: "",
+                    image: "image1.jpg"
                 }
             }).then((res) => {
-                console.log(res.data, res.status);
-                alert("문의글 등록 완료");
-                this.$router.go(-1);
+               if(res.status == 200){
+                    console.log(res.data);
+                    alert("문의글이 등록되었습니다.");
+                    this.$router.go(-1);
+                }
             }).catch((err) => {
                 console.log(err);
             })
@@ -366,22 +367,21 @@ export default {
                 })
         },
         replyForm() {
+            console.log(this.pageID);
             axios({
                 method: 'post',
-                url: `/api/qna/insertqna`,
+                url: `/api/qna/insertReply`,
                 data: {
-                    type: this.titleSelected,
+                    type: this.pageID + 'Reply',
                     originalNo: this.originalNo,
-                    reply: false,
                     content: this.content,
                     id: "admin",
-                    secret: true,
-                    image: ""
+                    image: "image1.jpg"
                 }
             }).then((res) => {
                 console.log(res.data, res.status);
                 alert("댓글 등록 완료");
-                this.$router.go(-1);
+                this.$router.go(-2);
             }).catch((err) => {
                 console.log(err);
             })
@@ -403,9 +403,11 @@ export default {
                     image: ""
                 }
             }).then((res) => {
-                console.log(res.data, res.status);
-                alert("수정 완료");
-                this.$router.go(-1);
+                if(res.status == 200){
+                    console.log(res.data);
+                    alert("수정이 완료되었습니다.");
+                    this.$router.go(-1);
+                }
             }).catch((err) => {
                 console.log(err);
             })
@@ -428,6 +430,7 @@ export default {
         }
     },
     mounted() {
+       
         //notice faq review 중 뭔지
         this.pageID = this.$route.params.id;
         //게시글 번호

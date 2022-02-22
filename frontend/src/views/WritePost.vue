@@ -9,7 +9,7 @@
                 <v-simple-table>
                     <template slot="default">
                         <tbody>
-                            <tr v-if="originalNo == undefined">
+                            <tr v-if="originalNo == undefined && pageID != 'review'">
                                 <td style="width:10%"> 제목 </td>
                                 <td>
                                     <v-select v-model="titleSelected" :items="titles" v-if="!admin"></v-select>
@@ -20,6 +20,12 @@
                                 <td style="width:10%"> 종류 </td>
                                 <td>
                                     <v-select v-model="faqTypeSelected" :items="faqType"></v-select>
+                                </td>
+                            </tr>
+                            <tr v-if="this.pageID == 'review'">
+                                <td style="width:10%"> 별점 </td>
+                                <td>
+                                    <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" hover length="5" size="64" v-model="star"></v-rating>
                                 </td>
                             </tr>
                             <tr>
@@ -54,7 +60,7 @@
                                     <v-file-input accept="image/*"></v-file-input>
                                 </td>
                             </tr>
-                            <tr v-if="!admin">
+                            <tr v-if="!admin && pageID != 'review'">
                                 <td> 비밀글 </td>
                                 <td>
                                     <v-radio-group v-model="secret" row>
@@ -135,6 +141,11 @@ export default {
                     text: '상품 문의입니다',
                     value: 'product',
                     content: '상품 문의 관련 text',
+                    type: 'product',
+                }, {
+                    text: '상품 문의입니다',
+                    value: 'product',
+                    content: '상품 문의 관련 text',
                     type: 'productQnA',
                 },
                 {
@@ -196,12 +207,14 @@ export default {
                 text: '기타 관련',
                 value: 'etc',
             }, ],
-            rules: [v => v.length <= 600 || 'Max 600 characters'],
+            rules: [v => v.length <= 600 || '600자 이하'],
             num: '',
+            productno: '',
             titleSelected: 'default',
             titleDetail: '',
             faqTypeSelected: '',
             originalNo: '',
+            star: '',
             content: '',
             image1: '',
             image2: '',
@@ -244,6 +257,7 @@ export default {
             if (this.pageID != 'notice' && this.pageID != 'faq') {
                 if (this.titleSelected == 'default') {
                     alert('제목을 선택해주세요')
+                    return;
                 }
             }
 

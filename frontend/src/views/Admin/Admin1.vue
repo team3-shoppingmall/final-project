@@ -1,7 +1,6 @@
 <template>
 <v-container fluid>
     <v-row>
- 
         <v-col cols="2" align-self="center">
             <v-select :items="searchType" v-model="searchTypeNo" hide-details></v-select>
         </v-col>

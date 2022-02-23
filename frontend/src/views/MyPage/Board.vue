@@ -1,15 +1,5 @@
 <template>
-<v-container style="min-height: 910px;">
-    <v-row justify="center">
-        <v-col cols="9">
-            <div class="text-h3">BOARD</div>
-        </v-col>
-    </v-row>
-    <v-row justify="center">
-        <v-col cols="9">
-            <MyPageButton class="mt-0" />
-        </v-col>
-    </v-row>
+<v-container fluid>
     <v-row justify="center">
         <v-col cols="9">
             <MyPageReview class="mt-0" />
@@ -26,7 +16,6 @@
 </template>
 
 <script>
-import MyPageButton from '@/components/MyPageButton.vue'
 import MyPageReview from '@/components/MyPageReview.vue'
 import MyPageQnA from '@/components/MyPageQnA.vue'
 export default {
@@ -36,7 +25,6 @@ export default {
         }
     },
     components: {
-        MyPageButton,
         MyPageReview,
         MyPageQnA
     }

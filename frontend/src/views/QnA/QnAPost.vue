@@ -29,7 +29,7 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                {{qna.content}}
+                                <div v-html="qna.content"></div>
                             </td>
                         </tr>
                         <tr v-if="image1 != ''">

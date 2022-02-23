@@ -48,11 +48,10 @@
     <div v-html="editorData"></div>
     <div>
         {{editorData}}
-         {{editor}}
     </div>
     <v-row>
         <v-col>
-            <ckeditor :editor="editor" v-model="editorData" :config="editorConfig" ></ckeditor>
+            <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
         </v-col>
     </v-row>
 </v-container>
@@ -85,8 +84,7 @@ export default {
             // plugins: [Base64UploadAdapter],
         };
     },
-    methods: {
-    }
+    methods: {}
 }
 </script>
 

@@ -1,15 +1,5 @@
 <template>
-<v-container style="min-height: 910px;">
-    <v-row justify="center">
-        <v-col cols="9">
-            <div class="text-h3">MODIFY PROFILE</div>
-        </v-col>
-    </v-row>
-    <v-row justify="center">
-        <v-col cols="9">
-            <MyPageButton class="mt-0"/>
-        </v-col>
-    </v-row>
+<v-container fluid>
     <v-row justify="center">
         <v-col cols="9">
             <v-divider class="my-5"></v-divider>
@@ -142,10 +132,8 @@
 </template>
 
 <script>
-import MyPageButton from '@/components/MyPageButton.vue'
 export default {
     components: {
-        MyPageButton
     }
 }
 </script>

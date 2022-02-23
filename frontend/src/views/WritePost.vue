@@ -368,7 +368,6 @@ export default {
                 }).then((res) => {
                     this.titleSelected = res.data.type;
                     this.content = res.data.content;
-
                 }).catch((err) => {
                     console.log(err);
                 })

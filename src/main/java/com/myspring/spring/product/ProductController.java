@@ -24,19 +24,22 @@ public class ProductController {
 	// 상품 리스트 조회
 	@GetMapping(value = "/getProductListByType")
 	public ResponseEntity<?> getProductListByType(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
-			@RequestParam("type1") String type1, @RequestParam(value="type2", required = false) String type2,
-			@RequestParam("searchWord") String searchWord, @RequestParam("minPrice") int minPrice,
-			@RequestParam("maxPrice") int maxPrice, @RequestParam("searchOrder") String searchOrder) {
+			@RequestParam(value = "type1", required = false) String type1,
+			@RequestParam(value = "type2", required = false) String type2,
+			@RequestParam(value = "searchWord", required = false) String searchWord,
+			@RequestParam("minPrice") int minPrice, @RequestParam("maxPrice") int maxPrice,
+			@RequestParam(value = "searchOrder", required = false) String searchOrder) {
 		return productService.getProductListByType(page, perPage, type1, type2, searchWord, minPrice, maxPrice,
 				searchOrder);
 	}
 
 	// 전체 개수 가져오기
 	@GetMapping("/getProductCountByType")
-	public ResponseEntity<?> getProductCountByType(@RequestParam("type1") String type1,
-			@RequestParam("type2") String type2, @RequestParam("searchWord") String searchWord,
+	public ResponseEntity<?> getProductCountByType(@RequestParam(value = "type1", required = false) String type1,
+			@RequestParam(value = "type2", required = false) String type2,
+			@RequestParam(value = "searchWord", required = false) String searchWord,
 			@RequestParam("minPrice") int minPrice, @RequestParam("maxPrice") int maxPrice,
-			@RequestParam("searchOrder") String searchOrder) {
+			@RequestParam(value = "searchOrder", required = false) String searchOrder) {
 		return productService.getProductCountByType(type1, type2, searchWord, minPrice, maxPrice, searchOrder);
 	}
 

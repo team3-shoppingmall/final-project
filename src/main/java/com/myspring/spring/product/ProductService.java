@@ -19,14 +19,6 @@ public class ProductService {
 	// 상품 리스트 조회
 	public ResponseEntity<?> getProductListByType(int page, int perPage, String type1, String type2, String searchWord,
 			int minPrice, int maxPrice, String searchOrder) {
-		System.out.println(page);
-		System.out.println(perPage);
-		System.out.println(type1);
-		System.out.println(type2);
-		System.out.println(searchWord);
-		System.out.println(minPrice);
-		System.out.println(maxPrice);
-		System.out.println(searchOrder);
 		int start = (page - 1) * perPage;
 		List<ProductVO> res = productMapper.getProductListByType(start, perPage, type1, type2, searchWord, minPrice,
 				maxPrice, searchOrder);

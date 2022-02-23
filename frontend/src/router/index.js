@@ -145,7 +145,7 @@ const routes = [
                 component: WritePost,
             },
             {
-                path: '/writePost/:id/:productno',
+                path: '/writePost/:id/:productNo',
                 name: 'writeProductPost',
                 component: WritePost,
             },

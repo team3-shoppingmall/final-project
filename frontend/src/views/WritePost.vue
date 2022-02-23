@@ -1,6 +1,6 @@
 <template>
 <v-container>
-    <v-btn @click="test">테스트</v-btn>
+    <v-btn @click="getReview" style="display: none;">getReview</v-btn>
 
     <v-row justify="center">
         <v-col align-self="center" cols="7">
@@ -356,7 +356,7 @@ export default {
             // alert('완료');
             // this.$router.go(-1);
         },
-        test() {
+        getReview() {
             axios({
                 method: 'get',
                 url: `/api/review/detail`,
@@ -364,10 +364,8 @@ export default {
                     reviewNo: this.num
                 }
             }).then((res) => {
-                if (res.status == 200) {
-                    this.content = res.data.content;
-                    this.star = res.data.star;
-                }
+                this.content = res.data.content;
+                this.star = res.data.star;
             })
         },
 
@@ -411,11 +409,12 @@ export default {
                         star: this.star
                     }
                 })
-                .then((res) => {
-                    if (res.status == 200) {
-                        alert("수정이 완료되었습니다.")
-                        this.$router.go(-1);
-                    }
+                .then(() => {
+                    alert("수정이 완료되었습니다.")
+                    this.$router.go(-1);
+                }).catch((err) => {
+                    alert('수정에 실패하셨습니다.');
+                    console.log(err);
                 })
         },
         replyForm() {
@@ -569,6 +568,8 @@ export default {
         } else {
             this.currentURL();
         }
+        //수정 페이지에 리뷰 정보 넣어주기
+        this.getReview();
 
     }
 }

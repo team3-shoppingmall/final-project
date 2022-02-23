@@ -75,7 +75,7 @@ public interface QnaMapper {
 	int insertQna(@Param("in") QnaVO qnaVO);
 	
 	// 댓글 등록
-	@Insert("insert into qnatable(type, originalNo, content, id, image) values(#{in.type}, #{in.originalNo}, #{in.content}, #{in.id}, #{in.image})")
+	@Insert("insert into qnatable(type, originalNo, content, id, secret, image) values(#{in.type}, #{in.originalNo}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
 	int insertReply(@Param("in") QnaVO qnaVO);
 	
 	// 댓글 등록시 reply 업데이트

@@ -1,6 +1,6 @@
 <template>
 <v-container>
-    <div class="text-h3">문의</div>
+    <!-- <div class="text-h3">공지사항</div> -->
     <v-simple-table>
         <template slot="default" v-if="dataLoaded">
             <tbody>
@@ -91,6 +91,22 @@ export default {
             this.pageID = this.$route.params.id;
 
             // this.dataLoaded = true;
+            axios({
+                method: 'get',
+                url: `/api/notice/list/{noticeNo}`,
+                params: {
+                    noticeNo: this.pageID
+                }
+            }).then((res) => {
+                if (res.status == 200) {
+                    // this.content = res.data;
+                    this.dataLoaded = true;
+                } else {
+                    console.log(res.status);
+                }
+            }).catch((err) => {
+                console.log(err);
+            })
         },
         moveToBefore() {
             this.$router.go(-1);

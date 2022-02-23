@@ -33,10 +33,12 @@
                             <tr>
                                 <td> 내용 </td>
                                 <td>
-                                    <!-- <v-textarea counter rows="11" v-model="content" :rules="rules"></v-textarea> -->
                                     <v-row>
                                         <v-col>
-                                            <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
+                                            <div v-html="content" style="border:1px black solid"></div>
+                                            <div style="border:1px black solid">{{content}}</div>
+                                            <div style="border:1px black solid">{{content.length}}</div>
+                                            <ckeditor :editor="editor" v-model="content" :config="editorConfig"></ckeditor>
                                         </v-col>
                                     </v-row>
                                 </td>
@@ -84,12 +86,12 @@
                     <v-col cols="auto" v-if="originalNo != undefined">
                         <v-btn @click="replyForm" outlined>답변 작성</v-btn>
                     </v-col>
-                    <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
+                    <!-- <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
                         <v-btn @click="form" outlined>작성</v-btn>
                     </v-col>
                     <v-col cols="auto" v-if="num != '' && num != undefined">
                         <v-btn @click="formUpdate" outlined>수정</v-btn>
-                    </v-col>
+                    </v-col> -->
 
                     <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
                         <v-btn @click="noticeForm" outlined>Notice 작성</v-btn>
@@ -134,79 +136,72 @@
 import axios from 'axios'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 export default {
+
     data() {
         return {
-            testImage: '',
             editor: ClassicEditor,
-            editorData: '<p>Content of the editor.</p>',
             editorConfig: {
                 ckfinder: {},
             },
             pageID: '',
             admin: false,
             titles: [{
-                    text: '제목을 선택해주세요',
-                    value: 'default',
-                    content: '',
-                    type: 'all',
-                    disabled: true,
-                }, {
-                    text: '상품 문의입니다',
-                    value: 'product',
-                    content: '상품 문의 관련 text',
-                    type: 'product',
-                }, {
-                    text: '상품 문의입니다',
-                    value: 'product',
-                    content: '상품 문의 관련 text',
-                    type: 'productQnA',
-                },
-                {
-                    text: '일반 문의입니다',
-                    value: 'general',
-                    content: '일반 문의 관련 text',
-                    type: 'productQnA',
-                }, {
-                    text: '배송 문의입니다',
-                    value: 'delivery',
-                    content: '배송 문의 관련 text',
-                    type: 'deliveryQnA',
-                }, {
-                    text: '주문 취소 문의입니다',
-                    value: 'cancel',
-                    content: '주문 취소 문의 관련 text',
-                    type: 'beforeDeliveryQnA',
-                },
-                {
-                    text: '상품 변경 문의입니다',
-                    value: 'change',
-                    content: '상품 변경 문의 관련 text',
-                    type: 'beforeDeliveryQnA',
-                },
-                {
-                    text: '주소 변경 문의입니다',
-                    value: 'changeAddress',
-                    content: '주소 변경 문의 관련 text',
-                    type: 'beforeDeliveryQnA',
-                }, {
-                    text: '반품 문의입니다',
-                    value: 'return',
-                    content: '반품 문의 관련 text',
-                    type: 'afterDeliveryQnA',
-                },
-                {
-                    text: '교환 문의입니다',
-                    value: 'exchange',
-                    content: '교환 문의 관련 text',
-                    type: 'afterDeliveryQnA',
-                },
-                {
-                    text: '불량 상품/오배송 문의입니다',
-                    value: 'error',
-                    content: '불량 상품/오배송 문의 관련 text',
-                    type: 'afterDeliveryQnA',
-                },
-            ],
+                text: '제목을 선택해주세요',
+                value: 'default',
+                content: '',
+                type: 'all',
+                disabled: true,
+            }, {
+                text: '상품 문의입니다',
+                value: 'product',
+                content: '<p>상품 문의 관련 text</p>',
+                type: 'product',
+            }, {
+                text: '상품 문의입니다',
+                value: 'product',
+                content: '<p>상품 문의 관련 text</p>',
+                type: 'productQnA',
+            }, {
+                text: '일반 문의입니다',
+                value: 'general',
+                content: '<p>일반 문의 관련 text</p>',
+                type: 'productQnA',
+            }, {
+                text: '배송 문의입니다',
+                value: 'delivery',
+                content: '<p>배송 문의 관련 text</p>',
+                type: 'deliveryQnA',
+            }, {
+                text: '주문 취소 문의입니다',
+                value: 'cancel',
+                content: '<p>주문 취소 문의 관련 text</p>',
+                type: 'beforeDeliveryQnA',
+            }, {
+                text: '상품 변경 문의입니다',
+                value: 'change',
+                content: '<p>상품 변경 문의 관련 text</p>',
+                type: 'beforeDeliveryQnA',
+            }, {
+                text: '주소 변경 문의입니다',
+                value: 'changeAddress',
+                content: '<p>주소 변경 문의 관련 text</p>',
+                type: 'beforeDeliveryQnA',
+            }, {
+                text: '반품 문의입니다',
+                value: 'return',
+                content: '<p>반품 문의 관련 text</p>',
+                type: 'afterDeliveryQnA',
+            }, {
+                text: '교환 문의입니다',
+                value: 'exchange',
+                content: '<p>교환 문의 관련 text</p>',
+                type: 'afterDeliveryQnA',
+            }, {
+                text: '불량 상품/오배송 문의입니다',
+                value: 'error',
+                content: '<p>불량 상품/오배송 문의 관련 text</p>',
+                type: 'afterDeliveryQnA',
+            }, ],
             faqType: [{
                 text: '상품 관련',
                 value: 'product',
@@ -220,7 +215,6 @@ export default {
                 text: '기타 관련',
                 value: 'etc',
             }, ],
-            rules: [v => v.length <= 600 || '600자 이하'],
             num: '',
             productno: '',
             titleSelected: 'default',
@@ -317,11 +311,11 @@ export default {
             // this.$router.go(-1);
         },
         noticeForm() {
-            if (this.pageID != 'notice' && this.pageID != 'faq') {
-                if (this.titleSelected == 'default') {
-                    alert('제목을 선택해주세요');
-                }
-            }
+            // if (this.pageID != 'notice' && this.pageID != 'faq') {
+            //     if (this.titleSelected == 'default') {
+            //         alert('제목을 선택해주세요');
+            //     }
+            // }
             axios({
                 method: 'post',
                 url: `/api/notice/insertNotice`,
@@ -378,11 +372,11 @@ export default {
         },
 
         noticeFormUpdate() {
-            if (this.pageID != 'notice' && this.pageID != 'faq') {
-                if (this.titleSelected == 'default') {
-                    alert('제목을 선택해주세요')
-                }
-            }
+            // if (this.pageID != 'notice' && this.pageID != 'faq') {
+            //     if (this.titleSelected == 'default') {
+            //         alert('제목을 선택해주세요')
+            //     }
+            // }
             axios({
                 method: 'patch',
                 url: `/api/notice/updateNotice`,
@@ -452,15 +446,35 @@ export default {
                 })
 
                 .then((res) => {
-                    console.log(res.data, res.status);
-                    alert("FAQ 등록 완료");
-                    this.$router.go(-1);
+                    if (res.status == 200) {
+                        console.log(res.data, res.status);
+                        alert("FAQ 등록 완료");
+                        this.$router.go(-1);
+                    }
                 }).catch((err) => {
                     console.log(err);
                 })
 
         },
+        faqFormUpdate() {
+            axios({
+                    method: 'patch',
+                    url: `/api/faq/updatefaq`,
+                    params: {
+                        faqNo: this.num,
+                        type: this.faqTypeSelected,
+                        title: this.titleDetail,
+                        content: this.content,
 
+                    }
+                })
+                .then((res) => {
+                    if (res.status == 200) {
+                        alert("수정이 완료되었습니다.")
+                        this.$router.go(-1);
+                    }
+                })
+        },
         qnaFormUpdate() {
 
             // this.sendType => 게시글 종류(notice, faq, qna(product, delivery) 등)
@@ -489,7 +503,7 @@ export default {
                 console.log(err);
             })
         },
-        //수정기능 완성 x
+        /* 수정기능 완성 x
         faqFormUpdate() {
 
             axios({
@@ -509,7 +523,7 @@ export default {
             }).catch((err) => {
                 console.log(err);
             })
-        },
+        }, */
     },
 
     watch: {
@@ -519,6 +533,13 @@ export default {
                     if (this.titleSelected == this.titles[i].value) {
                         this.content = this.titles[i].content;
                     }
+                }
+            }
+        },
+        content: {
+            handler() {
+                if (this.content.length > 2000) {
+                    alert('2000자까지 가능합니다');
                 }
             }
         }

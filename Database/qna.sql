@@ -21,9 +21,10 @@ insert into qnatable(type, originalNo, reply, content, id, image) values('produc
 insert into qnatable(type, originalNo, reply, content, id, image) values('product', last_insert_id()+1, true, 'content1', 'user1','image1.jpg');
 insert into qnatable(type, originalNo, content, id, image) values('productReply', 3, 'content1', 'user1','image1.jpg');
 insert into qnatable(type, originalNo, content, id, image) values('productReply', 4, 'content1', 'user1','image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, image) values('product', last_insert_id()+1, true, 'content1', 'user1','image1.jpg');
+insert into qnatable(type, originalNo, reply, content, id, image) values('product', lnoticetableast_insert_id()+1, true, 'content1', 'user1','image1.jpg');
 insert into qnatable(type, originalNo, reply, content, id, image) values('product', last_insert_id()+1, true, 'content1', 'user1','image1.jpg');
 
 commit;
 
 select * from qnatable order by qnaNo desc;
+

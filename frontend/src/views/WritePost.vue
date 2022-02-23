@@ -501,13 +501,12 @@ export default {
                     image: ""
                 }
             }).then((res) => {
-                if (res.status == 200) {
-                    console.log(res.data);
-                    alert("수정이 완료되었습니다.");
-                    this.$router.go(-1);
-                }
+                console.log(res.data);
+                alert("수정이 완료되었습니다.");
+                this.$router.go(-1);
             }).catch((err) => {
                 console.log(err);
+                alert("수정에 실패했습니다.");
             })
         },
         setContent(target) {

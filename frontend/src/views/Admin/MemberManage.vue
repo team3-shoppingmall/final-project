@@ -108,7 +108,7 @@ export default {
     methods: {
         getAllMembers() {
             axios
-                .get('/api/member/getAllMembers')
+                .get('/api/member/getMemberAll')
                 .then(res => {
                     this.items = res.data;
                 })
@@ -140,6 +140,16 @@ export default {
                 first = tel.substr(0, 3);
                 second = tel.substr(3, 4);
                 third = tel.substr(7, 4);
+                return `${first}-${second}-${third}`;
+            } else if (tel.substr(0, 2) == '02' && tel.length == 10) {
+                first = tel.substr(0, 2);
+                second = tel.substr(2, 4);
+                third = tel.substr(6, 4);
+                return `${first}-${second}-${third}`;
+            } else if (tel.substr(0, 2) == '02' && tel.length == 9) {
+                first = tel.substr(0, 2);
+                second = tel.substr(2, 3);
+                third = tel.substr(5, 4);
                 return `${first}-${second}-${third}`;
             } else if (tel.length == 10) {
                 first = tel.substr(0, 3);

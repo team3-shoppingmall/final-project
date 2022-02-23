@@ -50,7 +50,7 @@ export default {
             items: [{
                     title: '상품 관리',
                     icon: 'mdi-view-dashboard',
-                    to: '/admin/admin1'
+                    to: '/admin/productManage'
                 },
                 {
                     title: '상품 등록',
@@ -75,7 +75,7 @@ export default {
                    {
                     title: '회원 관리',
                     icon: 'mdi-help-box',
-                    to: '/admin/admin6'
+                    to: '/admin/memberManage'
                 },
             ],
 

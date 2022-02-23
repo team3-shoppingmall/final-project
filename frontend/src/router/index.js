@@ -38,12 +38,12 @@ import SignIn from '../views/SignIn.vue'
 import SignUp from '../views/SignUp.vue'
 
 import Admin from '@/layouts/Admin/Index.vue'
-import Admin_Child1 from '@/views/Admin/Admin1.vue'
+import ProductManage from '@/views/Admin/ProductManage.vue'
 import Admin_Child2 from '@/views/Admin/Admin2.vue'
 import Admin_Child3 from '@/views/Admin/Admin3.vue'
 import Admin_Child4 from '@/views/Admin/Admin4.vue'
 import Admin_Child5 from '@/views/Admin/Admin5.vue'
-import Admin_Child6 from '@/views/Admin/Admin6.vue'
+import MemberManage from '@/views/Admin/MemberManage.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -219,9 +219,9 @@ const routes = [
         component: Admin,
         children:[
             {
-                path: 'admin1',
-                name: 'Admin1',
-                component: Admin_Child1,
+                path: 'productManage',
+                name: 'ProductManage',
+                component: ProductManage,
             },
             {
                 path: 'admin2',
@@ -244,9 +244,9 @@ const routes = [
                 component: Admin_Child5,
             },
             {
-                path: 'admin6',
-                name: 'Admin6',
-                component: Admin_Child6,
+                path: 'memberManage',
+                name: 'MemberManage',
+                component: MemberManage,
             }
         ]
     },

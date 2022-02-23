@@ -10,7 +10,7 @@
             </v-col>
         </v-row>
     </v-app-bar>
-    <v-navigation-drawer app :value="visible" >
+    <v-navigation-drawer app v-model="visible" >
         <v-list-item>
             <v-list-item-content class="pa-2">
                 <v-list-item-title class="text-h6">
@@ -71,6 +71,11 @@ export default {
                     title: '배너 관리',
                     icon: 'mdi-help-box',
                     to: '/admin/admin5'
+                },
+                   {
+                    title: '회원 관리',
+                    icon: 'mdi-help-box',
+                    to: '/admin/admin6'
                 },
             ],
 

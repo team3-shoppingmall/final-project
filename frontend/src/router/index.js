@@ -11,6 +11,7 @@ import Payment from '../views/Payment.vue'
 import Question from '../views/Question.vue'
 
 import MyPage from '../views/MyPage.vue'
+import MyPageHome from '../views/MyPage/MyPageHome.vue'
 import Order from '../views/MyPage/Order.vue'
 import Profile from '../views/MyPage/Profile.vue'
 import Wishlist from '../views/MyPage/Wishlist.vue'
@@ -42,6 +43,7 @@ import Admin_Child2 from '@/views/Admin/Admin2.vue'
 import Admin_Child3 from '@/views/Admin/Admin3.vue'
 import Admin_Child4 from '@/views/Admin/Admin4.vue'
 import Admin_Child5 from '@/views/Admin/Admin5.vue'
+import Admin_Child6 from '@/views/Admin/Admin6.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -78,7 +80,39 @@ const routes = [
             }, {
                 path: '/myPage',
                 name: 'MyPage',
-                component: MyPage
+                component: MyPage,
+                children:[
+                    {
+                        path: 'home',
+                        name: 'MyPageHome',
+                        component: MyPageHome
+                    },
+                    {
+                        path: 'order',
+                        name: 'Order',
+                        component: Order
+                    },
+                    {
+                        path: 'profile',
+                        name: 'Profile',
+                        component: Profile
+                    },
+                    {
+                        path: 'wishlist',
+                        name: 'Wishlist',
+                        component: Wishlist
+                    },
+                    {
+                        path: 'point',
+                        name: 'Point',
+                        component: Point
+                    },
+                    {
+                        path: 'board',
+                        name: 'Board',
+                        component: Board
+                    },
+                ]
             }, {
                 path: '/community',
                 name: 'Community',
@@ -161,30 +195,6 @@ const routes = [
                 path: '/question',
                 name: 'Question',
                 component: Question
-            }, {
-                path: '/order',
-                name: 'Order',
-                component: Order
-            },
-            {
-                path: '/profile',
-                name: 'Profile',
-                component: Profile
-            },
-            {
-                path: '/wishlist',
-                name: 'Wishlist',
-                component: Wishlist
-            },
-            {
-                path: '/point',
-                name: 'Point',
-                component: Point
-            },
-            {
-                path: '/board',
-                name: 'Board',
-                component: Board
             },
         ]
     }, {
@@ -232,6 +242,11 @@ const routes = [
                 path: 'admin5',
                 name: 'Admin5',
                 component: Admin_Child5,
+            },
+            {
+                path: 'admin6',
+                name: 'Admin6',
+                component: Admin_Child6,
             }
         ]
     },

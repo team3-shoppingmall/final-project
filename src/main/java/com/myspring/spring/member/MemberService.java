@@ -15,6 +15,7 @@ public class MemberService {
 	public MemberService(MemberMapper memberMapper) {
 		this.memberMapper = memberMapper;
 	}
+
 	// 멤버 등록
 	public ResponseEntity<?> insertMember(MemberVO member) {
 		memberMapper.insertMember(member);
@@ -22,17 +23,18 @@ public class MemberService {
 	}
 
 	// 전체 멤버 조회
-	public ResponseEntity<?> getAllmembers() {
+	public ResponseEntity<?> getAllMembers() {
 		List<MemberVO> res = memberMapper.getAllMembers();
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 	// 아이디로 멤버 조회
-	public ResponseEntity<?> getMember(String id) {
-		MemberVO res = memberMapper.getMember(id);
+	public ResponseEntity<?> getMembers(String condition, Object param) {
+		List<MemberVO> res = memberMapper.getMembers(condition, param);
 		if (res != null)
 			return new ResponseEntity<>(res, HttpStatus.OK);
 		else
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+
 }

@@ -37,8 +37,8 @@ public class NoticeService {
 	}
 
 	// 공지사항 게시물 보기
-	public ResponseEntity<?> getNoticeFindByID(NoticeVO noticeVO) {
-		 NoticeVO res = noticeMapper.getNoticeFindByID(noticeVO);
+	public ResponseEntity<?> getNoticeFindByID(NoticeVO noticeNo) {
+		 NoticeVO res = noticeMapper.getNoticeFindByID(noticeNo);
 		 
 		 if (res == null)
 			 return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -20,7 +20,9 @@
     <v-data-table :headers="headers" :options.sync="options" :items="contents" item-key="faqNo" hide-default-footer="hide-default-footer" :loading="loading" disable-sort="disable-sort" show-expand="show-expand" :single-expand="true" :expanded.sync="expanded" class="elevation-1" @click:row="(item, slot) => slot.expand(!slot.isExpanded)">
         <template v-slot:expanded-item="{ headers, item }">
             <td :colspan="headers.length">
-                {{ item.content }}
+                 <div v-html="item.content" ></div>
+                <!-- {{ item.content }} -->
+                
             </td>
         </template>
         <template #[`item.type`]="{item}">

@@ -51,5 +51,5 @@ public class FaqVO {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	
+
 }

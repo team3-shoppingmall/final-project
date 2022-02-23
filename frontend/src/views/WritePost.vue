@@ -1,6 +1,7 @@
 <template>
 <v-container>
-    <v-btn @click="test">테스트</v-btn>
+    <v-btn @click="getReview" style="display: none;">getReview</v-btn>
+    <v-btn @click="getQnA" style="display: none;">getQnA</v-btn>
 
     {{titleSelected}}
     <v-row justify="center">
@@ -353,34 +354,30 @@ export default {
             // alert('완료');
             // this.$router.go(-1);
         },
-        test() {
-            if (this.pageID == 'qna') {
-                axios({
-                    method: 'get',
-                    url: `/api/qna/getqnabyqnaNo`,
-                    params: {
-                        qnaNo: this.num
-                    }
-                }).then((res) => {
-                    this.titleSelected = res.data.type;
-                    this.content = res.data.content;
-                }).catch((err) => {
-                    console.log(err);
-                })
-            } else if (this.pageID == 'review') {
-                axios({
-                    method: 'get',
-                    url: `/api/review/detail`,
-                    params: {
-                        reviewNo: this.num
-                    }
-                }).then((res) => {
-                    if (res.status == 200) {
-                        this.content = res.data.content;
-                        this.star = res.data.star;
-                    }
-                })
-            }
+        getReview() {
+            axios({
+                method: 'get',
+                url: `/api/review/detail`,
+                params: {
+                    reviewNo: this.num
+                }
+            }).then((res) => {
+                this.content = res.data.content;
+                this.star = res.data.star;
+            })
+        getQnA() {
+            axios({
+                method: 'get',
+                url: `/api/qna/getqnabyqnaNo`,
+                params: {
+                    qnaNo: this.num
+                }
+            }).then((res) => {
+                this.titleSelected = res.data.type;
+                this.content = res.data.content;
+            }).catch((err) => {
+                console.log(err);
+            })
         },
 
         noticeFormUpdate() {
@@ -421,11 +418,12 @@ export default {
                         star: this.star
                     }
                 })
-                .then((res) => {
-                    if (res.status == 200) {
-                        alert("수정이 완료되었습니다.")
-                        this.$router.go(-1);
-                    }
+                .then(() => {
+                    alert("수정이 완료되었습니다.")
+                    this.$router.go(-1);
+                }).catch((err) => {
+                    alert('수정에 실패하셨습니다.');
+                    console.log(err);
                 })
         },
         replyForm() {
@@ -585,7 +583,9 @@ export default {
         } else {
             this.currentURL();
         }
-        this.test();
+        //수정 페이지에 리뷰 정보 넣어주기
+        this.getReview();
+        this.getQnA();
     }
 }
 </script>

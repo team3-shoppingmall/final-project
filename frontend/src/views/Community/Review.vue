@@ -12,7 +12,7 @@
         <template #[`item.content`]="{item}">
             <v-row justify="space-between">
                 <v-col>
-                    <div class="text-left">{{ item.content }}</div>
+                    <div v-html="item.content" class="text-left"></div>
                 </v-col>
                 <v-col cols="auto">
                     <v-icon @click="updateReview(item.reviewNo)" v-if="admin">mdi-pencil</v-icon>

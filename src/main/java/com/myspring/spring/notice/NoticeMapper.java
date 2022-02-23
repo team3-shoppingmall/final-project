@@ -28,8 +28,7 @@ public interface NoticeMapper {
 	public NoticeVO getNoticeFindByID(int noticeNo);
 
 	// 공지사항 게시물 작성
-	@Insert("insert into noticetable(title, content, id, image) "
-				+ "values(#{in.title}, #{in.content}, #{in.id}, #{in.image})")
+	@Insert("insert into noticetable(title, content, id, image) values(#{in.title}, #{in.content}, #{in.id}, #{in.image})")
 	public int insertNotice(@Param("in") NoticeVO noticeVO);
 
 	// 공지사항 수정

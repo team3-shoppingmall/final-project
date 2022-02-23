@@ -94,8 +94,8 @@ export default {
         getFAQ(selectedType) {
             this.loading = true
             this.search = selectedType;
-            this.expanded = [],
-                axios({
+            this.expanded = [];
+            axios({
                     method: 'get',
                     url: `/api/faq/get/${selectedType}`,
 

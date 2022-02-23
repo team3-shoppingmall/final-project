@@ -18,7 +18,7 @@ create table membertable(
 );
 
 insert into membertable(id,password,name,tel,email,zipcode,addr1,addr2,authority) 
-values('admin','admin','admin','01012345678','admin@admin.com','zipcode','서울시 동대문구 이문로12길 62-5','addr2','ROLE_ADMIN');
+values('admin','admin','admin','01012345678','sunshine4437@gmail.com','zipcode','부산광역시 강서구 녹산산단382로14번가길 29번지(송정동)','addr2','ROLE_ADMIN');
 commit;
 select * from membertable;
 select * from membertable where point like '%0%';

@@ -1,10 +1,10 @@
 <template>
 <v-container fluid="fluid">
-    <v-row>
+    <v-row justify="center">
         <v-col cols="2" align-self="center">
             <v-select :items="searchType" v-model="condition" hide-details="hide-details"></v-select>
         </v-col>
-        <v-col cols="4" align-self="center">
+        <v-col cols="3" align-self="center">
             <v-text-field hide-details="hide-details" v-model="value" @keyup.enter="searchMember"></v-text-field>
         </v-col>
         <v-col cols="auto" align-self="center">

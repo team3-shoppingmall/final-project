@@ -9,31 +9,20 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BasketService {
-	private BasketMapper productMapper;
+	private BasketMapper basketMapper;
 
 	@Autowired
-	public BasketService(BasketMapper productMapper) {
-		this.productMapper = productMapper;
+	public BasketService(BasketMapper basketMapper) {
+		this.basketMapper = basketMapper;
 	}
 
-	// 멤버 등록
-	public ResponseEntity<?> insertMember(BasketVO member) {
-		productMapper.insertMember(member);
-		return null;
-	}
-
-	// 전체 멤버 조회
-	public ResponseEntity<?> getAllmembers() {
-		List<BasketVO> res = productMapper.getAllMembers();
-		return new ResponseEntity<>(res, HttpStatus.OK);
-	}
-
-	// 아이디로 멤버 조회
-	public ResponseEntity<?> getMember(String id) {
-		BasketVO res = productMapper.getMember(id);
-		if (res != null)
-			return new ResponseEntity<>(res, HttpStatus.OK);
-		else
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	// 장바구니 추가
+	public ResponseEntity<?> insertBakset(List<BasketVO> basketList) {
+		for (BasketVO basket : basketList) {
+			int res = basketMapper.insertBakset(basket);
+			if (res == 0)
+				return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

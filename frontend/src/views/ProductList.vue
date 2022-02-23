@@ -116,46 +116,48 @@ export default {
         },
         getProductList() {
             axios({
-                methods: 'get',
-                url: `/api/product/getBestProductList`,
+                method: 'get',
+                url: `/api/product/getBestProductListByType`,
                 params: {
                     type1: this.mainCategory,
                     type2: this.selectedCategory
                 }
             }).then(res => {
-                if (res.status == 200) {
-                    this.bestProducts = res.data;
-                } else {
-                    console.log(res.status);
-                }
+                this.bestProducts = res.data;
             }).catch((err) => {
                 console.log(err);
             })
             axios({
-                methods: 'get',
-                url: `/api/product/getProductList`,
+                method: 'get',
+                url: `/api/product/getProductListByType`,
                 params: {
                     page: this.page,
                     perPage: this.itemsPerPage,
                     type1: this.mainCategory,
-                    type2: this.selectedCategory
+                    type2: this.selectedCategory,
+                    searchWord: '',
+                    minPrice: 0,
+                    maxPrice: 99999999,
+                    searchOrder: '',
                 }
             }).then(res => {
-                if (res.status == 200) {
-                    this.products = res.data;
-                    axios({
-                        methods: 'get',
-                        url: `/api/product/getProductCount`,
-                        params: {
-                            type1: this.mainCategory,
-                            type2: this.selectedCategory
-                        }
-                    }).then(res => {
-                        this.pageLength = Math.ceil(res.data / this.page);
-                    })
-                } else {
-                    console.log(res.status);
-                }
+                this.products = res.data;
+                axios({
+                    method: 'get',
+                    url: `/api/product/getProductCountByType`,
+                    params: {
+                        type1: this.mainCategory,
+                        type2: this.selectedCategory,
+                        searchWord: '',
+                        minPrice: 0,
+                        maxPrice: 99999999,
+                        searchOrder: '',
+                    }
+                }).then(res => {
+                    this.pageLength = Math.ceil(res.data / this.page);
+                }).catch((err) => {
+                    console.log(err);
+                })
             }).catch((err) => {
                 console.log(err);
             })

@@ -23,8 +23,8 @@ public class MemberService {
 	}
 
 	// 전체 멤버 조회
-	public ResponseEntity<?> getAllMembers() {
-		List<MemberVO> res = memberMapper.getAllMembers();
+	public ResponseEntity<?> getMemberAll() {
+		List<MemberVO> res = memberMapper.getMemberAll();
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 

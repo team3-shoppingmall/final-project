@@ -13,29 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/wishList")
 public class WishListController {
-	private WishListService productService;
+	private WishListService wishListService;
 
 	@Autowired
-	public WishListController(WishListService productService) {
-		this.productService = productService;
+	public WishListController(WishListService wishListService) {
+		this.wishListService = wishListService;
 	}
-	
-	// 멤버 등록
+
+	// 관심 상품 추가
 	@PostMapping(value = "/insert")
-	public ResponseEntity<?> insertMember(@RequestBody WishListVO member) {
-		productService.insertMember(member);
-		return new ResponseEntity<>(HttpStatus.OK);
+	public ResponseEntity<?> insertWishList(@RequestBody WishListVO wishList) {
+		return wishListService.insertWishList(wishList);
 	}
-	
-	// 전체 멤버 조회
-	@GetMapping(value = "/getAllmembers")
-	public ResponseEntity<?> getAllmembers() {
-		return 	productService.getAllmembers();
-	}
-	
-	// 아이디로 멤버 조회
-	@GetMapping(value = "/getMember/{id}")
-	public ResponseEntity<?> getMember(@PathVariable("id") String id) {
-		return 	productService.getMember(id);
-	}
+
 }

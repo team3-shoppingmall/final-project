@@ -43,19 +43,19 @@ END$$
 DELIMITER ;
 
 CREATE TABLE producttable(
-	PRODUCTNO INT PRIMARY KEY AUTO_INCREMENT,
-	PRODUCTNAME VARCHAR(200) NOT NULL,
-	TYPE1 VARCHAR(50) NOT NULL,
-	TYPE2 VARCHAR(50) NOT NULL,
-	IMAGENAME VARCHAR(100) NOT NULL,
-	PRICE INT NOT NULL,
-	DISCOUNT INT NOT NULL,
-	COLOR VARCHAR(1000),
-	SIZE VARCHAR(1000),
-	AMOUNT INT NOT NULL,
+   PRODUCTNO INT PRIMARY KEY AUTO_INCREMENT,
+   PRODUCTNAME VARCHAR(200) NOT NULL,
+   TYPE1 VARCHAR(50) NOT NULL,
+   TYPE2 VARCHAR(50) NOT NULL,
+   IMAGENAME VARCHAR(100) NOT NULL,
+   PRICE INT NOT NULL,
+   DISCOUNT INT NOT NULL,
+   COLOR VARCHAR(1000),
+   SIZE VARCHAR(1000),
+   AMOUNT INT NOT NULL,
     REGDATE TIMESTAMP DEFAULT (current_timestamp),
-	DETAILIMAGENAME VARCHAR(2000) NOT NULL,
-	ONSALE BOOLEAN DEFAULT FALSE
+   DETAILIMAGENAME VARCHAR(2000) NOT NULL,
+   ONSALE BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE baskettable (
@@ -64,46 +64,50 @@ CREATE TABLE baskettable (
     PRODUCTNO INT NOT NULL,
     SELECTEDCOLOR VARCHAR(100),
     SELECTEDSIZE VARCHAR(100),
-    AMOUNT INT NOT NULL,
-    CONSTRAINT basket_fk_id FOREIGN KEY (ID)
-        REFERENCES membertable (ID),
-    CONSTRAINT basket_fk_productno FOREIGN KEY (PRODUCTNO)
-        REFERENCES producttable (PRODUCTNO)
+    AMOUNT INT NOT NULL
+--     CONSTRAINT basket_fk_id FOREIGN KEY (ID)
+--         REFERENCES membertable (ID),
+--     CONSTRAINT basket_fk_productno FOREIGN KEY (PRODUCTNO)
+--         REFERENCES producttable (PRODUCTNO)
 );
 
 CREATE TABLE wishlisttable (
-    WISHLISTIDX BIGINT PRIMARY KEY AUTO_INCREMENT,
     ID VARCHAR(50) NOT NULL,
-    PRODUCTNO INT NOT NULL
+    PRODUCTNO INT NOT NULL,
+    CONSTRAINT primary_wishlist PRIMARY KEY (ID, PRODUCTNO)
+--     CONSTRAINT wishList_fk_id FOREIGN KEY (ID)
+--         REFERENCES membertable (ID),
+--     CONSTRAINT wishList_fk_productno FOREIGN KEY (PRODUCTNO)
+--         REFERENCES producttable (PRODUCTNO)
 );
 
 CREATE TABLE ordertable (
-	ORDERIDX BIGINT PRIMARY KEY AUTO_INCREMENT,
-	ID VARCHAR(50) NOT NULL,
-	PRODUCTNO INT NOT NULL,
-	ORDERNO BIGINT,
-	SELECTEDCOLOR VARCHAR(100),
-	SELECTEDSIZE VARCHAR(100),
-	AMOUNT INT NOT NULL,
-	TOTALPRICE INT NOT NULL,
-	ORDERDATE TIMESTAMP DEFAULT (current_timestamp),
-	STATE VARCHAR(20) DEFAULT '결제 완료',
-	ORDERMETHOD VARCHAR(40) NOT NULL,
-	NAME VARCHAR(50) NOT NULL,
-	TEL VARCHAR(11) NOT NULL,
-	ZIPCODE VARCHAR(5) NOT NULL,
-	ADDRESS VARCHAR(200) NOT NULL,
-	DETAILADDR VARCHAR(50) NOT NULL,
-    CONSTRAINT order_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID),
-    CONSTRAINT order_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
+   ORDERIDX BIGINT PRIMARY KEY AUTO_INCREMENT,
+   ID VARCHAR(50) NOT NULL,
+   PRODUCTNO INT NOT NULL,
+   ORDERNO BIGINT,
+   SELECTEDCOLOR VARCHAR(100),
+   SELECTEDSIZE VARCHAR(100),
+   AMOUNT INT NOT NULL,
+   TOTALPRICE INT NOT NULL,
+   ORDERDATE TIMESTAMP DEFAULT (current_timestamp),
+   STATE VARCHAR(20) DEFAULT '결제 완료',
+   ORDERMETHOD VARCHAR(40) NOT NULL,
+   NAME VARCHAR(50) NOT NULL,
+   TEL VARCHAR(11) NOT NULL,
+   ZIPCODE VARCHAR(5) NOT NULL,
+   ADDRESS VARCHAR(200) NOT NULL,
+   DETAILADDR VARCHAR(50) NOT NULL
+--     CONSTRAINT order_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID),
+--     CONSTRAINT order_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
 );
 
 CREATE TABLE pointtable (
     NUM BIGINT PRIMARY KEY AUTO_INCREMENT,
     ID VARCHAR(50) NOT NULL,
     POINT INT NOT NULL,
-	POINTDATE TIMESTAMP DEFAULT (current_timestamp),
-    CONSTRAINT point_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
+   POINTDATE TIMESTAMP DEFAULT (current_timestamp)
+--     CONSTRAINT point_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
 );
 
 DELIMITER $$
@@ -132,19 +136,19 @@ CREATE TABLE faqtable (
 );
 
 CREATE TABLE reviewTable(
-	REVIEWNO BIGINT PRIMARY KEY AUTO_INCREMENT,
-	PRODUCTNO INT NOT NULL,
+   REVIEWNO BIGINT PRIMARY KEY AUTO_INCREMENT,
+   PRODUCTNO INT NOT NULL,
     CONTENT VARCHAR(600) NOT NULL,
-	id VARCHAR(50) NOT NULL,
+   id VARCHAR(50) NOT NULL,
     REGDATE TIMESTAMP DEFAULT (current_timestamp),
-	IMAGE VARCHAR(100),
-	STAR INT NOT NULL,
-    CONSTRAINT review_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
+   IMAGE VARCHAR(100),
+   STAR INT NOT NULL
+--     CONSTRAINT review_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
 );
 
 CREATE TABLE qnatable(
-	QNANO BIGINT PRIMARY KEY AUTO_INCREMENT,
-	PRODUCTNO INT,
+   QNANO BIGINT PRIMARY KEY AUTO_INCREMENT,
+   PRODUCTNO INT,
     TYPE VARCHAR(200) NOT NULL,
     ORIGINALNO BIGINT,
     REPLY BOOLEAN DEFAULT FALSE,
@@ -163,7 +167,7 @@ CREATE TABLE bannertable (
 
 -- insert data
 -- 회원
-insert into membertable values('admin','Asdqwe123','관리자','0212345678','spring@gmail.com','12345','서울 강남구 테헤란로 212 (멀티캠퍼스)','2층 201호',false,null,'ROLE_ADMIN');
+insert into membertable values('admin','admin','관리자','0212345678','spring@gmail.com','12345','서울 강남구 테헤란로 212 (멀티캠퍼스)','2층 201호',false,null,'ROLE_ADMIN');
 insert into membertable values('tester','Asdqwe123','유저','01098765432','user@gmail.com','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호',false,null,'ROLE_USER');
 insert into membertable values('tester2','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 -- 상품
@@ -259,7 +263,7 @@ insert into qnatable(type, originalNo, reply, content, id, secret, image) values
 insert into qnatable(type, originalNo, reply, content, id, secret, image) values('cancel', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
 insert into qnatable(type, originalNo, reply, content, id, secret, image) values('exchange', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
 -- 배너
-insert into bannertable(image, link) values('test1.jpg','testlin1k');
+insert into bannertable(image, link) values('test1.jpg','testlink1');
 insert into bannertable(image, link) values('test2.jpg','testlink2');
 
 commit;

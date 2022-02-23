@@ -1,6 +1,6 @@
 <template>
 <v-container fluid>
-    <v-row>
+     <v-row justify="center">
         <v-col align-self="center" cols="auto">
             <v-menu ref="menu1" v-model="menu1" :close-on-content-click="false" :return-value.sync="date1" transition="scale-transition" offset-y="offset-y" min-width="auto">
                 <template v-slot:activator="{ on, attrs }">
@@ -33,7 +33,7 @@
                 </v-date-picker>
             </v-menu>
         </v-col>
-        <v-col align-self="center">
+        <v-col align-self="center" cols="auto">
             <v-btn class="primary">조회하기</v-btn>
         </v-col>
     </v-row>

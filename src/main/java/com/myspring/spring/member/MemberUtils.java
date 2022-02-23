@@ -8,9 +8,10 @@ public class MemberUtils {
 			{
 				SELECT("*");
 				FROM("membertable");
-				WHERE(condition +" like "+ "'%" + param + "%'");
+				WHERE(condition + " like " + "'%" + param + "%'");
 			}
 		};
+
 		System.out.println(sql.toString());
 		return sql.toString();
 	}

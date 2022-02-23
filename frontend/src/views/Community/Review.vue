@@ -1,21 +1,13 @@
 <template>
 <v-container>
-    <v-data-table
-        :headers="headers"
-        :options.sync="options"
-        :items="contents"
-        :server-items-length="totalContents"
-        :loading="loading"
-        item-key="reviewNo"
-        class="elevation-1"
-        disable-sort="disable-sort">
-        <template #[`item.productno`]="{item}">
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
+        <template #[`item.productNo`]="{item}">
             <div class="text-left">
-                <ProductNameDisplay :productno="item.productno" />
+                <ProductNameDisplay :productNo="item.productNo" />
             </div>
         </template>
         <template #[`item.star`]="{item}">
-            <v-rating hover="hover" length="5" readonly="readonly" size="10" :value="item.star"></v-rating>
+            <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" length="5" readonly size="10" :value="item.star"></v-rating>
         </template>
         <template #[`item.content`]="{item}">
             <v-row justify="space-between">
@@ -37,6 +29,7 @@
             <DateDisplay :regDate="item.regDate" />
         </template>
     </v-data-table>
+
     <v-row align="center" justify="space-between">
         <v-col class="d-flex" cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
@@ -70,6 +63,7 @@ export default {
         return {
             admin: true,
             totalContents: 0,
+            reviewNo: '',
             contents: [],
             options: {},
             loading: true,
@@ -81,7 +75,7 @@ export default {
                 divider: true
             }, {
                 text: '상품명',
-                value: 'productno',
+                value: 'productNo',
                 width: '10%',
                 align: 'center',
                 divider: true
@@ -129,7 +123,7 @@ export default {
             } = this.options;
             axios({
                 method: 'get',
-                url: `/api/review/getReview`,
+                url: `/api/review/getAllReviews`,
                 params: {
                     page: page,
                     perPage: itemsPerPage,
@@ -138,34 +132,34 @@ export default {
                 }
             }).then(res => {
                 this.contents = res.data;
-                this.loading = false;
                 axios({
                     method: 'get',
-                    url: '/api/review/getCount',
+                    url: `/api/review/getCount`,
                     params: {
                         search: this.search,
                         searchWord: this.searchWord
                     }
                 }).then(res => {
                     this.totalContents = res.data;
+                    this.loading = false;
                 })
             })
         },
-        //deleteReview(num) {
-            //console.log(num);
-        deleteReview() {
+
+        deleteReview(num) {
             axios({
                     method: 'delete',
                     url: `/api/review/delete`,
                     params: {
-                        reviewNo: this.reviewNo
+                        reviewNo: num
                     }
                 })
                 .then(res => {
-                    this.contents = res.data;
-                    this.loading = false
-                    alert("삭제가 완료되었습니다.")
-                    this.$router.push(`/community/review`);
+                    console.log(res.data);
+                    if (res.status == 200) {
+                        alert("삭제가 완료되었습니다.")
+                        this.$router.go();
+                    }
                 })
         },
 

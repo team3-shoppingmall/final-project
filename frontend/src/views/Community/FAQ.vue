@@ -51,10 +51,6 @@
 
 <script>
 import axios from 'axios'
-// import {
-//     mdiAccount ,
-//     mdiDelete,
-// } from '@mdi/js'
 import FAQTypeDisplay from '@/components/FAQTypeDisplay.vue'
 export default {
     components: {
@@ -110,6 +106,7 @@ export default {
                 .then(res => {
                     this.contents = res.data;
                     this.loading = false
+                    
                 })
         },
         colorPicker(put) {
@@ -118,11 +115,26 @@ export default {
             }
         },
         deleteFAQ(num) {
-            console.log(num);
+            axios({ 
+                method: 'delete',
+                url:`/api/faq/deletefaq`,
+                params: {
+                    faqNo: num
+                }
+            })
+            .then(res => {
+                this.contents = res.data;
+                this.loading = false
+                alert("삭제가 완료되었습니다.")
+                this.$router.push(`/community/faq`);
+            })
+        
         },
+        
         updateFAQ(num) {
             this.$router.push(`/updatePost/faq/${num}`);
-        }
+           
+        } 
     },
     watch: {
         options: {

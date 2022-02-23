@@ -1,5 +1,7 @@
 <template>
 <v-container>
+    <v-btn @click="test">테스트</v-btn>
+
     <v-row justify="center">
         <v-col align-self="center" cols="7">
             <div class="text-h3" v-if="originalNo == undefined">글쓰기</div>
@@ -9,7 +11,7 @@
                 <v-simple-table>
                     <template slot="default">
                         <tbody>
-                            <tr v-if="originalNo == undefined">
+                            <tr v-if="originalNo == undefined && pageID != 'review'">
                                 <td style="width:10%"> 제목 </td>
                                 <td>
                                     <v-select v-model="titleSelected" :items="titles" v-if="!admin"></v-select>
@@ -20,6 +22,12 @@
                                 <td style="width:10%"> 종류 </td>
                                 <td>
                                     <v-select v-model="faqTypeSelected" :items="faqType"></v-select>
+                                </td>
+                            </tr>
+                            <tr v-if="this.pageID == 'review'">
+                                <td style="width:10%"> 별점 </td>
+                                <td>
+                                    <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" hover length="5" size="64" v-model="star"></v-rating>
                                 </td>
                             </tr>
                             <tr>
@@ -54,7 +62,7 @@
                                     <v-file-input accept="image/*"></v-file-input>
                                 </td>
                             </tr>
-                            <tr v-if="!admin">
+                            <tr v-if="!admin && pageID != 'review'">
                                 <td> 비밀글 </td>
                                 <td>
                                     <v-radio-group v-model="secret" row>
@@ -135,6 +143,11 @@ export default {
                     text: '상품 문의입니다',
                     value: 'product',
                     content: '상품 문의 관련 text',
+                    type: 'product',
+                }, {
+                    text: '상품 문의입니다',
+                    value: 'product',
+                    content: '상품 문의 관련 text',
                     type: 'productQnA',
                 },
                 {
@@ -196,12 +209,14 @@ export default {
                 text: '기타 관련',
                 value: 'etc',
             }, ],
-            rules: [v => v.length <= 600 || 'Max 600 characters'],
+            rules: [v => v.length <= 600 || '600자 이하'],
             num: '',
+            productno: '',
             titleSelected: 'default',
             titleDetail: '',
             faqTypeSelected: '',
             originalNo: '',
+            star:'',
             content: '',
             image1: '',
             image2: '',
@@ -244,6 +259,7 @@ export default {
             if (this.pageID != 'notice' && this.pageID != 'faq') {
                 if (this.titleSelected == 'default') {
                     alert('제목을 선택해주세요')
+                    return;
                 }
             }
 
@@ -252,17 +268,18 @@ export default {
                 url: `/api/qna/insertqna`,
                 data: {
                     type: this.titleSelected,
-                    originalNo: null,
                     reply: false,
                     content: this.content,
                     id: "user123",
                     secret: this.secret,
-                    image: "",
+                    image: "image1.jpg"
                 }
             }).then((res) => {
-                console.log(res.data, res.status);
-                alert("문의글 등록 완료");
-                this.$router.go(-1);
+                if (res.status == 200) {
+                    console.log(res.data);
+                    alert("문의글이 등록되었습니다.");
+                    this.$router.go(-1);
+                }
             }).catch((err) => {
                 console.log(err);
             })
@@ -291,28 +308,28 @@ export default {
         noticeForm() {
             if (this.pageID != 'notice' && this.pageID != 'faq') {
                 if (this.titleSelected == 'default') {
-                    alert('제목을 선택해주세요')
+                    alert('제목을 선택해주세요');
                 }
             }
+            axios({
+                method: 'post',
+                url: `/api/notice/insertNotice`,
+                data: {
+                    title: this.titleDetail,
+                    content: this.content,
+                    id: "admin123",
+                    image: "",
+                }
+            }).then((res) => {
+                if (res.status == 200) {
+                    console.log(res.data, res.status);
+                    alert("공지사항 등록 완료");
+                    this.$router.go(-1);
+                }
+            }).catch((err) => {
+                console.log(err);
 
-            // axios({
-            //     method: 'post',
-            //     url: /api/notice/insertNotice,
-            //     data: {
-            //         title: "",
-            //         content: "",
-            //         id: "admin123",
-            //         image: "",
-
-            //     }
-            // }).then((res) => {
-            //     console.log(res.data);
-            //     console.log(res.data, res.status);
-            //     alert("공지사항 등록 완료");
-            //     this.$router.go(-1);
-            // }).catch((err) => {
-            //     console.log(err);
-
+            })
             // // notice or faq or qna관련
             // console.log(this.titleSelected);
 
@@ -334,50 +351,114 @@ export default {
             // alert('완료');
             // this.$router.go(-1);
         },
-        reviewForm() {
+        test() {
             axios({
-                    method: 'patch',
-                    url: `/api/review/update`,
-                    params: {
-                        content: this.content,
-                        image: this.image,
-                        star: this.star
+                method: 'get',
+                url:`/api/review/detail`,
+                params: {
+                    reviewNo: this.num
+                }
+                }).then((res) => {
+                    if(res.status == 200){
+                    this.content = res.data.content;
+                    this.star = res.data.star;
                     }
                 })
-                .then(res => {
-                    this.contents = res.data;
-                    this.loading = false
-                    alert("수정이 완료되었습니다.")
-                    this.$router.push(`/community/review`);
-                })
-        },
-        replyForm() {
+            },
+
+        
+        noticeFormUpdate() {
+            if (this.pageID != 'notice' && this.pageID != 'faq') {
+                if (this.titleSelected == 'default') {
+                    alert('제목을 선택해주세요')
+                }
+            }
             axios({
-                method: 'post',
-                url: `/api/qna/insertqna`,
-                data: {
-                    type: this.titleSelected,
-                    originalNo: this.originalNo,
-                    reply: false,
+                method: 'patch',
+                url: `/api/notice/updateNotice`,
+                params: {
+                    noticeNo: this.num,
+                    title: this.titleDetail,
                     content: this.content,
-                    id: "admin",
-                    secret: true,
-                    image: ""
+                    image: "",
                 }
             }).then((res) => {
-                console.log(res.data, res.status);
-                alert("댓글 등록 완료");
-                this.$router.go(-1);
+                if (res.status == 200) {
+                    console.log(res.data, res.status);
+                    alert("공지사항 수정 완료");
+                    this.$router.go(-1);
+                }
             }).catch((err) => {
                 console.log(err);
             })
         },
+
+        moveToBefore() {
+            this.$router.go(-1);
+        },
+
+        reviewFormUpdate() {
+            axios({
+                    method: 'patch',
+                    url: `/api/review/update`,
+                    params: {
+                        reviewNo: this.num,
+                        content: this.content,
+                        star: this.star
+                    }
+                })
+                .then((res) => {
+                    if(res.status == 200){
+                    alert("수정이 완료되었습니다.")
+                    this.$router.go(-1);
+                    }
+                })
+        },
+        replyForm() {
+            console.log(this.pageID);
+            axios({
+                method: 'post',
+                url: `/api/qna/insertReply`,
+                data: {
+                    type: this.pageID + 'Reply',
+                    originalNo: this.originalNo,
+                    content: this.content,
+                    id: "admin",
+                    image: "image1.jpg"
+                }
+            }).then((res) => {
+                console.log(res.data, res.status);
+                alert("답변 등록 완료");
+                this.$router.go(-2);
+            }).catch((err) => {
+                console.log(err);
+            })
+        },
+        faqForm() {
+            axios.post('/api/faq/insertfaq', {
+                    type: this.faqTypeSelected,
+                    title: this.titleDetail,
+                    content: this.content
+                })
+
+                .then((res) => {
+                    console.log(res.data, res.status);
+                    alert("FAQ 등록 완료");
+                    this.$router.go(-1);
+                }).catch((err) => {
+                    console.log(err);
+                })
+
+        },
+
         qnaFormUpdate() {
+
             // this.sendType => 게시글 종류(notice, faq, qna(product, delivery) 등)
 
             //axios status==200 안으로 넣어야 함
             // alert('완료');
             // this.$router.go(-1);
+
             axios({
                 method: 'patch',
                 url: `/api/qna/updateqna`,
@@ -389,16 +470,35 @@ export default {
                     image: ""
                 }
             }).then((res) => {
+                if (res.status == 200) {
+                    console.log(res.data);
+                    alert("수정이 완료되었습니다.");
+                    this.$router.go(-1);
+                }
+            }).catch((err) => {
+                console.log(err);
+            })
+        },
+        //수정기능 완성 x
+        faqFormUpdate() {
+
+            axios({
+                method: 'patch',
+                url: `/api/faq/updatefaq`,
+                params: {
+                    faqNo: this.faqNo,
+                    type: this.faqTypeSelected,
+                    title: this.titleDetail,
+                    content: this.content,
+
+                }
+            }).then((res) => {
                 console.log(res.data, res.status);
                 alert("수정 완료");
                 this.$router.go(-1);
             }).catch((err) => {
                 console.log(err);
             })
-        },
-
-        moveToBefore() {
-            this.$router.go(-1);
         },
     },
 
@@ -414,13 +514,22 @@ export default {
         }
     },
     mounted() {
+
         //notice faq review 중 뭔지
         this.pageID = this.$route.params.id;
         //게시글 번호
         this.num = this.$route.params.num;
         //qna 원글 번호
         this.originalNo = this.$route.params.original;
+        // 상세 페이지에서 상품 문의 했을 때 상품번호
+        this.productno = this.$route.params.productno;
         if (this.num != '' && this.num != undefined) {
+            if (this.pageID == 'notice' || this.pageID == 'faq') {
+                this.admin = true;
+            } else if (this.pageID == 'review') {
+                this.titleSelected = 'review';
+            }
+
             // 기존 정보 가져와서 넣어주기
             // 만약 sendType이 notice나 faq면 관리자이니 admin true로 변경
         } else if (this.originalNo != '' && this.originalNo != undefined) {
@@ -429,6 +538,7 @@ export default {
         } else {
             this.currentURL();
         }
+
     }
 }
 </script>

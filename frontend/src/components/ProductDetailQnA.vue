@@ -2,6 +2,11 @@
 <v-container>
     <div>
         <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
+            <template #[`item.productno`]="{item}">
+                <div class="text-left">
+                    <ProductNameDisplay :productno="item.productno" />
+                </div>
+            </template>
             <template #[`item.type`]="{item}">
                 <div class="text-left">
                     <QnATitleDisplay :type="item.type" />
@@ -35,7 +40,8 @@
             </v-row>
         </v-col>
         <v-col cols="auto">
-            <v-btn :to="'/writePost/deliveryQnA'" outlined>글쓰기</v-btn>
+            <!-- <v-btn :to="`/writePost/product/${productno}`" outlined>글쓰기</v-btn> -->
+            <v-btn :to="`/writePost/product/1`" outlined>글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -46,12 +52,15 @@ import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 import QnATitleDisplay from '@/components/QnATitleDisplay.vue'
+import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
 export default {
     components: {
         HideId,
         DateDisplay,
         QnATitleDisplay,
+        ProductNameDisplay,
     },
+    props: ['productno'],
     data() {
         return {
             totalContents: 0,
@@ -61,36 +70,42 @@ export default {
             headers: [{
                     text: '번호',
                     value: 'qnaNo',
-                    sortable: false,
                     width: '10%',
                     align: 'center',
                     divider: true,
+                },
+                {
+                    text: '상품명',
+                    value: 'productno',
+                    width: '10%',
+                    align: 'center',
+                    divider: true
                 },
                 {
                     text: '제목',
                     value: 'type',
-                    sortable: false,
-                    width: '65%',
+                    width: '60%',
                     align: 'center',
-                    divider: true,
+                    divider: true
                 },
                 {
                     text: '작성자',
                     value: 'id',
-                    sortable: false,
                     width: '10%',
                     align: 'center',
-                    divider: true,
+                    divider: true
                 },
                 {
                     text: '작성일',
                     value: 'regDate',
-                    sortable: false,
-                    width: '15%',
+                    width: '10%',
                     align: 'center',
                 },
             ],
             searches: [{
+                    text: '상품명',
+                    value: 'productname'
+                }, {
                     text: '제목',
                     value: 'title'
                 },
@@ -114,32 +129,31 @@ export default {
                 page,
                 itemsPerPage
             } = this.options
-            let link = document.location.href;
-            link = link.slice(26, link.length - 3);
             axios({
                     method: 'get',
-                    url: `/api/qna/getdeliveryAll`,
+                    url: `/api/qna/getproductAll`,
                     params: {
                         page: page,
                         perPage: itemsPerPage,
                         search: this.search,
                         searchWord: this.searchWord,
+                        // productNo: this.productNo,
                     }
                 })
                 .then(res => {
                     this.contents = res.data;
+                    this.loading = false
                     axios({
                             method: 'get',
                             url: '/api/qna/getCount',
                             params: {
                                 search: this.search,
                                 searchWord: this.searchWord,
-                                type: link
+                                // productNo: this.productNo
                             }
                         })
                         .then(res => {
                             this.totalContents = res.data;
-                            this.loading = false
                         })
                 })
         },

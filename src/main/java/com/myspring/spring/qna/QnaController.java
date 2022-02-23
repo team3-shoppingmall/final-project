@@ -25,8 +25,8 @@ public class QnaController {
 	// 전체 개수 가져오기
 	@GetMapping("/getCount")
 	public ResponseEntity<?> getCount(@RequestParam("search") String search,
-			@RequestParam("searchWord") String searchWord) {
-		return qnaService.getCount(search, searchWord);
+			@RequestParam("searchWord") String searchWord, @RequestParam("type") String type) {
+		return qnaService.getCount(search, searchWord, type);
 	}
 
 	// 문의게시판 목록 출력
@@ -59,6 +59,13 @@ public class QnaController {
 			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
 		return qnaService.getQnaProductAll(page, perPage, search, searchWord);
 	}
+	
+//	// 상품문의 카테고리 전체 개수 가져오기
+//	@GetMapping("/getProductCount")
+//	public ResponseEntity<?> getQnaProductCount(@RequestParam("search") String search,
+//			@RequestParam("searchWord") String searchWord) {
+//		return qnaService.getQnaProductCount(search, searchWord);
+//	}
 
 	// 배송 문의 카테고리 전체 조회
 	@GetMapping("/getdeliveryAll")
@@ -66,6 +73,13 @@ public class QnaController {
 			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
 		return qnaService.getQnaDeliveryAll(page, perPage, search, searchWord);
 	}
+	
+//	// 배송 문의 카테고리 전체 개수 가져오기
+//	@GetMapping("/getDeliveryCount")
+//	public ResponseEntity<?> getQnaDeliveryCount(@RequestParam("search") String search,
+//			@RequestParam("searchWord") String searchWord) {
+//		return qnaService.getQnaDeliveryCount(search, searchWord);
+//	}
 
 	// 배송 전 변경&취소 카테고리 전체 조회
 	@GetMapping("/getbeforedeliveryAll")
@@ -73,6 +87,13 @@ public class QnaController {
 			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
 		return qnaService.getQnaBeforeDeliveryAll(page, perPage, search, searchWord);
 	}
+	
+//	// 배송 전 변경&취소 카테고리 전체 개수 가져오기
+//	@GetMapping("/getBeforeDeliveryCount")
+//	public ResponseEntity<?> getQnaBeforeDeliveryCount(@RequestParam("search") String search,
+//			@RequestParam("searchWord") String searchWord) {
+//		return qnaService.getQnaBeforeDeliveryCount(search, searchWord);
+//	}
 
 	// 배송 후 교환&반품 카테고리 전체 조회
 	@GetMapping("/getafterdeliveryAll")
@@ -80,11 +101,24 @@ public class QnaController {
 			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
 		return qnaService.getQnaAfterDeliveryAll(page, perPage, search, searchWord);
 	}
+	
+//	// 배송 후 교환&반품 카테고리 전체 개수 가져오기
+//	@GetMapping("/getAfterDeliveryCount")
+//	public ResponseEntity<?> getQnaAfterDeliveryCount(@RequestParam("search") String search,
+//			@RequestParam("searchWord") String searchWord) {
+//		return qnaService.getQnaAfterDeliveryCount(search, searchWord);
+//	}
 
-	// 문의 등록 & 댓글 등록
+	// 문의 등록 
 	@PostMapping("/insertqna")
 	public ResponseEntity<?> insertQna(@RequestBody QnaVO qnaVO) {
 		return qnaService.insertQna(qnaVO);
+	}
+	
+	// 댓글 등록
+	@PostMapping("/insertReply")
+	public ResponseEntity<?> insertReply(@RequestBody QnaVO qnaVO) {
+		return qnaService.insertReply(qnaVO);
 	}
 
 	//문의글 수정 시 댓글이 있으면 수정 불가

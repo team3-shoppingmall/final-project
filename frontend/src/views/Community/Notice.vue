@@ -1,7 +1,7 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" @click:row="moveto" disable-sort>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="noticeNo" class="elevation-1" @click:row="moveto" disable-sort>
             <template #[`item.title`]="{item}">
                 <div class="text-left">
                     {{ item.title }}
@@ -121,7 +121,7 @@ export default {
         },
 
     },
-    watch: {
+    watch: {  //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
         options: {
             handler() {
                 this.getNotice()

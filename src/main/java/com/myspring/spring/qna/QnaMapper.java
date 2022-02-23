@@ -31,7 +31,7 @@ public interface QnaMapper {
 	List<QnaVO> getQnaAll();
 	
 	// qnaNo로 1개 문의 가져오기
-	@Select("select * from qna where qnaNo = #{qnaNo}")
+	@Select("select * from qnatable where qnaNo = #{qnaNo}")
 	QnaVO getQnaByQnaNo(@Param("qnaNo") int qnaNo);
 		
 	// type별 문의 조회
@@ -39,28 +39,44 @@ public interface QnaMapper {
 	List<QnaVO> getQnaByType(@Param("type") String type);
 	
 	//상품문의 카테고리 전체 조회 & 아이디, 내용, 상품명으로 조회
-	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in ('general', 'product', 'productNotice', 'reply') order by qnaNo desc limit #{start}, #{perPage}")
+	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in ('general', 'product', 'productNotice', 'productReply', 'generalReply') order by qnaNo desc limit #{start}, #{perPage}")
 	List<QnaVO> getQnaProductAll(@Param("start") int start, @Param("perPage") int perPage, @Param("search") String search, @Param("searchWord") String searchWord);
-		
-//	// 상품문의 카테고리 전체 조회
-//	@Select("select * from qnatable where type in ('general', 'product', 'productNotice', 'reply') order by qnaNo desc")
-//	List<QnaVO> getQnaProductAll();
 	
-	// 배송 문의 카테고리 전체 조회
-	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in ('cancel', 'change', 'changeaddress', 'cancelNotice', 'reply') order by qnaNo desc")
+	//상품문의 카테고리 갯수 가져오기
+	@Select("select count(*) from qnatable where ${search} like CONCAT('%',#{searchWord},'%') AND type in ('general', 'product', 'productNotice', 'productReply', 'generalReply')")
+	int getQnaProductCount(@Param("search") String search, @Param("searchWord") String searchWord);
+	
+	// 배송 전 변경&취소 카테고리 전체 조회 & 아이디, 내용으로 조회 
+	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in ('cancel', 'change', 'changeaddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply') order by qnaNo desc")
 	List<QnaVO> getQnaBeforeDeliveryAll(@Param("start") int start, @Param("perPage") int perPage, @Param("search") String search, @Param("searchWord") String searchWord);
 	
-	// 배송 전 변경&취소 카테고리 전체 조회
-	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in ('delivery', 'deliveryNotice', 'reply') order by qnaNo desc")
+	// 배송 전 변경&취소 카테고리 전체 갯수 가져오기
+	@Select("select count(*) from qnatable where ${search} like CONCAT('%',#{searchWord},'%') AND type in ('cancel', 'change', 'changeaddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply')")
+	int getQnaBeforeDeliveryCount(@Param("search") String search, @Param("searchWord") String searchWord);
+	
+	// 배송 문의 카테고리 전체 조회 & 아이디, 내용으로 조회
+	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in('delivery', 'deliveryNotice', 'deliveryReply') order by qnaNo desc")
 	List<QnaVO> getQnaDelieveryAll(@Param("start") int start, @Param("perPage") int perPage, @Param("search") String search, @Param("searchWord") String searchWord);
 	
+	// 배송 문의 카테고리 전체 갯수 가져오기
+	@Select("select count(*) from qnatable where ${search} like CONCAT('%',#{searchWord},'%') AND type in ('delivery', 'deliveryNotice', 'deliveryReply')")
+	int getQnaDeliveryCount(@Param("search") String search, @Param("searchWord") String searchWord);
+	
 	// 배송 후 교환&반품 카테고리 전체 조회
-	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in ('return', 'exchange', 'error', 'returnNotice', 'reply') order by qnaNo desc")
+	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply') order by qnaNo desc")
 	List<QnaVO> getQnaAfterDeliveryAll(@Param("start") int start, @Param("perPage") int perPage, @Param("search") String search, @Param("searchWord") String searchWord);
 	
-	// 문의 등록 & 댓글 등록
-	@Insert("insert into qnatable(type, originalNo, reply, content, id, secret, image) values(#{in.type}, #{in.originalNo}, #{in.reply}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
+	// 배송 후 교환&반품 카테고리 전체 갯수 가져오기
+	@Select("select count(*) from qnatable where ${search} like CONCAT('%',#{searchWord},'%') AND type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply')")
+	int getQnaAfterDeliveryCount(@Param("search") String search, @Param("searchWord") String searchWord);
+	
+	// 문의 등록
+	@Insert("insert into qnatable(type, originalNo, reply, content, id, secret, image) values(#{in.type}, last_insert_id()+1, #{in.reply}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
 	int insertQna(@Param("in") QnaVO qnaVO);
+	
+	// 댓글 등록
+	@Insert("insert into qnatable(type, originalNo, content, id, image) values(#{in.type}, #{in.originalNo}, #{in.content}, #{in.id}, #{in.image})")
+	int insertReply(@Param("in") QnaVO qnaVO);
 	
 	// 댓글 등록시 reply 업데이트
 	@Update("update qnatable set reply = true where qnaNo = #{originalNo}")
@@ -74,7 +90,7 @@ public interface QnaMapper {
 	// 문의 삭제 & 댓글 삭제
 	@Delete("delete from qnatable where qnaNo = #{qnaNo}")
 	int deleteQna(@Param("qnaNo")int qnaNo);
-
+	
 	// 댓글 삭제시 reply 업데이트
 	@Update("update qnatable set reply = false where qnaNo = #{originalNo}")
 	int updateReplyFalse(@Param("originalNo") int originalNo);
@@ -86,6 +102,8 @@ public interface QnaMapper {
 	// 내용으로 문의 검색
 	@Select("select * from qnatable where content like CONCAT('%', #{content}, '%') order by qnaNo desc")
 	List<QnaVO> searchQnaByContent(@Param("content") String content);
+
+	
 
 //	//기간으로 문의 검색(최근 일주일)
 //	@Select("select * from qnatable where regDate between DATE_ADD(NOW(), INTERVAL -1 WEEK) and NOW()")

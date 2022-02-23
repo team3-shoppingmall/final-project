@@ -1,24 +1,36 @@
 <template>
-<span>{{ productname }}</span>
+<span>{{ productName }}</span>
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
 export default {
-    computed: {
-        productname() {
-            // if(this.productno == undefined){
-            //     return '';
-            // }
-            // axios.get(`/api/member/getProductname/${this.productno}`).then(res => {
-            //     if (res.status == 200) {
-            //         return res.data;
-            //     }
-            // })
-            return 'error';
+    data() {
+        return {
+            productName: '',
         }
     },
-    props: ['productno']
+    props: ['productNo'],
+    methods: {
+        getProductName() {
+            if (this.productNo == undefined || this.productNo == 0) {
+                this.productName = '';
+                return;
+            } else {
+                axios.get(`/api/product/getProduct/${this.productNo}`).then(res => {
+                    if (res.status == 200) {
+                        this.productName = res.data.productName;
+                        return;
+                    } else {
+                        this.productName = 'error';
+                    }
+                })
+            }
+        }
+    },
+    mounted() {
+        this.getProductName();
+    }
 }
 </script>
 

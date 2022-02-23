@@ -70,7 +70,7 @@ export default {
                     text: '제목',
                     value: 'type',
                     sortable: false,
-                    width: '70%',
+                    width: '65%',
                     align: 'center',
                     divider: true,
                 },
@@ -86,7 +86,7 @@ export default {
                     text: '작성일',
                     value: 'regDate',
                     sortable: false,
-                    width: '10%',
+                    width: '15%',
                     align: 'center',
                 },
             ],
@@ -114,7 +114,8 @@ export default {
                 page,
                 itemsPerPage
             } = this.options
-            
+            let link = document.location.href;
+            link = link.slice(26, link.length - 3);
             axios({
                     method: 'get',
                     url: `/api/qna/getafterdeliveryAll`,
@@ -127,17 +128,18 @@ export default {
                 })
                 .then(res => {
                     this.contents = res.data;
-                    this.loading = false
                     axios({
                             method: 'get',
                             url: '/api/qna/getCount',
                             params: {
                                 search: this.search,
                                 searchWord: this.searchWord,
+                                type: link
                             }
                         })
                         .then(res => {
                             this.totalContents = res.data;
+                            this.loading = false
                         })
                 })
         },

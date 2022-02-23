@@ -37,7 +37,7 @@ public class NoticeService {
 	}
 
 	// 공지사항 게시물 보기
-	public ResponseEntity<?> getNoticeFindByID(NoticeVO noticeNo) {
+	public ResponseEntity<?> getNoticeFindByID(int noticeNo) {
 		 NoticeVO res = noticeMapper.getNoticeFindByID(noticeNo);
 		 
 		 if (res == null)

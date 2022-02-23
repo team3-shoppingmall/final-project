@@ -2,9 +2,13 @@
 <v-container class="mt-5">
     <v-row justify="center">
         <v-col cols="9">
-            <v-row>
+            <v-row style="height:600px">
                 <v-col cols="6" class="pa-5">
-                    <v-img max-height="500" max-width="auto" :src="`https://picsum.photos/seed/1/500/500`"></v-img>
+                    <v-row>
+                        <v-col align="center">
+                            <v-img min-height="200" max-height="500" max-width="500" :src="`https://picsum.photos/seed/1/500/500`"></v-img>
+                        </v-col>
+                    </v-row>
                 </v-col>
                 <v-col cols="6" class="pa-5">
                     <v-simple-table>
@@ -68,9 +72,9 @@
                                                 <v-row>
                                                     <v-col>
                                                         <div class="text-h6"> {{product.productName}}</div>
-                                                        <div v-if="option.sizeSelected != undefined && option.colorSelected != undefined" class="text-subtitle-2"> - {{option.colorSelected}}/{{option.sizeSelected}}</div>
-                                                        <div v-if="option.sizeSelected == undefined && option.colorSelected != undefined" class="text-subtitle-2"> - {{option.colorSelected}}</div>
-                                                        <div v-if="option.sizeSelected != undefined && option.colorSelected == undefined" class="text-subtitle-2"> - {{option.sizeSelected}}</div>
+                                                        <div v-if="option.selectedSize != undefined && option.selectedColor != undefined" class="text-subtitle-2"> - {{option.selectedColor}}/{{option.selectedSize}}</div>
+                                                        <div v-if="option.selectedSize == undefined && option.selectedColor != undefined" class="text-subtitle-2"> - {{option.selectedColor}}</div>
+                                                        <div v-if="option.selectedSize != undefined && option.selectedColor == undefined" class="text-subtitle-2"> - {{option.selectedSize}}</div>
                                                     </v-col>
                                                 </v-row>
                                             </v-col>
@@ -96,17 +100,17 @@
                                     <td colspan="3">
                                         <v-row justify="center">
                                             <v-col cols="auto">
-                                                <v-btn>
+                                                <v-btn @click="buyItNow">
                                                     BUY IT NOW
                                                 </v-btn>
                                             </v-col>
                                             <v-col cols="auto">
-                                                <v-btn>
-                                                    ADD TO CART
+                                                <v-btn @click="addToBasket">
+                                                    ADD TO Basket
                                                 </v-btn>
                                             </v-col>
                                             <v-col cols="auto">
-                                                <v-btn>
+                                                <v-btn @click="addToWishList">
                                                     WISH LIST
                                                 </v-btn>
                                             </v-col>
@@ -118,28 +122,7 @@
                     </v-simple-table>
                 </v-col>
             </v-row>
-
-            <v-row class="text-h4 mt-10" justify="center">
-                Recommended Items
-            </v-row>
-            <v-row class="my-10" justify="center">
-                <v-col>
-                    <v-row justify="center">
-                        <v-col v-for="count in 5" :key="count" cols="2">
-                            <v-card @click="moveToDetail(products[0].productno)">
-                                <v-img max-height="300" max-width="auto" :src="`https://picsum.photos/seed/${randomNumber(count)}/200/150`"></v-img>
-                                <v-card-text>
-                                    <div>{{products[0].productname}} - <span v-if="products[0].size != 0">{{products[0].size}} size</span><span v-if="products[0].size==0">{{products[0].color}} color</span></div>
-                                    <div v-if="products[0].discount != 0" class="text-decoration-line-through">{{products[0].price}}원</div>
-                                    <div v-if="products[0].discount == 0">{{products[0].price}}원</div>
-                                    <div v-if="products[0].discount != 0">{{products[0].price*(100-products[0].discount)/100}}원</div>
-                                </v-card-text>
-                            </v-card>
-                        </v-col>
-                    </v-row>
-                </v-col>
-            </v-row>
-
+            <v-divider class="mt-10 md-10 pt-10 pd-10"></v-divider>
             <v-row justify="center" class="pa-5" id="detailSelected">
                 <v-col cols="auto">
                     <v-btn @click="scrollTo('detail')" color="primary">DETAIL</v-btn>
@@ -355,14 +338,14 @@ export default {
         },
         addSelected(color, size) {
             let data = {
+                id: 'tester',
                 productNo: this.product.productNo,
-                price: this.product.price - this.product.discount,
-                colorSelected: color,
-                sizeSelected: size,
+                selectedColor: color,
+                selectedSize: size,
                 amount: 1
             }
             for (let i = 0; i < this.selected.length; i++) {
-                if (this.selected[i].colorSelected == data.colorSelected && this.selected[i].sizeSelected == data.sizeSelected) {
+                if (this.selected[i].selectedColor == data.selectedColor && this.selected[i].selectedSize == data.selectedSize) {
                     alert('이미 추가한 옵션입니다. 옵션 개수를 조정해주세요.');
                     return;
                 }
@@ -388,6 +371,31 @@ export default {
                 }
             }
             this.totalPrice = amount * (this.product.price - this.product.discount);
+        },
+        buyItNow() {
+            console.log('바로 구매하기');
+        },
+        addToBasket() {
+            axios.post(`/api/basket/insert`, this.selected)
+                .then(() => {
+                    alert('장바구니에 저장하셨습니다');
+                    this.$router.go();
+                }).catch((err) => {
+                    alert('저장에 실패하셨습니다');
+                    console.log(err);
+                })
+        },
+        addToWishList() {
+            axios.post(`/api/wishList/insert`, {
+                    id: 'tester',
+                    productNo: this.pageID
+                })
+                .then(() => {
+                    alert('관심 상품에 저장하셨습니다');
+                }).catch((err) => {
+                    alert('이미 추가된 상품입니다');
+                    console.log(err);
+                })
         },
         scrollTo(tag) {
             let scroll = 0;

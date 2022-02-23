@@ -22,21 +22,26 @@ public class ProductController {
 	}
 
 	// 상품 리스트 조회
-	@GetMapping(value = "/getProductList")
+	@GetMapping(value = "/getProductListByType")
 	public ResponseEntity<?> getProductListByType(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
-			@RequestParam("type1") String type1, @RequestParam("type2") String type2) {
-		return productService.getProductListByType(page, perPage, type1, type2);
+			@RequestParam("type1") String type1, @RequestParam(value="type2", required = false) String type2,
+			@RequestParam("searchWord") String searchWord, @RequestParam("minPrice") int minPrice,
+			@RequestParam("maxPrice") int maxPrice, @RequestParam("searchOrder") String searchOrder) {
+		return productService.getProductListByType(page, perPage, type1, type2, searchWord, minPrice, maxPrice,
+				searchOrder);
 	}
 
 	// 전체 개수 가져오기
-	@GetMapping("/getProductCount")
+	@GetMapping("/getProductCountByType")
 	public ResponseEntity<?> getProductCountByType(@RequestParam("type1") String type1,
-			@RequestParam("type2") String type2) {
-		return productService.getProductCountByType(type1, type2);
+			@RequestParam("type2") String type2, @RequestParam("searchWord") String searchWord,
+			@RequestParam("minPrice") int minPrice, @RequestParam("maxPrice") int maxPrice,
+			@RequestParam("searchOrder") String searchOrder) {
+		return productService.getProductCountByType(type1, type2, searchWord, minPrice, maxPrice, searchOrder);
 	}
 
 	// 많이 팔린 상품 조회
-	@GetMapping(value = "/getBestProductList")
+	@GetMapping(value = "/getBestProductListByType")
 	public ResponseEntity<?> getBestProductListByType(@RequestParam("type1") String type1,
 			@RequestParam("type2") String type2) {
 		return productService.getBestProductListByType(type1, type2);

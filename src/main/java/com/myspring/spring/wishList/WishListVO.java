@@ -3,15 +3,15 @@ package com.myspring.spring.wishList;
 public class WishListVO {
 	private long wishListIdx;
 	private String id;
-	private int proudctNo;
+	private int productNo;
 
 	public WishListVO() {
 	}
 
-	public WishListVO(long wishListIdx, String id, int proudctNo) {
+	public WishListVO(long wishListIdx, String id, int productNo) {
 		this.wishListIdx = wishListIdx;
 		this.id = id;
-		this.proudctNo = proudctNo;
+		this.productNo = productNo;
 	}
 
 	public long getWishListIdx() {
@@ -30,12 +30,12 @@ public class WishListVO {
 		this.id = id;
 	}
 
-	public int getProudctNo() {
-		return proudctNo;
+	public int getProductNo() {
+		return productNo;
 	}
 
-	public void setProudctNo(int proudctNo) {
-		this.proudctNo = proudctNo;
+	public void setProductNo(int productNo) {
+		this.productNo = productNo;
 	}
 
 }

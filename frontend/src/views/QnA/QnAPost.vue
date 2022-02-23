@@ -142,7 +142,7 @@ export default {
             if (this.qna.reply == true)
                 alert("이미 답변이 완료된 문의글이므로 수정이 불가합니다.");
             else
-                this.$router.push(`/updatePost/qna/${this.qna.qnaNo}`)
+                this.$router.push(`/updatePost/qna/${this.qna.qnaNo}`);
         },
         deleteQnA() {
             console.log(this.qna.qnaNo);

@@ -2,9 +2,9 @@
 <v-container>
     <div>
         <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
-            <template #[`item.productno`]="{item}">
+            <template #[`item.productNo`]="{item}">
                 <div class="text-left">
-                    <ProductNameDisplay :productno="item.productno" />
+                    <ProductNameDisplay :productNo="item.productNo" />
                 </div>
             </template>
             <template #[`item.type`]="{item}">
@@ -40,8 +40,7 @@
             </v-row>
         </v-col>
         <v-col cols="auto">
-            <!-- <v-btn :to="`/writePost/product/${productno}`" outlined>글쓰기</v-btn> -->
-            <v-btn :to="`/writePost/product/1`" outlined>글쓰기</v-btn>
+            <v-btn :to="`/writePost/product/${productNo}`" outlined>글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -60,7 +59,7 @@ export default {
         QnATitleDisplay,
         ProductNameDisplay,
     },
-    props: ['productno'],
+    props: ['productNo'],
     data() {
         return {
             totalContents: 0,
@@ -76,15 +75,15 @@ export default {
                 },
                 {
                     text: '상품명',
-                    value: 'productno',
-                    width: '10%',
+                    value: 'productNo',
+                    width: '20%',
                     align: 'center',
                     divider: true
                 },
                 {
                     text: '제목',
                     value: 'type',
-                    width: '60%',
+                    width: '45%',
                     align: 'center',
                     divider: true
                 },
@@ -98,7 +97,7 @@ export default {
                 {
                     text: '작성일',
                     value: 'regDate',
-                    width: '10%',
+                    width: '15%',
                     align: 'center',
                 },
             ],
@@ -124,38 +123,36 @@ export default {
     },
     methods: {
         getQnA() {
+            console.log(this.productNo);
             this.loading = true
             const {
                 page,
                 itemsPerPage
             } = this.options
-            axios({
-                    method: 'get',
-                    url: `/api/qna/getproductAll`,
+            axios.get(`/api/qna/getproductAll`, {
+                params: {
+                    page: page,
+                    perPage: itemsPerPage,
+                    search: this.search,
+                    searchWord: this.searchWord,
+                    // 상품번호 추가해서 새로 만드시면 됩니다
+                    // productNo : this.productNo,
+                }
+            }).then(res => {
+                this.contents = res.data;
+                axios.get('/api/qna/getCount', {
                     params: {
-                        page: page,
-                        perPage: itemsPerPage,
                         search: this.search,
                         searchWord: this.searchWord,
-                        // productNo: this.productNo,
+                        type: 'product',
+                        // type은 어짜피 상품이니 필요없고 상품번호 추가해서 새로 만드시면 됩니다
+                        // productNo : this.productNo,
                     }
-                })
-                .then(res => {
-                    this.contents = res.data;
+                }).then(res => {
+                    this.totalContents = res.data;
                     this.loading = false
-                    axios({
-                            method: 'get',
-                            url: '/api/qna/getCount',
-                            params: {
-                                search: this.search,
-                                searchWord: this.searchWord,
-                                // productNo: this.productNo
-                            }
-                        })
-                        .then(res => {
-                            this.totalContents = res.data;
-                        })
                 })
+            })
         },
         moveto(item) {
             this.$router.push(`/qna/${item.qnaNo}`)
@@ -173,11 +170,4 @@ export default {
 </script>
 
 <style scoped>
-table td {
-    border-right: 1px solid #dddddd;
-}
-
-table td:last-child {
-    border-right: none
-}
 </style>

@@ -135,10 +135,8 @@ export default {
                     perPage: this.itemsPerPage,
                     type1: this.mainCategory,
                     type2: this.selectedCategory,
-                    searchWord: '',
                     minPrice: 0,
                     maxPrice: 99999999,
-                    searchOrder: '',
                 }
             }).then(res => {
                 this.products = res.data;
@@ -148,10 +146,8 @@ export default {
                     params: {
                         type1: this.mainCategory,
                         type2: this.selectedCategory,
-                        searchWord: '',
                         minPrice: 0,
                         maxPrice: 99999999,
-                        searchOrder: '',
                     }
                 }).then(res => {
                     this.pageLength = Math.ceil(res.data / this.page);

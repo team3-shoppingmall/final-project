@@ -252,7 +252,7 @@
 
             <v-row>
                 <v-col>
-                    <!-- <ProductDetailReview /> -->
+                    <ProductDetailReview :productNo="pageID" />
                 </v-col>
             </v-row>
 
@@ -273,7 +273,7 @@
 
             <v-row>
                 <v-col>
-                    <!-- <ProductDetailQnA /> -->
+                    <ProductDetailQnA :productNo="pageID" />
                 </v-col>
             </v-row>
         </v-col>
@@ -283,25 +283,16 @@
 
 <script>
 import axios from 'axios'
-// import ProductDetailReview from '@/components/ProductDetailReview.vue'
-// import ProductDetailQnA from '@/components/ProductDetailQnA.vue'
+import ProductDetailReview from '@/components/ProductDetailReview.vue'
+import ProductDetailQnA from '@/components/ProductDetailQnA.vue'
 export default {
     components: {
-        // ProductDetailReview,
-        // ProductDetailQnA,
+        ProductDetailReview,
+        ProductDetailQnA,
     },
     data() {
         return {
             pageID: '',
-            products: [{
-                productno: 1,
-                imageName: '',
-                productname: '블랙트위드 스커트',
-                size: 3,
-                color: 4,
-                price: 20000,
-                discount: 5,
-            }],
             product: '',
             colorOption: '',
             colorSelection: '',

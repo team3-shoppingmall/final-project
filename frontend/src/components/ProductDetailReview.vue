@@ -1,9 +1,9 @@
 <template>
 <v-container>
     <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
-        <template #[`item.productno`]="{item}">
+        <template #[`item.productNo`]="{item}">
             <div class="text-left">
-                <ProductNameDisplay :productno="item.productno" />
+                <ProductNameDisplay :productNo="item.productNo" />
             </div>
         </template>
         <template #[`item.star`]="{item}">
@@ -12,7 +12,7 @@
         <template #[`item.content`]="{item}">
             <v-row justify="space-between">
                 <v-col>
-                    <div class="text-left">{{ item.content }}</div>
+                    <div v-html="item.content" class="text-left"></div>
                 </v-col>
                 <v-col cols="auto">
                     <v-icon @click="updateReview(item.reviewNo)" v-if="admin">mdi-pencil</v-icon>
@@ -31,7 +31,7 @@
     </v-data-table>
 
     <v-row align="center" justify="space-between">
-        <v-col cols="8" sm="7" md="6" lg="5" xl="4">
+        <v-col class="d-flex" cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
                 <v-col cols="4">
                     <v-select :items="searches" v-model="search"></v-select>
@@ -40,13 +40,13 @@
                     <v-text-field v-model="searchWord"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon @click="getReview">검색</v-btn>
+                    <v-btn icon="icon" @click="getReview">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
         <v-col cols="auto" class="mr-3">
             <v-row>
-                <v-dialog v-model="dialog" persistent max-width="600px">
+                <v-dialog v-model="dialog" persistent max-width="750px">
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn outlined v-bind="attrs" v-on="on">
                             리뷰 작성하기
@@ -69,7 +69,8 @@
                                     </v-col>
                                     <v-col cols="12">
                                         리뷰
-                                        <v-textarea counter rows="7" v-model="content" :rules="rules"></v-textarea>
+                                        <ckeditor :editor="editor" v-model="content" :config="editorConfig"></ckeditor>
+                                        <span :class="contentColor">{{content.length}}/600</span>
                                     </v-col>
                                     <v-col cols="12">
                                         <v-file-input accept="image/*"></v-file-input>
@@ -82,7 +83,7 @@
                             <v-btn color="blue darken-1" text @click="dialog = false">
                                 Close
                             </v-btn>
-                            <v-btn color="blue darken-1" text @click="dialog = false">
+                            <v-btn color="blue darken-1" text @click="addReview">
                                 Save
                             </v-btn>
                         </v-card-actions>
@@ -91,12 +92,12 @@
             </v-row>
         </v-col>
     </v-row>
-
 </v-container>
 </template>
 
 <script>
 import axios from 'axios'
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
@@ -108,125 +109,139 @@ export default {
         ProductNameDisplay,
         ProductDetailDisplay,
     },
-    props: ['productno'],
+    props: ['productNo'],
     data() {
         return {
+            editor: ClassicEditor,
+            editorConfig: {
+                ckfinder: {},
+                toolbar: {
+                    shouldNotGroupWhenFull: true
+                }
+            },
             admin: true,
             dialog: false,
             totalContents: 0,
             contents: [],
             options: {},
             loading: true,
-            star: 5,
-            rules: [v => v.length <= 600 || '600자 이하'],
             headers: [{
-                    text: '번호',
-                    value: 'reviewNo',
-                    width: '10%',
-                    align: 'center',
-                    divider: true
-                },
-                {
-                    text: '상품명',
-                    value: 'productno',
-                    width: '10%',
-                    align: 'center',
-                    divider: true
-                },
-                {
-                    text: '별점',
-                    value: 'star',
-                    width: '10%',
-                    align: 'center',
-                    divider: true
-                },
-                {
-                    text: '후기',
-                    value: 'content',
-                    width: '45%',
-                    align: 'center',
-                    divider: true
-                },
-                {
-                    text: '작성자',
-                    value: 'id',
-                    width: '10%',
-                    align: 'center',
-                    divider: true
-                },
-                {
-                    text: '작성일',
-                    value: 'regDate',
-                    width: '10%',
-                    align: 'center',
-                },
-            ],
+                text: '번호',
+                value: 'reviewNo',
+                width: '10%',
+                align: 'center',
+                divider: true
+            }, {
+                text: '상품명',
+                value: 'productNo',
+                width: '10%',
+                align: 'center',
+                divider: true
+            }, {
+                text: '별점',
+                value: 'star',
+                width: '10%',
+                align: 'center',
+                divider: true
+            }, {
+                text: '후기',
+                value: 'content',
+                width: '45%',
+                align: 'center',
+                divider: true
+            }, {
+                text: '작성자',
+                value: 'id',
+                width: '10%',
+                align: 'center',
+                divider: true
+            }, {
+                text: '작성일',
+                value: 'regDate',
+                width: '10%',
+                align: 'center'
+            }],
             searches: [{
-                    text: '상품명',
-                    value: 'productname'
-                },
-                {
-                    text: '작성자',
-                    value: 'id'
-                }
-            ],
+                text: '상품명',
+                value: 'productname'
+            }, {
+                text: '작성자',
+                value: 'id'
+            }],
             search: 'id',
             searchWord: '',
+            star: 5,
+            content: '',
+            contentColor: 'black--text',
+            image1: '',
+
         }
     },
     methods: {
         getReview() {
-            this.loading = true
+            this.loading = true;
             const {
                 page,
                 itemsPerPage
-            } = this.options
+            } = this.options;
             axios({
+                method: 'get',
+                url: `/api/review/getAllReviews`,
+                params: {
+                    page: page,
+                    perPage: itemsPerPage,
+                    search: this.search,
+                    searchWord: this.searchWord,
+                    // 상품번호 추가해서 새로 만드시면 됩니다
+                    // productNo : this.productNo,
+                }
+            }).then(res => {
+                this.contents = res.data;
+                axios({
                     method: 'get',
-                    url: `/api/review/getReview`,
+                    url: `/api/review/getCount`,
                     params: {
-                        page: page,
-                        perPage: itemsPerPage,
                         search: this.search,
                         searchWord: this.searchWord,
-                        // productNo: this.productNo,
+                        // 상품번호 추가해서 새로 만드시면 됩니다
+                        // productNo : this.productNo,
                     }
+                }).then(res => {
+                    this.totalContents = res.data;
+                    this.loading = false;
                 })
-                .then(res => {
-                    this.contents = res.data;
-                    this.loading = false
-                    axios({
-                            method: 'get',
-                            url: '/api/review/getCount',
-                            params: {
-                                search: this.search,
-                                searchWord: this.searchWord,
-                                // productNo: this.productNo,
-                            }
-                        })
-                        .then(res => {
-                            this.totalContents = res.data;
-                        })
-                })
+            })
         },
-        //deleteReview(num) {
-        //console.log(num);
-        deleteReview() {
+        addReview() {
+            // 데이터
+            console.log(this.star);
+            console.log(this.content);
+            console.log(this.image1);
+
+            // 성공 시
+            this.dialog = false;
+            this.content = '';
+
+            // 실패 시
+            // alert('리뷰 작성에 실패했습니다.')
+            // console.log(err);
+        },
+        deleteReview(num) {
             axios({
                     method: 'delete',
                     url: `/api/review/delete`,
                     params: {
-                        reviewNo: this.reviewNo
+                        reviewNo: num
                     }
                 })
                 .then(res => {
-                    this.contents = res.data;
-                    this.loading = false
-                    alert("삭제가 완료되었습니다.")
-                    this.$router.push(`/community/review`);
+                    console.log(res.data);
+                    if (res.status == 200) {
+                        alert("삭제가 완료되었습니다.")
+                        this.$router.go();
+                    }
                 })
         },
-
         updateReview(num) {
             this.$router.push(`/updatePost/review/${num}`);
         }
@@ -236,11 +251,23 @@ export default {
             handler() {
                 this.getReview()
             },
-            deep: true,
+            deep: true
         },
-    },
+        content: {
+            handler() {
+                if (this.content.length > 600) {
+                    this.contentColor = 'red--text';
+                } else {
+                    this.contentColor = 'black--text';
+                }
+            }
+        }
+    }
 }
 </script>
 
-<style scoped>
+<style>
+.ck-editor__editable {
+    min-height: 200px;
+}
 </style>

@@ -1,13 +1,12 @@
 <template>
 <v-container>
-    <v-btn @click="getReview" style="display: none;">getReview</v-btn>
-    <v-btn @click="getQnA" style="display: none;">getQnA</v-btn>
-
-    {{titleSelected}}
     <v-row justify="center">
         <v-col align-self="center" cols="7">
             <div class="text-h3" v-if="originalNo == undefined">글쓰기</div>
             <div class="text-h3" v-if="originalNo != undefined">답변</div>
+            <div v-if="productNo != 0 && productNo != undefined">
+                <ProductDetailDisplay :productNo="productNo" />
+            </div>
             <v-divider class="my-5"></v-divider>
             <v-form ref="form">
                 <v-simple-table>
@@ -39,8 +38,8 @@
                                         <v-col>
                                             <div v-html="content" style="border:1px black solid"></div>
                                             <div style="border:1px black solid">{{content}}</div>
-                                            <div style="border:1px black solid">{{content.length}}</div>
                                             <ckeditor :editor="editor" v-model="content" :config="editorConfig"></ckeditor>
+                                            <span :class="contentColor">{{content.length}}/2000</span>
                                         </v-col>
                                     </v-row>
                                 </td>
@@ -102,9 +101,6 @@
                         <v-btn @click="noticeFormUpdate" outlined>Notice 수정</v-btn>
                     </v-col>
 
-                    <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
-                        <v-btn @click="reviewForm" outlined>review 작성</v-btn>
-                    </v-col>
                     <v-col cols="auto" v-if="num != '' && num != undefined">
                         <v-btn @click="reviewFormUpdate" outlined>review 수정</v-btn>
                     </v-col>
@@ -137,8 +133,11 @@
 <script>
 import axios from 'axios'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import ProductDetailDisplay from '@/components/ProductDetailDisplay.vue'
 export default {
-
+    components: {
+        ProductDetailDisplay,
+    },
     data() {
         return {
             editor: ClassicEditor,
@@ -146,6 +145,9 @@ export default {
                 ckfinder: {},
             },
             pageID: '',
+            num: '',
+            originalNo: '',
+            productNo: '',
             admin: false,
             titles: [{
                 text: '제목을 선택해주세요',
@@ -217,14 +219,12 @@ export default {
                 text: '기타 관련',
                 value: 'etc',
             }, ],
-            num: '',
-            productno: '',
             titleSelected: 'default',
             titleDetail: '',
             faqTypeSelected: '',
-            originalNo: '',
             star: '',
             content: '',
+            contentColor: 'black--text',
             image1: '',
             image2: '',
             image3: '',
@@ -308,7 +308,6 @@ export default {
             // // 비밀글 여부
             // console.log(this.secret);
 
-            //axios status==200 안으로 넣어야 함
             // alert('완료');
             // this.$router.go(-1);
         },
@@ -365,6 +364,7 @@ export default {
                 this.content = res.data.content;
                 this.star = res.data.star;
             })
+        },
         getQnA() {
             axios({
                 method: 'get',
@@ -540,51 +540,50 @@ export default {
     },
 
     watch: {
-        // titleSelected: {
-        //     handler() {
-        //         for (let i = 0; i < this.titles.length; i++) {
-        //             if (this.titleSelected == this.titles[i].value) {
-        //                 this.content = this.titles[i].content;
-        //             }
-        //         }
-        //     }
-        // },
         content: {
             handler() {
+                // 2000자를 넘어서면 빨간 글씨
                 if (this.content.length > 2000) {
-                    alert('2000자까지 가능합니다');
+                    this.contentColor = 'red--text';
+                } else {
+                    this.contentColor = 'black--text';
                 }
             }
         }
     },
     mounted() {
-
-        //notice faq review 중 뭔지
+        // notice, review, faq, qna
         this.pageID = this.$route.params.id;
-        //게시글 번호
+        // 수정용 게시글 번호
         this.num = this.$route.params.num;
-        //qna 원글 번호
+        // 답글용 원글 번호
         this.originalNo = this.$route.params.original;
-        // 상세 페이지에서 상품 문의 했을 때 상품번호
-        this.productno = this.$route.params.productno;
+        // 상세 페이지에서 문의 버튼 클릭 시 상품 번호
+        this.productNo = this.$route.params.productNo;
+
+        // 수정
         if (this.num != '' && this.num != undefined) {
             if (this.pageID == 'notice' || this.pageID == 'faq') {
                 this.admin = true;
-            } else if (this.pageID == 'review') {
-                this.titleSelected = 'review';
             }
-
-            // 기존 정보 가져와서 넣어주기
-            // 만약 sendType이 notice나 faq면 관리자이니 admin true로 변경
+            this.titleSelected = this.pageID;
+            if (this.pageID == 'notice') {
+                this.getNotice();
+            } else if (this.pageID == 'review') {
+                this.getReview();
+            } else if (this.pageID == 'faq') {
+                this.getFAQ();
+            } else if (this.pageID == 'qna') {
+                this.getQnA();
+            }
         } else if (this.originalNo != '' && this.originalNo != undefined) {
+            // 답변
             this.admin = true;
             this.titleSelected = 'reply';
         } else {
+            // 단순 글쓰기 
             this.currentURL();
         }
-        //수정 페이지에 리뷰 정보 넣어주기
-        this.getReview();
-        this.getQnA();
     }
 }
 </script>

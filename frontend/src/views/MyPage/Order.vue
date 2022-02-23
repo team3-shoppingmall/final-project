@@ -1,15 +1,6 @@
 <template>
-<v-container style="min-height: 910px;">
-    <v-row justify="center">
-        <v-col cols="9">
-            <div class="text-h3 ">ORDER LIST</div>
-        </v-col>
-    </v-row>
-    <v-row justify="center">
-        <v-col cols="9">
-            <MyPageButton class="mt-0" />
-        </v-col>
-    </v-row>
+<v-container fluid>
+
     <v-row justify="center">
         <v-col cols="9">
             <v-row>
@@ -85,7 +76,6 @@
 </template>
 
 <script>
-import MyPageButton from '@/components/MyPageButton.vue'
 export default {
     data() {
         return {
@@ -283,9 +273,7 @@ export default {
             }]
         }
     },
-    components: {
-        MyPageButton
-    }
+    components: {}
 }
 </script>
 

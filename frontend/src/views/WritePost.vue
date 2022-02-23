@@ -33,7 +33,12 @@
                             <tr>
                                 <td> 내용 </td>
                                 <td>
-                                    <v-textarea counter rows="11" v-model="content" :rules="rules"></v-textarea>
+                                    <!-- <v-textarea counter rows="11" v-model="content" :rules="rules"></v-textarea> -->
+                                    <v-row>
+                                        <v-col>
+                                            <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
+                                        </v-col>
+                                    </v-row>
                                 </td>
                             </tr>
                             <tr v-if="originalNo == undefined">
@@ -79,7 +84,7 @@
                     <v-col cols="auto" v-if="originalNo != undefined">
                         <v-btn @click="replyForm" outlined>답변 작성</v-btn>
                     </v-col>
-                    <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
+                    <v-col cols="auto" v-if ="(num == '' || num == undefined) && originalNo == undefined">
                         <v-btn @click="form" outlined>작성</v-btn>
                     </v-col>
                     <v-col cols="auto" v-if="num != '' && num != undefined">
@@ -128,12 +133,17 @@
 
 <script>
 import axios from 'axios'
-
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 export default {
 
     data() {
         return {
-            
+            testImage: '',
+            editor: ClassicEditor,
+            editorData: '<p>Content of the editor.</p>',
+            editorConfig: {
+                ckfinder: {},
+            },
             pageID: '',
             admin: false,
             titles: [{
@@ -219,7 +229,7 @@ export default {
             titleDetail: '',
             faqTypeSelected: '',
             originalNo: '',
-            star:'',
+            star: '',
             content: '',
             image1: '',
             image2: '',
@@ -309,11 +319,11 @@ export default {
             // this.$router.go(-1);
         },
         noticeForm() {
-            if (this.pageID != 'notice' && this.pageID != 'faq') {
-                if (this.titleSelected == 'default') {
-                    alert('제목을 선택해주세요');
-                }
-            }
+            // if (this.pageID != 'notice' && this.pageID != 'faq') {
+            //     if (this.titleSelected == 'default') {
+            //         alert('제목을 선택해주세요');
+            //     }
+            // }
             axios({
                 method: 'post',
                 url: `/api/notice/insertNotice`,
@@ -357,25 +367,24 @@ export default {
         test() {
             axios({
                 method: 'get',
-                url:`/api/review/detail`,
+                url: `/api/review/detail`,
                 params: {
                     reviewNo: this.num
                 }
-                }).then((res) => {
-                    if(res.status == 200){
+            }).then((res) => {
+                if (res.status == 200) {
                     this.content = res.data.content;
                     this.star = res.data.star;
-                    }
-                })
-            },
-
-        
-        noticeFormUpdate() {
-            if (this.pageID != 'notice' && this.pageID != 'faq') {
-                if (this.titleSelected == 'default') {
-                    alert('제목을 선택해주세요')
                 }
-            }
+            })
+        },
+
+        noticeFormUpdate() {
+            // if (this.pageID != 'notice' && this.pageID != 'faq') {
+            //     if (this.titleSelected == 'default') {
+            //         alert('제목을 선택해주세요')
+            //     }
+            // }
             axios({
                 method: 'patch',
                 url: `/api/notice/updateNotice`,
@@ -411,9 +420,9 @@ export default {
                     }
                 })
                 .then((res) => {
-                    if(res.status == 200){
-                    alert("수정이 완료되었습니다.")
-                    this.$router.go(-1);
+                    if (res.status == 200) {
+                        alert("수정이 완료되었습니다.")
+                        this.$router.go(-1);
                     }
                 })
         },

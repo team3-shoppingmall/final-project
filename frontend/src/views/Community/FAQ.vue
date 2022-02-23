@@ -17,7 +17,7 @@
             <v-btn @click="getFAQ('etc')" :color="colorPicker('etc')">기타관련</v-btn>
         </v-col>
     </v-row>
-    <v-data-table :headers="headers" :options.sync="options" :items="contents" :single-expand="true" hide-default-footer :expanded.sync="expanded" :loading="loading" disable-sort show-expand class="elevation-1" @click:row="(item, slot) => slot.expand(!slot.isExpanded)">
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" item-key="faqNo" hide-default-footer="hide-default-footer" :loading="loading" disable-sort="disable-sort" show-expand="show-expand" :single-expand="true" :expanded.sync="expanded" class="elevation-1" @click:row="(item, slot) => slot.expand(!slot.isExpanded)">
         <template v-slot:expanded-item="{ headers, item }">
             <td :colspan="headers.length">
                 {{ item.content }}
@@ -86,10 +86,6 @@ export default {
                     value: 'data-table-expand'
                 },
             ],
-            // icons: {
-            //     mdiPencil,
-            //     mdiDelete,
-            // },
             search: 'all',
 
         }
@@ -98,15 +94,16 @@ export default {
         getFAQ(selectedType) {
             this.loading = true
             this.search = selectedType;
+            this.expanded = [];
             axios({
                     method: 'get',
                     url: `/api/faq/get/${selectedType}`,
-                
+
                 })
                 .then(res => {
                     this.contents = res.data;
                     this.loading = false
-                    
+
                 })
         },
         colorPicker(put) {
@@ -115,26 +112,25 @@ export default {
             }
         },
         deleteFAQ(num) {
-            axios({ 
-                method: 'delete',
-                url:`/api/faq/deletefaq`,
-                params: {
-                    faqNo: num
-                }
-            })
-            .then(res => {
-                this.contents = res.data;
-                this.loading = false
-                alert("삭제가 완료되었습니다.")
-                this.$router.push(`/community/faq`);
-            })
-        
+            axios({
+                    method: 'delete',
+                    url: `/api/faq/deletefaq`,
+                    params: {
+                        faqNo: num
+                    }
+                })
+                .then(res => {
+                    this.contents = res.data;
+                    this.loading = false
+                    alert("삭제가 완료되었습니다.")
+                    this.$router.push(`/community/faq`);
+                })
+
         },
-        
         updateFAQ(num) {
             this.$router.push(`/updatePost/faq/${num}`);
-           
-        } 
+
+        }
     },
     watch: {
         options: {

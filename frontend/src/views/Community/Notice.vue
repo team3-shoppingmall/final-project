@@ -85,7 +85,7 @@ export default {
     },
     methods: {
         getNotice() {
-            this.loading = true
+            this.loading = true;
             const {
                 page,
                 itemsPerPage
@@ -102,7 +102,7 @@ export default {
                 })
                 .then(res => {
                     this.contents = res.data;
-                    this.loading = false
+                    this.loading = false;
                     axios({
                             method: 'get',
                             url: '/api/notice/getCount',

@@ -16,7 +16,6 @@ export default {
             axios.get(`/api/product/getProduct/${this.productNo}`).then(res => {
                 if (res.status == 200) {
                     this.product = res.data;
-                    return;
                 } else {
                     this.product = 'error';
                 }

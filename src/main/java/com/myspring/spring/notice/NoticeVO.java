@@ -8,7 +8,6 @@ public class NoticeVO {
 	private String id;
 	private String image;
 	
-	
 	public NoticeVO(int noticeNo, String title, String content, String id, String image) {
 		super();
 		this.noticeNo = noticeNo;
@@ -16,8 +15,7 @@ public class NoticeVO {
 		this.content = content;
 		this.id = id;
 		this.image = image;
-	}
-	
+	}	
 	
 	public int getNoticeNo() {
 		return noticeNo;
@@ -55,6 +53,5 @@ public class NoticeVO {
 		return "NoticeVO [noticeNo=" + noticeNo + ", title=" + title + ", content=" + content + ", id=" + id
 				+ ", image=" + image + "]";
 	}
-	
 	
 }

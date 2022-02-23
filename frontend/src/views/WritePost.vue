@@ -122,6 +122,7 @@
         </v-col>
     </v-row>
 
+
 </v-container>
 </template>
 
@@ -129,8 +130,10 @@
 import axios from 'axios'
 
 export default {
+
     data() {
         return {
+            
             pageID: '',
             admin: false,
             titles: [{
@@ -442,15 +445,35 @@ export default {
                 })
 
                 .then((res) => {
+                    if(res.status == 200) {
                     console.log(res.data, res.status);
                     alert("FAQ 등록 완료");
                     this.$router.go(-1);
+                    }
                 }).catch((err) => {
                     console.log(err);
                 })
 
         },
+               faqFormUpdate() {
+            axios({
+                    method: 'patch',
+                    url: `/api/faq/updatefaq`,
+                    params: {
+                          faqNo: this.num,
+                          type: this.faqTypeSelected,
+                          title: this.titleDetail,
+                          content: this.content,
 
+                    }
+                })
+                .then((res) => {
+                    if(res.status == 200){
+                    alert("수정이 완료되었습니다.")
+                    this.$router.go(-1);
+                    }
+                })
+        },
         qnaFormUpdate() {
 
             // this.sendType => 게시글 종류(notice, faq, qna(product, delivery) 등)
@@ -479,7 +502,7 @@ export default {
                 console.log(err);
             })
         },
-        //수정기능 완성 x
+        /* 수정기능 완성 x
         faqFormUpdate() {
 
             axios({
@@ -499,7 +522,7 @@ export default {
             }).catch((err) => {
                 console.log(err);
             })
-        },
+        }, */
     },
 
     watch: {
@@ -538,7 +561,7 @@ export default {
         } else {
             this.currentURL();
         }
-
+   
     }
 }
 </script>

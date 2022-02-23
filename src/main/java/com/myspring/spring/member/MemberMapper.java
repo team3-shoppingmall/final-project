@@ -1,7 +1,6 @@
 package com.myspring.spring.member;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -17,7 +16,7 @@ public interface MemberMapper {
 
 	// 전체 멤버 조회
 	@Select("select id, name, tel, email, zipcode, addr1, addr2, terms, point from membertable")
-	List<MemberVO> getAllMembers();
+	List<MemberVO> getMemberAll();
 
 	// 멤버 조회
 	@SelectProvider(type = MemberUtils.class, method = "getMembers")

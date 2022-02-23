@@ -2,6 +2,7 @@
 <v-container>
     <v-btn @click="test">테스트</v-btn>
 
+    {{titleSelected}}
     <v-row justify="center">
         <v-col align-self="center" cols="7">
             <div class="text-h3" v-if="originalNo == undefined">글쓰기</div>
@@ -14,7 +15,7 @@
                             <tr v-if="originalNo == undefined && pageID != 'review'">
                                 <td style="width:10%"> 제목 </td>
                                 <td>
-                                    <v-select v-model="titleSelected" :items="titles" v-if="!admin"></v-select>
+                                    <v-select v-model="titleSelected" :items="titles" v-if="!admin" @change="setContent(titleSelected)"></v-select>
                                     <v-text-field v-model="titleDetail" v-if="admin"></v-text-field>
                                 </td>
                             </tr>
@@ -169,7 +170,7 @@ export default {
             }, {
                 text: '배송 문의입니다',
                 value: 'delivery',
-                content:  "<p>★배송전 상품 변경/취소/환불/주소지변경 등 처리는<br>꼭!<strong> '배송전 변경/취소' </strong>게시판에 남겨주세요!★<br><br>---------------------------------------------<br>주문번호:</p>",
+                content: "<p>★배송전 상품 변경/취소/환불/주소지변경 등 처리는<br>꼭!<strong> '배송전 변경/취소' </strong>게시판에 남겨주세요!★<br><br>---------------------------------------------<br>주문번호:</p>",
                 type: 'deliveryQnA',
             }, {
                 text: '주문 취소 문의입니다',
@@ -357,23 +358,21 @@ export default {
             // this.$router.go(-1);
         },
         test() {
-            if(this.pageID == 'qna'){
+            if (this.pageID == 'qna') {
                 axios({
                     method: 'get',
                     url: `/api/qna/getqnabyqnaNo`,
                     params: {
                         qnaNo: this.num
                     }
-                }).then((res)=>{
-                    if(res.status == 200){
-                        this.titleSelected = res.data.type;
-                        //titleSelected를 type으로 받아서 제목을 바꿔주면 content가 default로 넣어둔 문구로 바뀜
-                        this.content = res.data.content;
-                    }
-                }).catch((err)=>{
+                }).then((res) => {
+                    this.titleSelected = res.data.type;
+                    this.content = res.data.content;
+
+                }).catch((err) => {
                     console.log(err);
                 })
-            }else if(this.pageID == 'review'){
+            } else if (this.pageID == 'review') {
                 axios({
                     method: 'get',
                     url: `/api/review/detail`,
@@ -520,6 +519,13 @@ export default {
                 console.log(err);
             })
         },
+        setContent(target) {
+            for (let i = 0; i < this.titles.length; i++) {
+                if (target == this.titles[i].value) {
+                    this.content = this.titles[i].content;
+                }
+            }
+        }
         /* 수정기능 완성 x
         faqFormUpdate() {
 
@@ -544,15 +550,15 @@ export default {
     },
 
     watch: {
-        titleSelected: {
-            handler() {
-                for (let i = 0; i < this.titles.length; i++) {
-                    if (this.titleSelected == this.titles[i].value) {
-                        this.content = this.titles[i].content;
-                    }
-                }
-            }
-        },
+        // titleSelected: {
+        //     handler() {
+        //         for (let i = 0; i < this.titles.length; i++) {
+        //             if (this.titleSelected == this.titles[i].value) {
+        //                 this.content = this.titles[i].content;
+        //             }
+        //         }
+        //     }
+        // },
         content: {
             handler() {
                 if (this.content.length > 2000) {
@@ -586,7 +592,7 @@ export default {
         } else {
             this.currentURL();
         }
-
+        this.test();
     }
 }
 </script>

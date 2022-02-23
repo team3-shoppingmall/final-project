@@ -12,7 +12,11 @@
                             <tbody>
                                 <tr>
                                     <td colspan="3">
-                                        {{product.productname}}
+                                        <div class="text-h6">
+                                            {{product.productName}}
+                                            - <span v-if="sizeOption != ''">{{sizeOption.length}} size</span>
+                                            <span v-if="sizeOption == ''">{{colorOption.length}} color</span>
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>
@@ -27,23 +31,34 @@
                                 <tr v-if="product.discount != 0">
                                     <td style="width:10%"> 할인가 </td>
                                     <td colspan="2">
-                                        {{product.price*(100-product.discount)/100}}원
+                                        {{product.price-product.discount}}원
                                     </td>
                                 </tr>
-                                <tr v-if="colorOption != []">
+                                <tr v-if="colorOption != ''">
                                     <td style="width:10%"> COLOR </td>
                                     <td colspan="2">
-                                        <span v-for="color in colorOption" :key="color">
-                                            <v-btn>{{color}}</v-btn>
-                                        </span>
+                                        <!-- size 있을 때 -->
+                                        <v-chip-group v-model="colorSelection" active-class="deep-purple--text text--accent-4" v-if="sizeOption != ''">
+                                            <v-chip label outlined v-for="color in colorOption" :key="color" :value="color">
+                                                {{ color }}
+                                            </v-chip>
+                                        </v-chip-group>
+                                        <!-- size 없을 때 -->
+                                        <v-chip-group active-class="deep-purple--text text--accent-4" v-if="sizeOption == ''">
+                                            <v-chip label outlined v-for="color in colorOption" :key="color" :value="color" @click="addSelected(color, null)">
+                                                {{ color }}
+                                            </v-chip>
+                                        </v-chip-group>
                                     </td>
                                 </tr>
-                                <tr v-if="sizeOption != []">
+                                <tr v-if="sizeOption != ''">
                                     <td style="width:10%"> SIZE </td>
                                     <td colspan="2">
-                                        <span v-for="size in sizeOption" :key="size">
-                                            <v-btn>{{size}}</v-btn>
-                                        </span>
+                                        <v-chip-group active-class="deep-purple--text text--accent-4">
+                                            <v-chip label outlined v-for="size in sizeOption" :key="size" :value="size" :disabled="colorOption != '' && colorSelection == ''" @click="addSelected(colorSelection, size)">
+                                                {{ size }}
+                                            </v-chip>
+                                        </v-chip-group>
                                     </td>
                                 </tr>
                                 <tr v-for="(option, idx) in selected" :key="idx">
@@ -52,7 +67,7 @@
                                             <v-col cols="9">
                                                 <v-row>
                                                     <v-col>
-                                                        <div class="text-h6"> {{option.productName}}</div>
+                                                        <div class="text-h6"> {{product.productName}}</div>
                                                         <div v-if="option.sizeSelected != undefined && option.colorSelected != undefined" class="text-subtitle-2"> - {{option.colorSelected}}/{{option.sizeSelected}}</div>
                                                         <div v-if="option.sizeSelected == undefined && option.colorSelected != undefined" class="text-subtitle-2"> - {{option.colorSelected}}</div>
                                                         <div v-if="option.sizeSelected != undefined && option.colorSelected == undefined" class="text-subtitle-2"> - {{option.sizeSelected}}</div>
@@ -62,10 +77,10 @@
                                             <v-col cols="3">
                                                 <v-row>
                                                     <v-col cols="6">
-                                                        <v-text-field type="number" min="1" :rules="[numberRule]" v-model="option.amount" @keyup="amountFilter"></v-text-field>
+                                                        <v-text-field type="number" min="1" :rules="[numberRule]" v-model="option.amount" @keyup="amountFilter" @click="amountFilter"></v-text-field>
                                                     </v-col>
                                                     <v-col cols="6" class="mt-5">
-                                                        <v-icon @click="deleteOption(idx)">mdi-delete</v-icon>
+                                                        <v-icon @click="deleteSelected(idx)">mdi-delete</v-icon>
                                                     </v-col>
                                                 </v-row>
                                             </v-col>
@@ -254,7 +269,7 @@
 
             <v-row>
                 <v-col>
-                    <ProductDetailReview />
+                    <!-- <ProductDetailReview /> -->
                 </v-col>
             </v-row>
 
@@ -275,7 +290,7 @@
 
             <v-row>
                 <v-col>
-                    <ProductDetailQnA />
+                    <!-- <ProductDetailQnA /> -->
                 </v-col>
             </v-row>
         </v-col>
@@ -284,16 +299,17 @@
 </template>
 
 <script>
-// import axios from 'axios'
-import ProductDetailReview from '@/components/ProductDetailReview.vue'
-import ProductDetailQnA from '@/components/ProductDetailQnA.vue'
+import axios from 'axios'
+// import ProductDetailReview from '@/components/ProductDetailReview.vue'
+// import ProductDetailQnA from '@/components/ProductDetailQnA.vue'
 export default {
     components: {
-        ProductDetailReview,
-        ProductDetailQnA,
+        // ProductDetailReview,
+        // ProductDetailQnA,
     },
     data() {
         return {
+            pageID: '',
             products: [{
                 productno: 1,
                 imageName: '',
@@ -304,16 +320,11 @@ export default {
                 discount: 5,
             }],
             product: '',
-            colorOption: ['빨강', '화이트'],
-            sizeOption: ['S', 'M', 'L'],
+            colorOption: '',
+            colorSelection: '',
+            sizeOption: '',
             images: [{}, {}, {}, {}, {}, {}, {}, {}, ],
-            selected: [{
-                productName: '블랙트위드 스커트',
-                price: 10000,
-                colorSelected: 'red',
-                sizeSelected: 'S',
-                amount: 1,
-            }],
+            selected: [],
             totalPrice: 0,
             number: 0,
             numberRule: val => {
@@ -326,6 +337,57 @@ export default {
     methods: {
         randomNumber(count) {
             return Math.floor(Math.random() * 100) + count;
+        },
+        getProudct() {
+            axios.get(`/api/product/getProduct/${this.pageID}`).then(res => {
+                if (res.status == 200) {
+                    this.product = res.data;
+                    if (this.product.color != null) {
+                        this.colorOption = this.product.color.split(';');
+                    }
+                    if (this.product.size != null) {
+                        this.sizeOption = this.product.size.split(';');
+                    }
+                } else {
+                    console.log(res.status);
+                }
+            })
+        },
+        addSelected(color, size) {
+            let data = {
+                productNo: this.product.productNo,
+                price: this.product.price - this.product.discount,
+                colorSelected: color,
+                sizeSelected: size,
+                amount: 1
+            }
+            for (let i = 0; i < this.selected.length; i++) {
+                if (this.selected[i].colorSelected == data.colorSelected && this.selected[i].sizeSelected == data.sizeSelected) {
+                    alert('이미 추가한 옵션입니다. 옵션 개수를 조정해주세요.');
+                    return;
+                }
+            }
+            this.selected.push(data);
+            this.amountFilter();
+        },
+        deleteSelected(num) {
+            this.selected.splice(num, 1);
+            this.amountFilter();
+        },
+        amountFilter() {
+            let amount = 0;
+            console.log(this.selected);
+            for (let i = 0; i < this.selected.length; i++) {
+                console.log(this.selected[i].amount);
+                if (this.selected[i].amount > 0 && this.selected[i].amount == Math.round(this.selected[i].amount)) {
+                    amount += Number(this.selected[i].amount);
+                } else {
+                    alert('잘못된 입력입니다.');
+                    this.selected[i].amount = 1;
+                    amount += Number(this.selected[i].amount);
+                }
+            }
+            this.totalPrice = amount * (this.product.price - this.product.discount);
         },
         scrollTo(tag) {
             let scroll = 0;
@@ -343,26 +405,10 @@ export default {
                 behavior: 'smooth'
             });
         },
-        amountFilter(event) {
-            let number = event.target.value;
-            console.log(number);
-            number = Math.round(number);
-            if (!(number > 0) || number != event.target.value) {
-                alert('잘못된 입력입니다.');
-                event.target.value = '';
-            }
-        },
     },
-    watch: {
-        selected: {
-            Handler() {
-                let amount = 0;
-                for (let i = 0; i < this.selected.length; i++) {
-                    amount += this.selected[i].amount;
-                }
-                this.totalPrice = amount * this.product.price * (100 - this.product.discount) / 100;
-            }
-        }
+    mounted() {
+        this.pageID = this.$route.params.id;
+        this.getProudct();
     }
 }
 </script>

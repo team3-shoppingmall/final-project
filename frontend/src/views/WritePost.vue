@@ -79,7 +79,7 @@
                     <v-col cols="auto" v-if="originalNo != undefined">
                         <v-btn @click="replyForm" outlined>답변 작성</v-btn>
                     </v-col>
-                    <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
+                    <v-col cols="auto" v-if ="(num == '' || num == undefined) && originalNo == undefined">
                         <v-btn @click="form" outlined>작성</v-btn>
                     </v-col>
                     <v-col cols="auto" v-if="num != '' && num != undefined">
@@ -306,11 +306,11 @@ export default {
             // this.$router.go(-1);
         },
         noticeForm() {
-            if (this.pageID != 'notice' && this.pageID != 'faq') {
-                if (this.titleSelected == 'default') {
-                    alert('제목을 선택해주세요');
-                }
-            }
+            // if (this.pageID != 'notice' && this.pageID != 'faq') {
+            //     if (this.titleSelected == 'default') {
+            //         alert('제목을 선택해주세요');
+            //     }
+            // }
             axios({
                 method: 'post',
                 url: `/api/notice/insertNotice`,
@@ -368,11 +368,11 @@ export default {
 
         
         noticeFormUpdate() {
-            if (this.pageID != 'notice' && this.pageID != 'faq') {
-                if (this.titleSelected == 'default') {
-                    alert('제목을 선택해주세요')
-                }
-            }
+            // if (this.pageID != 'notice' && this.pageID != 'faq') {
+            //     if (this.titleSelected == 'default') {
+            //         alert('제목을 선택해주세요')
+            //     }
+            // }
             axios({
                 method: 'patch',
                 url: `/api/notice/updateNotice`,

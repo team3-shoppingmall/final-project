@@ -312,11 +312,6 @@ export default {
             // this.$router.go(-1);
         },
         noticeForm() {
-            // if (this.pageID != 'notice' && this.pageID != 'faq') {
-            //     if (this.titleSelected == 'default') {
-            //         alert('제목을 선택해주세요');
-            //     }
-            // }
             axios({
                 method: 'post',
                 url: `/api/notice/insertNotice`,
@@ -327,12 +322,13 @@ export default {
                     image: "",
                 }
             }).then((res) => {
-                if (res.status == 200) {
+                {
                     console.log(res.data, res.status);
                     alert("공지사항 등록 완료");
                     this.$router.go(-1);
                 }
             }).catch((err) => {
+                alert("등록 실패");
                 console.log(err);
 
             })
@@ -388,11 +384,6 @@ export default {
         },
 
         noticeFormUpdate() {
-            // if (this.pageID != 'notice' && this.pageID != 'faq') {
-            //     if (this.titleSelected == 'default') {
-            //         alert('제목을 선택해주세요')
-            //     }
-            // }
             axios({
                 method: 'patch',
                 url: `/api/notice/updateNotice`,
@@ -403,12 +394,15 @@ export default {
                     image: "",
                 }
             }).then((res) => {
-                if (res.status == 200) {
+                {
+                    this.titleDetail = res.data.content;
+                    this.content = res.data.content;
                     console.log(res.data, res.status);
                     alert("공지사항 수정 완료");
                     this.$router.go(-1);
                 }
             }).catch((err) => {
+                alert("수정 실패");
                 console.log(err);
             })
         },

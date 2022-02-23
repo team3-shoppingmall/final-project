@@ -8,6 +8,8 @@ public class NoticeVO {
 	private String id;
 	private String image;
 	
+	public NoticeVO() {}
+	
 	public NoticeVO(int noticeNo, String title, String content, String id, String image) {
 		super();
 		this.noticeNo = noticeNo;

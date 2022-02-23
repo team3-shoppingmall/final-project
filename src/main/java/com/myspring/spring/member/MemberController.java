@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,23 +20,25 @@ public class MemberController {
 	public MemberController(MemberService memberService) {
 		this.memberService = memberService;
 	}
-	
+
 	// 멤버 등록
 	@PostMapping(value = "/insert")
 	public ResponseEntity<?> insertMember(@RequestBody MemberVO member) {
 		memberService.insertMember(member);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
-	
+
 	// 전체 멤버 조회
-	@GetMapping(value = "/getAllmembers")
-	public ResponseEntity<?> getAllmembers() {
-		return 	memberService.getAllmembers();
+	@GetMapping(value = "/getAllMembers")
+	public ResponseEntity<?> getAllMembers() {
+		return memberService.getAllMembers();
 	}
-	
-	// 아이디로 멤버 조회
-	@GetMapping(value = "/getMember/{id}")
-	public ResponseEntity<?> getMember(@PathVariable("id") String id) {
-		return 	memberService.getMember(id);
+
+	// 멤버 조회
+	@GetMapping(value = "/getMembers")
+	public ResponseEntity<?> getMembers(@RequestParam("condition") String condition,
+			@RequestParam("param") Object param) {
+		return memberService.getMembers(condition, param);
 	}
+
 }

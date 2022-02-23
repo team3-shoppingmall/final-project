@@ -29,7 +29,7 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                {{qna.content}}
+                                <div v-html="qna.content"></div>
                             </td>
                         </tr>
                         <tr v-if="image1 != ''">
@@ -139,8 +139,8 @@ export default {
                 this.$router.push(`/replyPost/${this.qna.type}/${this.qna.qnaNo}`)
         },
         moveToUpdate() {
-            if (this.reply == true)
-                alert("이미 답변이 완료된 문의글이므로 수정하실 수 없습니다.");
+            if (this.qna.reply == true)
+                alert("이미 답변이 완료된 문의글이므로 수정이 불가합니다.");
             else
                 this.$router.push(`/updatePost/qna/${this.qna.qnaNo}`)
         },

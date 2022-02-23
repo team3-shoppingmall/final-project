@@ -83,7 +83,7 @@ export default {
                 ],
             }, {
                 name: 'MyPage',
-                to: '/myPage',
+                to: '/myPage/home',
             }, {
                 name: 'Payment',
                 to: '/payment',

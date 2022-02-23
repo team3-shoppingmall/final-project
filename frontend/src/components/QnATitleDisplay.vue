@@ -49,6 +49,10 @@ export default {
                 },
                 {
                     text: '답변합니다',
+                    value: 'generalReply',
+                },
+                {
+                    text: '답변합니다',
                     value: 'productReply',
                 },
                 {
@@ -57,11 +61,27 @@ export default {
                 },
                 {
                     text: '답변합니다',
-                    value: 'beforeDeliveryReply',
+                    value: 'cancelReply',
                 },
                 {
                     text: '답변합니다',
-                    value: 'afterDeliveryReply',
+                    value: 'changeReply',
+                },
+                {
+                    text: '답변합니다',
+                    value: 'changeaddressReply',
+                },
+                {
+                    text: '답변합니다',
+                    value: 'returnReply',
+                },
+                {
+                    text: '답변합니다',
+                    value: 'exchangeReply',
+                },
+                {
+                    text: '답변합니다',
+                    value: 'errorReply',
                 },
             ],
         }

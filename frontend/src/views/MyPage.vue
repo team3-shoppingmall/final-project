@@ -1,43 +1,26 @@
 <template>
-<v-container  style="min-height: 910px;">
+<v-container style="min-height: 910px;">
     <v-row justify="center">
         <v-col cols="9">
             <div class="text-h3">MY PAGE</div>
-            <MyPageButton class="mt-6 " />
+            <v-row class="justify-center">
+                <v-btn class="mx-5" :to="'/myPage/home'">MY PAGE</v-btn>
+                <v-btn class="mx-5" :to="'/myPage/order'">ORDER</v-btn>
+                <v-btn class="mx-5" :to="'/myPage/profile'">PROFILE</v-btn>
+                <v-btn class="mx-5" :to="'/myPage/wishlist'">WISH LIST</v-btn>
+                <v-btn class="mx-5" :to="'/myPage/point'">POINT</v-btn>
+                <v-btn class="mx-5" :to="'/myPage/board'">BOARD</v-btn>
+            </v-row>
+        </v-col>
+    </v-row>
+    <v-row>
+        <v-col>
+            <v-divider class="mt-5"></v-divider>
         </v-col>
     </v-row>
     <v-row justify="center">
         <v-col cols="9">
-            <v-simple-table>
-                <tbody>
-                    <tr>
-                        <td class="text-h5" colspan="4">나의 주문처리 현황
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <v-card outlined="outlined">입금 전</v-card>
-                        </td>
-                        <td>
-                            <v-card outlined="outlined">배송준비중</v-card>
-                        </td>
-                        <td>
-                            <v-card outlined="outlined">배송중</v-card>
-                        </td>
-                        <td>
-                            <v-card outlined="outlined">배송완료</v-card>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <v-card outlined="outlined">사용적립금</v-card>
-                        </td>
-                        <td colspan="2">
-                            <v-card outlined="outlined">총주문</v-card>
-                        </td>
-                    </tr>
-                </tbody>
-            </v-simple-table>
+            <router-view></router-view>
         </v-col>
     </v-row>
 
@@ -45,11 +28,8 @@
 </template>
 
 <script>
-import MyPageButton from '@/components/MyPageButton.vue'
 export default {
-    components: {
-        MyPageButton
-    }
+    components: {}
 }
 </script>
 

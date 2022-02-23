@@ -1,11 +1,13 @@
 package com.myspring.spring.member;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.SelectProvider;
 
 @Mapper
 public interface MemberMapper {
@@ -14,11 +16,11 @@ public interface MemberMapper {
 	int insertMember(@Param("in") MemberVO member);
 
 	// 전체 멤버 조회
-	@Select("select id, name, tel, email, zipcode, addr1, addr2, terms, point, authority from membertable")
+	@Select("select id, name, tel, email, zipcode, addr1, addr2, terms, point from membertable")
 	List<MemberVO> getAllMembers();
 
-	// 아이디로 멤버 조회
-	@Select("select * from membertable where id = #{id}")
-	MemberVO getMember(@Param("id") String id);
+	// 멤버 조회
+	@SelectProvider(type = MemberUtils.class, method = "getMembers")
+	List<MemberVO> getMembers(String condition, Object param);
 
 }

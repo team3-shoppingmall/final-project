@@ -23,6 +23,7 @@ public class QnaService {
 	// afterDelivery => 'return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply'
 	public ResponseEntity<?> getCount(String search, String searchWord, String type) {
 		int res = 0;
+		System.out.println(type);
 
 		if (type.equals("product")) {
 			// 상품문의 전체 개수 조회

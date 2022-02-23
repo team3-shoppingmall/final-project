@@ -46,7 +46,7 @@ export default {
                 to: '/',
             }, {
                 name: 'ADMIN',
-                to: '/admin/admin1',
+                to: '/admin/ProductManage',
             }, {
                 name: 'BASKET',
                 to: '/basket',

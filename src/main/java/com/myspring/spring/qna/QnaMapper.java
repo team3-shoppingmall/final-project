@@ -22,7 +22,7 @@ public interface QnaMapper {
 	QnaVO getQna(@Param("qnaNo") int qnaNo);
 	
 	// 문의 게시판 목록 조회
-	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') order by qnaNo desc limit #{start}, #{perPage}")
+	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') by originalNo desc, qnaNo asc limit #{start}, #{perPage}")
 	List<QnaVO> getQnaWithSearch(@Param("start") int start, @Param("perPage") int perPage, @Param("search") String search, @Param("searchWord") String searchWord);
 	
 	
@@ -39,7 +39,7 @@ public interface QnaMapper {
 	List<QnaVO> getQnaByType(@Param("type") String type);
 	
 	//상품문의 카테고리 전체 조회 & 아이디, 내용, 상품명으로 조회
-	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in ('general', 'product', 'productNotice', 'productReply', 'generalReply') order by qnaNo desc limit #{start}, #{perPage}")
+	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in ('general', 'product', 'productNotice', 'productReply', 'generalReply') order by originalNo desc, qnaNo asc limit ${start}, ${perPage}")
 	List<QnaVO> getQnaProductAll(@Param("start") int start, @Param("perPage") int perPage, @Param("search") String search, @Param("searchWord") String searchWord);
 	
 	//상품문의 카테고리 갯수 가져오기
@@ -47,7 +47,7 @@ public interface QnaMapper {
 	int getQnaProductCount(@Param("search") String search, @Param("searchWord") String searchWord);
 	
 	// 배송 전 변경&취소 카테고리 전체 조회 & 아이디, 내용으로 조회 
-	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in ('cancel', 'change', 'changeaddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply') order by qnaNo desc")
+	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in ('cancel', 'change', 'changeaddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply') order by originalNo desc, qnaNo asc limit ${start}, ${perPage}")
 	List<QnaVO> getQnaBeforeDeliveryAll(@Param("start") int start, @Param("perPage") int perPage, @Param("search") String search, @Param("searchWord") String searchWord);
 	
 	// 배송 전 변경&취소 카테고리 전체 갯수 가져오기
@@ -55,7 +55,7 @@ public interface QnaMapper {
 	int getQnaBeforeDeliveryCount(@Param("search") String search, @Param("searchWord") String searchWord);
 	
 	// 배송 문의 카테고리 전체 조회 & 아이디, 내용으로 조회
-	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in('delivery', 'deliveryNotice', 'deliveryReply') order by qnaNo desc")
+	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in('delivery', 'deliveryNotice', 'deliveryReply') order by originalNo desc, qnaNo asc limit #{start}, #{perPage}")
 	List<QnaVO> getQnaDelieveryAll(@Param("start") int start, @Param("perPage") int perPage, @Param("search") String search, @Param("searchWord") String searchWord);
 	
 	// 배송 문의 카테고리 전체 갯수 가져오기
@@ -63,7 +63,7 @@ public interface QnaMapper {
 	int getQnaDeliveryCount(@Param("search") String search, @Param("searchWord") String searchWord);
 	
 	// 배송 후 교환&반품 카테고리 전체 조회
-	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply') order by qnaNo desc")
+	@Select("select * from qnatable where ${search} like CONCAT('%', #{searchWord}, '%') AND type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply') order by originalNo desc, qnaNo asc limit #{start}, #{perPage}")
 	List<QnaVO> getQnaAfterDeliveryAll(@Param("start") int start, @Param("perPage") int perPage, @Param("search") String search, @Param("searchWord") String searchWord);
 	
 	// 배송 후 교환&반품 카테고리 전체 갯수 가져오기
@@ -71,7 +71,7 @@ public interface QnaMapper {
 	int getQnaAfterDeliveryCount(@Param("search") String search, @Param("searchWord") String searchWord);
 	
 	// 문의 등록
-	@Insert("insert into qnatable(type, originalNo, reply, content, id, secret, image) values(#{in.type}, last_insert_id()+1, #{in.reply}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
+	@Insert("insert into qnatable(productNo, type, originalNo, reply, content, id, secret, image) values(#{in.productNo}, #{in.type}, last_insert_id()+1, #{in.reply}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
 	int insertQna(@Param("in") QnaVO qnaVO);
 	
 	// 댓글 등록

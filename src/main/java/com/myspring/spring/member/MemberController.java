@@ -29,9 +29,9 @@ public class MemberController {
 	}
 
 	// 전체 멤버 조회
-	@GetMapping(value = "/getAllMembers")
-	public ResponseEntity<?> getAllMembers() {
-		return memberService.getAllMembers();
+	@GetMapping(value = "/getMemberAll")
+	public ResponseEntity<?> getMemberAll() {
+		return memberService.getMemberAll();
 	}
 
 	// 멤버 조회

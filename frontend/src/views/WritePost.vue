@@ -2,6 +2,7 @@
 <v-container>
     <v-btn @click="test">테스트</v-btn>
 
+    {{titleSelected}}
     <v-row justify="center">
         <v-col align-self="center" cols="7">
             <div class="text-h3" v-if="originalNo == undefined">글쓰기</div>
@@ -14,7 +15,7 @@
                             <tr v-if="originalNo == undefined && pageID != 'review'">
                                 <td style="width:10%"> 제목 </td>
                                 <td>
-                                    <v-select v-model="titleSelected" :items="titles" v-if="!admin"></v-select>
+                                    <v-select v-model="titleSelected" :items="titles" v-if="!admin" @change="setContent(titleSelected)"></v-select>
                                     <v-text-field v-model="titleDetail" v-if="admin"></v-text-field>
                                 </td>
                             </tr>
@@ -154,52 +155,52 @@ export default {
             }, {
                 text: '상품 문의입니다',
                 value: 'product',
-                content: '<p>상품 문의 관련 text</p>',
+                content: '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>&#8251;게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br></p>',
                 type: 'product',
             }, {
                 text: '상품 문의입니다',
                 value: 'product',
-                content: '<p>상품 문의 관련 text</p>',
+                content: '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>&#8251;게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br></p>',
                 type: 'productQnA',
             }, {
                 text: '일반 문의입니다',
                 value: 'general',
-                content: '<p>일반 문의 관련 text</p>',
+                content: '<p>이곳은 일반문의를 위한 게시판입니다.<br>상품과 관련된 문의는 제목을 상품문의로 선택해주세요!<br><br>&#8251;게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br></p>',
                 type: 'productQnA',
             }, {
                 text: '배송 문의입니다',
                 value: 'delivery',
-                content: '<p>배송 문의 관련 text</p>',
+                content: "<p>★배송전 상품 변경/취소/환불/주소지변경 등 처리는<br>꼭!<strong> '배송전 변경/취소' </strong>게시판에 남겨주세요!★<br><br>---------------------------------------------<br>주문번호:</p>",
                 type: 'deliveryQnA',
             }, {
                 text: '주문 취소 문의입니다',
                 value: 'cancel',
-                content: '<p>주문 취소 문의 관련 text</p>',
+                content: "<p><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>-----------------------------------------------<br>*주문취소*(전체취소시 상품명에 '전체취소' 꼭! 기재해주세요!)<br><br><strong>주문번호 :</strong><br><strong>상품명(옵션포함기재):</strong><br><strong>※결제시 입금한 이름의 계좌번호※</strong><br><strong>환불계좌번호:</strong><br><strong>은행사 :</strong><br><strong>예금주명 :</strong><br><br>♥해당 양식에 정확한 상품명 남겨주셔야 처리가 가능합니다♥</p>",
                 type: 'beforeDeliveryQnA',
             }, {
                 text: '상품 변경 문의입니다',
                 value: 'change',
-                content: '<p>상품 변경 문의 관련 text</p>',
+                content: '<p>♥해당 양식에 정확한 상품명을 기재해주셔야 처리가 가능합니다♥<br><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>-----------------------------------------------<br>*상품변경*<br><br>주문번호 :<br>변경전 상품명 (사이즈,컬러) :<br>변경후 상품명 (사이즈,컬러) :</p>',
                 type: 'beforeDeliveryQnA',
             }, {
                 text: '주소 변경 문의입니다',
                 value: 'changeAddress',
-                content: '<p>주소 변경 문의 관련 text</p>',
+                content: '<p>♥해당 양식에 정확한 주문번호를 기재해주셔야 처리가 가능합니다♥<br><br><br>-----------------------------------------------<br>*주소지 변경*<br><br>주문번호 :<br>변경 주소지(번지수포함) :</p>',
                 type: 'beforeDeliveryQnA',
             }, {
                 text: '반품 문의입니다',
                 value: 'return',
-                content: '<p>반품 문의 관련 text</p>',
+                content: '<p>♥해당 양식에 정확한 정보를 기재해주셔야 처리가 가능합니다♥<br><br><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>--------------------------------------<br>*반품*<br><br><strong>주문번호 :</strong><br><strong>상품명(사이즈,컬러):</strong><br><strong>반품 사유 :</strong><br><strong>&#8251;결제시 입금한 이름의 계좌번호&#8251;</strong><br><strong>환불계좌번호(은행사포함) :</strong><br><strong>예금주명 :</strong><br><br>(수령주소지로 자동 회수접수)<br>&#8251;회수주소 변경 원하실 경우에만 새주소지와 함께 기재해 주세요.<br><br>회수주소:<br><br>--------------------------------------<br>&nbsp;</p>',
                 type: 'afterDeliveryQnA',
             }, {
                 text: '교환 문의입니다',
                 value: 'exchange',
-                content: '<p>교환 문의 관련 text</p>',
+                content: '<p>♥해당 양식에 정확한 정보를 기재해주셔야 처리가 가능합니다♥<br><br><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>--------------------------------------<br>*교환*<br><br><strong>주문번호 :</strong><br><strong>교환전 상품명(사이즈,컬러) :</strong><br><strong>교환후 상품명(사이즈,컬러) :</strong><br><strong>왕복 배송비 입금자명/입금날짜 :</strong><br><br>(수령주소지로 자동 회수접수)<br>※회수/교환상품수령지 변경 원하실 경우에만 새주소지 함께 기재해 주세요.<br><br>회수주소:<br>교환상품 수령 주소:<br>&nbsp;</p>',
                 type: 'afterDeliveryQnA',
             }, {
                 text: '불량 상품/오배송 문의입니다',
                 value: 'error',
-                content: '<p>불량 상품/오배송 문의 관련 text</p>',
+                content: '<p>♥해당 양식에 정확한 정보를 기재해주셔야 처리가 가능합니다♥<br><br>--------------------------------------<br>*불량/오배송*<br><br><strong>▷바코드(검수완료)사진</strong><br><strong>▷불량사진</strong><br><strong>(필수첨부 부탁드립니다!)</strong><br><br>주문번호 :<br>교환/반품 (원하시는 처리 선택해주세요!) :<br>상품 수령일자 : ( / )<br>반품 접수일자 : ( / )<br>상품명(사이즈,컬러) :<br>불량/오배송 사유 :<br>검수번호(숫자나 알파벳) :<br><br>(상품바코드옆 검수자 숫자한자리/두자리를 기재합니다.)</p>',
                 type: 'afterDeliveryQnA',
             }, ],
             faqType: [{
@@ -357,18 +358,33 @@ export default {
             // this.$router.go(-1);
         },
         test() {
-            axios({
-                method: 'get',
-                url: `/api/review/detail`,
-                params: {
-                    reviewNo: this.num
-                }
-            }).then((res) => {
-                if (res.status == 200) {
+            if (this.pageID == 'qna') {
+                axios({
+                    method: 'get',
+                    url: `/api/qna/getqnabyqnaNo`,
+                    params: {
+                        qnaNo: this.num
+                    }
+                }).then((res) => {
+                    this.titleSelected = res.data.type;
                     this.content = res.data.content;
-                    this.star = res.data.star;
-                }
-            })
+                }).catch((err) => {
+                    console.log(err);
+                })
+            } else if (this.pageID == 'review') {
+                axios({
+                    method: 'get',
+                    url: `/api/review/detail`,
+                    params: {
+                        reviewNo: this.num
+                    }
+                }).then((res) => {
+                    if (res.status == 200) {
+                        this.content = res.data.content;
+                        this.star = res.data.star;
+                    }
+                })
+            }
         },
 
         noticeFormUpdate() {
@@ -482,7 +498,6 @@ export default {
             //axios status==200 안으로 넣어야 함
             // alert('완료');
             // this.$router.go(-1);
-
             axios({
                 method: 'patch',
                 url: `/api/qna/updateqna`,
@@ -503,6 +518,13 @@ export default {
                 console.log(err);
             })
         },
+        setContent(target) {
+            for (let i = 0; i < this.titles.length; i++) {
+                if (target == this.titles[i].value) {
+                    this.content = this.titles[i].content;
+                }
+            }
+        }
         /* 수정기능 완성 x
         faqFormUpdate() {
 
@@ -527,15 +549,15 @@ export default {
     },
 
     watch: {
-        titleSelected: {
-            handler() {
-                for (let i = 0; i < this.titles.length; i++) {
-                    if (this.titleSelected == this.titles[i].value) {
-                        this.content = this.titles[i].content;
-                    }
-                }
-            }
-        },
+        // titleSelected: {
+        //     handler() {
+        //         for (let i = 0; i < this.titles.length; i++) {
+        //             if (this.titleSelected == this.titles[i].value) {
+        //                 this.content = this.titles[i].content;
+        //             }
+        //         }
+        //     }
+        // },
         content: {
             handler() {
                 if (this.content.length > 2000) {
@@ -569,7 +591,7 @@ export default {
         } else {
             this.currentURL();
         }
-
+        this.test();
     }
 }
 </script>

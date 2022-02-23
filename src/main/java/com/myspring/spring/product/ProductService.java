@@ -17,14 +17,19 @@ public class ProductService {
 	}
 
 	// 상품 리스트 조회
-	public ResponseEntity<?> getProductListByType(int page, int perPage, String type1, String type2) {
-		List<ProductVO> res = null;
+	public ResponseEntity<?> getProductListByType(int page, int perPage, String type1, String type2, String searchWord,
+			int minPrice, int maxPrice, String searchOrder) {
+		System.out.println(page);
+		System.out.println(perPage);
+		System.out.println(type1);
+		System.out.println(type2);
+		System.out.println(searchWord);
+		System.out.println(minPrice);
+		System.out.println(maxPrice);
+		System.out.println(searchOrder);
 		int start = (page - 1) * perPage;
-		if (type2.equals("all")) {
-			res = productMapper.getProductListByType1(start, perPage, type1);
-		} else {
-			res = productMapper.getProductListByTypeAll(start, perPage, type1, type2);
-		}
+		List<ProductVO> res = productMapper.getProductListByType(start, perPage, type1, type2, searchWord, minPrice,
+				maxPrice, searchOrder);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
@@ -32,13 +37,9 @@ public class ProductService {
 	}
 
 	// 상품 리스트 전체 개수 조회
-	public ResponseEntity<?> getProductCountByType(String type1, String type2) {
-		int res = 0;
-		if (type2.equals("all")) {
-			res = productMapper.getProductCountByType1(type1);
-		} else {
-			res = productMapper.getCountByTypeAll(type1, type2);
-		}
+	public ResponseEntity<?> getProductCountByType(String type1, String type2, String searchWord, int minPrice,
+			int maxPrice, String searchOrder) {
+		int res = productMapper.getProductCountByType(type1, type2, searchWord, minPrice, maxPrice, searchOrder);
 		if (res == 0)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
@@ -47,12 +48,7 @@ public class ProductService {
 
 	// 많이 팔린 상품 조회
 	public ResponseEntity<?> getBestProductListByType(String type1, String type2) {
-		List<ProductVO> res = null;
-		if (type2.equals("all")) {
-			res = productMapper.getBestProductListByType1(type1);
-		} else {
-			res = productMapper.getBestProductListByTypeAll(type1, type2);
-		}
+		List<ProductVO> res = productMapper.getBestProductListByType(type1, type2);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else

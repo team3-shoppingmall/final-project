@@ -1,21 +1,18 @@
 <template>
 <v-container>
-    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort="disable-sort">
-        <template #top="{ }">
-            <div class="text-left text-h5 pa-2">후기내역</div>
-        </template>
-        <template #[`item.productno`]="{item}">
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
+        <template #[`item.productName`]="{index}">
             <div class="text-left">
-                <ProductNameDisplay :productno="item.productno" />
+                {{ nameList[index] }}
             </div>
         </template>
         <template #[`item.star`]="{item}">
-            <v-rating hover="hover" length="5" readonly="readonly" size="10" :value="item.star"></v-rating>
+            <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" length="5" readonly size="10" :value="item.star"></v-rating>
         </template>
         <template #[`item.content`]="{item}">
-            <v-row justify="space-between">
+            <v-row justify="space-between" align="center">
                 <v-col>
-                    <div class="text-left">{{ item.content }}</div>
+                    <div v-html="item.content" class="text-left"></div>
                 </v-col>
                 <v-col cols="auto">
                     <v-icon @click="updateReview(item.reviewNo)" v-if="admin">mdi-pencil</v-icon>
@@ -32,17 +29,18 @@
             <DateDisplay :regDate="item.regDate" />
         </template>
     </v-data-table>
+
     <v-row align="center" justify="space-between">
         <v-col class="d-flex" cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
                 <v-col cols="4">
-                    <v-select :items="searches" v-model="search" hide-details="hide-details"></v-select>
+                    <v-select :items="searches" v-model="search"></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord" hide-details="hide-details"></v-text-field>
+                    <v-text-field v-model="searchWord"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn @click="getReview" class="primary">검색</v-btn>
+                    <v-btn icon="icon" @click="getReview">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -54,22 +52,18 @@
 import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
-import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
 export default {
     components: {
         HideId,
         DateDisplay,
-        ProductNameDisplay
     },
     data() {
         return {
-
             admin: true,
             totalContents: 0,
             contents: [],
-            options: {
-                itemsPerPage: 5
-            },
+            nameList: [],
+            options: {},
             loading: true,
             headers: [{
                 text: '번호',
@@ -79,7 +73,7 @@ export default {
                 divider: true
             }, {
                 text: '상품명',
-                value: 'productno',
+                value: 'productName',
                 width: '10%',
                 align: 'center',
                 divider: true
@@ -109,7 +103,7 @@ export default {
             }],
             searches: [{
                 text: '상품명',
-                value: 'productname'
+                value: 'productName'
             }, {
                 text: '작성자',
                 value: 'id'
@@ -127,7 +121,7 @@ export default {
             } = this.options;
             axios({
                 method: 'get',
-                url: `/api/review/getReview`,
+                url: `/api/review/getAllReviews`,
                 params: {
                     page: page,
                     perPage: itemsPerPage,
@@ -135,27 +129,32 @@ export default {
                     searchWord: this.searchWord
                 }
             }).then(res => {
-                this.contents = res.data;
+                this.contents = res.data.reviewList;
+                this.totalContents = res.data.count;
+                this.nameList = res.data.nameList;
                 this.loading = false;
-                axios({
-                    method: 'get',
-                    url: '/api/review/getCount',
-                    params: {
-                        search: this.search,
-                        searchWord: this.searchWord
-                    }
-                }).then(res => {
-                    this.totalContents = res.data;
-                })
             })
         },
+
         deleteReview(num) {
-            console.log(num);
+            axios({
+                    method: 'delete',
+                    url: `/api/review/delete`,
+                    params: {
+                        reviewNo: num
+                    }
+                })
+                .then(res => {
+                    console.log(res.data);
+                    if (res.status == 200) {
+                        alert("삭제가 완료되었습니다.")
+                        this.$router.go();
+                    }
+                })
         },
+
         updateReview(num) {
-            this
-                .$router
-                .push(`/updatePost/review/${num}`);
+            this.$router.push(`/updatePost/review/${num}`);
         }
     },
     watch: {

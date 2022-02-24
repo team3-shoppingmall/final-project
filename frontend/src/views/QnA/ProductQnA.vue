@@ -1,13 +1,10 @@
 <template>
-    <v-container>
-    
-        <div>
-    
-            
+<v-container>
+    <div>
         <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
-            <template #[`item.productName`]="{item}">
+            <template #[`item.productName`]="{index}">
                 <div class="text-left">
-                    {{item.productName}}
+                    {{ nameList[index] }}
                 </div>
             </template>
             <template #[`item.type`]="{item}">
@@ -64,6 +61,7 @@ export default {
         return {
             totalContents: 0,
             contents: [],
+            nameList: [],
             options: {},
             loading: true,
             headers: [{
@@ -102,21 +100,18 @@ export default {
                 },
             ],
             searches: [{
-                    text: '상품명',
-                    value: 'productName'
-                }, {
-                    text: '제목',
-                    value: 'title'
-                },
-                {
-                    text: '내용',
-                    value: 'content'
-                },
-                {
-                    text: '작성자',
-                    value: 'id'
-                }
-            ],
+                text: '상품명',
+                value: 'productName'
+            }, {
+                text: '제목',
+                value: 'type'
+            }, {
+                text: '내용',
+                value: 'content'
+            }, {
+                text: '작성자',
+                value: 'id'
+            }],
             search: 'id',
             searchWord: '',
 
@@ -141,10 +136,10 @@ export default {
                 }
             }).then(res => {
                 console.log(res);
-                //this.productNo = res.data.nameList;
+                this.nameList = res.data.nameList;
                 this.contents = res.data.qnaList;
                 this.totalContents = res.data.count;
-                this.loading = false
+                this.loading = false;
                 // axios.get('/api/qna/getCount', {
                 //         params: {
                 //             search: this.search,

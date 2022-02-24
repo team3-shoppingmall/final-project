@@ -2,9 +2,9 @@
 <v-container>
     <div>
         <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
-            <template #[`item.productNo`]="{item}">
+            <template #[`item.productName`]="{item}">
                 <div class="text-left">
-                    <ProductNameDisplay :productNo="item.productNo" />
+                    {{item.productName}}
                 </div>
             </template>
             <template #[`item.type`]="{item}">
@@ -51,13 +51,11 @@ import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 import QnATitleDisplay from '@/components/QnATitleDisplay.vue'
-import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
 export default {
     components: {
         HideId,
         DateDisplay,
         QnATitleDisplay,
-        ProductNameDisplay,
     },
     data() {
         return {
@@ -74,7 +72,7 @@ export default {
                 },
                 {
                     text: '상품명',
-                    value: 'productNo',
+                    value: 'productName',
                     width: '20%',
                     align: 'center',
                     divider: true
@@ -102,7 +100,7 @@ export default {
             ],
             searches: [{
                     text: '상품명',
-                    value: 'productname'
+                    value: 'productName'
                 }, {
                     text: '제목',
                     value: 'title'
@@ -130,26 +128,26 @@ export default {
             } = this.options
             let link = document.location.href;
             link = link.slice(26, link.length - 3);
-            axios.get( `/api/qna/getproductAll`, {
+            axios.get(`/api/qna/getproductAll`, {
+                params: {
+                    page: page,
+                    perPage: itemsPerPage,
+                    search: this.search,
+                    searchWord: this.searchWord,
+                }
+            }).then(res => {
+                this.contents = res.data;
+                axios.get('/api/qna/getCount', {
                     params: {
-                        page: page,
-                        perPage: itemsPerPage,
                         search: this.search,
                         searchWord: this.searchWord,
+                        type: link
                     }
                 }).then(res => {
-                    this.contents = res.data;
-                    axios.get('/api/qna/getCount', {
-                            params: {
-                                search: this.search,
-                                searchWord: this.searchWord,
-                                type: link
-                            }
-                        }).then(res => {
-                            this.totalContents = res.data;
-                            this.loading = false
-                        })
+                    this.totalContents = res.data;
+                    this.loading = false
                 })
+            })
         },
         moveto(item) {
             this.$router.push(`/qna/${item.qnaNo}`)

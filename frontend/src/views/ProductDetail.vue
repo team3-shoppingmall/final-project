@@ -6,7 +6,9 @@
                 <v-col cols="6" class="pa-5">
                     <v-row>
                         <v-col align="center">
-                            <v-img min-height="200" max-height="500" max-width="500" :src="`https://picsum.photos/seed/1/500/500`"></v-img>
+                            <v-carousel :show-arrows="false" cycle interval="2000" hide-delimiters>
+                                <v-carousel-item v-for="(image,i) in images" :key="i" :src="image.src"></v-carousel-item>
+                            </v-carousel>
                         </v-col>
                     </v-row>
                 </v-col>
@@ -229,14 +231,27 @@ export default {
             colorOption: '',
             colorSelection: '',
             sizeOption: '',
-            images: [{}, {}, {}, {}, {}, {}, {}, {}, ],
             selected: [],
             totalPrice: 0,
             number: 0,
             numberRule: val => {
                 if (val == '') return '개수를 입력해주세요'
                 return true
-            }
+            },
+            images: [{
+                    src: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
+                },
+                {
+                    src: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
+                },
+                {
+                    src: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
+                },
+                {
+                    src: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
+                },
+            ],
+            detailImages: [],
 
         }
     },

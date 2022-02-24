@@ -1,11 +1,11 @@
 <template>
 <v-container>
     <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
-        <template #[`item.productNo`]="{item}">
-            <div class="text-left">
-                <ProductNameDisplay :productNo="item.productNo" />
-            </div>
-        </template>
+        <template #[`item.productName`]="{item}">
+                <div class="text-left">
+                    {{item.productName}}
+                </div>
+            </template>
         <template #[`item.star`]="{item}">
             <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" length="5" readonly size="10" :value="item.star"></v-rating>
         </template>
@@ -52,12 +52,10 @@
 import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
-import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
 export default {
     components: {
         HideId,
         DateDisplay,
-        ProductNameDisplay
     },
     data() {
         return {
@@ -74,7 +72,7 @@ export default {
                 divider: true
             }, {
                 text: '상품명',
-                value: 'productNo',
+                value: 'productName',
                 width: '10%',
                 align: 'center',
                 divider: true
@@ -104,7 +102,7 @@ export default {
             }],
             searches: [{
                 text: '상품명',
-                value: 'productname'
+                value: 'productName'
             }, {
                 text: '작성자',
                 value: 'id'

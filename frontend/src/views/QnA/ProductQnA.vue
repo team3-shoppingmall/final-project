@@ -167,11 +167,4 @@ export default {
 </script>
 
 <style scoped>
-table td {
-    border-right: 1px solid #dddddd;
-}
-
-table td:last-child {
-    border-right: none
-}
 </style>

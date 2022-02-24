@@ -7,7 +7,7 @@
                 <tr>
                     <td style="width:10%"> 제목 </td>
                     <td>
-                        {{this.titleDetail}}
+                        {{notice.title}}
                     </td>
                 </tr>
                 <tr>
@@ -18,8 +18,7 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <div v-html="this.content"></div>
-                    <!--    <div v-html="this.content" style="border:1px black solid"></div>-->
+                        <div v-html="notice.content"></div>
                     </td>
                 </tr>
                 <tr v-if="image1 != ''">
@@ -99,8 +98,6 @@ export default {
                 }
             }).then((res) => {
                     this.notice = res.data;
-                    this.titleDetail = res.data.title;
-                    this.content = res.data.content;
                     this.dataLoaded = true;
                     console.log(res.status);    
             }).catch((err) => {

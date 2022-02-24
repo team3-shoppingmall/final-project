@@ -1,11 +1,14 @@
 package com.myspring.spring.product;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProductService {
@@ -19,14 +22,6 @@ public class ProductService {
 	// 상품 리스트 조회
 	public ResponseEntity<?> getProductListByType(int page, int perPage, String type1, String type2, String searchWord,
 			int minPrice, int maxPrice, String searchOrder) {
-		System.out.println(page);
-		System.out.println(perPage);
-		System.out.println(type1);
-		System.out.println(type2);
-		System.out.println(searchWord);
-		System.out.println(minPrice);
-		System.out.println(maxPrice);
-		System.out.println(searchOrder);
 		int start = (page - 1) * perPage;
 		List<ProductVO> res = productMapper.getProductListByType(start, perPage, type1, type2, searchWord, minPrice,
 				maxPrice, searchOrder);
@@ -64,4 +59,80 @@ public class ProductService {
 			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
+	public ResponseEntity<?> insertProduct(ProductVO requestData, List<MultipartFile> fileList) {
+		ProductVO result = new ProductVO();
+		ResponseEntity<?> entity = null;
+
+		try {
+			productMapper.insertProduct(requestData, result);
+			int productno = result.getProductNo();
+			File file = new File("./src/main/resources/images/product/" + productno + "/");
+			file.mkdir();
+			String[] path = { "/product/", "/detail/" };
+			file = new File("./images/product/" + productno + path[0]);
+			file.mkdir();
+			file = new File("./images/product/" + productno + path[1]);
+			file.mkdir();
+
+			for (int i = 0; i < fileList.size(); i++) {
+				MultipartFile multipartFile = fileList.get(i);
+				FileOutputStream writer = new FileOutputStream(
+						"./images/product/" + productno + path[i] + multipartFile.getOriginalFilename());
+				System.out.println(multipartFile.getOriginalFilename());
+				writer.write(multipartFile.getBytes());
+				writer.close();
+			}
+			entity = new ResponseEntity<>(HttpStatus.OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return entity;
+	}
+
+	public ResponseEntity<?> updateProduct(ProductVO requestData, List<MultipartFile> file1,
+			List<MultipartFile> file2) {
+		ProductVO result = new ProductVO();
+		ResponseEntity<?> entity = null;
+
+		try {
+			productMapper.updateProduct(requestData, result);
+//			int productno = result.getProductno();
+			File file;
+			File[] underDir;
+			FileOutputStream writer;
+			String[] path = { "/product/", "/detail/" };
+
+			if (file1 != null) {
+				file = new File("./images/product/" + requestData.getProductNo() + path[0]);
+				underDir = file.listFiles();
+				for (int i = 0; i < underDir.length; i++) {
+					underDir[i].delete();
+				}
+				writer = new FileOutputStream("./src/main/resources/images/product/" + requestData.getProductNo()
+						+ path[0] + file1.get(0).getOriginalFilename());
+				writer.write(file1.get(0).getBytes());
+				writer.close();
+			}
+			if (file2 != null) {
+				file = new File("./images/product/" + requestData.getProductNo() + path[1]);
+				underDir = file.listFiles();
+				for (int i = 0; i < underDir.length; i++) {
+					underDir[i].delete();
+				}
+				writer = new FileOutputStream("./images/product/" + requestData.getProductNo() + path[1]
+						+ file2.get(0).getOriginalFilename());
+				writer.write(file2.get(0).getBytes());
+				writer.close();
+			}
+
+			entity = new ResponseEntity<>(HttpStatus.OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return entity;
+	}
 }

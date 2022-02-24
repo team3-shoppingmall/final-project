@@ -252,7 +252,7 @@
 
             <v-row>
                 <v-col>
-                    <!-- <ProductDetailReview /> -->
+                    <ProductDetailReview :productNo="pageID" />
                 </v-col>
             </v-row>
 
@@ -273,7 +273,7 @@
 
             <v-row>
                 <v-col>
-                    <!-- <ProductDetailQnA /> -->
+                    <ProductDetailQnA :productNo="pageID" />
                 </v-col>
             </v-row>
         </v-col>
@@ -283,25 +283,16 @@
 
 <script>
 import axios from 'axios'
-// import ProductDetailReview from '@/components/ProductDetailReview.vue'
-// import ProductDetailQnA from '@/components/ProductDetailQnA.vue'
+import ProductDetailReview from '@/components/ProductDetailReview.vue'
+import ProductDetailQnA from '@/components/ProductDetailQnA.vue'
 export default {
     components: {
-        // ProductDetailReview,
-        // ProductDetailQnA,
+        ProductDetailReview,
+        ProductDetailQnA,
     },
     data() {
         return {
             pageID: '',
-            products: [{
-                productno: 1,
-                imageName: '',
-                productname: '블랙트위드 스커트',
-                size: 3,
-                color: 4,
-                price: 20000,
-                discount: 5,
-            }],
             product: '',
             colorOption: '',
             colorSelection: '',
@@ -342,7 +333,8 @@ export default {
                 productNo: this.product.productNo,
                 selectedColor: color,
                 selectedSize: size,
-                amount: 1
+                amount: 1,
+                price: this.product.price - this.product.discount
             }
             for (let i = 0; i < this.selected.length; i++) {
                 if (this.selected[i].selectedColor == data.selectedColor && this.selected[i].selectedSize == data.selectedSize) {
@@ -373,7 +365,12 @@ export default {
             this.totalPrice = amount * (this.product.price - this.product.discount);
         },
         buyItNow() {
-            console.log('바로 구매하기');
+            this.$router.push({
+                name: "Payment",
+                params: {
+                    Payment: this.selected
+                }
+            });
         },
         addToBasket() {
             axios.post(`/api/basket/insert`, this.selected)

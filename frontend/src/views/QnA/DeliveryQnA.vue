@@ -116,28 +116,22 @@ export default {
             } = this.options
             let link = document.location.href;
             link = link.slice(26, link.length - 3);
-            axios({
-                    method: 'get',
-                    url: `/api/qna/getdeliveryAll`,
+            axios.get( `/api/qna/getdeliveryAll`, {
                     params: {
                         page: page,
                         perPage: itemsPerPage,
                         search: this.search,
                         searchWord: this.searchWord,
                     }
-                })
-                .then(res => {
+                }).then(res => {
                     this.contents = res.data;
-                    axios({
-                            method: 'get',
-                            url: '/api/qna/getCount',
+                    axios.get('/api/qna/getCount', {
                             params: {
                                 search: this.search,
                                 searchWord: this.searchWord,
                                 type: link
                             }
-                        })
-                        .then(res => {
+                        }).then(res => {
                             this.totalContents = res.data;
                             this.loading = false
                         })

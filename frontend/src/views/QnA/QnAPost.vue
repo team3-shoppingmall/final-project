@@ -111,23 +111,16 @@ export default {
     methods: {
         getQnA() {
             this.pageID = this.$route.params.id;
-            axios({
-                method: 'get',
-                url: `/api/qna/getqnabyqnaNo`,
+            axios.get(`/api/qna/getqnabyqnaNo`, {
                 params: {
                     qnaNo: this.pageID
                 }
             }).then((res) => {
-                if (res.status == 200) {
-                    this.qna = res.data;
-                    this.dataLoaded = true;
-                } else {
-                    console.log(res.status);
-                }
+                this.qna = res.data;
+                this.dataLoaded = true;
             }).catch((err) => {
                 console.log(err);
             })
-
         },
         moveToBefore() {
             this.$router.go(-1);
@@ -146,18 +139,14 @@ export default {
         },
         deleteQnA() {
             console.log(this.qna.qnaNo);
-            axios({
-                method: 'delete',
-                url: `/api/qna/deleteqna`,
+            axios.delete( `/api/qna/deleteqna`, {
                 params: {
                     qnaNo: this.qna.qnaNo
                 }
             }).then(res => {
-                if (res.status == 200) {
-                    console.log(res.data);
-                    alert("삭제되었습니다.");
-                    this.$router.go(-1);
-                }
+                console.log(res.data);
+                alert("삭제되었습니다.");
+                this.$router.go(-1);
             }).catch((err) => {
                 console.log(err);
             })

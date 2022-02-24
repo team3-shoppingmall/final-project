@@ -10,9 +10,9 @@
             <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" length="5" readonly size="10" :value="item.star"></v-rating>
         </template>
         <template #[`item.content`]="{item}">
-            <v-row justify="space-between">
+            <v-row justify="space-between" align="center">
                 <v-col>
-                    <div class="text-left">{{ item.content }}</div>
+                    <div v-html="item.content" class="text-left"></div>
                 </v-col>
                 <v-col cols="auto">
                     <v-icon @click="updateReview(item.reviewNo)" v-if="admin">mdi-pencil</v-icon>
@@ -63,7 +63,6 @@ export default {
         return {
             admin: true,
             totalContents: 0,
-            reviewNo: '',
             contents: [],
             options: {},
             loading: true,

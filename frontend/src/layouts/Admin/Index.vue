@@ -55,7 +55,7 @@ export default {
                 {
                     title: '상품 등록',
                     icon: 'mdi-image',
-                    to: '/admin/admin2'
+                    to: '/admin/addProduct'
                 },
                 {
                     title: '주문 관리',

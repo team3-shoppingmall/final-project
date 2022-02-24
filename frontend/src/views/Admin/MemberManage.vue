@@ -13,7 +13,7 @@
     </v-row>
     <v-row>
         <v-col>
-            <v-data-table :headers="headers" :items="items">
+            <v-data-table :headers="headers" :options.sync="options" :items="items" :server-items-length="totalContents" :loading="loading">
                 <template v-slot:[`item.tel`]="{ item }">
                     <div>{{telFormatter(item.tel)}}</div>
                 </template>
@@ -183,14 +183,27 @@ import axios from 'axios'
 export default {
     methods: {
         getAllMembers() {
+            this.loading = true;
+            const {
+                page,
+                itemsPerPage
+            } = this.options;
+
             axios
-                .get('/api/member/getMemberAll')
+                .get('/api/member/getMemberAll', {
+                    params: {
+                        page: page,
+                        perPage: itemsPerPage,
+                    }
+                })
                 .then(res => {
-                    this.items = res.data;
+                    this.items = res.data.res;
+                    this.totalContents = res.data.count;
                 })
                 .catch(err => {
                     console.log(err.response.status);
                 })
+                .finally(this.loading = false);
         },
         searchMember() {
             console.log(this.condition, this.value);
@@ -207,6 +220,7 @@ export default {
                 .catch(err => {
                     console.log(err.response.status);
                 })
+
         },
         telFormatter(tel) {
             let first;
@@ -255,16 +269,27 @@ export default {
         },
         updateMember() {
             axios.put('/api/member/updateMember', this.editItem)
-                .then(this.getAllMembers())
-
+                .then(() => {
+                    this.getAllMembers();
+                })
         },
 
     },
-    mounted() {
-        this.getAllMembers()
+     watch: {  //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
+        options: {
+            handler() {
+                 this.getAllMembers();
+            },
+            deep: true,
+        },
     },
+    // mounted() {
+    //     this.getAllMembers();
+    // },
     data() {
         return {
+            totalContents: 0,
+            loading: false,
             editItem: {},
             condition: 'id',
             value: '',

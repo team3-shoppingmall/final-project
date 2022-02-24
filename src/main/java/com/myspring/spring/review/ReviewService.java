@@ -47,7 +47,6 @@ private ReviewMapper reviewMapper;
 	
 	//리뷰 작성
 	public ResponseEntity<?> insertReview(ReviewVO reviewVO) {
-		System.out.println(reviewVO);
 		int res = reviewMapper.insertReview(reviewVO);
 		if(res == 0) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

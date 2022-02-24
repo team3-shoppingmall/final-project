@@ -182,9 +182,9 @@ insert into membertable values('tester212','Asdqwe123','유저2','01045614561','
 insert into membertable values('tester222','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 -- 상품
 insert into producttable(productname, type1, type2, imagename, price, color, size, amount, detailimagename) 
-values('스노우 버튼 모직스커트', 'skirt','mini','test.jpg',38000,'그레이지;소프트민트','S;M;L', 100,'test.jpg');
+values('스노우 버튼 모직스커트', 'skirt','mini','image1.png;image2.png',38000,'그레이지;소프트민트','S;M;L', 100,'detail1.jpg;detail2.jpg');
 insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, detailimagename)
-values('실키 여리핏 히든블라우스', 'shirt','blouse','test.jpg',34900,5000,'아이보리;피치베이지;워터리블루;블랙',null, 100,'test.jpg');
+values('실키 여리핏 히든블라우스', 'shirt','blouse','image3.png',34900,5000,'아이보리;피치베이지;워터리블루;블랙',null, 100,'4231.jpg;copy-1642379566-2.jpg');
 -- 장바구니
 insert into baskettable(id, productno, selectedcolor, selectedsize, amount) values('tester',1,'소프트민트','S',2);
 insert into baskettable(id, productno, selectedcolor, selectedsize, amount) values('tester',2,'아이보리',null,5);

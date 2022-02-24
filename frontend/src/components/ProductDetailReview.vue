@@ -61,7 +61,7 @@
                                 <v-row>
                                     <v-col cols="12">
                                         상품 정보
-                                        <ProductDetailDisplay :type="'product'" />
+                                        <ProductDetailDisplay :productNo="'productNo'" />
                                     </v-col>
                                     <v-col cols="12">
                                         별점

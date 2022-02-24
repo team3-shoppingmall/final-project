@@ -333,7 +333,8 @@ export default {
                 productNo: this.product.productNo,
                 selectedColor: color,
                 selectedSize: size,
-                amount: 1
+                amount: 1,
+                price: this.product.price - this.product.discount
             }
             for (let i = 0; i < this.selected.length; i++) {
                 if (this.selected[i].selectedColor == data.selectedColor && this.selected[i].selectedSize == data.selectedSize) {
@@ -364,7 +365,12 @@ export default {
             this.totalPrice = amount * (this.product.price - this.product.discount);
         },
         buyItNow() {
-            console.log('바로 구매하기');
+            this.$router.push({
+                name: "Payment",
+                params: {
+                    Payment: this.selected
+                }
+            });
         },
         addToBasket() {
             axios.post(`/api/basket/insert`, this.selected)

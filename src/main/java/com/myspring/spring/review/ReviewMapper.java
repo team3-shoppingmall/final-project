@@ -27,7 +27,7 @@ public interface ReviewMapper {
 	public ReviewVO getReview(int reviewNo);
 	
 	//리뷰 작성
-	@Insert("insert into reviewtable(productNo, content, id, image, star) values(#(in.producNo), #{in.content}, #{in.id}, #{in.image}, #{in.star})")
+	@Insert("insert into reviewtable(productNo, content, id, image, star) values(#{in.productNo}, #{in.content}, #{in.id}, #{in.image}, #{in.star})")
 	public int insertReview(@Param("in") ReviewVO reviewVO);
 	
 	//리뷰 삭제

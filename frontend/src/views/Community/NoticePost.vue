@@ -18,8 +18,8 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <div v-html="notice.content" style="border:1px black solid"></div>
-                        <!-- {{this.content}} -->
+                        <div v-html="this.content"></div>
+                    <!--    <div v-html="this.content" style="border:1px black solid"></div>-->
                     </td>
                 </tr>
                 <tr v-if="image1 != ''">
@@ -90,7 +90,6 @@ export default {
         //Router는 Vue component와 웹 경로를 연결해줌
         getNotice() {
             this.pageID = this.$route.params.id;
-            this.num = this.$route.params.num;
             this.dataLoaded = false;
             axios({
                 method: 'get',
@@ -99,12 +98,11 @@ export default {
                     noticeNo: this.pageID
                 }
             }).then((res) => {
-                {
+                    this.notice = res.data;
                     this.titleDetail = res.data.title;
                     this.content = res.data.content;
                     this.dataLoaded = true;
-                    console.log(res.status);
-                } 
+                    console.log(res.status);    
             }).catch((err) => {
                 alert("목록을 불러오는데 실패했습니다.");
                 console.log(err);

@@ -152,9 +152,9 @@ export default {
                 }
             }).then(res => {
                 console.log(res);
-                this.productNo = res.data.nameList;
-                this.contents = res.data;
-                this.totalContents = res.data;
+                //this.productNo = res.data.nameList;
+                this.contents = res.data.qnaList;
+                this.totalContents = res.data.count;
                 this.loading = false
                 // axios.get('/api/qna/getCount', {
                 //         params: {

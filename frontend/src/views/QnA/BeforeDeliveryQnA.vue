@@ -135,8 +135,8 @@ export default {
                     type: link
                 }
             }).then(res => {
-                this.contents = res.data;
-                this.totalContents = res.data;
+                this.contents = res.data.qnaList;
+                this.totalContents = res.count;
                 this.loading = false
                 // axios.get('/api/qna/getCount', {
                 //         params: {

@@ -25,4 +25,13 @@ public class BasketService {
 		}
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+
+	// 장바구니 조회
+	public ResponseEntity<?> getBasketById(String id) {
+		BasketVO res = basketMapper.getBasketById(id);
+		if (res == null)
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(HttpStatus.OK);
+	}
 }

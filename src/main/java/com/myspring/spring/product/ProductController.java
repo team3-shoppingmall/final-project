@@ -1,15 +1,19 @@
 package com.myspring.spring.product;
 
+import java.util.List;
+
+import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping(value = "/api/product")
@@ -54,6 +58,19 @@ public class ProductController {
 	@GetMapping(value = "/getProduct/{productNo}")
 	public ResponseEntity<?> getProductByNo(@PathVariable("productNo") int productNo) {
 		return productService.getProductByNo(productNo);
+	}
+
+	@PostMapping("/insertProduct")
+	public ResponseEntity<?> insertProduct(@RequestPart(value = "data") ProductVO requestData,
+			@RequestParam("fileList") List<MultipartFile> fileList) throws NotFoundException {
+		return productService.insertProduct(requestData, fileList);
+	}
+
+	@PutMapping("/updateProduct")
+	public ResponseEntity<?> updateProduct(@RequestPart(value = "data") ProductVO requestData,
+			@RequestParam(value = "file1", required = false) List<MultipartFile> file1,
+			@RequestParam(value = "file2", required = false) List<MultipartFile> file2) throws NotFoundException {
+		return productService.updateProduct(requestData, file1, file2);
 	}
 
 }

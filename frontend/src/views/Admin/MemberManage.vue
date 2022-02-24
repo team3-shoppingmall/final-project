@@ -19,7 +19,7 @@
                 </template>
                 <template v-slot:[`item.btn`]="{ item }">
 
-                    <v-dialog v-model="dialog" width="600px">
+                    <!-- <v-dialog v-model="dialog" width="600px">
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn color="primary" v-bind="attrs" v-on="on" @click="selectItem(item)">
                                 수정
@@ -85,8 +85,8 @@
                                         <td colspan="2">
                                             <v-row justify="end">
                                                 <v-col cols="auto">
-                                                    <v-btn class="error" @click="dialog = false">취소</v-btn>
-                                                    <v-btn class="primary ml-3">수정</v-btn>
+                                                    <v-btn class="error" >취소</v-btn>
+                                                    <v-btn class="primary ml-3" @click="updateMember">수정</v-btn>
                                                 </v-col>
                                             </v-row>
                                         </td>
@@ -94,7 +94,83 @@
                                 </tbody>
                             </v-simple-table>
                         </v-card>
-                    </v-dialog>
+                    </v-dialog> -->
+                    <v-edit-dialog large @save="updateMember" cancel-text="취소" save-text="수정">
+                        <v-btn class="primary" @click="selectItem(item)">
+                            수정
+                        </v-btn>
+                        <template v-slot:input>
+                            <!-- <v-card class="pa-2" width="600px"> -->
+                            <v-simple-table>
+                                <thead>
+                                    <tr>
+                                        <th class="text-h5" colspan="2">회원정보수정</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-h6">ID</td>
+                                        <td>
+                                            <v-text-field v-model="editItem.id" hide-details readonly></v-text-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-h6">이름</td>
+                                        <td>
+                                            <v-text-field v-model="editItem.name" hide-details></v-text-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-h6">전화번호</td>
+                                        <td>
+                                            <v-text-field v-model="editItem.tel" hide-details></v-text-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-h6">이메일</td>
+                                        <td>
+                                            <v-text-field v-model="editItem.email" hide-details></v-text-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-h6">우편번호</td>
+                                        <td>
+                                            <v-text-field v-model="editItem.zipcode" hide-details></v-text-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-h6">주소1</td>
+                                        <td>
+                                            <v-text-field v-model="editItem.addr1" hide-details></v-text-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-h6">주소2</td>
+                                        <td>
+                                            <v-text-field v-model="editItem.addr2" hide-details></v-text-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-h6">포인트</td>
+                                        <td>
+                                            <v-text-field v-model="editItem.point" hide-details readonly></v-text-field>
+                                        </td>
+                                    </tr>
+                                    <!-- <tr>
+                                            <td colspan="2">
+                                                <v-row justify="end">
+                                                    <v-col cols="auto">
+                                                        <v-btn class="error">취소</v-btn>
+                                                        <v-btn class="primary ml-3" @click="updateMember">수정</v-btn>
+                                                    </v-col>
+                                                </v-row>
+                                            </td>
+                                        </tr> -->
+                                </tbody>
+                            </v-simple-table>
+                            <!-- </v-card> -->
+                        </template>
+                    </v-edit-dialog>
                 </template>
             </v-data-table>
         </v-col>
@@ -161,12 +237,28 @@ export default {
             }
         },
         selectItem(item) {
-            this.editItem = this.items[
+            let temp = this.items[
                 this
                 .items
                 .indexOf(item)
             ];
-        }
+            this.editItem = {
+                id: temp.id,
+                name: temp.name,
+                tel: temp.tel,
+                email: temp.email,
+                zipcode: temp.zipcode,
+                addr1: temp.addr1,
+                addr2: temp.addr2,
+                point: temp.point
+            }
+        },
+        updateMember() {
+            axios.put('/api/member/updateMember', this.editItem)
+                .then(this.getAllMembers())
+
+        },
+
     },
     mounted() {
         this.getAllMembers()
@@ -174,7 +266,6 @@ export default {
     data() {
         return {
             editItem: {},
-            dialog: false,
             condition: 'id',
             value: '',
             searchType: [{

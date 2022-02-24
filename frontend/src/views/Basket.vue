@@ -3,26 +3,24 @@
     <v-row justify="center">
         <v-col cols="9">
             <div class="text-h3">장바구니</div>
-            <!-- @click:row="moveTo" -->
-            <v-data-table :headers="headers" :items="desserts" :options.sync="options" :server-items-length="totalDesserts" :loading="loading" hide-default-footer show-select="show-select" item-key="name" class="elevation-1">
-                <template v-slot:[`item.image`]="{ item }">
-                    <v-img :src="`https://picsum.photos/seed/${item.image}/140/140`" width="100px" height="100px"></v-img>
-                    <!-- <div class="red text-right"> {{ item.image }} </div> -->
-                </template>
+            <v-data-table :headers="headers" :items="baskets" :options.sync="options" :server-items-length="totalDesserts" :loading="loading" hide-default-footer show-select="show-select" item-key="name" class="elevation-1">
                 <template v-slot:[`item.info`]="{ item }">
+                    <ProductDetailDisplay :productNo="item.productNo" />
+                </template>
+                <template v-slot:[`item.option`]="{ item }">
                     <v-simple-table>
                         <tbody>
                             <tr>
                                 <td>색상</td>
-                                <td>{{item.info}}</td>
+                                <td>{{item.selectedColor}}</td>
                             </tr>
                             <tr>
                                 <td>사이즈</td>
-                                <td>{{item.info}}</td>
+                                <td>{{item.selectedSize}}</td>
                             </tr>
                             <tr>
                                 <td>개수</td>
-                                <td>{{item.info}}</td>
+                                <td>{{item.amount}}</td>
                             </tr>
                             <tr>
                                 <td colspan="2" class="text-center">
@@ -31,29 +29,21 @@
                             </tr>
                         </tbody>
                     </v-simple-table>
-
+                </template>
+                <template v-slot:[`item.totalPrice`]="{ item }">
+                    {{item.price * item.amount}}
                 </template>
                 <template v-slot:footer="{ }">
                     <v-divider></v-divider>
-                    <v-row justify="center">
-                        <v-col cols="6">
-                            <v-simple-table>
-                                <tbody>
-                                    <tr>
-                                        <td>총 상품금액</td>
-                                        <td>배송비</td>
-                                        <td>결제 예정 금액</td>
-                                    </tr>
-                                    <tr>
-                                        <td>총 상품금액</td>
-                                        <td>배송비</td>
-                                        <td>결제 예정 금액</td>
-                                    </tr>
-                                </tbody>
-                            </v-simple-table>
+                    <v-row justify="end">
+                        <v-col cols="auto">
+                            상품구매금액 {{AddComma(totalPrice)}} 원
+                            + 배송비 <span v-if="totalPrice<50000">{{AddComma(2500)}}</span><span v-if="totalPrice>=50000">0</span> 원
+                            = 합계 : <span v-if="totalPrice<50000">{{AddComma(totalPrice+2500)}}</span><span v-if="totalPrice>=50000">{{AddComma(totalPrice)}}</span> 원
                         </v-col>
                     </v-row>
                 </template>
+
             </v-data-table>
             <v-row class="my-3 px-16" justify="space-between">
                 <v-col cols="auto">
@@ -80,55 +70,44 @@
 </template>
 
 <script>
+import axios from 'axios'
+import ProductDetailDisplay from '@/components/ProductDetailDisplay.vue'
 export default {
+    components: {
+        ProductDetailDisplay,
+    },
+    name: 'Payment',
     data() {
         return {
-            selected: [],
+            baskets: [],
+            totalPrice: 0,
             totalDesserts: 1,
-            desserts: [{
-                name: 'Frozen Yogurt1',
-                image: 1,
-                info: 159,
-                fat: 6.0,
-                carbs: 24,
-                protein: 4.0,
-                iron: '1%',
-                isCheck: false
-            }, {
-                name: 'Frozen Yogurt2',
-                image: 2,
-                info: 160,
-                fat: 6.0,
-                carbs: 24,
-                protein: 4.0,
-                iron: '1%',
-                isCheck: false
-            }],
             loading: false,
-            options: {},
+            options: {
+                itemsPerPage: 50,
+            },
             headers: [{
-                text: 'image',
-                value: 'image',
-                width: '100px'
-            }, {
-                text: 'Dessert (100g serving)',
-                align: 'start',
-                sortable: false,
-                value: 'name'
-            }, {
                 text: '상품정보',
                 value: 'info'
             }, {
+                text: '선택 옵션',
+                value: 'option'
+            }, {
                 text: '합계',
-                value: 'iron'
+                value: 'totalPrice'
             }, ]
         }
     },
     methods: {
-        moveTo() {
-            this
-                .$router
-                .push('/')
+        getBasket() {
+            axios.get(`/api/basket/getBasket/${'tester'}`)
+                .then(res => {
+                    this.baskets = res.data;
+                })
+        },
+        AddComma(num) {
+            var regexp = /\B(?=(\d{3})+(?!\d))/g;
+            return `${num}`.toString().replace(regexp, ",");
         },
         test() {
             console.log("test")

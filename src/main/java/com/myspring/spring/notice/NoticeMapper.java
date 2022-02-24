@@ -25,7 +25,7 @@ public interface NoticeMapper {
 	
 	// 공지사항 게시물 보기
 	@Select("select * from noticetable where noticeNo = #{noticeNo}")
-	public NoticeVO getNoticeFindByID(int noticeNo);
+	public NoticeVO getNoticeFindByID(@Param("noticeNo") int noticeNo);
 
 	// 공지사항 게시물 작성
 	@Insert("insert into noticetable(title, content, id, image) values(#{in.title}, #{in.content}, #{in.id}, #{in.image})")

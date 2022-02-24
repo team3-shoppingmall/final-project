@@ -22,11 +22,11 @@ public class NoticeController {
 		this.noticeService = noticeService;
 	}
 
-	// 전체 개수 가져오기
-	@GetMapping("/getCount")
-	public ResponseEntity<?> getCount(@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-		return noticeService.getCount(search, searchWord);
-	}
+//	// 전체 개수 가져오기
+//	@GetMapping("/getCount")
+//	public ResponseEntity<?> getCount(@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
+//		return noticeService.getCount(search, searchWord);
+//	}
 
 	// 공지사항 목록 출력
 	@GetMapping("/getNotice")

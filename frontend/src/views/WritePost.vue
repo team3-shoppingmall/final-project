@@ -394,6 +394,24 @@ export default {
 
         },
 
+        getNotice() {
+            axios({
+                method: 'get',
+                url: `/api/notice/list/${this.num}`,
+                params: {
+                    noticeNo: this.num
+                }
+            }).then((res) => {
+                    // this.notice = res.data;
+                    this.titleDetail = res.data.title;
+                    this.content = res.data.content;
+                    console.log(res.status);    
+            }).catch((err) => {
+                alert("목록을 불러오는데 실패했습니다.");
+                console.log(err);
+            })
+        },
+
         noticeFormUpdate() {
             axios({
                 method: 'patch',
@@ -405,13 +423,9 @@ export default {
                     image: "",
                 }
             }).then((res) => {
-                {
-                    this.titleDetail = res.data.content;
-                    this.content = res.data.content;
                     console.log(res.data, res.status);
                     alert("공지사항 수정 완료");
                     this.$router.go(-1);
-                }
             }).catch((err) => {
                 alert("수정 실패");
                 console.log(err);

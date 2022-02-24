@@ -28,11 +28,11 @@
                                         <td>
                                             <v-row justify="center">
                                                 <v-col cols="4">
-                                                    <v-text-field v-model="minPrice" suffix="원"></v-text-field>
+                                                    <v-text-field v-model="minPrice" suffix="원" @keyup="pricePolicy"></v-text-field>
                                                 </v-col>
                                                 <v-col cols="auto" class="mt-5">~</v-col>
                                                 <v-col cols="4">
-                                                    <v-text-field v-model="maxPrice" suffix="원"></v-text-field>
+                                                    <v-text-field v-model="maxPrice" suffix="원" @keyup="pricePolicy"></v-text-field>
                                                 </v-col>
                                             </v-row>
                                         </td>
@@ -54,14 +54,20 @@
                     </v-form>
                 </v-col>
             </v-row>
+            <div class="text-subtitle-1">
+                총 {{totalLength}}개의 상품이 검색되었습니다
+            </div>
+            <div class="text-center text-h3 mt-10" v-if="noSearch">
+                검색된 상품이 없습니다.
+            </div>
             <v-row class="my-10" justify="center">
                 <v-col>
                     <v-row>
                         <v-col v-for="(product, idx) in products" :key="idx" cols="3">
-                            <v-card @click="moveToDetail(product.productNo)">
+                            <v-card @click="moveToDetail(product.productNo)" min-height="385">
                                 <v-img max-height="300" max-width="auto" :src="`https://picsum.photos/seed/${randomNumber(idx)}/300/250`"></v-img>
                                 <v-card-text>
-                                    <div>
+                                    <div style="height:50px">
                                         {{product.productName}}
                                         - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
                                         <span v-if="product.size == null">{{product.color.split(';').length-1}} color</span>
@@ -90,8 +96,7 @@ export default {
         return {
             types: [{
                     text: '기준 선택',
-                    value: '',
-                    disabled: true,
+                    value: null,
                 },
                 {
                     text: 'OUTER',
@@ -126,16 +131,15 @@ export default {
                     value: 'skirt;midi-long',
                 },
             ],
-            typeSelected: '',
+            typeSelected: null,
 
-            productName: '',
+            productName: null,
             minPrice: 0,
-            maxPrice: 99999999,
+            maxPrice: 9999999,
 
             searchOrders: [{
                     text: '기준 선택',
-                    value: '',
-                    disabled: true,
+                    value: null,
                 },
                 {
                     text: '신상품 순',
@@ -143,28 +147,21 @@ export default {
                 },
                 {
                     text: '낮은 가격 순',
-                    value: 'regDate asc',
+                    value: 'price asc',
                 },
                 {
                     text: '높은 가격 순',
                     value: 'price desc',
                 },
             ],
-            searchOrder: '',
+            searchOrder: null,
 
             page: 1,
             pageLength: 0,
             visibleLength: 5,
-            products: '',
-            product: [{
-                productno: 1,
-                imageName: '',
-                productname: '블랙트위드 스커트',
-                size: 3,
-                color: 4,
-                price: 20000,
-                discount: 5,
-            }],
+            totalLength: 0,
+            products: [],
+            noSearch: false,
 
         }
     },
@@ -181,14 +178,21 @@ export default {
             this.$router.push(`/productDetail/${num}`)
         },
         searchProduct() {
+            this.noSearch = false;
+            let type1 = null;
+            let type2 = null;
+            if (this.typeSelected != null) {
+                type1 = this.typeSelected.split(';')[0];
+                type2 = this.typeSelected.split(';')[1];
+            }
             axios({
                 method: 'get',
                 url: `/api/product/getProductListByType`,
                 params: {
                     page: this.page,
                     perPage: 12,
-                    type1: this.typeSelected.split(';')[0],
-                    type2: this.typeSelected.split(';')[1],
+                    type1: type1,
+                    type2: type2,
                     searchWord: this.productName,
                     minPrice: this.minPrice,
                     maxPrice: this.maxPrice,
@@ -200,21 +204,33 @@ export default {
                     method: 'get',
                     url: `/api/product/getProductCountByType`,
                     params: {
-                        type1: this.typeSelected[0],
-                        type2: this.typeSelected[1],
+                        type1: type1,
+                        type2: type2,
                         searchWord: this.productName,
                         minPrice: this.minPrice,
                         maxPrice: this.maxPrice,
                         searchOrder: this.searchOrder,
                     }
                 }).then(res => {
-                    this.pageLength = Math.ceil(res.data / this.page);
+                    this.pageLength = Math.ceil(res.data / 12);
+                    this.totalLength = res.data;
                 }).catch((err) => {
+                    this.pageLength = 0;
+                    this.noSearch = true;
                     console.log(err);
                 })
             }).catch((err) => {
                 console.log(err);
             })
+        },
+        pricePolicy() {
+            if (this.minPrice < 0 || this.minPrice > 9999999 || this.minPrice != Math.round(this.minPrice)) {
+                alert('0원 ~ 9,999,999원의 상품만 검색이 가능합니다');
+                this.minPrice = 0;
+            } else if (this.maxPrice < 0 || this.maxPrice > 9999999 || this.maxPrice != Math.round(this.maxPrice)) {
+                alert('0원 ~ 9,999,999원의 상품만 검색이 가능합니다');
+                this.maxPrice = 9999999;
+            }
         },
         randomNumber(count) {
             return Math.floor(Math.random() * 100) + count;

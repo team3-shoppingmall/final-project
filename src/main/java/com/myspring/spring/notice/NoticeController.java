@@ -37,7 +37,7 @@ public class NoticeController {
 	
 	// 공지사항 게시물 보기
 	@GetMapping("/list/{noticeNo}")
-	public ResponseEntity<?> getNoticeFindByID(@PathVariable("noticeNo") NoticeVO noticeNo) {
+	public ResponseEntity<?> getNoticeFindByID(@PathVariable("noticeNo") int noticeNo) {
 		return noticeService.getNoticeFindByID(noticeNo);
 	}
 	

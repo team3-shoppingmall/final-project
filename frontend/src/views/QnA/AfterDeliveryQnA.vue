@@ -116,9 +116,7 @@ export default {
             } = this.options
             let link = document.location.href;
             link = link.slice(26, link.length - 3);
-            axios({
-                    method: 'get',
-                    url: `/api/qna/getafterdeliveryAll`,
+            axios.get( `/api/qna/getafterdeliveryAll`,{
                     params: {
                         page: page,
                         perPage: itemsPerPage,
@@ -128,9 +126,7 @@ export default {
                 })
                 .then(res => {
                     this.contents = res.data;
-                    axios({
-                            method: 'get',
-                            url: '/api/qna/getCount',
+                    axios.get('/api/qna/getCount',{
                             params: {
                                 search: this.search,
                                 searchWord: this.searchWord,

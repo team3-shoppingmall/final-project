@@ -76,7 +76,7 @@ const routes = [
             }, {
                 path: '/payment',
                 name: 'Payment',
-                component: Payment
+                component: Payment,
             }, {
                 path: '/myPage',
                 name: 'MyPage',
@@ -145,7 +145,7 @@ const routes = [
                 component: WritePost,
             },
             {
-                path: '/writePost/:id/:productno',
+                path: '/writePost/:id/:productNo',
                 name: 'writeProductPost',
                 component: WritePost,
             },

@@ -187,7 +187,7 @@ export default {
             }
             axios({
                 method: 'get',
-                url: `/api/product/getProductListByType`,
+                url: `/api/product/getProductList`,
                 params: {
                     page: this.page,
                     perPage: 12,
@@ -199,27 +199,13 @@ export default {
                     searchOrder: this.searchOrder,
                 }
             }).then(res => {
-                this.products = res.data;
-                axios({
-                    method: 'get',
-                    url: `/api/product/getProductCountByType`,
-                    params: {
-                        type1: type1,
-                        type2: type2,
-                        searchWord: this.productName,
-                        minPrice: this.minPrice,
-                        maxPrice: this.maxPrice,
-                        searchOrder: this.searchOrder,
-                    }
-                }).then(res => {
-                    this.pageLength = Math.ceil(res.data / 12);
-                    this.totalLength = res.data;
-                }).catch((err) => {
-                    this.pageLength = 0;
-                    this.noSearch = true;
-                    console.log(err);
-                })
+                this.products = res.data.productList;
+                this.pageLength = Math.ceil(res.data.count / 12);
+                this.totalLength = res.data.count;
             }).catch((err) => {
+                this.products = [];
+                this.pageLength = 0;
+                this.noSearch = true;
                 console.log(err);
             })
         },

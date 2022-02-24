@@ -2,7 +2,9 @@ package com.myspring.spring.product;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,30 +22,26 @@ public class ProductService {
 	}
 
 	// 상품 리스트 조회
-	public ResponseEntity<?> getProductListByType(int page, int perPage, String type1, String type2, String searchWord,
+	public ResponseEntity<?> getProductList(int page, int perPage, String type1, String type2, String searchWord,
 			int minPrice, int maxPrice, String searchOrder) {
 		int start = (page - 1) * perPage;
-		List<ProductVO> res = productMapper.getProductListByType(start, perPage, type1, type2, searchWord, minPrice,
+		List<ProductVO> productList = productMapper.getProductList(start, perPage, type1, type2, searchWord, minPrice,
 				maxPrice, searchOrder);
-		if (res == null)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
+		int count = productMapper.getProductCount(type1, type2, searchWord, minPrice, maxPrice);
+		if (productList == null || count == 0)
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		else {
+			Map<String, Object> resMap = new HashMap<>();
+			resMap.put("productList", productList);
+			resMap.put("count", count);
+			return new ResponseEntity<>(resMap, HttpStatus.OK);
+		}
 
-	// 상품 리스트 전체 개수 조회
-	public ResponseEntity<?> getProductCountByType(String type1, String type2, String searchWord, int minPrice,
-			int maxPrice, String searchOrder) {
-		int res = productMapper.getProductCountByType(type1, type2, searchWord, minPrice, maxPrice, searchOrder);
-		if (res == 0)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 	// 많이 팔린 상품 조회
-	public ResponseEntity<?> getBestProductListByType(String type1, String type2) {
-		List<ProductVO> res = productMapper.getBestProductListByType(type1, type2);
+	public ResponseEntity<?> getBestProductList(String type1, String type2) {
+		List<ProductVO> res = productMapper.getBestProductList(type1, type2);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else

@@ -14,18 +14,17 @@ import org.apache.ibatis.annotations.Update;
 public interface ProductMapper {
 
 	// 상품 리스트 조회
-	@SelectProvider(type = ProductUtils.class, method = "getProductListByType")
-	public List<ProductVO> getProductListByType(int start, int perPage, String type1, String type2, String searchWord,
+	@SelectProvider(type = ProductUtils.class, method = "getProductList")
+	public List<ProductVO> getProductList(int start, int perPage, String type1, String type2, String searchWord,
 			int minPrice, int maxPrice, String searchOrder);
 
 	// 상품 리스트 전체 개수 조회
-	@SelectProvider(type = ProductUtils.class, method = "getProductCountByType")
-	int getProductCountByType(String type1, String type2, String searchWord, int minPrice, int maxPrice,
-			String searchOrder);
+	@SelectProvider(type = ProductUtils.class, method = "getProductCount")
+	int getProductCount(String type1, String type2, String searchWord, int minPrice, int maxPrice);
 
 	// 많이 팔린 상품 조회
-	@SelectProvider(type = ProductUtils.class, method = "getBestProductListByType")
-	List<ProductVO> getBestProductListByType(String type1, String type2);
+	@SelectProvider(type = ProductUtils.class, method = "getBestProductList")
+	List<ProductVO> getBestProductList(String type1, String type2);
 
 	// 상품 정보 조회
 	@Select("select * from producttable where productNo = #{productNo}")

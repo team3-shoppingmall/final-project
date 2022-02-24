@@ -88,7 +88,6 @@ export default {
     methods: { //Vue component에서 사용할 메서드를 선언, template에서 이벤트로 호출될 수 있음
         //Router는 Vue component와 웹 경로를 연결해줌
         getNotice() {
-            this.pageID = this.$route.params.id;
             this.dataLoaded = false;
             axios({
                 method: 'get',
@@ -143,7 +142,6 @@ export default {
     },
     mounted() { //method를 호출하거나 DOM으로 <template>안에 있는 태그를 처리할 때 사용
         this.pageID = this.$route.params.id;
-        this.num = this.$route.params.num;
         this.getNotice();
     }
 }

@@ -1,39 +1,48 @@
 package com.myspring.spring.review;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.myspring.spring.product.ProductMapper;
+
 @Service
 public class ReviewService {
-private ReviewMapper reviewMapper;
+	private ReviewMapper reviewMapper;
+	private ProductMapper productMapper;
+
 	
 	@Autowired
-	public ReviewService(ReviewMapper reviewMapper) {
-		this.reviewMapper = reviewMapper;
-	}
-	
-	// 전체 개수 가져오기
-	public ResponseEntity<?> getCount(String search, String searchWord) {
-		int res = reviewMapper.getCount(search, searchWord);
-		if (res == 0)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
+	public ReviewService(ReviewMapper reviewMapper, ProductMapper productMapper) {
+		 this.reviewMapper = reviewMapper;
+	     this.productMapper = productMapper;
 	}
 		
 	//리뷰 전체보기
 	public ResponseEntity<?> getAllReviews(int page, int perPage, String search, String searchWord) {
 		int start = (page - 1) * perPage;
-		List<ReviewVO> res = reviewMapper.getAllReviews(start, perPage, search, searchWord);
-		if(res == null)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
+		List<ReviewVO> reviewList = reviewMapper.getAllReviews(start, perPage, search, searchWord);
+	    List<String> nameList = new ArrayList<String>();
+	      for (ReviewVO reviewVO : reviewList) {
+	    	 String name = productMapper.getProductByNo(reviewVO.getProductNo()).getProductName();
+	         nameList.add(name);
+	      }
+		int count = reviewMapper.getCount(search, searchWord);
+		if(reviewList == null || count == 0)
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		else {
+			Map<String, Object> resMap = new HashMap<>();
+			resMap.put("reviewList", reviewList);
+			resMap.put("count", count);
+			resMap.put("nameList", nameList);
+			return new ResponseEntity<>(resMap, HttpStatus.OK);
+		}
 	}
 	
 	//리뷰 상세보기

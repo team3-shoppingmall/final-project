@@ -365,6 +365,7 @@ export default {
                 this.content = res.data.content;
                 this.star = res.data.star;
             })
+        },
         getQnA() {
             axios({
                 method: 'get',
@@ -392,8 +393,8 @@ export default {
                 }
             }).then((res) => {
                 {
-                    this.titleDetail = res.data.content;
-                    this.content = res.data.content;
+                    // this.titleDetail = res.data.title;
+                    // this.content = res.data.content;
                     console.log(res.data, res.status);
                     alert("공지사항 수정 완료");
                     this.$router.go(-1);

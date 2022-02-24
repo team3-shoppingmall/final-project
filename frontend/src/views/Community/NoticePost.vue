@@ -7,7 +7,7 @@
                 <tr>
                     <td style="width:10%"> 제목 </td>
                     <td>
-                        {{notice.title}}
+                        {{this.titleDetail}}
                     </td>
                 </tr>
                 <tr>
@@ -18,8 +18,8 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <div v-html="content" style="border:1px black solid"></div>
-                        {{notice.content}}
+                        <div v-html="notice.content" style="border:1px black solid"></div>
+                        <!-- {{this.content}} -->
                     </td>
                 </tr>
                 <tr v-if="image1 != ''">
@@ -88,37 +88,39 @@ export default {
     },
     methods: { //Vue component에서 사용할 메서드를 선언, template에서 이벤트로 호출될 수 있음
         //Router는 Vue component와 웹 경로를 연결해줌
-        // getNotice() {
-        //     this.pageID = this.$route.params.id;
-        //     this.dataLoaded = false;
-        //     axios({
-        //         method: 'get',
-        //         url: `/api/notice/list/${this.pageID}`,
-        //         params: {
-        //             noticeNo: this.pageID
-        //         }
-        //     }).then((res) => {
-        //         {
-        //             this.titleDetail = res.data.title;
-        //             this.content = res.data.content;
-        //             this.dataLoaded = true;
-        //             console.log(res.status);
-        //         } 
-        //     }).catch((err) => {
-        //         console.log(err);
-        //     })
-        // },
         getNotice() {
-            axios.get(`/api/notice/list/${this.pageID}`).then (res => {
-                this.titleDetail = res.data.title;
-                this.content = res.data.content;
-                this.dataLoaded = true;
-                console.log(res.status);
+            this.pageID = this.$route.params.id;
+            this.num = this.$route.params.num;
+            this.dataLoaded = false;
+            axios({
+                method: 'get',
+                url: `/api/notice/list/${this.pageID}`,
+                params: {
+                    noticeNo: this.pageID
+                }
+            }).then((res) => {
+                {
+                    this.titleDetail = res.data.title;
+                    this.content = res.data.content;
+                    this.dataLoaded = true;
+                    console.log(res.status);
+                } 
             }).catch((err) => {
                 alert("목록을 불러오는데 실패했습니다.");
                 console.log(err);
             })
         },
+        // getNotice() {
+        //     axios.get(`/api/notice/list/${this.pageID}`).then (res => {
+        //         this.titleDetail = res.data.title;
+        //         this.content = res.data.content;
+        //         this.dataLoaded = true;
+        //         console.log(res.status);
+        //     }).catch((err) => {
+        //         alert("목록을 불러오는데 실패했습니다.");
+        //         console.log(err);
+        //     })
+        // },
 
         moveToBefore() {
             this.$router.go(-1);
@@ -146,6 +148,7 @@ export default {
     },
     mounted() { //method를 호출하거나 DOM으로 <template>안에 있는 태그를 처리할 때 사용
         this.pageID = this.$route.params.id;
+        this.num = this.$route.params.num;
         this.getNotice();
     }
 }

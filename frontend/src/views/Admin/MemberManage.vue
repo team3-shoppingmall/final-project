@@ -337,7 +337,6 @@ export default {
     }
 }
 </script>
-
 <style scoped>
 .v-small-dialog__menu-content {
     background-color: black !important;

@@ -121,7 +121,7 @@ export default {
             headers: [{
                 text: '번호',
                 value: 'reviewNo',
-                width: '10%',
+                width: '7%',
                 align: 'center',
                 divider: true
             }, {
@@ -133,19 +133,19 @@ export default {
             }, {
                 text: '후기',
                 value: 'content',
-                width: '45%',
+                width: '60%',
                 align: 'center',
                 divider: true
             }, {
                 text: '작성자',
                 value: 'id',
-                width: '10%',
+                width: '8%',
                 align: 'center',
                 divider: true
             }, {
                 text: '작성일',
                 value: 'regDate',
-                width: '10%',
+                width: '15%',
                 align: 'center'
             }],
             searches: [{

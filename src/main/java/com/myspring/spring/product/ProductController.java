@@ -26,32 +26,21 @@ public class ProductController {
 	}
 
 	// 상품 리스트 조회
-	@GetMapping(value = "/getProductListByType")
-	public ResponseEntity<?> getProductListByType(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+	@GetMapping(value = "/getProductList")
+	public ResponseEntity<?> getProductList(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
 			@RequestParam(value = "type1", required = false) String type1,
 			@RequestParam(value = "type2", required = false) String type2,
 			@RequestParam(value = "searchWord", required = false) String searchWord,
 			@RequestParam("minPrice") int minPrice, @RequestParam("maxPrice") int maxPrice,
 			@RequestParam(value = "searchOrder", required = false) String searchOrder) {
-		return productService.getProductListByType(page, perPage, type1, type2, searchWord, minPrice, maxPrice,
-				searchOrder);
-	}
-
-	// 전체 개수 가져오기
-	@GetMapping("/getProductCountByType")
-	public ResponseEntity<?> getProductCountByType(@RequestParam(value = "type1", required = false) String type1,
-			@RequestParam(value = "type2", required = false) String type2,
-			@RequestParam(value = "searchWord", required = false) String searchWord,
-			@RequestParam("minPrice") int minPrice, @RequestParam("maxPrice") int maxPrice,
-			@RequestParam(value = "searchOrder", required = false) String searchOrder) {
-		return productService.getProductCountByType(type1, type2, searchWord, minPrice, maxPrice, searchOrder);
+		return productService.getProductList(page, perPage, type1, type2, searchWord, minPrice, maxPrice, searchOrder);
 	}
 
 	// 많이 팔린 상품 조회
-	@GetMapping(value = "/getBestProductListByType")
-	public ResponseEntity<?> getBestProductListByType(@RequestParam("type1") String type1,
+	@GetMapping(value = "/getBestProductList")
+	public ResponseEntity<?> getBestProductList(@RequestParam("type1") String type1,
 			@RequestParam("type2") String type2) {
-		return productService.getBestProductListByType(type1, type2);
+		return productService.getBestProductList(type1, type2);
 	}
 
 	// 상품 정보 조회

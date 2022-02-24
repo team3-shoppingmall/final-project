@@ -6,7 +6,9 @@
                 <v-col cols="6" class="pa-5">
                     <v-row>
                         <v-col align="center">
-                            <v-img min-height="200" max-height="500" max-width="500" :src="`https://picsum.photos/seed/1/500/500`"></v-img>
+                            <v-carousel :show-arrows="false" cycle interval="2000" hide-delimiters>
+                                <v-carousel-item v-for="(image,i) in images" :key="i" :src="image.src"></v-carousel-item>
+                            </v-carousel>
                         </v-col>
                     </v-row>
                 </v-col>
@@ -160,78 +162,8 @@
             </v-row>
 
             <v-row justify="center">
-                <v-col cols="9">
-                    <v-simple-table>
-                        <template slot="default">
-                            <tbody>
-                                <tr>
-                                    <td colspan="2"></td>
-                                </tr>
-                                <tr>
-                                    <td style="width:20%" class="pa-5"> 상품 결제정보 </td>
-                                    <td class="pa-5">
-                                        <div>
-                                            <p>고액결제의 경우 안전을 위해 카드사에서 확인전화를 드릴 수도 있습니다. 확인과정에서 도난 카드의 사용이나 타인 명의의 주문등 정상적인 주문이 아니라고 판단될 경우 임의로 주문을 보류 또는 취소할 수 있습니다.</p>
-
-                                            <p>무통장 입금은 상품 구매 대금은 PC뱅킹, 인터넷뱅킹, 텔레뱅킹 혹은 가까운 은행에서 직접 입금하시면 됩니다.<br>
-                                                주문 시 입력한 입금자명과 실제입금자의 성명이 반드시 일치하여야 하며, 7일 이내로 입금을 하셔야 하며 입금되지 않은 주문은 자동취소 됩니다.</p>
-
-                                            <p>A/S 책임자 : 070-1234-5678 Spring 고객센터<br>
-                                                품질보증기준: 전자상거래 소비자 보호법에 의거하여 소비자 청약철회 가능한 기준에 따름.<br>
-                                                구매자가 미성년자일 경우 법정 대리인이 계약에 동의하지 않을 때 구매를 취소할 수 있습니다.</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width:20%" class="pa-5"> 배송정보 </td>
-                                    <td class="pa-5">
-                                        <div>
-                                            <p>Spring은 대한민국 택배 no.1 우체국택배를 이용하여<br>
-                                                가장 안전하고, 신속하게 배송하여 드립니다 :)<br>
-                                                대부분 출고 다음날에 바로 도착하며 (주말 제외)<br>
-                                                지역 택배 기사님들의 일정과 기상상황에 따라 변동이 있을 수 있습니다.<br>
-                                                기본 배송 준비일은 입고지연 상품 제외, 2~5일 정도가 소요되고 있습니다.</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width:20%" class="pa-5"> 교환 및 반품정보 </td>
-                                    <td class="pa-5">
-                                        <div>
-                                            <p>[교환/반품 안내]<br>
-                                                물품 수령 후(택배 도착일자 기준) 7일 이내에 Q&amp;A "배송 후 교환/반품" 게시판 또는 고객센터 [070-1234-5678]
-                                                로 반드시 접수 해주세요. 글쓰기시 양식이 자동으로 등록되어 있으며, 사전에 신청해 주신 상품에 한해서만 교환/반품이 가능합니다.<br>
-                                                접수 시 Spring에서 우체국 택배 회수접수를 도와드리고 있습니다.
-                                            </p>
-
-                                            <p>
-                                                *패킹하여 보내실 때는 물품 수령시와 동일하게 포장해 주세요.<br>
-                                                택에 손상이 있는 경우에는 반품과 교환이 모두 불가합니다. <br>
-                                                성함,주소,전화번호,보내시는 상품,사유등 반품카드 양식에 맞게 적어 보내주셔야 처리가 가능합니다.
-                                            </p>
-
-                                            <p>보내시는 주소지 : 서울시 동대문구 천호대로4 동대문우체국 소포실 물류창고</p>
-
-                                            <p>
-                                                &lt;교환반품 불가사항&gt; <br>
-                                                - 상품 수령 후 7일 이상 경과된 경우 <br>
-                                                - 상품 구매시 교환/환불 불가능이 명시되어 있는경우 <br>
-                                                - 사용 흔적(집냄새,향수냄새,체취) / 텍 제거 및 바코드 훼손, 오염이 발견된 상품 <br>
-                                                - 세일상품
-                                            </p>
-
-                                            <p>-배송시 생긴 구김, 마감 박음질, 제작과정에서 발생하는 냄새나 초크자국 등 대량생산으로 인해 생긴 사유는 불량으로 간주되지 않습니다.</p>
-
-                                            <p>*불량상품의 재발송 시 왕복배송비는 Spring이 부담합니다.</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2"></td>
-                                </tr>
-                            </tbody>
-                        </template>
-                    </v-simple-table>
+                <v-col cols="10">
+                    <Guide />
                 </v-col>
             </v-row>
 
@@ -250,8 +182,8 @@
                 </v-col>
             </v-row>
 
-            <v-row>
-                <v-col>
+            <v-row justify="center">
+                <v-col cols="10">
                     <ProductDetailReview :productNo="pageID" />
                 </v-col>
             </v-row>
@@ -271,8 +203,8 @@
                 </v-col>
             </v-row>
 
-            <v-row>
-                <v-col>
+            <v-row justify="center">
+                <v-col cols="10">
                     <ProductDetailQnA :productNo="pageID" />
                 </v-col>
             </v-row>
@@ -283,12 +215,14 @@
 
 <script>
 import axios from 'axios'
-import ProductDetailReview from '@/components/ProductDetailReview.vue'
+import Guide from '@/components/Guide.vue'
 import ProductDetailQnA from '@/components/ProductDetailQnA.vue'
+import ProductDetailReview from '@/components/ProductDetailReview.vue'
 export default {
     components: {
-        ProductDetailReview,
+        Guide,
         ProductDetailQnA,
+        ProductDetailReview,
     },
     data() {
         return {
@@ -297,14 +231,27 @@ export default {
             colorOption: '',
             colorSelection: '',
             sizeOption: '',
-            images: [{}, {}, {}, {}, {}, {}, {}, {}, ],
             selected: [],
             totalPrice: 0,
             number: 0,
             numberRule: val => {
                 if (val == '') return '개수를 입력해주세요'
                 return true
-            }
+            },
+            images: [{
+                    src: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
+                },
+                {
+                    src: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
+                },
+                {
+                    src: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
+                },
+                {
+                    src: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
+                },
+            ],
+            detailImages: [],
 
         }
     },

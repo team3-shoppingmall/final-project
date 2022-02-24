@@ -3,37 +3,28 @@
     
         <div>
     
-            <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
-    
-                <template #[`item.productNo`]="{item}">
-    
-                    <div class="text-left">
-    
-                        <ProductNameDisplay :productNo="item.productNo" />
-    
-                    </div>
-</template>
-<template #[`item.type`]="{item}">
-    <div class="text-left">
-    
-        <QnATitleDisplay :type="item.type" />
-    
-    </div>
-</template>
-<template #[`item.id`]="{item}">
-    <div class="text-left">
-    
-        <HideId :id="item.id" />
-    
-    </div>
-</template>
-<template #[`item.regDate`]="{item}">
-    <div>
-    
-        <DateDisplay :regDate="item.regDate" />
-    
-    </div>
-</template>
+            
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
+            <template #[`item.productName`]="{item}">
+                <div class="text-left">
+                    {{item.productName}}
+                </div>
+            </template>
+            <template #[`item.type`]="{item}">
+                <div class="text-left">
+                    <QnATitleDisplay :type="item.type" />
+                </div>
+            </template>
+            <template #[`item.id`]="{item}">
+                <div class="text-left">
+                    <HideId :id="item.id" />
+                </div>
+            </template>
+            <template #[`item.regDate`]="{item}">
+                <div>
+                    <DateDisplay :regDate="item.regDate" />
+                </div>
+            </template>
         </v-data-table>
     </div>
 
@@ -63,13 +54,11 @@ import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 import QnATitleDisplay from '@/components/QnATitleDisplay.vue'
-import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
 export default {
     components: {
         HideId,
         DateDisplay,
         QnATitleDisplay,
-        ProductNameDisplay,
     },
     data() {
         return {
@@ -86,7 +75,7 @@ export default {
                 },
                 {
                     text: '상품명',
-                    value: 'productNo',
+                    value: 'productName',
                     width: '20%',
                     align: 'center',
                     divider: true
@@ -114,7 +103,7 @@ export default {
             ],
             searches: [{
                     text: '상품명',
-                    value: 'productname'
+                    value: 'productName'
                 }, {
                     text: '제목',
                     value: 'title'

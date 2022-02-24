@@ -82,7 +82,6 @@ export default {
 
             bestProducts: [],
             products: [],
-
         }
     },
     methods: {
@@ -117,7 +116,7 @@ export default {
         getProductList() {
             axios({
                 method: 'get',
-                url: `/api/product/getBestProductListByType`,
+                url: `/api/product/getBestProductList`,
                 params: {
                     type1: this.mainCategory,
                     type2: this.selectedCategory
@@ -129,7 +128,7 @@ export default {
             })
             axios({
                 method: 'get',
-                url: `/api/product/getProductListByType`,
+                url: `/api/product/getProductList`,
                 params: {
                     page: this.page,
                     perPage: this.itemsPerPage,
@@ -139,21 +138,24 @@ export default {
                     maxPrice: 99999999,
                 }
             }).then(res => {
-                this.products = res.data;
-                axios({
-                    method: 'get',
-                    url: `/api/product/getProductCountByType`,
-                    params: {
-                        type1: this.mainCategory,
-                        type2: this.selectedCategory,
-                        minPrice: 0,
-                        maxPrice: 99999999,
-                    }
-                }).then(res => {
-                    this.pageLength = Math.ceil(res.data / this.page);
-                }).catch((err) => {
-                    console.log(err);
-                })
+                console.log(res.data);
+                this.products = res.data.productList;
+                this.pageLength = Math.ceil(res.data.count / this.page);
+                // this.products = res.data;
+                // axios({
+                //     method: 'get',
+                //     url: `/api/product/getProductCountByType`,
+                //     params: {
+                //         type1: this.mainCategory,
+                //         type2: this.selectedCategory,
+                //         minPrice: 0,
+                //         maxPrice: 99999999,
+                //     }
+                // }).then(res => {
+                //     this.pageLength = Math.ceil(res.data / this.page);
+                // }).catch((err) => {
+                //     console.log(err);
+                // })
             }).catch((err) => {
                 console.log(err);
             })

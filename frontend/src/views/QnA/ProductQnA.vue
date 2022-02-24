@@ -1,6 +1,9 @@
 <template>
-<v-container>
-    <div>
+    <v-container>
+    
+        <div>
+    
+            
         <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
             <template #[`item.productName`]="{item}">
                 <div class="text-left">
@@ -128,25 +131,30 @@ export default {
             } = this.options
             let link = document.location.href;
             link = link.slice(26, link.length - 3);
-            axios.get(`/api/qna/getproductAll`, {
+            axios.get(`/api/qna/getQnaListByType`, {
                 params: {
                     page: page,
                     perPage: itemsPerPage,
                     search: this.search,
                     searchWord: this.searchWord,
+                    type: link
                 }
             }).then(res => {
-                this.contents = res.data;
-                axios.get('/api/qna/getCount', {
-                    params: {
-                        search: this.search,
-                        searchWord: this.searchWord,
-                        type: link
-                    }
-                }).then(res => {
-                    this.totalContents = res.data;
-                    this.loading = false
-                })
+                console.log(res);
+                //this.productNo = res.data.nameList;
+                this.contents = res.data.qnaList;
+                this.totalContents = res.data.count;
+                this.loading = false
+                // axios.get('/api/qna/getCount', {
+                //         params: {
+                //             search: this.search,
+                //             searchWord: this.searchWord,
+                //             type: link
+                //         }
+                //     }).then(res => {
+                //         this.totalContents = res.data;
+                //         this.loading = false
+                //     })
             })
         },
         moveto(item) {
@@ -165,4 +173,5 @@ export default {
 </script>
 
 <style scoped>
+
 </style>

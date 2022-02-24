@@ -21,11 +21,6 @@ public class ReviewController {
 	public ReviewController(ReviewService reviewService) {
 		this.reviewService = reviewService;
 	}
-	// 전체 개수 가져오기
-	@GetMapping("/getCount")
-	public ResponseEntity<?> getCount(@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-		return reviewService.getCount(search, searchWord);
-	}
 	
 	//리뷰 전체보기
 	@GetMapping("/getAllReviews")

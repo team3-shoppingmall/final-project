@@ -101,19 +101,21 @@ export default {
                     }
                 })
                 .then(res => {
-                    this.contents = res.data;
-                    axios({
-                            method: 'get',
-                            url: '/api/notice/getCount',
-                            params: {
-                                search: this.search,
-                                searchWord: this.searchWord,
-                            }
-                        })
-                        .then(res => {
-                            this.totalContents = res.data;
-                            this.loading = false;
-                        })
+                    this.contents = res.data.noticeList;
+                    this.totalContents = res.data.count;
+                    this.loading = false;
+                    // axios({
+                    //         method: 'get',
+                    //         url: '/api/notice/getCount',
+                    //         params: {
+                    //             search: this.search,
+                    //             searchWord: this.searchWord,
+                    //         }
+                    //     })
+                    //     .then(res => {
+                    //         this.totalContents = res.data;
+                    //         this.loading = false;
+                    //     })
                 })
         },
         moveto(item) {

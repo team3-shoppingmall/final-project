@@ -1,51 +1,59 @@
 package com.myspring.spring.qna;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.myspring.spring.product.ProductMapper;
+
 @Service
 public class QnaService {
 	private QnaMapper qnaMapper;
+    private ProductMapper productMapper;
 
-	@Autowired
-	public QnaService(QnaMapper qnaMapper) {
-		this.qnaMapper = qnaMapper;
-	}
+    @Autowired
+    public QnaService(QnaMapper qnaMapper, ProductMapper productMapper) {
+       this.qnaMapper = qnaMapper;
+       this.productMapper = productMapper;
+    }
+
 
 	// 카테고리별 전체 개수 가져오기
 	// product => 'general', 'product', 'productNotice', 'productReply', 'generalReply'
 	// beforeDelivery => 'cancel', 'change', 'changeaddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply'
 	// delivery => 'delivery', 'deliveryNotice', 'deliveryReply'
 	// afterDelivery => 'return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply'
-	public ResponseEntity<?> getCount(String search, String searchWord, String type) {
-		int res = 0;
-		System.out.println(type);
-
-		if (type.equals("product")) {
-			// 상품문의 전체 개수 조회
-			res = qnaMapper.getQnaProductCount(search, searchWord);
-		} else if (type.equals("beforeDelivery")) {
-			// 배송전 문의 전체 개수 조회
-			res = qnaMapper.getQnaBeforeDeliveryCount(search, searchWord);
-		} else if (type.equals("delivery")) {
-			// 배송문의 전체 개수 조회
-			res = qnaMapper.getQnaDeliveryCount(search, searchWord);
-		} else if (type.equals("afterDelivery")) {
-			// 배송후 문의 전체 개수 조회
-			res = qnaMapper.getQnaAfterDeliveryCount(search, searchWord);
-		} else {
-			// 이외에는 에러 반환
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		if (res == 0)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
+//	public ResponseEntity<?> getCount(String search, String searchWord, String type) {
+//		int res = 0;
+//		System.out.println(type);
+//
+//		if (type.equals("product")) {
+//			// 상품문의 전체 개수 조회
+//			res = qnaMapper.getQnaProductCount(search, searchWord, type);
+//		} else if (type.equals("beforeDelivery")) {
+//			// 배송전 문의 전체 개수 조회
+//			res = qnaMapper.getQnaBeforeDeliveryCount(search, searchWord, type);
+//		} else if (type.equals("delivery")) {
+//			// 배송문의 전체 개수 조회
+//			res = qnaMapper.getQnaDeliveryCount(search, searchWord);
+//		} else if (type.equals("afterDelivery")) {
+//			// 배송후 문의 전체 개수 조회
+//			res = qnaMapper.getQnaAfterDeliveryCount(search, searchWord);
+//		} else {
+//			// 이외에는 에러 반환
+//			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//		if (res == 0)
+//			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+//		else
+//			return new ResponseEntity<>(res, HttpStatus.OK);
+//	}
 
 	// 문의게시판 목록 출력
 	public ResponseEntity<?> getQnaWithSearch(int page, int perPage, String search, String searchWord) {
@@ -75,45 +83,45 @@ public class QnaService {
 			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
-	// 상품문의 카테고리 전체 조회
-	public ResponseEntity<?> getQnaProductAll(int page, int perPage, String search, String searchWord) {
-		int start = (page - 1) * perPage;
-		List<QnaVO> res = qnaMapper.getQnaProductAll(start, perPage, search, searchWord);
-		if (res == null)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
-
-	// 배송문의 카테고리 전체 조회
-	public ResponseEntity<?> getQnaDeliveryAll(int page, int perPage, String search, String searchWord) {
-		int start = (page - 1) * perPage;
-		List<QnaVO> res = qnaMapper.getQnaDelieveryAll(start, perPage, search, searchWord);
-		if (res == null)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
-
-	// 배송 전 변경&취소 카테고리 전체 조회
-	public ResponseEntity<?> getQnaBeforeDeliveryAll(int page, int perPage, String search, String searchWord) {
-		int start = (page - 1) * perPage;
-		List<QnaVO> res = qnaMapper.getQnaBeforeDeliveryAll(start, perPage, search, searchWord);
-		if (res == null)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
-
-	// 배송 후 교환&반품 카테고리 전체 조회
-	public ResponseEntity<?> getQnaAfterDeliveryAll(int page, int perPage, String search, String searchWord) {
-		int start = (page - 1) * perPage;
-		List<QnaVO> res = qnaMapper.getQnaAfterDeliveryAll(start, perPage, search, searchWord);
-		if (res == null)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
+//	// 상품문의 카테고리 전체 조회
+//	public ResponseEntity<?> getQnaProductAll(int page, int perPage, String search, String searchWord) {
+//		int start = (page - 1) * perPage;
+//		List<QnaVO> res = qnaMapper.getQnaProductAll(start, perPage, search, searchWord);
+//		if (res == null)
+//			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+//		else
+//			return new ResponseEntity<>(res, HttpStatus.OK);
+//	}
+//
+//	// 배송문의 카테고리 전체 조회
+//	public ResponseEntity<?> getQnaDeliveryAll(int page, int perPage, String search, String searchWord) {
+//		int start = (page - 1) * perPage;
+//		List<QnaVO> res = qnaMapper.getQnaDelieveryAll(start, perPage, search, searchWord);
+//		if (res == null)
+//			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+//		else
+//			return new ResponseEntity<>(res, HttpStatus.OK);
+//	}
+//
+//	// 배송 전 변경&취소 카테고리 전체 조회
+//	public ResponseEntity<?> getQnaBeforeDeliveryAll(int page, int perPage, String search, String searchWord) {
+//		int start = (page - 1) * perPage;
+//		List<QnaVO> res = qnaMapper.getQnaBeforeDeliveryAll(start, perPage, search, searchWord);
+//		if (res == null)
+//			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+//		else
+//			return new ResponseEntity<>(res, HttpStatus.OK);
+//	}
+//
+//	// 배송 후 교환&반품 카테고리 전체 조회
+//	public ResponseEntity<?> getQnaAfterDeliveryAll(int page, int perPage, String search, String searchWord) {
+//		int start = (page - 1) * perPage;
+//		List<QnaVO> res = qnaMapper.getQnaAfterDeliveryAll(start, perPage, search, searchWord);
+//		if (res == null)
+//			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+//		else
+//			return new ResponseEntity<>(res, HttpStatus.OK);
+//	}
 
 	// 문의 등록
 	public ResponseEntity<?> insertQna(QnaVO qnaVO) {
@@ -207,6 +215,39 @@ public class QnaService {
 		else
 			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
+
+	//카테고리별로 qna목록 출력
+	public ResponseEntity<?> getQnaListByType(int page, int perPage, String search, String searchWord, String type) {
+		int start = (page - 1) * perPage;
+		List<QnaVO> qnaList = qnaMapper.getQnaListByType(start, perPage, search, searchWord, type);
+		int count = qnaMapper.getQnaCountByType(search, searchWord, type);
+		List<String> nameList = new ArrayList<String>();
+
+		for (QnaVO qnaVO : qnaList) {
+	         String name = null;
+	         try {
+	            name = productMapper.getProductByNo(qnaVO.getProductNo()).getProductName();
+	         } catch (NullPointerException ne) {
+	            name = null;
+	         } catch (Exception e) {
+	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	         }
+	         nameList.add(name);
+	      }
+
+		if (qnaList == null || count == 0) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}else {
+			 Map<String, Object> resMap = new HashMap<>();
+			 resMap.put("qnaList", qnaList);
+	         resMap.put("count", count);
+			 resMap.put("nameList", nameList);
+			 return new ResponseEntity<>(resMap, HttpStatus.OK);
+		}
+		
+			
+	}
+	
 
 //	//기간으로 문의 검색(일주일)
 //	public ResponseEntity<?> searchQnaByWeek() {

@@ -32,6 +32,11 @@ public class FaqController {
     public ResponseEntity<?> getFaqByType(@PathVariable("type") String type) {
     	return faqService.getFaqByType(type);
     }
+    //수정시 데이터 불러오기 (하나만 조회)
+	@GetMapping("/getfaqbyfaqNo")
+	public ResponseEntity<?> getFaqByFaqNo(@RequestParam("faqNo") int faqNo){
+		return faqService.getFaqByFaqNo(faqNo);
+	}
     
     //faq 등록
     @PostMapping("/insertfaq")

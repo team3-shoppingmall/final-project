@@ -18,75 +18,84 @@
                     <div>{{telFormatter(item.tel)}}</div>
                 </template>
                 <template v-slot:[`item.btn`]="{ item }">
-                    <v-edit-dialog large @save="updateMember" cancel-text="취소" save-text="수정" >
-                        <v-btn class="primary" @click="selectItem(item)">
-                            수정
-                        </v-btn>
-                        <template v-slot:input>
-                            <v-simple-table>
-                                <thead>
-                                    <tr>
-                                        <th class="text-h5" colspan="2">회원정보수정</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="text-h6">ID</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.id" hide-details readonly></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">이름</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.name" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">전화번호</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.tel" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">이메일</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.email" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">우편번호</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.zipcode" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">주소1</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.addr1" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">주소2</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.addr2" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">포인트</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.point" hide-details readonly></v-text-field>
-                                        </td>
-                                    </tr>
-
-                                </tbody>
-                            </v-simple-table>
-                        </template>
-                    </v-edit-dialog>
+                    <v-btn color="primary" @click.stop="selectItem(item), dialog = true">
+                        수정
+                    </v-btn>
                 </template>
             </v-data-table>
         </v-col>
     </v-row>
+    <v-dialog v-model="dialog" width="600px">
+        <v-card class="pa-2" >
+            <v-simple-table>
+                <thead>
+                    <tr>
+                        <th class="text-h5" colspan="2">회원정보수정</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-h6">ID</td>
+                        <td>
+                            <v-text-field v-model="editItem.id" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">이름</td>
+                        <td>
+                            <v-text-field v-model="editItem.name" hide-details></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">전화번호</td>
+                        <td>
+                            <v-text-field v-model="editItem.tel" hide-details></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">이메일</td>
+                        <td>
+                            <v-text-field v-model="editItem.email" hide-details></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">우편번호</td>
+                        <td>
+                            <v-text-field v-model="editItem.zipcode" hide-details></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">주소1</td>
+                        <td>
+                            <v-text-field v-model="editItem.addr1" hide-details></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">주소2</td>
+                        <td>
+                            <v-text-field v-model="editItem.addr2" hide-details></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">포인트</td>
+                        <td>
+                            <v-text-field v-model="editItem.point" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <v-row justify="end">
+                                <v-col cols="auto">
+                                    <v-btn class="error" @click="dialog = false">취소</v-btn>
+                                    <v-btn class="primary ml-3" @click="updateMember">수정</v-btn>
+                                </v-col>
+                            </v-row>
+                        </td>
+                    </tr>
+                </tbody>
+            </v-simple-table>
+        </v-card>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -172,6 +181,7 @@ export default {
             }
         },
         selectItem(item) {
+            console.log(item)
             let temp = this.items[
                 this
                 .items
@@ -192,6 +202,7 @@ export default {
             axios.put('/api/member/updateMember', this.editItem)
                 .then(() => {
                     this.getAllMembers();
+                    this.dialog = false;
                 })
         },
 
@@ -326,5 +337,10 @@ export default {
     }
 }
 </script>
-
-<style></style>
+<style scoped>
+.v-small-dialog__menu-content {
+    background-color: black !important;
+    position: absolute;
+    left: 50%;
+}
+</style>

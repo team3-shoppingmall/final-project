@@ -31,7 +31,7 @@ public interface ProductMapper {
 	public ProductVO getProductByNo(@Param("productNo") int productNo);
 
 	@Insert("insert into producttable(productName, type1, type2, imageName, price, color, size, amount, detailImageName) "
-			+ "values (#{in.productName}, #{in.type1}, #{in.type2}, #{in.imageName}, #{in.price}, #{in.color}, #{in.size},  #{in.amount}, #{in.detailimagename})")
+			+ "values (#{in.productName}, #{in.type1}, #{in.type2}, #{in.imageName}, #{in.price}, #{in.color}, #{in.size},  #{in.amount}, #{in.detailImageName})")
 	@Options(useGeneratedKeys = true, keyProperty = "result.productNo", keyColumn = "productNo")
 	int insertProduct(@Param("in") ProductVO in, @Param("result") ProductVO result);
 

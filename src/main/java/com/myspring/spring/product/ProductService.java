@@ -63,19 +63,28 @@ public class ProductService {
 
 		try {
 			productMapper.insertProduct(requestData, result);
-			int productno = result.getProductNo();
-			File file = new File("./src/main/resources/images/product/" + productno + "/");
+			int productNo = result.getProductNo();
+			String[] imageName = requestData.getImageName().split(";");
+			String[] detailImageName = requestData.getDetailImageName().split(";");
+			File file = new File("./images/product/" + productNo + "/");
 			file.mkdir();
-			String[] path = { "/product/", "/detail/" };
-			file = new File("./images/product/" + productno + path[0]);
+			file = new File("./images/product/" + productNo + "/product/");
 			file.mkdir();
-			file = new File("./images/product/" + productno + path[1]);
+			file = new File("./images/product/" + productNo + "/detail/");
 			file.mkdir();
 
-			for (int i = 0; i < fileList.size(); i++) {
+			for (int i = 0; i < imageName.length; i++) {
 				MultipartFile multipartFile = fileList.get(i);
 				FileOutputStream writer = new FileOutputStream(
-						"./images/product/" + productno + path[i] + multipartFile.getOriginalFilename());
+						"./images/product/" + productNo + "/product/" + multipartFile.getOriginalFilename());
+				System.out.println(multipartFile.getOriginalFilename());
+				writer.write(multipartFile.getBytes());
+				writer.close();
+			}
+			for (int i = imageName.length; i < detailImageName.length + imageName.length; i++) {
+				MultipartFile multipartFile = fileList.get(i);
+				FileOutputStream writer = new FileOutputStream(
+						"./images/product/" + productNo + "/detail/" + multipartFile.getOriginalFilename());
 				System.out.println(multipartFile.getOriginalFilename());
 				writer.write(multipartFile.getBytes());
 				writer.close();

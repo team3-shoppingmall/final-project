@@ -162,7 +162,7 @@ export default {
         };
     },
     methods: {
-        async sendFile() {
+        sendFile() {
             if (this.productName == null) {
                 alert('상품명을 입력해주세요');
                 return;
@@ -242,22 +242,22 @@ export default {
                 color: color,
                 size: size,
                 amount: this.amount,
-                detailImageName: this.detailImageName,
+                detailImageName: detailImageName,
             }
 
-            this.formData = new FormData();
-            this.formData.append('data', new Blob([JSON.stringify(data)], {
+            let formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(data)], {
                 type: "application/json"
             }))
 
             for (let i = 0; i < this.imageFiles.length; i++) {
-                this.formData.append('fileList', this.files[i])
+                formData.append(`fileList`, this.imageFiles[i])
             }
             for (let i = 0; i < this.detailImageFiles.length; i++) {
-                this.formData.append('fileList', this.files[i])
+                formData.append(`fileList`, this.detailImageFiles[i])
             }
-
-            axios.post('/api/product/insertProduct', this.formData)
+            console.log(formData);
+            axios.post('/api/product/insertProduct', formData)
                 .then(res => {
                     console.log(res.status);
                     alert("상품을 추가하셨습니다");
@@ -267,6 +267,21 @@ export default {
                         alert("error")
                 })
         },
+    },
+    watch: {
+      imageFiles (val) {
+        if (val.length > 5) {
+          this.$nextTick(() => this.imageFiles.pop());
+          alert('상품 이미지는 5개까지 가능합니다')
+        }
+      },
+      
+      detailImageFiles (val) {
+        if (val.length > 20) {
+          this.$nextTick(() => this.detailImageFiles.pop());
+          alert('상세 이미지는 20개까지 가능합니다')
+        }
+      },
     },
 }
 </script>

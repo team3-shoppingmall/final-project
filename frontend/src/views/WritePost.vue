@@ -388,10 +388,9 @@ export default {
                     noticeNo: this.num
                 }
             }).then((res) => {
-                    this.notice = res.data;
+                    // this.notice = res.data;
                     this.titleDetail = res.data.title;
                     this.content = res.data.content;
-                    this.dataLoaded = true;
                     console.log(res.status);    
             }).catch((err) => {
                 alert("목록을 불러오는데 실패했습니다.");
@@ -410,10 +409,6 @@ export default {
                     image: "",
                 }
             }).then((res) => {
-                    this.notice = res.data;
-                    this.titleDetail = res.data.title;
-                    this.content = res.data.content;
-                    this.dataLoaded = true;
                     console.log(res.data, res.status);
                     alert("공지사항 수정 완료");
                     this.$router.go(-1);

@@ -122,11 +122,9 @@ export default {
                         faqNo: num
                     }
                 })
-                .then(res => {
-                    this.contents = res.data;
-                    this.loading = false
+                .then(() => {
                     alert("삭제가 완료되었습니다.")
-                    this.$router.push(`/community/faq`);
+                    this.$router.go();
                 })
 
         },

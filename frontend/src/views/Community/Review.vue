@@ -1,11 +1,11 @@
 <template>
 <v-container>
     <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
-        <template #[`item.productName`]="{item}">
-                <div class="text-left">
-                    {{item.productName}}
-                </div>
-            </template>
+        <template #[`item.productName`]="{index}">
+            <div class="text-left">
+                {{ nameList[index] }}
+            </div>
+        </template>
         <template #[`item.star`]="{item}">
             <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" length="5" readonly size="10" :value="item.star"></v-rating>
         </template>
@@ -62,6 +62,7 @@ export default {
             admin: true,
             totalContents: 0,
             contents: [],
+            nameList: [],
             options: {},
             loading: true,
             headers: [{
@@ -130,6 +131,7 @@ export default {
             }).then(res => {
                 this.contents = res.data.reviewList;
                 this.totalContents = res.data.count;
+                this.nameList = res.data.nameList;
                 this.loading = false;
             })
         },

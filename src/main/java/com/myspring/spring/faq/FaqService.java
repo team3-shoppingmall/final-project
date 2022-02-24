@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.myspring.spring.qna.QnaVO;
+
 @Service
 public class FaqService {
 	private FaqMapper faqMapper;
@@ -39,7 +41,15 @@ public class FaqService {
 		else
 			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
-
+    //수정시 데이터 불러오기 (하나만 조회)
+	public ResponseEntity<?> getFaqByFaqNo(int faqNo) {
+		System.out.println(faqNo);
+		FaqVO res = faqMapper.getFaqByFaqNo(faqNo);
+		if (res == null)
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(res, HttpStatus.OK);
+	}
 	// faq 등록
 	public ResponseEntity<?> insertFaq(FaqVO faqVO) {
 		int res = faqMapper.insertFaq(faqVO);
@@ -66,5 +76,7 @@ public class FaqService {
 		else
 			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
+
+	
 
 }

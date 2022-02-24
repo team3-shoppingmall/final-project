@@ -39,7 +39,7 @@ import SignUp from '../views/SignUp.vue'
 
 import Admin from '@/layouts/Admin/Index.vue'
 import ProductManage from '@/views/Admin/ProductManage.vue'
-import Admin_Child2 from '@/views/Admin/Admin2.vue'
+import AddProduct from '@/views/Admin/AddProduct.vue'
 import Admin_Child3 from '@/views/Admin/Admin3.vue'
 import Admin_Child4 from '@/views/Admin/Admin4.vue'
 import Admin_Child5 from '@/views/Admin/Admin5.vue'
@@ -76,7 +76,7 @@ const routes = [
             }, {
                 path: '/payment',
                 name: 'Payment',
-                component: Payment
+                component: Payment,
             }, {
                 path: '/myPage',
                 name: 'MyPage',
@@ -224,9 +224,9 @@ const routes = [
                 component: ProductManage,
             },
             {
-                path: 'admin2',
-                name: 'Admin2',
-                component: Admin_Child2,
+                path: 'addProduct',
+                name: 'AddProduct',
+                component: AddProduct,
             },
             {
                 path: 'admin3',

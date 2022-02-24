@@ -1,16 +1,11 @@
 <template>
 <v-container>
     <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
-        <template #[`item.productNo`]="{item}">
-            <div class="text-left">
-                <ProductNameDisplay :productNo="item.productNo" />
-            </div>
-        </template>
         <template #[`item.star`]="{item}">
             <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" length="5" readonly size="10" :value="item.star"></v-rating>
         </template>
         <template #[`item.content`]="{item}">
-            <v-row justify="space-between">
+            <v-row justify="space-between" align="center">
                 <v-col>
                     <div v-html="item.content" class="text-left"></div>
                 </v-col>
@@ -61,7 +56,7 @@
                                 <v-row>
                                     <v-col cols="12">
                                         상품 정보
-                                        <ProductDetailDisplay :type="'product'" />
+                                        <ProductDetailDisplay :productNo="productNo" />
                                     </v-col>
                                     <v-col cols="12">
                                         별점
@@ -100,13 +95,11 @@ import axios from 'axios'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
-import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
 import ProductDetailDisplay from '@/components/ProductDetailDisplay.vue'
 export default {
     components: {
         HideId,
         DateDisplay,
-        ProductNameDisplay,
         ProductDetailDisplay,
     },
     props: ['productNo'],
@@ -128,12 +121,6 @@ export default {
             headers: [{
                 text: '번호',
                 value: 'reviewNo',
-                width: '10%',
-                align: 'center',
-                divider: true
-            }, {
-                text: '상품명',
-                value: 'productNo',
                 width: '10%',
                 align: 'center',
                 divider: true
@@ -173,7 +160,7 @@ export default {
             star: 5,
             content: '',
             contentColor: 'black--text',
-            image1: '',
+            image1: 'test1.jpg',
 
         }
     },
@@ -206,7 +193,7 @@ export default {
                 method: 'post',
                 url: `/api/review/insert`,
                 data: {
-                    star: this.star,
+                    productNo: this.productNo,
                     content: this.content,
                     image: this.image,
                     id: "test1",

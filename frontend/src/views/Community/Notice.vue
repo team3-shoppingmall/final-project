@@ -101,19 +101,21 @@ export default {
                     }
                 })
                 .then(res => {
-                    this.contents = res.data;
+                    this.contents = res.data.noticeList;
+                    this.totalContents = res.data.count;
                     this.loading = false;
-                    axios({
-                            method: 'get',
-                            url: '/api/notice/getCount',
-                            params: {
-                                search: this.search,
-                                searchWord: this.searchWord,
-                            }
-                        })
-                        .then(res => {
-                            this.totalContents = res.data;
-                        })
+                    // axios({
+                    //         method: 'get',
+                    //         url: '/api/notice/getCount',
+                    //         params: {
+                    //             search: this.search,
+                    //             searchWord: this.searchWord,
+                    //         }
+                    //     })
+                    //     .then(res => {
+                    //         this.totalContents = res.data;
+                    //         this.loading = false;
+                    //     })
                 })
         },
         moveto(item) {
@@ -121,7 +123,7 @@ export default {
         },
 
     },
-    watch: {  //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
+    watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
         options: {
             handler() {
                 this.getNotice()

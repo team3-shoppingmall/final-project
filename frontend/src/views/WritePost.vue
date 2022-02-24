@@ -379,6 +379,38 @@ export default {
                 console.log(err);
             })
         },
+        getFAQ() {
+            axios({
+                method: 'get',
+                url: `/api/faq/getfaqbyfaqNo`,
+                params: {
+                    faqNo: this.num
+                }
+            }).then((res) => {
+                this.titleDetail = res.data.title;
+                this.faqTypeSelected = res.data.type;
+                this.content = res.data.content;
+            })
+
+        },
+
+        getNotice() {
+            axios({
+                method: 'get',
+                url: `/api/notice/list/${this.num}`,
+                params: {
+                    noticeNo: this.num
+                }
+            }).then((res) => {
+                    // this.notice = res.data;
+                    this.titleDetail = res.data.title;
+                    this.content = res.data.content;
+                    console.log(res.status);    
+            }).catch((err) => {
+                alert("목록을 불러오는데 실패했습니다.");
+                console.log(err);
+            })
+        },
 
         noticeFormUpdate() {
             axios({
@@ -391,13 +423,9 @@ export default {
                     image: "",
                 }
             }).then((res) => {
-                {
-                    this.titleDetail = res.data.content;
-                    this.content = res.data.content;
                     console.log(res.data, res.status);
                     alert("공지사항 수정 완료");
                     this.$router.go(-1);
-                }
             }).catch((err) => {
                 alert("수정 실패");
                 console.log(err);
@@ -453,12 +481,10 @@ export default {
                     content: this.content
                 })
 
-                .then((res) => {
-                    if (res.status == 200) {
+                .then(res => {
                         console.log(res.data, res.status);
                         alert("FAQ 등록 완료");
                         this.$router.go(-1);
-                    }
                 }).catch((err) => {
                     console.log(err);
                 })
@@ -475,13 +501,19 @@ export default {
                         content: this.content,
 
                     }
+                }).then((res) => {
+                
+                    console.log(res.data, res.status);
+                    alert("FAQ 수정 완료");
+                    this.$router.go(-1);
                 })
-                .then((res) => {
-                    if (res.status == 200) {
-                        alert("수정이 완료되었습니다.")
-                        this.$router.go(-1);
-                    }
-                })
+
+                // .then(res => {
+                //     if (res.status == 200) {
+                //         alert("수정이 완료되었습니다.")
+                //         this.$router.go(-1);
+                //     }
+                // })
         },
         qnaFormUpdate() {
 

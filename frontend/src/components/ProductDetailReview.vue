@@ -180,25 +180,12 @@ export default {
                     search: this.search,
                     searchWord: this.searchWord,
                     productNo: this.productNo
-                    // 상품번호 추가해서 새로 만드시면 됩니다
-                    // productNo : this.productNo,
                 }
             }).then(res => {
-                this.contents = res.data;
-                axios({
-                    method: 'get',
-                    url: `/api/review/getCount`,
-                    params: {
-                        search: this.search,
-                        searchWord: this.searchWord,
-                        productNo: this.productNo
-                        // 상품번호 추가해서 새로 만드시면 됩니다
-                        // productNo : this.productNo,
-                    }
-                }).then(res => {
-                    this.totalContents = res.data;
-                    this.loading = false;
-                })
+                console.log(res.data);
+                this.contents = res.data.reviewList;
+                this.totalContents = res.data.count;
+                this.loading = false;
             })
         },
         addReview() {
@@ -208,19 +195,20 @@ export default {
                 data: {
                     productNo: this.productNo,
                     content: this.content,
-                    id: "tester",
-                    image: this.image1,
-                    star: this.star,
-                }
-            }).then(() => {
-                this.dialog = false;
-                this.content = '';
-                alert("리뷰 등록 완료");
-                this.$router.go();
-            }).catch((err) => {
-                alert('리뷰 작성에 실패했습니다.')
-                console.log(err);
-            })
+                    image: this.image,
+                    id: "test1",
+                    productNo: this.productNo
+                } 
+                }).then((res) => {
+                    this.dialog = false;
+                    this.content = '';
+                    console.log(res.data, res.status);
+                    alert("리뷰 등록 완료");
+                    this.$router.go();
+                }).catch((err) => {
+                    alert('리뷰 작성에 실패했습니다.')
+                    console.log(err);
+                })
         },
         deleteReview(num) {
             axios({

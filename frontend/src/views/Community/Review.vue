@@ -130,18 +130,9 @@ export default {
                     searchWord: this.searchWord
                 }
             }).then(res => {
-                this.contents = res.data;
-                axios({
-                    method: 'get',
-                    url: `/api/review/getCount`,
-                    params: {
-                        search: this.search,
-                        searchWord: this.searchWord
-                    }
-                }).then(res => {
-                    this.totalContents = res.data;
-                    this.loading = false;
-                })
+                this.contents = res.data.reviewList;
+                this.totalContents = res.data.count;
+                this.loading = false;
             })
         },
 

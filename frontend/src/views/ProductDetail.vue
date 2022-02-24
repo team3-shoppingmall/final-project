@@ -1,13 +1,13 @@
 <template>
 <v-container class="mt-5">
-    <v-row justify="center">
+    <v-row justify="center" v-if="dataLoaded">
         <v-col cols="9">
             <v-row style="height:600px">
                 <v-col cols="6" class="pa-5">
                     <v-row>
                         <v-col align="center">
                             <v-carousel :show-arrows="false" cycle interval="2000" hide-delimiters>
-                                <v-carousel-item v-for="(image,i) in images" :key="i" :src="image.src"></v-carousel-item>
+                                <v-carousel-item v-for="(image,i) in images" :key="i" :src="`/api/product/productImage/${pageID}/${image}`"></v-carousel-item>
                             </v-carousel>
                         </v-col>
                     </v-row>
@@ -20,8 +20,8 @@
                                     <td colspan="3">
                                         <div class="text-h6">
                                             {{product.productName}}
-                                            - <span v-if="sizeOption != ''">{{sizeOption.length}} size</span>
-                                            <span v-if="sizeOption == ''">{{colorOption.length}} color</span>
+                                            - <span v-if="sizeOption != null">{{sizeOption.length}} size</span>
+                                            <span v-if="sizeOption == null">{{colorOption.length}} color</span>
                                         </div>
                                     </td>
                                 </tr>
@@ -40,28 +40,28 @@
                                         {{product.price-product.discount}}원
                                     </td>
                                 </tr>
-                                <tr v-if="colorOption != ''">
+                                <tr v-if="colorOption != null">
                                     <td style="width:10%"> COLOR </td>
                                     <td colspan="2">
                                         <!-- size 있을 때 -->
-                                        <v-chip-group v-model="colorSelection" active-class="deep-purple--text text--accent-4" v-if="sizeOption != ''">
+                                        <v-chip-group v-model="colorSelection" active-class="deep-purple--text text--accent-4" v-if="sizeOption != null">
                                             <v-chip label outlined v-for="color in colorOption" :key="color" :value="color">
                                                 {{ color }}
                                             </v-chip>
                                         </v-chip-group>
                                         <!-- size 없을 때 -->
-                                        <v-chip-group active-class="deep-purple--text text--accent-4" v-if="sizeOption == ''">
+                                        <v-chip-group active-class="deep-purple--text text--accent-4" v-if="sizeOption == null">
                                             <v-chip label outlined v-for="color in colorOption" :key="color" :value="color" @click="addSelected(color, null)">
                                                 {{ color }}
                                             </v-chip>
                                         </v-chip-group>
                                     </td>
                                 </tr>
-                                <tr v-if="sizeOption != ''">
+                                <tr v-if="sizeOption != null">
                                     <td style="width:10%"> SIZE </td>
                                     <td colspan="2">
                                         <v-chip-group active-class="deep-purple--text text--accent-4">
-                                            <v-chip label outlined v-for="size in sizeOption" :key="size" :value="size" :disabled="colorOption != '' && colorSelection == ''" @click="addSelected(colorSelection, size)">
+                                            <v-chip label outlined v-for="size in sizeOption" :key="size" :value="size" :disabled="colorOption != null && colorSelection == null" @click="addSelected(colorSelection, size)">
                                                 {{ size }}
                                             </v-chip>
                                         </v-chip-group>
@@ -141,8 +141,8 @@
             </v-row>
 
             <v-row justify="center">
-                <v-col v-for="(image, idx) in images" :key="idx" cols="9">
-                    <v-img max-height="300" max-width="auto" :src="`https://picsum.photos/seed/${randomNumber(idx)}/1000/500`"></v-img>
+                <v-col v-for="(image, idx) in detailImages" :key="idx" cols="9">
+                    <v-img max-height="auto" max-width="auto" :src="`/api/product/detailImage/${pageID}/${image}`"></v-img>
                 </v-col>
             </v-row>
 
@@ -226,32 +226,21 @@ export default {
     },
     data() {
         return {
-            pageID: '',
-            product: '',
-            colorOption: '',
-            colorSelection: '',
-            sizeOption: '',
+            dataLoaded: false,
+            pageID: null,
+            product: null,
+            colorOption: null,
+            colorSelection: null,
+            sizeOption: null,
             selected: [],
+            images: [],
+            detailImages: [],
             totalPrice: 0,
             number: 0,
             numberRule: val => {
                 if (val == '') return '개수를 입력해주세요'
                 return true
             },
-            images: [{
-                    src: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
-                },
-                {
-                    src: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
-                },
-                {
-                    src: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
-                },
-                {
-                    src: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
-                },
-            ],
-            detailImages: [],
 
         }
     },
@@ -260,18 +249,21 @@ export default {
             return Math.floor(Math.random() * 100) + count;
         },
         getProudct() {
+            this.dataLoaded = false;
             axios.get(`/api/product/getProduct/${this.pageID}`).then(res => {
-                if (res.status == 200) {
-                    this.product = res.data;
-                    if (this.product.color != null) {
-                        this.colorOption = this.product.color.split(';');
-                    }
-                    if (this.product.size != null) {
-                        this.sizeOption = this.product.size.split(';');
-                    }
-                } else {
-                    console.log(res.status);
+                this.product = res.data;
+                if (this.product.color != null) {
+                    this.colorOption = this.product.color.split(';');
                 }
+                if (this.product.size != null) {
+                    this.sizeOption = this.product.size.split(';');
+                }
+                this.images = this.product.imageName.split(';');
+                this.detailImages = this.product.detailImageName.split(';');
+                this.dataLoaded = true;
+            }).catch(err => {
+                console.log(err);
+                this.dataLoaded = true;
             })
         },
         addSelected(color, size) {
@@ -298,7 +290,6 @@ export default {
         },
         amountFilter() {
             let amount = 0;
-            console.log(this.selected);
             for (let i = 0; i < this.selected.length; i++) {
                 console.log(this.selected[i].amount);
                 if (this.selected[i].amount > 0 && this.selected[i].amount == Math.round(this.selected[i].amount)) {
@@ -358,9 +349,16 @@ export default {
             });
         },
     },
+    watch: {
+        '$route'() {
+            this.pageID = this.$route.params.id;
+            this.getProudct();
+        }
+    },
     mounted() {
         this.pageID = this.$route.params.id;
         this.getProudct();
+
     }
 }
 </script>

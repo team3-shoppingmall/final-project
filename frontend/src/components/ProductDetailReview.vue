@@ -149,9 +149,6 @@ export default {
                 align: 'center'
             }],
             searches: [{
-                text: '상품명',
-                value: 'productname'
-            }, {
                 text: '작성자',
                 value: 'id'
             }],

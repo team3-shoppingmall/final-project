@@ -47,17 +47,24 @@
                                     상품 이미지
                                 </v-col>
                                 <v-col cols="auto">
-                                    <v-icon @click="imageFiles.push(null)" color="primary">mdi-plus</v-icon>
+                                    <v-icon @click="imagePlus" color="primary">mdi-plus</v-icon>
                                 </v-col>
                             </v-row>
                         </td>
                         <td>
                             <v-row v-for="(idx) in imageFiles.length" :key="idx" align="center" dense>
                                 <v-col>
-                                    <v-file-input v-model="imageFiles[idx-1]" accept="image/*" truncate-length="50"></v-file-input>
+                                    <v-file-input v-model="imageFiles[idx-1]" accept="image/*" truncate-length="50" @change="onImageChange(idx-1)"></v-file-input>
                                 </v-col>
                                 <v-col cols="auto">
-                                    <v-icon @click="imageFiles.splice(idx-1, 1);" color="primary">mdi-minus</v-icon>
+                                    <v-icon @click="imageMinus(idx-1);" color="primary">mdi-minus</v-icon>
+                                </v-col>
+                                <v-col cols="4">
+                                    <v-row justify="center">
+                                        <v-col cols="auto">
+                                            <img v-if="imageUrl[idx-1]" :src="imageUrl[idx-1]" style="max-height: 200px; object-fit: cover; " />
+                                        </v-col>
+                                    </v-row>
                                 </v-col>
                             </v-row>
                         </td>
@@ -69,17 +76,24 @@
                                     상품 상세 이미지
                                 </v-col>
                                 <v-col cols="auto">
-                                    <v-icon @click="detailImageFiles.push(null)" color="primary">mdi-plus</v-icon>
+                                    <v-icon @click="detailImagePlus" color="primary">mdi-plus</v-icon>
                                 </v-col>
                             </v-row>
                         </td>
                         <td>
                             <v-row v-for="(idx) in detailImageFiles.length" :key="idx" align="center" dense>
                                 <v-col>
-                                    <v-file-input v-model="detailImageFiles[idx-1]" accept="image/*" truncate-length="50"></v-file-input>
+                                    <v-file-input v-model="detailImageFiles[idx-1]" accept="image/*" truncate-length="50" @change="onDetailImageChange(idx-1)"></v-file-input>
                                 </v-col>
                                 <v-col cols="auto">
-                                    <v-icon @click="detailImageFiles.splice(idx-1, 1);" color="primary">mdi-minus</v-icon>
+                                    <v-icon @click="detailImageMinus(idx-1);" color="primary">mdi-minus</v-icon>
+                                </v-col>
+                                <v-col cols="4">
+                                    <v-row justify="center">
+                                        <v-col cols="auto">
+                                            <img v-if="detailImageUrl[idx-1]" :src="detailImageUrl[idx-1]" style="max-height: 200px; object-fit: cover" />
+                                        </v-col>
+                                    </v-row>
                                 </v-col>
                             </v-row>
                         </td>
@@ -89,21 +103,11 @@
             </v-simple-table>
         </v-col>
     </v-row>
-    <!-- <div v-html="editorData"></div>
-    <div>
-        {{editorData}}
-    </div>
-    <v-row>
-        <v-col>
-            <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
-        </v-col>
-    </v-row> -->
 </v-container>
 </template>
 
 <script>
 import axios from 'axios'
-// import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 export default {
 
@@ -116,7 +120,9 @@ export default {
             sizeList: [],
             amount: 0,
             imageFiles: [null],
+            imageUrl: [null],
             detailImageFiles: [null],
+            detailImageUrl: [null],
 
             types: [{
                 text: '기준 선택',
@@ -141,27 +147,43 @@ export default {
                 text: 'SKIRT>미디/롱',
                 value: 'skirt;midi-long',
             }, ],
-
-            // editor: ClassicEditor,
-            // editorData: '<p>Content of the editor.</p>',
-            // editorConfig: {
-            //     // The configuration of the editor.
-            //     ckfinder: {
-            //         // baseUrl: `http://localhost:3000/uploads`,
-            //         // source: `http://localhost:3000/uploads`,
-            //         // uploadUrl: `http://localhost:8085/api/files/test`,
-            //         // filebrowserUploadUrl: `http://localhost:3000/api/files/test`,
-            //         // filebrowserImageUploadUrl: `http://localhost:3000/api/files/test`,
-            //         // filebrowserBrowseUrl: `http://localhost:3000/uploads`,
-            //         // filebrowserImageBrowseUrl: `http://localhost:3000/uploads`,
-            //         // filebrowserFlashUploadUrl: `http://localhost:3000/api/files/test`,
-            //         // filebrowserFlashBrowseUrl: `http://localhost:3000/uploads`,
-            //     },
-            // },
-            // plugins: [Base64UploadAdapter],
         };
     },
     methods: {
+        imagePlus() {
+            this.imageFiles.push(null);
+            this.imageUrl.push(null);
+        },
+        imageMinus(index) {
+            this.imageFiles.splice(index, 1);
+            this.imageUrl.splice(index, 1);
+        },
+        detailImagePlus() {
+            this.detailImageFiles.push(null);
+            this.detailImageUrl.push(null);
+        },
+        detailImageMinus(index) {
+            this.detailImageFiles.splice(index, 1);
+            this.detailImageUrl.splice(index, 1);
+        },
+        onImageChange(index) {
+            const file = this.imageFiles[index];
+            if (file) {
+                this.imageUrl[index] = URL.createObjectURL(file);
+                URL.revokeObjectURL(file);
+            } else {
+                this.imageUrl[index] = null;
+            }
+        },
+        onDetailImageChange(index) {
+            const file = this.detailImageFiles[index];
+            if (file) {
+                this.detailImageUrl[index] = URL.createObjectURL(file);
+                URL.revokeObjectURL(file);
+            } else {
+                this.detailImageUrl[index] = null;
+            }
+        },
         sendFile() {
             if (this.productName == null) {
                 alert('상품명을 입력해주세요');
@@ -269,19 +291,19 @@ export default {
         },
     },
     watch: {
-      imageFiles (val) {
-        if (val.length > 5) {
-          this.$nextTick(() => this.imageFiles.pop());
-          alert('상품 이미지는 5개까지 가능합니다')
-        }
-      },
-      
-      detailImageFiles (val) {
-        if (val.length > 20) {
-          this.$nextTick(() => this.detailImageFiles.pop());
-          alert('상세 이미지는 20개까지 가능합니다')
-        }
-      },
+        imageFiles(val) {
+            if (val.length > 5) {
+                this.$nextTick(() => this.imageFiles.pop());
+                alert('상품 이미지는 5개까지 가능합니다');
+            }
+        },
+
+        detailImageFiles(val) {
+            if (val.length > 20) {
+                this.$nextTick(() => this.detailImageFiles.pop());
+                alert('상세 이미지는 20개까지 가능합니다');
+            }
+        },
     },
 }
 </script>

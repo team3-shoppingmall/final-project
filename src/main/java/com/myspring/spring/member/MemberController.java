@@ -1,11 +1,12 @@
 package com.myspring.spring.member;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,11 +28,17 @@ public class MemberController {
 		memberService.insertMember(member);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+	
+	@PutMapping(value="/updateMember")
+	public ResponseEntity<?> updateMember(@RequestBody MemberVO member){
+		return memberService.updateMember(member); 
+	}
+	
 
 	// 전체 멤버 조회
 	@GetMapping(value = "/getMemberAll")
-	public ResponseEntity<?> getMemberAll() {
-		return memberService.getMemberAll();
+	public ResponseEntity<?> getMemberAll(@Param("page") int page, @Param("perPage") int perPage) {
+		return memberService.getMemberAll(page, perPage);
 	}
 
 	// 멤버 조회

@@ -49,7 +49,7 @@ CREATE TABLE producttable(
 	TYPE2 VARCHAR(50) NOT NULL,
 	IMAGENAME VARCHAR(100) NOT NULL,
 	PRICE INT NOT NULL,
-	DISCOUNT INT NOT NULL,
+	DISCOUNT INT DEFAULT 0,
 	COLOR VARCHAR(1000),
 	SIZE VARCHAR(1000),
 	AMOUNT INT NOT NULL,
@@ -181,8 +181,8 @@ insert into membertable values('tester29','Asdqwe123','유저2','01045614561','u
 insert into membertable values('tester212','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 insert into membertable values('tester222','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 -- 상품
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, detailimagename) 
-values('스노우 버튼 모직스커트', 'skirt','mini','test.jpg',38000,0,'그레이지;소프트민트','S;M;L', 100,'test.jpg');
+insert into producttable(productname, type1, type2, imagename, price, color, size, amount, detailimagename) 
+values('스노우 버튼 모직스커트', 'skirt','mini','test.jpg',38000,'그레이지;소프트민트','S;M;L', 100,'test.jpg');
 insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, detailimagename)
 values('실키 여리핏 히든블라우스', 'shirt','blouse','test.jpg',34900,5000,'아이보리;피치베이지;워터리블루;블랙',null, 100,'test.jpg');
 -- 장바구니

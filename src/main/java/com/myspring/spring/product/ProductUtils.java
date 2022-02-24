@@ -2,7 +2,7 @@ package com.myspring.spring.product;
 
 import org.apache.ibatis.jdbc.SQL;
 
-public class ProductUtils  {
+public class ProductUtils {
 	public String getProductListByType(int start, int perPage, String type1, String type2, String searchWord,
 			int minPrice, int maxPrice, String searchOrder) {
 		SQL sql = new SQL() {
@@ -18,10 +18,11 @@ public class ProductUtils  {
 					AND();
 					WHERE("UPPER(type1) = UPPER('" + type1 + "')");
 				}
-				if (!type2.equals("all")) {
-					AND();
-					WHERE("UPPER(type2) = UPPER('" + type2 + "')");
-				}
+				if (type2 != null)
+					if (!type2.equals("all")) {
+						AND();
+						WHERE("UPPER(type2) = UPPER('" + type2 + "')");
+					}
 				if (!searchOrder.equals("")) {
 					ORDER_BY(searchOrder);
 				}
@@ -35,6 +36,7 @@ public class ProductUtils  {
 
 	public String getProductCountByType(String type1, String type2, String searchWord, int minPrice, int maxPrice,
 			String searchOrder) {
+
 		SQL sql = new SQL() {
 			{
 				SELECT("count(*)");
@@ -48,7 +50,7 @@ public class ProductUtils  {
 					AND();
 					WHERE("UPPER(type1) = UPPER('" + type1 + "')");
 				}
-				if (!type2.equals("all") && !type2.equals(null)) {
+				if (!type2.equals("all") && type2 != null) {
 					AND();
 					WHERE("UPPER(type2) = UPPER('" + type2 + "')");
 				}

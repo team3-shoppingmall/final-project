@@ -8,7 +8,7 @@
                 - <span v-if="sizeOption != ''">{{sizeOption.length}} size</span>
                 <span v-if="sizeOption == ''">{{colorOption.length}} color</span>
             </v-list-item-title>
-            <v-list-item-subtitle>{{product.price}}원</v-list-item-subtitle>
+            <v-list-item-subtitle>{{product.price-product.discount}}원</v-list-item-subtitle>
 
             <v-btn outlined :to="`/productDetail/${product.productNo}`" max-width="150">
                 상품 상세보기

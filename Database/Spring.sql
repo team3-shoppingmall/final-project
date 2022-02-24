@@ -49,7 +49,7 @@ CREATE TABLE producttable(
 	TYPE2 VARCHAR(50) NOT NULL,
 	IMAGENAME VARCHAR(100) NOT NULL,
 	PRICE INT NOT NULL,
-	DISCOUNT INT NOT NULL,
+	DISCOUNT INT DEFAULT 0,
 	COLOR VARCHAR(1000),
 	SIZE VARCHAR(1000),
 	AMOUNT INT NOT NULL,
@@ -132,12 +132,12 @@ CREATE TABLE faqtable (
 	FAQNO INT PRIMARY KEY AUTO_INCREMENT,
 	TYPE VARCHAR(50) NOT NULL,
 	TITLE VARCHAR(100) NOT NULL,
-	CONTENT VARCHAR(600) NOT NULL
+	CONTENT VARCHAR(2000) NOT NULL
 );
 
 CREATE TABLE reviewTable(
 	REVIEWNO BIGINT PRIMARY KEY AUTO_INCREMENT,
-	PRODUCTNO INT NOT NULL,
+	PRODUCTNO INT not NULL,
 	CONTENT VARCHAR(600) NOT NULL,
 	id VARCHAR(50) NOT NULL,
 	REGDATE TIMESTAMP DEFAULT (current_timestamp),
@@ -169,10 +169,20 @@ CREATE TABLE bannertable (
 -- 회원
 insert into membertable values('admin','admin','관리자','0212345678','spring@gmail.com','12345','서울 강남구 테헤란로 212 (멀티캠퍼스)','2층 201호',false,null,'ROLE_ADMIN');
 insert into membertable values('tester','Asdqwe123','유저','01098765432','user@gmail.com','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호',false,null,'ROLE_USER');
-insert into membertable values('tester2','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester21','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester22','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester23','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester24','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester25','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester26','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester27','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester28','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester29','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester212','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester222','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 -- 상품
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, detailimagename) 
-values('스노우 버튼 모직스커트', 'skirt','mini','test.jpg',38000,0,'그레이지;소프트민트','S;M;L', 100,'test.jpg');
+insert into producttable(productname, type1, type2, imagename, price, color, size, amount, detailimagename) 
+values('스노우 버튼 모직스커트', 'skirt','mini','test.jpg',38000,'그레이지;소프트민트','S;M;L', 100,'test.jpg');
 insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, detailimagename)
 values('실키 여리핏 히든블라우스', 'shirt','blouse','test.jpg',34900,5000,'아이보리;피치베이지;워터리블루;블랙',null, 100,'test.jpg');
 -- 장바구니
@@ -359,3 +369,4 @@ select * from bannertable;
 -- 많이 팔린 순으로 정렬
 -- select productno, sum(amount) from ordertable group by productno order by sum(amount) desc;
 -- select * from producttable left join ordertable on producttable.productno = ordertable.productno where type1 = 'skirt' group by ordertable.productno order by sum(ordertable.amount) desc limit 0,8;
+

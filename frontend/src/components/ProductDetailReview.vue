@@ -1,16 +1,11 @@
 <template>
 <v-container>
     <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
-        <template #[`item.productNo`]="{item}">
-            <div class="text-left">
-                <ProductNameDisplay :productNo="item.productNo" />
-            </div>
-        </template>
         <template #[`item.star`]="{item}">
             <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" length="5" readonly size="10" :value="item.star"></v-rating>
         </template>
         <template #[`item.content`]="{item}">
-            <v-row justify="space-between">
+            <v-row justify="space-between" align="center">
                 <v-col>
                     <div v-html="item.content" class="text-left"></div>
                 </v-col>
@@ -61,7 +56,7 @@
                                 <v-row>
                                     <v-col cols="12">
                                         상품 정보
-                                        <ProductDetailDisplay :type="'product'" />
+                                        <ProductDetailDisplay :productNo="productNo" />
                                     </v-col>
                                     <v-col cols="12">
                                         별점
@@ -100,13 +95,11 @@ import axios from 'axios'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
-import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
 import ProductDetailDisplay from '@/components/ProductDetailDisplay.vue'
 export default {
     components: {
         HideId,
         DateDisplay,
-        ProductNameDisplay,
         ProductDetailDisplay,
     },
     props: ['productNo'],
@@ -128,12 +121,6 @@ export default {
             headers: [{
                 text: '번호',
                 value: 'reviewNo',
-                width: '10%',
-                align: 'center',
-                divider: true
-            }, {
-                text: '상품명',
-                value: 'productNo',
                 width: '10%',
                 align: 'center',
                 divider: true
@@ -173,7 +160,7 @@ export default {
             star: 5,
             content: '',
             contentColor: 'black--text',
-            image1: '',
+            image1: 'test1.jpg',
 
         }
     },
@@ -192,6 +179,7 @@ export default {
                     perPage: itemsPerPage,
                     search: this.search,
                     searchWord: this.searchWord,
+                    productNo: this.productNo
                     // 상품번호 추가해서 새로 만드시면 됩니다
                     // productNo : this.productNo,
                 }
@@ -203,6 +191,7 @@ export default {
                     params: {
                         search: this.search,
                         searchWord: this.searchWord,
+                        productNo: this.productNo
                         // 상품번호 추가해서 새로 만드시면 됩니다
                         // productNo : this.productNo,
                     }
@@ -213,18 +202,25 @@ export default {
             })
         },
         addReview() {
-            // 데이터
-            console.log(this.star);
-            console.log(this.content);
-            console.log(this.image1);
-
-            // 성공 시
-            this.dialog = false;
-            this.content = '';
-
-            // 실패 시
-            // alert('리뷰 작성에 실패했습니다.')
-            // console.log(err);
+            axios({
+                method: 'post',
+                url: `/api/review/insert`,
+                data: {
+                    productNo: this.productNo,
+                    content: this.content,
+                    id: "tester",
+                    image: this.image1,
+                    star: this.star,
+                }
+            }).then(() => {
+                this.dialog = false;
+                this.content = '';
+                alert("리뷰 등록 완료");
+                this.$router.go();
+            }).catch((err) => {
+                alert('리뷰 작성에 실패했습니다.')
+                console.log(err);
+            })
         },
         deleteReview(num) {
             axios({

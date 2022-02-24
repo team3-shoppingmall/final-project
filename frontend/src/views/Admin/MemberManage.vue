@@ -13,92 +13,89 @@
     </v-row>
     <v-row>
         <v-col>
-            <v-data-table :headers="headers" :items="items">
+            <v-data-table :headers="headers" :options.sync="options" :items="items" :server-items-length="totalContents" :loading="loading">
                 <template v-slot:[`item.tel`]="{ item }">
                     <div>{{telFormatter(item.tel)}}</div>
                 </template>
                 <template v-slot:[`item.btn`]="{ item }">
-
-                    <v-dialog v-model="dialog" width="600px">
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-btn color="primary" v-bind="attrs" v-on="on" @click="selectItem(item)">
-                                수정
-                            </v-btn>
-                        </template>
-                        <v-card class="pa-2" width="600px">
-                            <v-simple-table>
-                                <thead>
-                                    <tr>
-                                        <th class="text-h5" colspan="2">회원정보수정</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="text-h6">ID</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.id" hide-details readonly></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">이름</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.name" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">전화번호</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.tel" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">이메일</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.email" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">우편번호</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.zipcode" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">주소1</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.addr1" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">주소2</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.addr2" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">포인트</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.point" hide-details readonly></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2">
-                                            <v-row justify="end">
-                                                <v-col cols="auto">
-                                                    <v-btn class="error" @click="dialog = false">취소</v-btn>
-                                                    <v-btn class="primary ml-3">수정</v-btn>
-                                                </v-col>
-                                            </v-row>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </v-simple-table>
-                        </v-card>
-                    </v-dialog>
+                    <v-btn color="primary" @click.stop="selectItem(item), dialog = true">
+                        수정
+                    </v-btn>
                 </template>
             </v-data-table>
         </v-col>
     </v-row>
+    <v-dialog v-model="dialog" width="600px">
+        <v-card class="pa-2" >
+            <v-simple-table>
+                <thead>
+                    <tr>
+                        <th class="text-h5" colspan="2">회원정보수정</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-h6">ID</td>
+                        <td>
+                            <v-text-field v-model="editItem.id" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">이름</td>
+                        <td>
+                            <v-text-field v-model="editItem.name" hide-details></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">전화번호</td>
+                        <td>
+                            <v-text-field v-model="editItem.tel" hide-details></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">이메일</td>
+                        <td>
+                            <v-text-field v-model="editItem.email" hide-details></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">우편번호</td>
+                        <td>
+                            <v-text-field v-model="editItem.zipcode" hide-details></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">주소1</td>
+                        <td>
+                            <v-text-field v-model="editItem.addr1" hide-details></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">주소2</td>
+                        <td>
+                            <v-text-field v-model="editItem.addr2" hide-details></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">포인트</td>
+                        <td>
+                            <v-text-field v-model="editItem.point" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <v-row justify="end">
+                                <v-col cols="auto">
+                                    <v-btn class="error" @click="dialog = false">취소</v-btn>
+                                    <v-btn class="primary ml-3" @click="updateMember">수정</v-btn>
+                                </v-col>
+                            </v-row>
+                        </td>
+                    </tr>
+                </tbody>
+            </v-simple-table>
+        </v-card>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -107,30 +104,53 @@ import axios from 'axios'
 export default {
     methods: {
         getAllMembers() {
+            this.loading = true;
+            const {
+                page,
+                itemsPerPage
+            } = this.options;
+
             axios
-                .get('/api/member/getMemberAll')
+                .get('/api/member/getMembers', {
+                    params: {
+                        page: page,
+                        perPage: itemsPerPage,
+                    }
+                })
                 .then(res => {
-                    this.items = res.data;
+                    this.items = res.data.res;
+                    this.totalContents = res.data.count;
                 })
                 .catch(err => {
                     console.log(err.response.status);
                 })
+                .finally(this.loading = false);
         },
         searchMember() {
-            console.log(this.condition, this.value);
+            this.loading = true;
+            const {
+                page,
+                itemsPerPage
+            } = this.options;
+
             axios
                 .get('/api/member/getMembers', {
                     params: {
+                        page: page,
+                        perPage: itemsPerPage,
                         condition: this.condition,
                         param: this.value
                     }
                 })
                 .then(res => {
-                    this.items = res.data;
+                    this.items = res.data.res;
+                    this.totalContents = res.data.count;
                 })
                 .catch(err => {
                     console.log(err.response.status);
                 })
+                .finally(this.loading = false);
+
         },
         telFormatter(tel) {
             let first;
@@ -161,20 +181,49 @@ export default {
             }
         },
         selectItem(item) {
-            this.editItem = this.items[
+            console.log(item)
+            let temp = this.items[
                 this
                 .items
                 .indexOf(item)
             ];
-        }
+            this.editItem = {
+                id: temp.id,
+                name: temp.name,
+                tel: temp.tel,
+                email: temp.email,
+                zipcode: temp.zipcode,
+                addr1: temp.addr1,
+                addr2: temp.addr2,
+                point: temp.point
+            }
+        },
+        updateMember() {
+            axios.put('/api/member/updateMember', this.editItem)
+                .then(() => {
+                    this.getAllMembers();
+                    this.dialog = false;
+                })
+        },
+
     },
-    mounted() {
-        this.getAllMembers()
+    watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
+        options: {
+            handler() {
+                this.getAllMembers();
+            },
+            deep: true,
+        },
     },
+    // mounted() {
+    //     this.getAllMembers();
+    // },
     data() {
         return {
-            editItem: {},
             dialog: false,
+            totalContents: 0,
+            loading: false,
+            editItem: {},
             condition: 'id',
             value: '',
             searchType: [{
@@ -272,14 +321,14 @@ export default {
                 value: 'point',
                 divider: true,
                 align: 'center',
-                width: '7%',
+                width: '6%',
                 sortable: false,
                 class: 'text-subtitle-1'
             }, {
                 text: '수정',
                 value: 'btn',
                 align: 'center',
-                width: '5%',
+                width: '6%',
                 sortable: false,
                 class: 'text-subtitle-1'
             }],
@@ -289,4 +338,10 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+.v-small-dialog__menu-content {
+    background-color: black !important;
+    position: absolute;
+    left: 50%;
+}
+</style>

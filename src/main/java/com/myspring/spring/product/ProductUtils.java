@@ -22,17 +22,22 @@ public class ProductUtils {
 						WHERE("productName like " + "'%" + words[i] + "%'");
 					}
 				}
+
+
 				if (type1 != null) {
 					AND();
 					WHERE("UPPER(type1) = UPPER('" + type1 + "')");
 				}
 				if (type2 != null) {
+
 					if (!type2.equals("all")) {
 						AND();
 						WHERE("UPPER(type2) = UPPER('" + type2 + "')");
 					}
+
 				}
 				if (searchOrder != null) {
+
 					ORDER_BY(searchOrder);
 				}
 				LIMIT(perPage);
@@ -45,6 +50,7 @@ public class ProductUtils {
 
 	public String getProductCountByType(String type1, String type2, String searchWord, int minPrice, int maxPrice,
 			String searchOrder) {
+
 		SQL sql = new SQL() {
 			{
 				SELECT("count(*)");
@@ -62,7 +68,9 @@ public class ProductUtils {
 						WHERE("productName like " + "'%" + words[i] + "%'");
 					}
 				}
+
 				if (type1 != null) {
+
 					AND();
 					WHERE("UPPER(type1) = UPPER('" + type1 + "')");
 				}

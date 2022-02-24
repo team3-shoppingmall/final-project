@@ -54,11 +54,11 @@
                     </v-form>
                 </v-col>
             </v-row>
-            <div class="text-center text-h3 mt-10" v-if="noSearch">
-                검색된 상품이 없습니다.
-            </div>
             <div class="text-subtitle-1">
                 총 {{totalLength}}개의 상품이 검색되었습니다
+            </div>
+            <div class="text-center text-h3 mt-10" v-if="noSearch">
+                검색된 상품이 없습니다.
             </div>
             <v-row class="my-10" justify="center">
                 <v-col>

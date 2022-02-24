@@ -18,89 +18,11 @@
                     <div>{{telFormatter(item.tel)}}</div>
                 </template>
                 <template v-slot:[`item.btn`]="{ item }">
-
-                    <!-- <v-dialog v-model="dialog" width="600px">
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-btn color="primary" v-bind="attrs" v-on="on" @click="selectItem(item)">
-                                수정
-                            </v-btn>
-                        </template>
-                        <v-card class="pa-2" width="600px">
-                            <v-simple-table>
-                                <thead>
-                                    <tr>
-                                        <th class="text-h5" colspan="2">회원정보수정</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="text-h6">ID</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.id" hide-details readonly></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">이름</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.name" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">전화번호</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.tel" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">이메일</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.email" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">우편번호</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.zipcode" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">주소1</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.addr1" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">주소2</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.addr2" hide-details></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-h6">포인트</td>
-                                        <td>
-                                            <v-text-field v-model="editItem.point" hide-details readonly></v-text-field>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2">
-                                            <v-row justify="end">
-                                                <v-col cols="auto">
-                                                    <v-btn class="error" >취소</v-btn>
-                                                    <v-btn class="primary ml-3" @click="updateMember">수정</v-btn>
-                                                </v-col>
-                                            </v-row>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </v-simple-table>
-                        </v-card>
-                    </v-dialog> -->
-                    <v-edit-dialog large @save="updateMember" cancel-text="취소" save-text="수정">
+                    <v-edit-dialog large @save="updateMember" cancel-text="취소" save-text="수정" style="position:absolute; left: 0px;">
                         <v-btn class="primary" @click="selectItem(item)">
                             수정
                         </v-btn>
                         <template v-slot:input>
-                            <!-- <v-card class="pa-2" width="600px"> -->
                             <v-simple-table>
                                 <thead>
                                     <tr>
@@ -156,19 +78,9 @@
                                             <v-text-field v-model="editItem.point" hide-details readonly></v-text-field>
                                         </td>
                                     </tr>
-                                    <!-- <tr>
-                                            <td colspan="2">
-                                                <v-row justify="end">
-                                                    <v-col cols="auto">
-                                                        <v-btn class="error">취소</v-btn>
-                                                        <v-btn class="primary ml-3" @click="updateMember">수정</v-btn>
-                                                    </v-col>
-                                                </v-row>
-                                            </td>
-                                        </tr> -->
+
                                 </tbody>
                             </v-simple-table>
-                            <!-- </v-card> -->
                         </template>
                     </v-edit-dialog>
                 </template>
@@ -190,7 +102,7 @@ export default {
             } = this.options;
 
             axios
-                .get('/api/member/getMemberAll', {
+                .get('/api/member/getMembers', {
                     params: {
                         page: page,
                         perPage: itemsPerPage,
@@ -206,20 +118,29 @@ export default {
                 .finally(this.loading = false);
         },
         searchMember() {
-            console.log(this.condition, this.value);
+            this.loading = true;
+            const {
+                page,
+                itemsPerPage
+            } = this.options;
+
             axios
                 .get('/api/member/getMembers', {
                     params: {
+                        page: page,
+                        perPage: itemsPerPage,
                         condition: this.condition,
                         param: this.value
                     }
                 })
                 .then(res => {
-                    this.items = res.data;
+                    this.items = res.data.res;
+                    this.totalContents = res.data.count;
                 })
                 .catch(err => {
                     console.log(err.response.status);
                 })
+                .finally(this.loading = false);
 
         },
         telFormatter(tel) {
@@ -275,10 +196,10 @@ export default {
         },
 
     },
-     watch: {  //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
+    watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
         options: {
             handler() {
-                 this.getAllMembers();
+                this.getAllMembers();
             },
             deep: true,
         },
@@ -288,6 +209,7 @@ export default {
     // },
     data() {
         return {
+            dialog: false,
             totalContents: 0,
             loading: false,
             editItem: {},
@@ -388,14 +310,14 @@ export default {
                 value: 'point',
                 divider: true,
                 align: 'center',
-                width: '7%',
+                width: '6%',
                 sortable: false,
                 class: 'text-subtitle-1'
             }, {
                 text: '수정',
                 value: 'btn',
                 align: 'center',
-                width: '5%',
+                width: '6%',
                 sortable: false,
                 class: 'text-subtitle-1'
             }],

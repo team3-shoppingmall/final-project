@@ -38,7 +38,6 @@ private ReviewMapper reviewMapper;
 	
 	//리뷰 상세보기
 		public ResponseEntity<?> getReview(int reviewNo) {
-			System.out.println(reviewNo);
 			ReviewVO res = reviewMapper.getReview(reviewNo);
 			if (res == null)
 				return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);

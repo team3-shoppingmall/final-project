@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+
 @Mapper
 public interface ReviewMapper {
 	
@@ -26,7 +27,7 @@ public interface ReviewMapper {
 	public ReviewVO getReview(int reviewNo);
 	
 	//리뷰 작성
-	@Insert("insert into reviewtable(content, id, image, star) values(#{in.content}, #{in.id}, #{in.image}, #{in.star})")
+	@Insert("insert into reviewtable(productNo, content, id, image, star) values(#(in.producNo), #{in.content}, #{in.id}, #{in.image}, #{in.star})")
 	public int insertReview(@Param("in") ReviewVO reviewVO);
 	
 	//리뷰 삭제

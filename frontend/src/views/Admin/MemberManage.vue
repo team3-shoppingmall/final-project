@@ -18,7 +18,7 @@
                     <div>{{telFormatter(item.tel)}}</div>
                 </template>
                 <template v-slot:[`item.btn`]="{ item }">
-                    <v-edit-dialog large @save="updateMember" cancel-text="취소" save-text="수정" style="position:absolute; left: 0px;">
+                    <v-edit-dialog large @save="updateMember" cancel-text="취소" save-text="수정" >
                         <v-btn class="primary" @click="selectItem(item)">
                             수정
                         </v-btn>

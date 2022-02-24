@@ -379,6 +379,17 @@ export default {
                 console.log(err);
             })
         },
+        getNotice() {
+            axios.get(`/api/notice/list/${this.num}`).then (res => {
+                this.titleDetail = res.data.title;
+                this.content = res.data.content;
+                this.dataLoaded = true;
+                console.log(res.status);
+            }).catch((err) => {
+                alert("목록을 불러오는데 실패했습니다.");
+                console.log(err);
+            })
+        },
 
         noticeFormUpdate() {
             axios({

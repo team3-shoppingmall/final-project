@@ -1,27 +1,39 @@
 <template>
-<v-container>
+    <v-container>
+    
+        <div>
+    
+            <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
+    
+                <template #[`item.productNo`]="{item}">
+    
+                    <div class="text-left">
+    
+                        <ProductNameDisplay :productNo="item.productNo" />
+    
+                    </div>
+</template>
+<template #[`item.type`]="{item}">
+    <div class="text-left">
+    
+        <QnATitleDisplay :type="item.type" />
+    
+    </div>
+</template>
+<template #[`item.id`]="{item}">
+    <div class="text-left">
+    
+        <HideId :id="item.id" />
+    
+    </div>
+</template>
+<template #[`item.regDate`]="{item}">
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
-            <template #[`item.productNo`]="{item}">
-                <div class="text-left">
-                    <ProductNameDisplay :productNo="item.productNo" />
-                </div>
-            </template>
-            <template #[`item.type`]="{item}">
-                <div class="text-left">
-                    <QnATitleDisplay :type="item.type" />
-                </div>
-            </template>
-            <template #[`item.id`]="{item}">
-                <div class="text-left">
-                    <HideId :id="item.id" />
-                </div>
-            </template>
-            <template #[`item.regDate`]="{item}">
-                <div>
-                    <DateDisplay :regDate="item.regDate" />
-                </div>
-            </template>
+    
+        <DateDisplay :regDate="item.regDate" />
+    
+    </div>
+</template>
         </v-data-table>
     </div>
 
@@ -129,29 +141,29 @@ export default {
                 page,
                 itemsPerPage
             } = this.options
-            axios.get(`/api/qna/getproductAll`, {
+            axios.get(`/api/qna/getQnaByType`, {
                 params: {
                     page: page,
                     perPage: itemsPerPage,
                     search: this.search,
                     searchWord: this.searchWord,
-                    // 상품번호 추가해서 새로 만드시면 됩니다
-                    // productNo : this.productNo,
+                    productNo: this.productNo,
                 }
             }).then(res => {
                 this.contents = res.data;
-                axios.get('/api/qna/getCount', {
-                    params: {
-                        search: this.search,
-                        searchWord: this.searchWord,
-                        type: 'product',
-                        // type은 어짜피 상품이니 필요없고 상품번호 추가해서 새로 만드시면 됩니다
-                        // productNo : this.productNo,
-                    }
-                }).then(res => {
-                    this.totalContents = res.data;
-                    this.loading = false
-                })
+                this.totalContents = res.data;
+                this.loading = false
+                // axios.get('/api/qna/getCount', {
+                //     params: {
+                //         search: this.search,
+                //         searchWord: this.searchWord,
+                //         // type은 어짜피 상품이니 필요없고 상품번호 추가해서 새로 만드시면 됩니다
+                //         productNo : this.productNo,
+                //     }
+                // }).then(res => {
+                //     this.totalContents = res.data;
+                //     this.loading = false
+                // })
             })
         },
         moveto(item) {
@@ -170,4 +182,5 @@ export default {
 </script>
 
 <style scoped>
+
 </style>

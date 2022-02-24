@@ -1,22 +1,32 @@
 <template>
-<v-container>
+    <v-container>
+    
+        <div>
+    
+            <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
+    
+                <template #[`item.type`]="{item}">
+    
+                    <div class="text-left">
+    
+                        <QnATitleDisplay :type="item.type" />
+    
+                    </div>
+</template>
+<template #[`item.id`]="{item}">
+    <div class="text-left">
+    
+        <HideId :id="item.id" />
+    
+    </div>
+</template>
+<template #[`item.regDate`]="{item}">
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
-            <template #[`item.type`]="{item}">
-                <div class="text-left">
-                    <QnATitleDisplay :type="item.type" />
-                </div>
-            </template>
-            <template #[`item.id`]="{item}">
-                <div class="text-left">
-                    <HideId :id="item.id" />
-                </div>
-            </template>
-            <template #[`item.regDate`]="{item}">
-                <div>
-                    <DateDisplay :regDate="item.regDate" />
-                </div>
-            </template>
+    
+        <DateDisplay :regDate="item.regDate" />
+    
+    </div>
+</template>
         </v-data-table>
     </div>
 
@@ -116,27 +126,30 @@ export default {
             } = this.options
             let link = document.location.href;
             link = link.slice(26, link.length - 3);
-            axios.get( `/api/qna/getafterdeliveryAll`,{
+            axios.get(`/api/qna/getQnaListByType`, {
                     params: {
                         page: page,
                         perPage: itemsPerPage,
                         search: this.search,
                         searchWord: this.searchWord,
+                        type: link
                     }
                 })
                 .then(res => {
                     this.contents = res.data;
-                    axios.get('/api/qna/getCount',{
-                            params: {
-                                search: this.search,
-                                searchWord: this.searchWord,
-                                type: link
-                            }
-                        })
-                        .then(res => {
-                            this.totalContents = res.data;
-                            this.loading = false
-                        })
+                    this.totalContents = res.data;
+                    this.loading = false
+                    // axios.get('/api/qna/getCount',{
+                    //         params: {
+                    //             search: this.search,
+                    //             searchWord: this.searchWord,
+                    //             type: link
+                    //         }
+                    //     })
+                    //     .then(res => {
+                    //         this.totalContents = res.data;
+                    //         this.loading = false
+                    //     })
                 })
         },
         moveto(item) {

@@ -28,24 +28,18 @@ public class MemberController {
 		memberService.insertMember(member);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
-	
-	@PutMapping(value="/updateMember")
-	public ResponseEntity<?> updateMember(@RequestBody MemberVO member){
-		return memberService.updateMember(member); 
+
+	@PutMapping(value = "/updateMember")
+	public ResponseEntity<?> updateMember(@RequestBody MemberVO member) {
+		return memberService.updateMember(member);
 	}
-	
 
 	// 전체 멤버 조회
-	@GetMapping(value = "/getMemberAll")
-	public ResponseEntity<?> getMemberAll(@Param("page") int page, @Param("perPage") int perPage) {
-		return memberService.getMemberAll(page, perPage);
-	}
-
-	// 멤버 조회
 	@GetMapping(value = "/getMembers")
-	public ResponseEntity<?> getMembers(@RequestParam("condition") String condition,
-			@RequestParam("param") Object param) {
-		return memberService.getMembers(condition, param);
+	public ResponseEntity<?> getMembers(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+			@RequestParam(value = "condition", required = false) String condition,
+			@RequestParam(value = "param", required = false) Object param) {
+		return memberService.getMembers(page, perPage, condition, param);
 	}
 
 }

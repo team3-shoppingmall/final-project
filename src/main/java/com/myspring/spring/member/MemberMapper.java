@@ -16,17 +16,17 @@ public interface MemberMapper {
 	int insertMember(@Param("in") MemberVO member);
 
 	// 전체 멤버 조회
-	@Select("select id, name, tel, email, zipcode, addr1, addr2, terms, point from membertable limit #{perPage} offset #{start}")
-	List<MemberVO> getMemberAll(@Param("start") int start, @Param("perPage") int perPage);
+//	@Select("select id, name, tel, email, zipcode, addr1, addr2, terms, point from membertable limit #{perPage} offset #{start}")
+//	List<MemberVO> getMemberAll(@Param("start") int start, @Param("perPage") int perPage);
 
 	// 전체 멤버 수 조회
 	@Select("select count(id) from membertable")
 	int getMemberCount();
-	
+
 	// 멤버 조회
 	// select * from membertable where ? like %?%
 	@SelectProvider(type = MemberUtils.class, method = "getMembers")
-	List<MemberVO> getMembers(String condition, Object param);
+	List<MemberVO> getMembers(int start, int perPage, String condition, Object param);
 
 	// 멤버 정보 수정
 	// update membertable set ? = ?, ... where id = ?

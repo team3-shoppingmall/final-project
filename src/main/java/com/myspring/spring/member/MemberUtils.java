@@ -3,12 +3,16 @@ package com.myspring.spring.member;
 import org.apache.ibatis.jdbc.SQL;
 
 public class MemberUtils {
-	public String getMembers(String condition, Object param) {
+//	@Select("select id, name, tel, email, zipcode, addr1, addr2, terms, point from membertable limit #{perPage} offset #{start}")
+	public String getMembers(int start, int perPage, String condition, Object param) {
 		SQL sql = new SQL() {
 			{
-				SELECT("*");
+				SELECT("id, name, tel, email, zipcode, addr1, addr2, terms, point");
 				FROM("membertable");
-				WHERE(condition + " like " + "'%" + param + "%'");
+				if (condition != null)
+					WHERE(condition + " like " + "'%" + param + "%'");
+				LIMIT(perPage);
+				OFFSET(start);
 			}
 		};
 

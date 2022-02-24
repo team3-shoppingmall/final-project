@@ -192,6 +192,7 @@ export default {
                     perPage: itemsPerPage,
                     search: this.search,
                     searchWord: this.searchWord,
+                    productNo: this. productNo
                     // 상품번호 추가해서 새로 만드시면 됩니다
                     // productNo : this.productNo,
                 }
@@ -203,6 +204,7 @@ export default {
                     params: {
                         search: this.search,
                         searchWord: this.searchWord,
+                        productNo: this. productNo
                         // 상품번호 추가해서 새로 만드시면 됩니다
                         // productNo : this.productNo,
                     }
@@ -213,18 +215,26 @@ export default {
             })
         },
         addReview() {
-            // 데이터
-            console.log(this.star);
-            console.log(this.content);
-            console.log(this.image1);
-
-            // 성공 시
-            this.dialog = false;
-            this.content = '';
-
-            // 실패 시
-            // alert('리뷰 작성에 실패했습니다.')
-            // console.log(err);
+            axios({
+                method: 'post',
+                url: `/api/review/insert`,
+                data: {
+                    star: this.star,
+                    content: this.content,
+                    image: this.image,
+                    id: "test1",
+                    productNo: this.productNo
+                } 
+                }).then((res) => {
+                    this.dialog = false;
+                    this.content = '';
+                    console.log(res.data, res.status);
+                    alert("리뷰 등록 완료");
+                    this.$router.go(-1);
+                }).catch((err) => {
+                    alert('리뷰 작성에 실패했습니다.')
+                    console.log(err);
+                })
         },
         deleteReview(num) {
             axios({

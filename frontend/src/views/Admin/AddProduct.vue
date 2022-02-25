@@ -31,7 +31,7 @@
                     <tr>
                         <td>상품 사이즈</td>
                         <td>
-                            <v-combobox v-model="sizeList" multiple persistent-hint small-chips deletable-chips hide-details clearable append-icon=""></v-combobox>
+                            <v-combobox v-model="sizeList" multiple persistent-hint small-chips deletable-chips hide-details clearable append-icon="" ></v-combobox>
                         </td>
                     </tr>
                     <tr>

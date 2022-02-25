@@ -29,14 +29,10 @@ public class ReviewService {
 		int start = (page - 1) * perPage;
 		List<ReviewAndProductVO> reviewList = reviewMapper.getAllReviews(start, perPage, search, searchWord);
 		int count = reviewMapper.getCount(search, searchWord);
-		if(reviewList == null || count == 0)
-			return new ResponseEntity<>(HttpStatus.OK);
-		else {
-			Map<String, Object> resMap = new HashMap<>();
-			resMap.put("reviewList", reviewList);
-			resMap.put("count", count);
-			return new ResponseEntity<>(resMap, HttpStatus.OK);
-		}
+		Map<String, Object> resMap = new HashMap<>();
+		resMap.put("reviewList", reviewList);
+		resMap.put("count", count);
+		return new ResponseEntity<>(resMap, HttpStatus.OK);
 	}
 	
 	//리뷰 상세보기

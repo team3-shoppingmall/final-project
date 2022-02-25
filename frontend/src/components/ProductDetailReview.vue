@@ -185,6 +185,7 @@ export default {
                 console.log(res.data);
                 this.contents = res.data.reviewList;
                 this.totalContents = res.data.count;
+            }).finally(() => {
                 this.loading = false;
             })
         },
@@ -194,10 +195,10 @@ export default {
                 url: `/api/review/insert`,
                 data: {
                     productNo: this.productNo,
+                    star: this.star,
                     content: this.content,
                     image: this.image,
                     id: "test1",
-                    productNo: this.productNo
                 } 
                 }).then((res) => {
                     this.dialog = false;

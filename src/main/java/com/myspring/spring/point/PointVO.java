@@ -3,26 +3,26 @@ package com.myspring.spring.point;
 import java.util.Date;
 
 public class PointVO {
-	private long num;
+	private int num;
 	private String id;
 	private int point;
-	private Date potinDate;
+	private String content;
+	private Date pointDate;
 
-	public PointVO() {
-	}
-
-	public PointVO(long num, String id, int point, Date potinDate) {
+	public PointVO(int num, String id, int point, Date potinDate) {
 		this.num = num;
 		this.id = id;
 		this.point = point;
-		this.potinDate = potinDate;
+		this.content = content;
+		this.pointDate = potinDate;
 	}
 
-	public long getNum() {
+
+	public int getNum() {
 		return num;
 	}
 
-	public void setNum(long num) {
+	public void setNum(int num) {
 		this.num = num;
 	}
 
@@ -41,13 +41,26 @@ public class PointVO {
 	public void setPoint(int point) {
 		this.point = point;
 	}
-
-	public Date getPotinDate() {
-		return potinDate;
+    
+	public String getContent() {
+		return content;
 	}
 
-	public void setPotinDate(Date potinDate) {
-		this.potinDate = potinDate;
+	public void setContent(String content) {
+		this.content = content;
 	}
+
+	public Date getPointDate() {
+		return pointDate;
+	}
+
+	public void setPointDate(Date pointDate) {
+		this.pointDate = pointDate;
+	}
+
+	public PointVO() {
+	}
+
+	
 
 }

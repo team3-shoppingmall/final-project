@@ -343,8 +343,8 @@ insert into qnatable(type, originalNo, reply, content, id, secret, image) values
 insert into qnatable(type, originalNo, reply, content, id, secret, image) values('cancel', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
 insert into qnatable(type, originalNo, reply, content, id, secret, image) values('exchange', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
 -- 배너
-insert into bannertable(image, link) values('test1.jpg','testlink1');
-insert into bannertable(image, link) values('test2.jpg','testlink2');
+-- insert into bannertable(image, link) values('test1.jpg','testlink1'); 
+-- insert into bannertable(image, link) values('test2.jpg','testlink2');
 
 commit;
 

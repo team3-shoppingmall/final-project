@@ -1,20 +1,14 @@
 <template>
 <v-container>
     <v-row justify="center" class="pa-5">
-        <v-col cols="2">
-            <v-btn @click="getFAQ('all')" :color="colorPicker('all')">전체보기</v-btn>
-        </v-col>
-        <v-col cols="2">
-            <v-btn @click="getFAQ('product')" :color="colorPicker('product')">상품관련</v-btn>
-        </v-col>
-        <v-col cols="2">
-            <v-btn @click="getFAQ('delivery')" :color="colorPicker('delivery')">배송관련</v-btn>
-        </v-col>
-        <v-col cols="2">
-            <v-btn @click="getFAQ('return')" :color="colorPicker('return')">교환/반품관련</v-btn>
-        </v-col>
-        <v-col cols="2">
-            <v-btn @click="getFAQ('etc')" :color="colorPicker('etc')">기타관련</v-btn>
+        <v-col cols="8">
+            <v-row justify="space-between">
+                <v-btn width="150px" @click="getFAQ('all')" :color="colorPicker('all')">전체보기</v-btn>
+                <v-btn width="150px" @click="getFAQ('product')" :color="colorPicker('product')">상품관련</v-btn>
+                <v-btn width="150px" @click="getFAQ('delivery')" :color="colorPicker('delivery')">배송관련</v-btn>
+                <v-btn width="150px" @click="getFAQ('return')" :color="colorPicker('return')">교환/반품관련</v-btn>
+                <v-btn width="150px" @click="getFAQ('etc')" :color="colorPicker('etc')">기타관련</v-btn>
+            </v-row>
         </v-col>
     </v-row>
     <v-data-table :headers="headers" :options.sync="options" :items="contents" item-key="faqNo" hide-default-footer="hide-default-footer" :loading="loading" disable-sort="disable-sort" show-expand="show-expand" :single-expand="true" :expanded.sync="expanded" class="elevation-1" @click:row="(item, slot) => slot.expand(!slot.isExpanded)">

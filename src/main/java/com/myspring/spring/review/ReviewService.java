@@ -27,22 +27,12 @@ public class ReviewService {
 	//리뷰 전체보기
 	public ResponseEntity<?> getAllReviews(int page, int perPage, String search, String searchWord) {
 		int start = (page - 1) * perPage;
-		List<ReviewVO> reviewList = reviewMapper.getAllReviews(start, perPage, search, searchWord);
-	    List<String> nameList = new ArrayList<String>();
-	      for (ReviewVO reviewVO : reviewList) {
-	    	 String name = productMapper.getProductByNo(reviewVO.getProductNo()).getProductName();
-	         nameList.add(name);
-	      }
+		List<ReviewAndProductVO> reviewList = reviewMapper.getAllReviews(start, perPage, search, searchWord);
 		int count = reviewMapper.getCount(search, searchWord);
-		if(reviewList == null || count == 0)
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		else {
-			Map<String, Object> resMap = new HashMap<>();
-			resMap.put("reviewList", reviewList);
-			resMap.put("count", count);
-			resMap.put("nameList", nameList);
-			return new ResponseEntity<>(resMap, HttpStatus.OK);
-		}
+		Map<String, Object> resMap = new HashMap<>();
+		resMap.put("reviewList", reviewList);
+		resMap.put("count", count);
+		return new ResponseEntity<>(resMap, HttpStatus.OK);
 	}
 	
 	//리뷰 상세보기

@@ -182,6 +182,7 @@ export default {
                 console.log(res.data);
                 this.contents = res.data.reviewList;
                 this.totalContents = res.data.count;
+            }).finally(() => {
                 this.loading = false;
             })
         },
@@ -191,20 +192,21 @@ export default {
                 url: `/api/review/insert`,
                 data: {
                     productNo: this.productNo,
+                    star: this.star,
                     content: this.content,
                     image: this.image,
                     id: "test1",
-                }
-            }).then((res) => {
-                this.dialog = false;
-                this.content = '';
-                console.log(res.data, res.status);
-                alert("리뷰 등록 완료");
-                this.$router.go();
-            }).catch((err) => {
-                alert('리뷰 작성에 실패했습니다.')
-                console.log(err);
-            })
+                } 
+                }).then((res) => {
+                    this.dialog = false;
+                    this.content = '';
+                    console.log(res.data, res.status);
+                    alert("리뷰 등록 완료");
+                    this.$router.go();
+                }).catch((err) => {
+                    alert('리뷰 작성에 실패했습니다.')
+                    console.log(err);
+                })
         },
         deleteReview(num) {
             axios({

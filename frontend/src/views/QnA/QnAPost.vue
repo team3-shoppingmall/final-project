@@ -78,6 +78,7 @@
                 <v-col cols="auto">
                     <v-btn @click="deleteQnA" outlined>삭제</v-btn>
                 </v-col>
+                {{qna}}
             </v-row>
         </v-col>
     </v-row>

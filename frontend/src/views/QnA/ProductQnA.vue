@@ -129,21 +129,10 @@ export default {
                     type: link
                 }
             }).then(res => {
-                console.log(res);
-                this.nameList = res.data.nameList;
+                console.log(res.data);
                 this.contents = res.data.qnaList;
                 this.totalContents = res.data.count;
                 this.loading = false;
-                // axios.get('/api/qna/getCount', {
-                //         params: {
-                //             search: this.search,
-                //             searchWord: this.searchWord,
-                //             type: link
-                //         }
-                //     }).then(res => {
-                //         this.totalContents = res.data;
-                //         this.loading = false
-                //     })
             })
         },
         moveto(item) {

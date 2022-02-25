@@ -18,7 +18,6 @@ drop table if exists membertable;
 -- drop trigger
 DROP TRIGGER IF EXISTS `springdb`.`membertable_BEFORE_INSERT`;
 DROP TRIGGER IF EXISTS `springdb`.`pointtable_BEFORE_INSERT`;
-DROP TRIGGER IF EXISTS `springdb`.`qnatable_BEFORE_INSERT`;
 
 -- create table and trigger
 CREATE TABLE membertable (
@@ -159,21 +158,6 @@ CREATE TABLE qnatable(
 	SECRET BOOLEAN NOT NULL,
 	IMAGE VARCHAR(500) NOT NULL
 );
-
-DELIMITER $$
-USE `springdb`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`qnatable_BEFORE_INSERT` BEFORE INSERT ON `qnatable` FOR EACH ROW
-BEGIN
-IF new.originalNo IS null
-THEN
-        set new.originalNo = (SELECT `AUTO_INCREMENT`
-FROM  INFORMATION_SCHEMA.TABLES
-WHERE TABLE_SCHEMA = 'springdb'
-AND   TABLE_NAME   = 'qnatable');
-     
-    END IF;
-END$$
-DELIMITER ;
 
 CREATE TABLE bannertable (
 	NUM INT PRIMARY KEY AUTO_INCREMENT,

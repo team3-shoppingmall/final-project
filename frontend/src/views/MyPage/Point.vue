@@ -39,8 +39,8 @@ export default {
         }
     },
     method: {
-        getPoint() {
-            this.loading = true
+            getPoint() {
+            this.loading = true;
             axios({
                 method: 'get',
                 url: `/api/point/getAll`,
@@ -51,6 +51,7 @@ export default {
                 this.pointdate = res.data.pointDate;
                 this.point = res.data.point;
                 this.content = res.data.content;
+                this.loading = false;
             })
         }
     },

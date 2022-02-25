@@ -16,12 +16,15 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
+      components: {
+    },
     data() {
         return {
             headers: [{
                 text: '날짜',
-                value: 'date',
+                value: 'pointDate',
                 align: 'center',
             }, {
                 text: '포인트',
@@ -32,10 +35,25 @@ export default {
                 value: 'content',
                 align: 'center',
             }, ],
+            
         }
     },
-    components: {
-    }
+    method: {
+        getPoint() {
+            this.loading = true
+            axios({
+                method: 'get',
+                url: `/api/point/getAll`,
+
+            })
+            .then(res => {
+                
+                this.pointdate = res.data.pointDate;
+                this.point = res.data.point;
+                this.content = res.data.content;
+            })
+        }
+    },
 }
 </script>
 

@@ -41,9 +41,9 @@ public class QnaController {
 	public ResponseEntity<?> getQnaAll() {
 		return qnaService.getQnaAll();
 	}
-	
+
 	@GetMapping("/getqnabyqnaNo")
-	public ResponseEntity<?> getQnaByQnaNo(@RequestParam("qnaNo") int qnaNo){
+	public ResponseEntity<?> getQnaByQnaNo(@RequestParam("qnaNo") int qnaNo) {
 		return qnaService.getQnaByQnaNo(qnaNo);
 	}
 
@@ -52,15 +52,28 @@ public class QnaController {
 	public ResponseEntity<?> getQnaByType(@PathVariable("type") String type) {
 		return qnaService.getQnaByType(type);
 	}
-	
-	//카테고리별 목록 조회
+
+	// 카테고리별 목록 조회
 	@GetMapping("/getQnaListByType")
 	public ResponseEntity<?> getQnaListByType(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
-											@RequestParam("search") String search, @RequestParam("searchWord") String searchWord,
-											@RequestParam("type") String type){
+			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord,
+			@RequestParam("type") String type) {
 		return qnaService.getQnaListByType(page, perPage, search, searchWord, type);
 	}
-	
+
+	// 카테고리별 목록 조회
+	@GetMapping("/getQnaListByProductNo")
+	public ResponseEntity<?> getQnaListByProductNo(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord,
+			@RequestParam("type") String type, @RequestParam("productNo") int productNo) {
+		return qnaService.getQnaListByProductNo(page, perPage, search, searchWord, type, productNo);
+	}
+
+	// originalNo로 조회
+	@GetMapping("/getQnaByOriginalNo")
+	public ResponseEntity<?> getQnaByOrignalNo(@RequestParam("originalNo") int originalNo) {
+		return qnaService.getQnaByOriginalNo(originalNo);
+	}
 
 //	// 상품문의 카테고리 전체 조회
 //	@GetMapping("/getproductAll")
@@ -92,20 +105,20 @@ public class QnaController {
 //			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
 //		return qnaService.getQnaAfterDeliveryAll(page, perPage, search, searchWord);
 //	}
-	
-	// 문의 등록 
+
+	// 문의 등록
 	@PostMapping("/insertqna")
 	public ResponseEntity<?> insertQna(@RequestBody QnaVO qnaVO) {
 		return qnaService.insertQna(qnaVO);
 	}
-	
+
 	// 댓글 등록
 	@PostMapping("/insertReply")
 	public ResponseEntity<?> insertReply(@RequestBody QnaVO qnaVO) {
 		return qnaService.insertReply(qnaVO);
 	}
 
-	//문의글 수정 시 댓글이 있으면 수정 불가
+	// 문의글 수정 시 댓글이 있으면 수정 불가
 	// 문의 수정 & 댓글 수정
 	@PatchMapping("/updateqna")
 	public ResponseEntity<?> updateQna(@RequestParam("qnaNo") int qnaNo, @RequestParam("type") String type,
@@ -133,8 +146,7 @@ public class QnaController {
 	public ResponseEntity<?> searchQnaByContent(@RequestParam("content") String content) {
 		return qnaService.searchQnaByContent(content);
 	}
-	
-	
+
 //	//기간으로 문의 검색(일주일)
 //	@GetMapping("/qna/searchQnaByWeek") public ResponseEntity<?>
 //	searchQnaByWeek(){ return qnaService.searchQnaByWeek(); }
@@ -146,5 +158,5 @@ public class QnaController {
 //	//기간으로 문의 검색(세달)
 //	@GetMapping("/qna/searchQnaByMonths") public ResponseEntity<?>
 //	searchQnaByMonths(){ return qnaService.searchQnaByMonths(); }
-	 
+
 }

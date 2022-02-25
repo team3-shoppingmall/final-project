@@ -588,7 +588,7 @@ export default {
                     this.contentColor = 'black--text';
                 }
             }
-        },
+        },   
         files(val) {
             if (val.length > 5) {
                 this.$nextTick(() => this.files.pop());

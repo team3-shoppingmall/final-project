@@ -1,32 +1,22 @@
 <template>
-    <v-container>
-    
-        <div>
-    
-            <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
-    
-                <template #[`item.type`]="{item}">
-    
-                    <div class="text-left">
-    
-                        <QnATitleDisplay :type="item.type" />
-    
-                    </div>
-</template>
-<template #[`item.id`]="{item}">
-    <div class="text-left">
-    
-        <HideId :id="item.id" />
-    
-    </div>
-</template>
-<template #[`item.regDate`]="{item}">
+<v-container>
     <div>
-    
-        <DateDisplay :regDate="item.regDate" />
-    
-    </div>
-</template>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
+            <template #[`item.type`]="{item}">
+                <div class="text-left">
+                    <QnATitleDisplay :type="item.type" />
+                </div>
+            </template>
+            <template #[`item.id`]="{item}">
+                <div class="text-left">
+                    <HideId :id="item.id" />
+                </div>
+            </template>
+            <template #[`item.regDate`]="{item}">
+                <div>
+                    <DateDisplay :regDate="item.regDate" />
+                </div>
+            </template>
         </v-data-table>
     </div>
 
@@ -101,18 +91,9 @@ export default {
                 },
             ],
             searches: [{
-                    text: '제목',
-                    value: 'title'
-                },
-                {
-                    text: '내용',
-                    value: 'content'
-                },
-                {
-                    text: '작성자',
-                    value: 'id'
-                }
-            ],
+                text: '작성자',
+                value: 'id'
+            }],
             search: 'id',
             searchWord: '',
         }
@@ -166,11 +147,4 @@ export default {
 </script>
 
 <style scoped>
-table td {
-    border-right: 1px solid #dddddd;
-}
-
-table td:last-child {
-    border-right: none
-}
 </style>

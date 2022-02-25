@@ -71,14 +71,9 @@ export default {
                 },
             ],
             searches: [{
-                    text: '제목',
-                    value: 'title'
-                },
-                {
-                    text: '작성자',
-                    value: 'id'
-                }
-            ],
+                text: '제목',
+                value: 'title'
+            }, ],
             search: 'title',
             searchWord: '',
         }

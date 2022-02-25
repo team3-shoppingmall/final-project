@@ -1,9 +1,9 @@
 <template>
 <v-container>
     <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
-        <template #[`item.productName`]="{index}">
+        <template #[`item.productName`]="{item}">
             <div class="text-left">
-                {{ nameList[index] }}
+                {{ item.productName }}
             </div>
         </template>
         <template #[`item.star`]="{item}">

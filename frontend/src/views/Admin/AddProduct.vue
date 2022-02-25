@@ -1,6 +1,6 @@
 <template>
 <v-container fluid>
-    <v-row>
+    <v-row justify="center">
         <v-col cols="9">
             <v-simple-table>
                 <tbody>
@@ -23,21 +23,21 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>재고</td>
+                        <td>
+                            <v-text-field hide-details v-model="amount"></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
                         <td>상품 색상</td>
                         <td>
-                            <v-combobox v-model="colorList" multiple persistent-hint small-chips deletable-chips hide-details clearable append-icon=""></v-combobox>
+                            <v-combobox v-model="colorList" multiple chips deletable-chips hide-details clearable append-icon="" class="mt-0"></v-combobox>
                         </td>
                     </tr>
                     <tr>
                         <td>상품 사이즈</td>
                         <td>
-                            <v-combobox v-model="sizeList" multiple persistent-hint small-chips deletable-chips hide-details clearable append-icon="" ></v-combobox>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>재고</td>
-                        <td>
-                            <v-text-field hide-details v-model="amount"></v-text-field>
+                            <v-combobox v-model="sizeList" multiple chips deletable-chips hide-details clearable append-icon="" class="mt-0"></v-combobox>
                         </td>
                     </tr>
                     <tr>
@@ -62,7 +62,7 @@
                                 <v-col cols="4">
                                     <v-row justify="center">
                                         <v-col cols="auto">
-                                            <img v-if="imageUrl[idx-1]" :src="imageUrl[idx-1]" style="max-height: 200px; object-fit: cover; " />
+                                            <img v-if="imageUrl[idx-1]" :src="imageUrl[idx-1]" style="max-height: 250px; object-fit: cover; " />
                                         </v-col>
                                     </v-row>
                                 </v-col>
@@ -99,8 +99,13 @@
                         </td>
                     </tr>
                 </tbody>
-                <v-btn @click="sendFile">등록</v-btn>
             </v-simple-table>
+            <v-row justify="center">
+                <v-col align="center">
+                    <v-btn @click="sendFile" color="primary" class="mr-5">등록</v-btn>
+                    <v-btn  color="primary" class="ml-5">초기화</v-btn>
+                </v-col>
+            </v-row>
         </v-col>
     </v-row>
 </v-container>
@@ -115,10 +120,10 @@ export default {
         return {
             productName: null,
             typeSelected: null,
-            price: 0,
+            price: '',
             colorList: [],
             sizeList: [],
-            amount: 0,
+            amount: '',
             imageFiles: [null],
             imageUrl: [null],
             detailImageFiles: [null],
@@ -191,6 +196,14 @@ export default {
             }
             if (this.typeSelected == null) {
                 alert('상품 타입을 선택해주세요');
+                return;
+            }
+            if (!(this.price > 0 && (this.price == Math.round(this.price)) && this.price != '')) {
+                alert('상품 가격이 유효하지 않습니다')
+                return;
+            }
+            if (!(this.amount >= 0 && (this.amount == Math.round(this.amount)) && this.amount != '')) {
+                alert('상품 수량이 유효하지 않습니다')
                 return;
             }
             if (this.colorList.length == 0 && this.sizeList.length == 0) {

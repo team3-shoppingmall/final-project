@@ -2,9 +2,9 @@
 <v-container>
     <div>
         <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
-            <template #[`item.productName`]="{index}">
+            <template #[`item.productName`]="{item}">
                 <div class="text-left">
-                    {{ nameList[index] }}
+                    {{ item.productName }}
                 </div>
             </template>
             <template #[`item.type`]="{item}">
@@ -102,12 +102,6 @@ export default {
             searches: [{
                 text: '상품명',
                 value: 'productName'
-            }, {
-                text: '제목',
-                value: 'type'
-            }, {
-                text: '내용',
-                value: 'content'
             }, {
                 text: '작성자',
                 value: 'id'

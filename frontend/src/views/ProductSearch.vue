@@ -65,8 +65,8 @@
                     <v-row>
                         <v-col v-for="(product, idx) in products" :key="idx" cols="3">
                             <v-card @click="moveToDetail(product.productNo)" min-height="385">
-                                <v-img max-height="300" max-width="auto" :src="`https://picsum.photos/seed/${randomNumber(idx)}/300/250`"></v-img>
-                                <v-card-text>
+                                <v-img min-height="300" max-height="300" :src="`/api/product/productImage/${product.productNo}/${product.imageName.split(';')[0]}`"></v-img>
+                                <v-card-text style="height:120px">
                                     <div style="height:50px">
                                         {{product.productName}}
                                         - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
@@ -218,8 +218,12 @@ export default {
                 this.maxPrice = 9999999;
             }
         },
-        randomNumber(count) {
-            return Math.floor(Math.random() * 100) + count;
+    },
+    watch: {
+        page: {
+            handler() {
+                this.searchProduct();
+            }
         }
     },
     mounted() {

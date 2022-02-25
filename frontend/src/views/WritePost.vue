@@ -1,7 +1,7 @@
 <template>
 <v-container>
     <v-row justify="center">
-        <v-col align-self="center" cols="7">
+        <v-col align-self="center" cols="9">
             <div class="text-h3" v-if="originalNo == undefined">글쓰기</div>
             <div class="text-h3" v-if="originalNo != undefined">답변</div>
             <div v-if="productNo != 0 && productNo != undefined">
@@ -36,8 +36,6 @@
                                 <td>
                                     <v-row>
                                         <v-col>
-                                            <div v-html="content" style="border:1px black solid"></div>
-                                            <div style="border:1px black solid">{{content}}</div>
                                             <ckeditor :editor="editor" v-model="content" :config="editorConfig"></ckeditor>
                                             <span :class="contentColor">{{content.length}}/2000</span>
                                         </v-col>
@@ -47,9 +45,16 @@
                             <tr v-if="originalNo == undefined">
                                 <td> 파일 첨부 </td>
                                 <td>
-                                    <v-row v-for="(idx) in 5" :key="idx" align="center" dense>
-                                        <v-col cols="8">
-                                            <v-file-input v-model="files[idx-1]" accept="image/*" truncate-length="50" class="pa-0"></v-file-input>
+                                    <v-row>
+                                        <v-col cols="3" v-for="(idx) in 4" :key="idx" align="center">
+                                            <v-card :loading="false" class="mx-auto my-5">
+                                                <v-card-title>
+                                                    <v-img max-height="250" :src="imageUrl[idx-1]" min-height="250" contain @click="fileInputClick(idx-1)" />
+                                                </v-card-title>
+                                                <v-card-actions>
+                                                    <v-file-input v-model="imageFiles[idx-1]" :id="`fileInput${idx-1}`" accept="image/*" truncate-length="14" class="pa-0" hide-details @change="onImageChange(idx-1)"></v-file-input>
+                                                </v-card-actions>
+                                            </v-card>
                                         </v-col>
                                     </v-row>
                                 </td>
@@ -209,7 +214,8 @@ export default {
             star: '',
             content: '',
             contentColor: 'black--text',
-            files: [null],
+            imageFiles: [null, null, null, null],
+            imageUrl: [null, null, null, null],
             secret: true,
         }
     },
@@ -233,6 +239,18 @@ export default {
                         this.titles.splice(i, 1);
                     }
                 }
+            }
+        },
+        fileInputClick(idx) {
+            document.getElementById(`fileInput${idx}`).click();
+        },
+        onImageChange(index) {
+            const file = this.imageFiles[index];
+            if (file) {
+                this.imageUrl[index] = URL.createObjectURL(file);
+                URL.revokeObjectURL(file);
+            } else {
+                this.imageUrl[index] = null;
             }
         },
         moveto() {
@@ -292,6 +310,15 @@ export default {
             // this.$router.go(-1);
         },
         noticeForm() {
+            if(this.titleDetail == ''){
+                alert('제목을 입력해주세요');
+                return;
+            }
+            if(this.content == ''){
+                alert('내용을 입력해주세요');
+                return;
+            }
+
             axios({
                 method: 'post',
                 url: `/api/notice/insertNotice`,

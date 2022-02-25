@@ -108,29 +108,29 @@ export default {
                 page,
                 itemsPerPage
             } = this.options
-            axios.get(`/api/qna/getproductAll`, {
+            axios.get(`/api/qna/getQnaByType`, {
                 params: {
                     page: page,
                     perPage: itemsPerPage,
                     search: this.search,
                     searchWord: this.searchWord,
-                    // 상품번호 추가해서 새로 만드시면 됩니다
-                    // productNo : this.productNo,
+                    productNo: this.productNo,
                 }
             }).then(res => {
                 this.contents = res.data;
-                axios.get('/api/qna/getCount', {
-                    params: {
-                        search: this.search,
-                        searchWord: this.searchWord,
-                        type: 'product',
-                        // type은 어짜피 상품이니 필요없고 상품번호 추가해서 새로 만드시면 됩니다
-                        // productNo : this.productNo,
-                    }
-                }).then(res => {
-                    this.totalContents = res.data;
-                    this.loading = false
-                })
+                this.totalContents = res.data;
+                this.loading = false
+                // axios.get('/api/qna/getCount', {
+                //     params: {
+                //         search: this.search,
+                //         searchWord: this.searchWord,
+                //         // type은 어짜피 상품이니 필요없고 상품번호 추가해서 새로 만드시면 됩니다
+                //         productNo : this.productNo,
+                //     }
+                // }).then(res => {
+                //     this.totalContents = res.data;
+                //     this.loading = false
+                // })
             })
         },
         moveto(item) {
@@ -149,4 +149,5 @@ export default {
 </script>
 
 <style scoped>
+
 </style>

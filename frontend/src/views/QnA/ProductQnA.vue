@@ -2,9 +2,9 @@
 <v-container>
     <div>
         <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
-            <template #[`item.productNo`]="{item}">
+            <template #[`item.productName`]="{index}">
                 <div class="text-left">
-                    <ProductNameDisplay :productNo="item.productNo" />
+                    {{ nameList[index] }}
                 </div>
             </template>
             <template #[`item.type`]="{item}">
@@ -51,18 +51,17 @@ import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 import QnATitleDisplay from '@/components/QnATitleDisplay.vue'
-import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
 export default {
     components: {
         HideId,
         DateDisplay,
         QnATitleDisplay,
-        ProductNameDisplay,
     },
     data() {
         return {
             totalContents: 0,
             contents: [],
+            nameList: [],
             options: {},
             loading: true,
             headers: [{
@@ -74,7 +73,7 @@ export default {
                 },
                 {
                     text: '상품명',
-                    value: 'productNo',
+                    value: 'productName',
                     width: '20%',
                     align: 'center',
                     divider: true
@@ -101,21 +100,18 @@ export default {
                 },
             ],
             searches: [{
-                    text: '상품명',
-                    value: 'productname'
-                }, {
-                    text: '제목',
-                    value: 'title'
-                },
-                {
-                    text: '내용',
-                    value: 'content'
-                },
-                {
-                    text: '작성자',
-                    value: 'id'
-                }
-            ],
+                text: '상품명',
+                value: 'productName'
+            }, {
+                text: '제목',
+                value: 'type'
+            }, {
+                text: '내용',
+                value: 'content'
+            }, {
+                text: '작성자',
+                value: 'id'
+            }],
             search: 'id',
             searchWord: '',
 
@@ -130,26 +126,31 @@ export default {
             } = this.options
             let link = document.location.href;
             link = link.slice(26, link.length - 3);
-            axios.get( `/api/qna/getproductAll`, {
-                    params: {
-                        page: page,
-                        perPage: itemsPerPage,
-                        search: this.search,
-                        searchWord: this.searchWord,
-                    }
-                }).then(res => {
-                    this.contents = res.data;
-                    axios.get('/api/qna/getCount', {
-                            params: {
-                                search: this.search,
-                                searchWord: this.searchWord,
-                                type: link
-                            }
-                        }).then(res => {
-                            this.totalContents = res.data;
-                            this.loading = false
-                        })
-                })
+            axios.get(`/api/qna/getQnaListByType`, {
+                params: {
+                    page: page,
+                    perPage: itemsPerPage,
+                    search: this.search,
+                    searchWord: this.searchWord,
+                    type: link
+                }
+            }).then(res => {
+                console.log(res);
+                this.nameList = res.data.nameList;
+                this.contents = res.data.qnaList;
+                this.totalContents = res.data.count;
+                this.loading = false;
+                // axios.get('/api/qna/getCount', {
+                //         params: {
+                //             search: this.search,
+                //             searchWord: this.searchWord,
+                //             type: link
+                //         }
+                //     }).then(res => {
+                //         this.totalContents = res.data;
+                //         this.loading = false
+                //     })
+            })
         },
         moveto(item) {
             this.$router.push(`/qna/${item.qnaNo}`)
@@ -167,4 +168,5 @@ export default {
 </script>
 
 <style scoped>
+
 </style>

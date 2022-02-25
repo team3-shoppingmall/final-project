@@ -22,12 +22,12 @@ public class QnaController {
 		this.qnaService = qnaService;
 	}
 
-	// 전체 개수 가져오기
-	@GetMapping("/getCount")
-	public ResponseEntity<?> getCount(@RequestParam("search") String search,
-			@RequestParam("searchWord") String searchWord, @RequestParam("type") String type) {
-		return qnaService.getCount(search, searchWord, type);
-	}
+//	// 전체 개수 가져오기
+//	@GetMapping("/getCount")
+//	public ResponseEntity<?> getCount(@RequestParam("search") String search,
+//			@RequestParam("searchWord") String searchWord, @RequestParam("type") String type) {
+//		return qnaService.getCount(search, searchWord, type);
+//	}
 
 	// 문의게시판 목록 출력
 	@GetMapping("/getQnaPage")
@@ -52,37 +52,46 @@ public class QnaController {
 	public ResponseEntity<?> getQnaByType(@PathVariable("type") String type) {
 		return qnaService.getQnaByType(type);
 	}
-
-	// 상품문의 카테고리 전체 조회
-	@GetMapping("/getproductAll")
-	public ResponseEntity<?> getQnaProductAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
-			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-		return qnaService.getQnaProductAll(page, perPage, search, searchWord);
+	
+	//카테고리별 목록 조회
+	@GetMapping("/getQnaListByType")
+	public ResponseEntity<?> getQnaListByType(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+											@RequestParam("search") String search, @RequestParam("searchWord") String searchWord,
+											@RequestParam("type") String type){
+		return qnaService.getQnaListByType(page, perPage, search, searchWord, type);
 	}
 	
 
-	// 배송 문의 카테고리 전체 조회
-	@GetMapping("/getdeliveryAll")
-	public ResponseEntity<?> getQnaDeliveryAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
-			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-		return qnaService.getQnaDeliveryAll(page, perPage, search, searchWord);
-	}
-	
-
-	// 배송 전 변경&취소 카테고리 전체 조회
-	@GetMapping("/getbeforedeliveryAll")
-	public ResponseEntity<?> getQnaBeforeDeliveryAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
-			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-		return qnaService.getQnaBeforeDeliveryAll(page, perPage, search, searchWord);
-	}
-	
-
-	// 배송 후 교환&반품 카테고리 전체 조회
-	@GetMapping("/getafterdeliveryAll")
-	public ResponseEntity<?> getQnaAfterDeliveryAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
-			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-		return qnaService.getQnaAfterDeliveryAll(page, perPage, search, searchWord);
-	}
+//	// 상품문의 카테고리 전체 조회
+//	@GetMapping("/getproductAll")
+//	public ResponseEntity<?> getQnaProductAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+//			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord ) {
+//		return qnaService.getQnaProductAll(page, perPage, search, searchWord);
+//	}
+//	
+//
+//	// 배송 문의 카테고리 전체 조회
+//	@GetMapping("/getdeliveryAll")
+//	public ResponseEntity<?> getQnaDeliveryAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+//			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
+//		return qnaService.getQnaDeliveryAll(page, perPage, search, searchWord);
+//	}
+//	
+//
+//	// 배송 전 변경&취소 카테고리 전체 조회
+//	@GetMapping("/getbeforedeliveryAll")
+//	public ResponseEntity<?> getQnaBeforeDeliveryAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+//			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
+//		return qnaService.getQnaBeforeDeliveryAll(page, perPage, search, searchWord);
+//	}
+//	
+//
+//	// 배송 후 교환&반품 카테고리 전체 조회
+//	@GetMapping("/getafterdeliveryAll")
+//	public ResponseEntity<?> getQnaAfterDeliveryAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+//			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
+//		return qnaService.getQnaAfterDeliveryAll(page, perPage, search, searchWord);
+//	}
 	
 	// 문의 등록 
 	@PostMapping("/insertqna")

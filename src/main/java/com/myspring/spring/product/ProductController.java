@@ -1,9 +1,15 @@
 package com.myspring.spring.product;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,32 +32,21 @@ public class ProductController {
 	}
 
 	// 상품 리스트 조회
-	@GetMapping(value = "/getProductListByType")
-	public ResponseEntity<?> getProductListByType(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+	@GetMapping(value = "/getProductList")
+	public ResponseEntity<?> getProductList(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
 			@RequestParam(value = "type1", required = false) String type1,
 			@RequestParam(value = "type2", required = false) String type2,
 			@RequestParam(value = "searchWord", required = false) String searchWord,
 			@RequestParam("minPrice") int minPrice, @RequestParam("maxPrice") int maxPrice,
 			@RequestParam(value = "searchOrder", required = false) String searchOrder) {
-		return productService.getProductListByType(page, perPage, type1, type2, searchWord, minPrice, maxPrice,
-				searchOrder);
-	}
-
-	// 전체 개수 가져오기
-	@GetMapping("/getProductCountByType")
-	public ResponseEntity<?> getProductCountByType(@RequestParam(value = "type1", required = false) String type1,
-			@RequestParam(value = "type2", required = false) String type2,
-			@RequestParam(value = "searchWord", required = false) String searchWord,
-			@RequestParam("minPrice") int minPrice, @RequestParam("maxPrice") int maxPrice,
-			@RequestParam(value = "searchOrder", required = false) String searchOrder) {
-		return productService.getProductCountByType(type1, type2, searchWord, minPrice, maxPrice, searchOrder);
+		return productService.getProductList(page, perPage, type1, type2, searchWord, minPrice, maxPrice, searchOrder);
 	}
 
 	// 많이 팔린 상품 조회
-	@GetMapping(value = "/getBestProductListByType")
-	public ResponseEntity<?> getBestProductListByType(@RequestParam("type1") String type1,
+	@GetMapping(value = "/getBestProductList")
+	public ResponseEntity<?> getBestProductList(@RequestParam("type1") String type1,
 			@RequestParam("type2") String type2) {
-		return productService.getBestProductListByType(type1, type2);
+		return productService.getBestProductList(type1, type2);
 	}
 
 	// 상품 정보 조회
@@ -71,6 +66,34 @@ public class ProductController {
 			@RequestParam(value = "file1", required = false) List<MultipartFile> file1,
 			@RequestParam(value = "file2", required = false) List<MultipartFile> file2) throws NotFoundException {
 		return productService.updateProduct(requestData, file1, file2);
+	}
+
+	@GetMapping("/productImage/{productNo}/{image}")
+	public ResponseEntity<?> productimage(@PathVariable("productNo") int productNo, @PathVariable("image") String image)
+			throws IOException {
+		InputStream imageStream;
+		try {
+			imageStream = new FileInputStream("./images/product/" + productNo + "/product/" + image);
+		} catch (FileNotFoundException e) {
+			imageStream = new FileInputStream("./images/error.png");
+		}
+		byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+		imageStream.close();
+		return new ResponseEntity<byte[]>(imageByteArray, HttpStatus.OK);
+	}
+
+	@GetMapping("/detailImage/{productNo}/{image}")
+	public ResponseEntity<?> detailimage(@PathVariable("productNo") int productNo, @PathVariable("image") String image)
+			throws IOException {
+		InputStream imageStream;
+		try {
+			imageStream = new FileInputStream("./images/product/" + productNo + "/detail/" + image);
+		} catch (FileNotFoundException e) {
+			imageStream = new FileInputStream("./images/error.png");
+		}
+		byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+		imageStream.close();
+		return new ResponseEntity<byte[]>(imageByteArray, HttpStatus.OK);
 	}
 
 }

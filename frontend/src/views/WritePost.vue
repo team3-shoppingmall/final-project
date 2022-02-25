@@ -45,29 +45,13 @@
                                 </td>
                             </tr>
                             <tr v-if="originalNo == undefined">
-                                <td rowspan="5"> 파일 첨부 </td>
+                                <td> 파일 첨부 </td>
                                 <td>
-                                    <v-file-input accept="image/*"></v-file-input>
-                                </td>
-                            </tr>
-                            <tr v-if="originalNo == undefined">
-                                <td>
-                                    <v-file-input accept="image/*"></v-file-input>
-                                </td>
-                            </tr>
-                            <tr v-if="originalNo == undefined">
-                                <td>
-                                    <v-file-input accept="image/*"></v-file-input>
-                                </td>
-                            </tr>
-                            <tr v-if="originalNo == undefined">
-                                <td>
-                                    <v-file-input accept="image/*"></v-file-input>
-                                </td>
-                            </tr>
-                            <tr v-if="originalNo == undefined">
-                                <td>
-                                    <v-file-input accept="image/*"></v-file-input>
+                                    <v-row v-for="(idx) in 5" :key="idx" align="center" dense>
+                                        <v-col cols="8">
+                                            <v-file-input v-model="files[idx-1]" accept="image/*" truncate-length="50" class="pa-0"></v-file-input>
+                                        </v-col>
+                                    </v-row>
                                 </td>
                             </tr>
                             <tr v-if="!admin && pageID != 'review'">
@@ -225,11 +209,7 @@ export default {
             star: '',
             content: '',
             contentColor: 'black--text',
-            image1: '',
-            image2: '',
-            image3: '',
-            image4: '',
-            image5: '',
+            files: [null],
             secret: true,
         }
     },
@@ -402,10 +382,10 @@ export default {
                     noticeNo: this.num
                 }
             }).then((res) => {
-                    // this.notice = res.data;
-                    this.titleDetail = res.data.title;
-                    this.content = res.data.content;
-                    console.log(res.status);    
+                // this.notice = res.data;
+                this.titleDetail = res.data.title;
+                this.content = res.data.content;
+                console.log(res.status);
             }).catch((err) => {
                 alert("목록을 불러오는데 실패했습니다.");
                 console.log(err);
@@ -423,9 +403,9 @@ export default {
                     image: "",
                 }
             }).then((res) => {
-                    console.log(res.data, res.status);
-                    alert("공지사항 수정 완료");
-                    this.$router.go(-1);
+                console.log(res.data, res.status);
+                alert("공지사항 수정 완료");
+                this.$router.go(-1);
             }).catch((err) => {
                 alert("수정 실패");
                 console.log(err);
@@ -482,9 +462,9 @@ export default {
                 })
 
                 .then(res => {
-                        console.log(res.data, res.status);
-                        alert("FAQ 등록 완료");
-                        this.$router.go(-1);
+                    console.log(res.data, res.status);
+                    alert("FAQ 등록 완료");
+                    this.$router.go(-1);
                 }).catch((err) => {
                     console.log(err);
                 })
@@ -492,28 +472,28 @@ export default {
         },
         faqFormUpdate() {
             axios({
-                    method: 'patch',
-                    url: `/api/faq/updatefaq`,
-                    params: {
-                        faqNo: this.num,
-                        type: this.faqTypeSelected,
-                        title: this.titleDetail,
-                        content: this.content,
+                method: 'patch',
+                url: `/api/faq/updatefaq`,
+                params: {
+                    faqNo: this.num,
+                    type: this.faqTypeSelected,
+                    title: this.titleDetail,
+                    content: this.content,
 
-                    }
-                }).then((res) => {
-                
-                    console.log(res.data, res.status);
-                    alert("FAQ 수정 완료");
-                    this.$router.go(-1);
-                })
+                }
+            }).then((res) => {
 
-                // .then(res => {
-                //     if (res.status == 200) {
-                //         alert("수정이 완료되었습니다.")
-                //         this.$router.go(-1);
-                //     }
-                // })
+                console.log(res.data, res.status);
+                alert("FAQ 수정 완료");
+                this.$router.go(-1);
+            })
+
+            // .then(res => {
+            //     if (res.status == 200) {
+            //         alert("수정이 완료되었습니다.")
+            //         this.$router.go(-1);
+            //     }
+            // })
         },
         qnaFormUpdate() {
 
@@ -581,7 +561,13 @@ export default {
                     this.contentColor = 'black--text';
                 }
             }
-        }
+        },
+        files(val) {
+            if (val.length > 5) {
+                this.$nextTick(() => this.files.pop());
+                alert('이미지는 5개까지 첨부 가능합니다')
+            }
+        },
     },
     mounted() {
         // notice, review, faq, qna

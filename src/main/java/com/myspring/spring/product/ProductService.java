@@ -2,7 +2,9 @@ package com.myspring.spring.product;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,30 +22,26 @@ public class ProductService {
 	}
 
 	// 상품 리스트 조회
-	public ResponseEntity<?> getProductListByType(int page, int perPage, String type1, String type2, String searchWord,
+	public ResponseEntity<?> getProductList(int page, int perPage, String type1, String type2, String searchWord,
 			int minPrice, int maxPrice, String searchOrder) {
 		int start = (page - 1) * perPage;
-		List<ProductVO> res = productMapper.getProductListByType(start, perPage, type1, type2, searchWord, minPrice,
+		List<ProductVO> productList = productMapper.getProductList(start, perPage, type1, type2, searchWord, minPrice,
 				maxPrice, searchOrder);
-		if (res == null)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
+		int count = productMapper.getProductCount(type1, type2, searchWord, minPrice, maxPrice);
+		if (productList == null || count == 0)
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		else {
+			Map<String, Object> resMap = new HashMap<>();
+			resMap.put("productList", productList);
+			resMap.put("count", count);
+			return new ResponseEntity<>(resMap, HttpStatus.OK);
+		}
 
-	// 상품 리스트 전체 개수 조회
-	public ResponseEntity<?> getProductCountByType(String type1, String type2, String searchWord, int minPrice,
-			int maxPrice, String searchOrder) {
-		int res = productMapper.getProductCountByType(type1, type2, searchWord, minPrice, maxPrice, searchOrder);
-		if (res == 0)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 	// 많이 팔린 상품 조회
-	public ResponseEntity<?> getBestProductListByType(String type1, String type2) {
-		List<ProductVO> res = productMapper.getBestProductListByType(type1, type2);
+	public ResponseEntity<?> getBestProductList(String type1, String type2) {
+		List<ProductVO> res = productMapper.getBestProductList(type1, type2);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
@@ -65,19 +63,28 @@ public class ProductService {
 
 		try {
 			productMapper.insertProduct(requestData, result);
-			int productno = result.getProductNo();
-			File file = new File("./src/main/resources/images/product/" + productno + "/");
+			int productNo = result.getProductNo();
+			String[] imageName = requestData.getImageName().split(";");
+			String[] detailImageName = requestData.getDetailImageName().split(";");
+			File file = new File("./images/product/" + productNo + "/");
 			file.mkdir();
-			String[] path = { "/product/", "/detail/" };
-			file = new File("./images/product/" + productno + path[0]);
+			file = new File("./images/product/" + productNo + "/product/");
 			file.mkdir();
-			file = new File("./images/product/" + productno + path[1]);
+			file = new File("./images/product/" + productNo + "/detail/");
 			file.mkdir();
 
-			for (int i = 0; i < fileList.size(); i++) {
+			for (int i = 0; i < imageName.length; i++) {
 				MultipartFile multipartFile = fileList.get(i);
 				FileOutputStream writer = new FileOutputStream(
-						"./images/product/" + productno + path[i] + multipartFile.getOriginalFilename());
+						"./images/product/" + productNo + "/product/" + multipartFile.getOriginalFilename());
+				System.out.println(multipartFile.getOriginalFilename());
+				writer.write(multipartFile.getBytes());
+				writer.close();
+			}
+			for (int i = imageName.length; i < detailImageName.length + imageName.length; i++) {
+				MultipartFile multipartFile = fileList.get(i);
+				FileOutputStream writer = new FileOutputStream(
+						"./images/product/" + productNo + "/detail/" + multipartFile.getOriginalFilename());
 				System.out.println(multipartFile.getOriginalFilename());
 				writer.write(multipartFile.getBytes());
 				writer.close();

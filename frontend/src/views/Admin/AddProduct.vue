@@ -54,17 +54,10 @@
                         <td>
                             <v-row v-for="(idx) in imageFiles.length" :key="idx" align="center" dense>
                                 <v-col>
-                                    <v-file-input v-model="imageFiles[idx-1]" accept="image/*" truncate-length="50" @change="onImageChange(idx-1)"></v-file-input>
+                                    <v-file-input v-model="imageFiles[idx-1]" accept="image/*" truncate-length="100" @change="onImageChange(idx-1)"></v-file-input>
                                 </v-col>
                                 <v-col cols="auto">
                                     <v-icon @click="imageMinus(idx-1);" color="primary">mdi-minus</v-icon>
-                                </v-col>
-                                <v-col cols="4">
-                                    <v-row justify="center">
-                                        <v-col cols="auto">
-                                            <img v-if="imageUrl[idx-1]" :src="imageUrl[idx-1]" style="max-height: 250px; object-fit: cover; " />
-                                        </v-col>
-                                    </v-row>
                                 </v-col>
                             </v-row>
                         </td>
@@ -88,13 +81,6 @@
                                 <v-col cols="auto">
                                     <v-icon @click="detailImageMinus(idx-1);" color="primary">mdi-minus</v-icon>
                                 </v-col>
-                                <v-col cols="4">
-                                    <v-row justify="center">
-                                        <v-col cols="auto">
-                                            <img v-if="detailImageUrl[idx-1]" :src="detailImageUrl[idx-1]" style="max-height: 200px; object-fit: cover" />
-                                        </v-col>
-                                    </v-row>
-                                </v-col>
                             </v-row>
                         </td>
                     </tr>
@@ -103,8 +89,28 @@
             <v-row justify="center">
                 <v-col align="center">
                     <v-btn @click="sendFile" color="primary" class="mr-5">등록</v-btn>
-                    <v-btn  color="primary" class="ml-5">초기화</v-btn>
+                    <v-btn color="primary" class="ml-5">초기화</v-btn>
                 </v-col>
+            </v-row>
+
+            <v-spacer class="mt-5 md-5"></v-spacer>
+
+            <v-row v-for="(idx) in imageUrl.length" :key="idx" justify="center">
+                <v-lazy :options="{threshold: .5}" transition="fade-transition">
+                    <v-col cols="auto" v-if="imageUrl[idx-1] != null">
+                        <div>상품 이미지 {{idx}}번 : {{imageFiles[idx-1].name}}</div>
+                        <v-img v-if="imageUrl[idx-1]" :src="imageUrl[idx-1]" />
+                    </v-col>
+                </v-lazy>
+            </v-row>
+
+            <v-row v-for="(idx) in detailImageUrl.length" :key="idx" justify="center">
+                <v-lazy :options="{threshold: .5}" transition="fade-transition">
+                    <v-col cols="auto" v-if="detailImageUrl[idx-1] != null">
+                        <div>상세 이미지 {{idx}}번 : {{detailImageFiles[idx-1].name}}</div>
+                        <v-img v-if="detailImageUrl[idx-1]" :src="detailImageUrl[idx-1]" />
+                    </v-col>
+                </v-lazy>
             </v-row>
         </v-col>
     </v-row>
@@ -305,9 +311,9 @@ export default {
     },
     watch: {
         imageFiles(val) {
-            if (val.length > 5) {
+            if (val.length > 4) {
                 this.$nextTick(() => this.imageFiles.pop());
-                alert('상품 이미지는 5개까지 가능합니다');
+                alert('상품 이미지는 4개까지 가능합니다');
             }
         },
 

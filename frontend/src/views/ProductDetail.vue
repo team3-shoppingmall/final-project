@@ -7,7 +7,7 @@
                     <v-row>
                         <v-col align="center">
                             <v-carousel :show-arrows="false" cycle interval="2000" hide-delimiters>
-                                <v-carousel-item v-for="(image,i) in images" :key="i" :src="`/api/product/productImage/${pageID}/${image}`"></v-carousel-item>
+                                <v-carousel-item v-for="(image,i) in images" :key="i" :src="`/api/product/productImage/${pageID}/${image}`" contain></v-carousel-item>
                             </v-carousel>
                         </v-col>
                     </v-row>
@@ -142,7 +142,9 @@
 
             <v-row justify="center">
                 <v-col v-for="(image, idx) in detailImages" :key="idx" cols="9">
-                    <v-img max-height="auto" max-width="auto" :src="`/api/product/detailImage/${pageID}/${image}`"></v-img>
+                    <v-lazy :options="{threshold: .5}" min-height="200" transition="fade-transition">
+                        <v-img max-height="auto" max-width="auto" :src="`/api/product/detailImage/${pageID}/${image}`"></v-img>
+                    </v-lazy>
                 </v-col>
             </v-row>
 
@@ -163,7 +165,9 @@
 
             <v-row justify="center">
                 <v-col cols="10">
-                    <Guide />
+                    <v-lazy :options="{threshold: .5}" min-height="200" transition="fade-transition">
+                        <Guide />
+                    </v-lazy>
                 </v-col>
             </v-row>
 
@@ -184,7 +188,9 @@
 
             <v-row justify="center">
                 <v-col cols="10">
-                    <ProductDetailReview :productNo="pageID" />
+                    <v-lazy v-model="isActive" :options="{threshold: .5}" min-height="1210" transition="fade-transition">
+                        <ProductDetailReview :productNo="pageID" />
+                    </v-lazy>
                 </v-col>
             </v-row>
 
@@ -205,7 +211,9 @@
 
             <v-row justify="center">
                 <v-col cols="10">
-                    <ProductDetailQnA :productNo="pageID" />
+                    <v-lazy v-model="isActive" :options="{threshold: .5}" min-height="200" transition="fade-transition">
+                        <ProductDetailQnA :productNo="pageID" />
+                    </v-lazy>
                 </v-col>
             </v-row>
         </v-col>
@@ -227,6 +235,7 @@ export default {
     data() {
         return {
             dataLoaded: false,
+            isActive: false,
             pageID: null,
             product: null,
             colorOption: null,
@@ -241,7 +250,6 @@ export default {
                 if (val == '') return '개수를 입력해주세요'
                 return true
             },
-
         }
     },
     methods: {
@@ -303,6 +311,10 @@ export default {
             this.totalPrice = amount * (this.product.price - this.product.discount);
         },
         buyItNow() {
+            if (this.selected.length == 0) {
+                alert('구매할 상품이 없습니다');
+                return;
+            }
             this.$router.push({
                 name: "Payment",
                 params: {

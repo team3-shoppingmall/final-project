@@ -1,11 +1,24 @@
 <template>
 <v-container>
-    {{contents}}
-    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
-        <template #[`item.productName`]="{item}">
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
+        <template #[`item.image`]="{item}">
             <div class="text-left">
-                {{ item.productName }}
+                <v-dialog width="500">
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.productNo}/${item.image.split(';')[0]}`"></v-img>
+                    </template>
+                    <v-card>
+                        <v-img :src="`/api/review/reviewImage/${item.productNo}/${item.image}`"></v-img>
+                    </v-card>
+                </v-dialog>
             </div>
+        </template>
+        <template #[`item.productName`]="{item}">
+            <v-btn text :to="`/productDetail/${item.productNo}`">
+                <div class="text-left text-truncate" style="max-width: 100px;">
+                    {{ item.productName }}
+                </div>
+            </v-btn>
         </template>
         <template #[`item.star`]="{item}">
             <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" length="5" readonly size="10" :value="item.star"></v-rating>
@@ -22,7 +35,7 @@
             </v-row>
         </template>
         <template #[`item.id`]="{item}">
-            <div class="text-left">
+            <div>
                 <HideId :id="item.id" />
             </div>
         </template>
@@ -41,7 +54,7 @@
                     <v-text-field v-model="searchWord"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon="icon" @click="getReview">검색</v-btn>
+                    <v-btn @click="getReview" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -69,6 +82,12 @@ export default {
             headers: [{
                 text: '번호',
                 value: 'reviewNo',
+                width: '5%',
+                align: 'center',
+                divider: true
+            }, {
+                text: '이미지',
+                value: 'image',
                 width: '10%',
                 align: 'center',
                 divider: true
@@ -87,19 +106,19 @@ export default {
             }, {
                 text: '후기',
                 value: 'content',
-                width: '45%',
+                width: '51%',
                 align: 'center',
                 divider: true
             }, {
                 text: '작성자',
                 value: 'id',
-                width: '10%',
+                width: '7%',
                 align: 'center',
                 divider: true
             }, {
                 text: '작성일',
                 value: 'regDate',
-                width: '10%',
+                width: '7%',
                 align: 'center'
             }],
             searches: [{
@@ -136,27 +155,18 @@ export default {
                 this.loading = false;
             })
         },
-
         deleteReview(num) {
-            axios({
-                    method: 'delete',
-                    url: `/api/review/delete`,
-                    params: {
-                        reviewNo: num
-                    }
-                })
-                .then(res => {
-                    console.log(res.data);
-                    if (res.status == 200) {
-                        alert("삭제가 완료되었습니다.")
-                        this.$router.go();
-                    }
+            axios.delete(`/api/review/delete/${num}`)
+                .then(() => {
+                    alert("삭제가 완료되었습니다.")
+                    this.$router.go();
+                }).catch(err => {
+                    console.log(err);
                 })
         },
-
         updateReview(num) {
             this.$router.push(`/updatePost/review/${num}`);
-        }
+        },
     },
     watch: {
         options: {

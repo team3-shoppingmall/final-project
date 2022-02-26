@@ -1,6 +1,18 @@
 <template>
 <v-container>
-    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort no-data-text="검색된 자료가 없습니다">
+        <template #[`item.image`]="{item}">
+            <div class="text-left">
+                <v-dialog width="500">
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${productNo}/${item.image.split(';')[0]}`"></v-img>
+                    </template>
+                    <v-card>
+                        <v-img :src="`/api/review/reviewImage/${productNo}/${item.image}`"></v-img>
+                    </v-card>
+                </v-dialog>
+            </div>
+        </template>
         <template #[`item.star`]="{item}">
             <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" length="5" readonly size="10" :value="item.star"></v-rating>
         </template>
@@ -16,7 +28,7 @@
             </v-row>
         </template>
         <template #[`item.id`]="{item}">
-            <div class="text-left">
+            <div>
                 <HideId :id="item.id" />
             </div>
         </template>
@@ -125,6 +137,12 @@ export default {
                 align: 'center',
                 divider: true
             }, {
+                text: '이미지',
+                value: 'image',
+                width: '10%',
+                align: 'center',
+                divider: true
+            }, {
                 text: '별점',
                 value: 'star',
                 width: '10%',
@@ -133,19 +151,19 @@ export default {
             }, {
                 text: '후기',
                 value: 'content',
-                width: '60%',
+                width: '58%',
                 align: 'center',
                 divider: true
             }, {
                 text: '작성자',
                 value: 'id',
-                width: '8%',
+                width: '7%',
                 align: 'center',
                 divider: true
             }, {
                 text: '작성일',
                 value: 'regDate',
-                width: '15%',
+                width: '8%',
                 align: 'center'
             }],
             searches: [{
@@ -179,7 +197,6 @@ export default {
                     productNo: this.productNo
                 }
             }).then(res => {
-                console.log(res.data);
                 this.contents = res.data.reviewList;
                 this.totalContents = res.data.count;
             }).finally(() => {
@@ -187,6 +204,10 @@ export default {
             })
         },
         addReview() {
+            if (this.content == '') {
+                alert('후기를 입력해주세요');
+                return;
+            }
             axios({
                 method: 'post',
                 url: `/api/review/insert`,
@@ -196,32 +217,22 @@ export default {
                     content: this.content,
                     image: this.image,
                     id: "test1",
-                } 
-                }).then((res) => {
-                    this.dialog = false;
-                    this.content = '';
-                    console.log(res.data, res.status);
-                    alert("리뷰 등록 완료");
-                    this.$router.go();
-                }).catch((err) => {
-                    alert('리뷰 작성에 실패했습니다.')
-                    console.log(err);
-                })
+                }
+            }).then(() => {
+                this.dialog = false;
+                this.content = '';
+                alert("리뷰 등록 완료");
+                this.$router.go();
+            }).catch((err) => {
+                alert('리뷰 작성에 실패했습니다.')
+                console.log(err);
+            })
         },
         deleteReview(num) {
-            axios({
-                    method: 'delete',
-                    url: `/api/review/delete`,
-                    params: {
-                        reviewNo: num
-                    }
-                })
-                .then(res => {
-                    console.log(res.data);
-                    if (res.status == 200) {
-                        alert("삭제가 완료되었습니다.")
-                        this.$router.go();
-                    }
+            axios.delete(`/api/review/delete/${num}`)
+                .then(() => {
+                    alert("삭제가 완료되었습니다.")
+                    this.$router.go();
                 })
         },
         updateReview(num) {

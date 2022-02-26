@@ -22,13 +22,6 @@ public class QnaController {
 		this.qnaService = qnaService;
 	}
 
-//	// 전체 개수 가져오기
-//	@GetMapping("/getCount")
-//	public ResponseEntity<?> getCount(@RequestParam("search") String search,
-//			@RequestParam("searchWord") String searchWord, @RequestParam("type") String type) {
-//		return qnaService.getCount(search, searchWord, type);
-//	}
-
 	// 문의게시판 목록 출력
 	@GetMapping("/getQnaPage")
 	public ResponseEntity<?> getQna(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
@@ -42,8 +35,8 @@ public class QnaController {
 		return qnaService.getQnaAll();
 	}
 
-	@GetMapping("/getqnabyqnaNo")
-	public ResponseEntity<?> getQnaByQnaNo(@RequestParam("qnaNo") int qnaNo) {
+	@GetMapping("/getQna/{qnaNo}")
+	public ResponseEntity<?> getQnaByQnaNo(@PathVariable("qnaNo") int qnaNo) {
 		return qnaService.getQnaByQnaNo(qnaNo);
 	}
 

@@ -1,5 +1,6 @@
 package com.myspring.spring.product;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -84,7 +85,7 @@ public class ProductController {
 
 //	판매 여부 변경
 	@PatchMapping("/updateOnSale/{productNo}")
-	public ResponseEntity<?> updateOnSale(@PathVariable("productNo") int proudctNo){
+	public ResponseEntity<?> updateOnSale(@PathVariable("productNo") int proudctNo) {
 		return productService.updateOnSale(proudctNo);
 	}
 

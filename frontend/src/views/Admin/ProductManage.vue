@@ -39,10 +39,13 @@
         <v-col cols="auto" align-self="center">
             <v-btn class="primary " large="large" @click="searchProduct">검색</v-btn>
         </v-col>
+        <v-col cols="auto" align-self="center">
+            <v-btn class="primary " large="large" @click="reset">초기화</v-btn>
+        </v-col>
     </v-row>
     <v-row>
         <v-col>
-            <v-data-table :headers="headers" :options.sync="options" :items="products" :server-items-length="totalContents" :loading="loading" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
+            <v-data-table :headers="headers" :options.sync="options" :items="products" item-key="productNo" :server-items-length="totalContents" :loading="loading" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
                 <template #[`item.productName`]="{item}">
                     <v-btn text :to="`/productDetail/${item.productNo}`" v-if="item.productNo > 0">
                         <div class="text-truncate" style="max-width: 250px;">
@@ -147,7 +150,6 @@ export default {
                 divider: true,
                 align: 'center',
                 width: '6%',
-                // class: 'text-subtitle-1'
             }, {
                 text: '상품명',
                 value: 'productName',
@@ -331,6 +333,14 @@ export default {
                 console.log(err);
             })
         },
+        reset() {
+            this.typeSelected = null;
+            this.searchWord1 = null;
+            this.searchWord2 = null;
+            this.options.page = 1;
+            this.options.itemsPerPage = 10;
+            this.searchProduct();
+        },
         changeOnSale(item) {
             axios.patch(`/api/product/updateOnSale/${item.productNo}`)
                 .then(() => {
@@ -374,23 +384,19 @@ export default {
         },
         search: {
             handler() {
+                this.searchWord1 = '';
+                this.searchWord2 = '';
+                this.typeSelected = null;
                 if (this.search == 'price') {
                     this.searchWord1 = 0;
                     this.searchWord2 = 9999999;
-                    this.typeSelected = null;
                 } else if (this.search == 'amount') {
                     this.searchWord1 = 0;
                     this.searchWord2 = 9999;
-                    this.typeSelected = null;
                 } else if (this.search == 'regDate') {
                     let date = new Date();
                     this.searchWord1 = `${date.getFullYear()-10}-${date.getMonth()+1}-${date.getDate()}`;
                     this.searchWord2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
-                    this.typeSelected = null;
-                } else {
-                    this.searchWord1 = '';
-                    this.searchWord2 = '';
-                    this.typeSelected = null;
                 }
             }
         },

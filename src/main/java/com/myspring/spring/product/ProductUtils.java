@@ -40,7 +40,7 @@ public class ProductUtils {
 								+ Integer.parseInt(searchWord2));
 						break;
 					case "regDate":
-						WHERE("regDate >= " + searchWord1 + " and regDate <= " + searchWord2);
+						WHERE("regDate >= '" + searchWord1 + "' and regDate <= '" + searchWord2 + " 23:59:59'");
 						break;
 					}
 				}
@@ -102,7 +102,7 @@ public class ProductUtils {
 								+ Integer.parseInt(searchWord2));
 						break;
 					case "regDate":
-						WHERE("regDate >= " + searchWord1 + " and regDate <= " + searchWord2);
+						WHERE("regDate >= '" + searchWord1 + "' and regDate <= '" + searchWord2 + " 23:59:59'");
 						break;
 					}
 				}

@@ -23,7 +23,7 @@
                         </td>
                     </tr>
                     <tr v-if="pageID != undefined">
-                        <td>상품 가격</td>
+                        <td>할인가</td>
                         <td>
                             <v-text-field hide-details v-model="product.discount"></v-text-field>
                         </td>
@@ -101,23 +101,29 @@
             </v-row>
 
             <v-spacer class="mt-5 md-5"></v-spacer>
-
-            <v-row v-for="(idx) in imageUrl.length" :key="idx" justify="center">
-                <v-lazy :options="{threshold: .5}" transition="fade-transition">
-                    <v-col cols="auto" v-if="imageUrl[idx-1] != null">
-                        <div>상품 이미지 {{idx}}번 : {{imageFiles[idx-1].name}}</div>
-                        <v-img v-if="imageUrl[idx-1]" :src="imageUrl[idx-1]" />
-                    </v-col>
-                </v-lazy>
+            <v-row>
+                <v-col>
+                    <v-row v-for="(idx) in imageUrl.length" :key="idx" justify="center">
+                        <v-lazy :options="{threshold: .5}" transition="fade-transition">
+                            <v-col cols="auto" v-if="imageUrl[idx-1] != null">
+                                <div>상품 이미지 {{idx}}번 : {{imageFiles[idx-1].name}}</div>
+                                <v-img v-if="imageUrl[idx-1]" :src="imageUrl[idx-1]" />
+                            </v-col>
+                        </v-lazy>
+                    </v-row>
+                </v-col>
             </v-row>
-
-            <v-row v-for="(idx) in detailImageUrl.length" :key="idx" justify="center">
-                <v-lazy :options="{threshold: .5}" transition="fade-transition">
-                    <v-col cols="auto" v-if="detailImageUrl[idx-1] != null">
-                        <div>상세 이미지 {{idx}}번 : {{detailImageFiles[idx-1].name}}</div>
-                        <v-img v-if="detailImageUrl[idx-1]" :src="detailImageUrl[idx-1]" />
-                    </v-col>
-                </v-lazy>
+            <v-row>
+                <v-col>
+                    <v-row v-for="(idx) in detailImageUrl.length" :key="idx" justify="center">
+                        <v-lazy :options="{threshold: .5}" transition="fade-transition">
+                            <v-col cols="auto" v-if="detailImageUrl[idx-1] != null">
+                                <div>상세 이미지 {{idx}}번 : {{detailImageFiles[idx-1].name}}</div>
+                                <v-img v-if="detailImageUrl[idx-1]" :src="detailImageUrl[idx-1]" />
+                            </v-col>
+                        </v-lazy>
+                    </v-row>
+                </v-col>
             </v-row>
         </v-col>
     </v-row>
@@ -435,22 +441,51 @@ export default {
             axios.get(`/api/product/getProduct/${this.pageID}`)
                 .then(res => {
                     this.product = res.data;
+                    this.typeSelected = this.product.type1 + ";" + this.product.type2;
+                    if (this.product.color != null) {
+                        this.colorList = this.product.color.split(';');
+                    }
+                    if (this.product.size != null) {
+                        this.sizeList = this.product.size.split(';');
+                    }
                     let imageList = this.product.imageName.split(';');
-                    for (let i = 0; i < this.imageList.length; i++) {
-                        axios.get(`/api/product/productImage/${this.pageID}/${imageList[i]}`)
+                    for (let i = 0; i < imageList.length; i++) {
+                        axios.get(`/api/product/productImage/${this.pageID}/${imageList[i]}`, {
+                                responseType: "blob",
+                            })
                             .then(res => {
-                                this.imageFiles[i] = res.data;
+                                if (i > 0) {
+                                    this.imageFiles.push(null);
+                                }
+                                var file = new File([res.data], imageList[i], {
+                                    type: "image/*",
+                                    lastModified: Date.now()
+                                });
+                                this.imageFiles[i] = file;
+                                this.onImageChange(i);
                             })
                     }
 
                     let detailImageList = this.product.detailImageName.split(';');
-                    for (let i = 0; i < this.detailImageList.length; i++) {
-                        axios.get(`/api/product/detailImage/${this.pageID}/${detailImageList[i]}`)
+                    for (let i = 0; i < detailImageList.length; i++) {
+                        axios.get(`/api/product/detailImage/${this.pageID}/${detailImageList[i]}`, {
+                                responseType: "blob",
+                            })
                             .then(res => {
-                                this.detailImageFiles[i] = res.data;
+                                if (i > 0) {
+                                    this.detailImageFiles.push(null);
+                                }
+                                var file = new File([res.data], detailImageList[i]);
+                                this.detailImageFiles[i] = file;
+                                this.onDetailImageChange(i);
                             })
                     }
                 })
+        },
+        blobToFile(theBlob, fileName) {
+            theBlob.lastModifiedDate = new Date();
+            theBlob.name = fileName;
+            return theBlob;
         }
     },
     watch: {

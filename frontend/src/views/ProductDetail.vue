@@ -2,7 +2,7 @@
 <v-container class="mt-5">
     <v-row justify="center" v-if="dataLoaded">
         <v-col cols="9">
-            <v-row style="height:600px">
+            <v-row>
                 <v-col cols="6" class="pa-5">
                     <v-row>
                         <v-col align="center">
@@ -27,14 +27,17 @@
                                 </tr>
                                 <tr>
                                     <td style="width:20%"> 가격 </td>
-                                    <td colspan="2" v-if="product.discount != 0" class="text-decoration-line-through">
+                                    <td colspan="2" v-if="product.discount != 0 && product.amount > 0 && product.onSale == true" class="text-decoration-line-through">
                                         {{product.price}}원
                                     </td>
-                                    <td colspan="2" v-if="product.discount == 0">
+                                    <td colspan="2" v-if="product.discount == 0 && product.amount > 0 && product.onSale == true">
                                         {{product.price}}원
+                                    </td>
+                                    <td colspan="2" v-if="product.amount == 0 || product.onSale == false" class="red--text">
+                                        품절 상품입니다
                                     </td>
                                 </tr>
-                                <tr v-if="product.discount != 0">
+                                <tr v-if="product.discount != 0 && product.amount > 0 && product.onSale == true">
                                     <td style="width:10%"> 할인가 </td>
                                     <td colspan="2">
                                         {{product.price-product.discount}}원
@@ -45,13 +48,13 @@
                                     <td colspan="2">
                                         <!-- size 있을 때 -->
                                         <v-chip-group v-model="colorSelection" active-class="deep-purple--text text--accent-4" v-if="sizeOption != null">
-                                            <v-chip label outlined v-for="color in colorOption" :key="color" :value="color">
+                                            <v-chip label outlined v-for="color in colorOption" :key="color" :value="color" :disabled="product.amount == 0 || product.onSale == false">
                                                 {{ color }}
                                             </v-chip>
                                         </v-chip-group>
                                         <!-- size 없을 때 -->
                                         <v-chip-group active-class="deep-purple--text text--accent-4" v-if="sizeOption == null">
-                                            <v-chip label outlined v-for="color in colorOption" :key="color" :value="color" @click="addSelected(color, null)">
+                                            <v-chip label outlined v-for="color in colorOption" :key="color" :value="color" @click="addSelected(color, null)" :disabled="product.amount == 0 || product.onSale == false">
                                                 {{ color }}
                                             </v-chip>
                                         </v-chip-group>
@@ -61,7 +64,7 @@
                                     <td style="width:10%"> SIZE </td>
                                     <td colspan="2">
                                         <v-chip-group active-class="deep-purple--text text--accent-4">
-                                            <v-chip label outlined v-for="size in sizeOption" :key="size" :value="size" :disabled="colorOption != null && colorSelection == null" @click="addSelected(colorSelection, size)">
+                                            <v-chip label outlined v-for="size in sizeOption" :key="size" :value="size" :disabled="(colorOption != null && colorSelection == null) || product.amount == 0 || product.onSale == false" @click="addSelected(colorSelection, size)">
                                                 {{ size }}
                                             </v-chip>
                                         </v-chip-group>
@@ -102,12 +105,12 @@
                                     <td colspan="3">
                                         <v-row justify="center">
                                             <v-col cols="auto">
-                                                <v-btn @click="buyItNow">
+                                                <v-btn @click="buyItNow" :disabled="product.amount == 0 || product.onSale == false">
                                                     BUY IT NOW
                                                 </v-btn>
                                             </v-col>
                                             <v-col cols="auto">
-                                                <v-btn @click="addToBasket">
+                                                <v-btn @click="addToBasket" :disabled="product.amount == 0 || product.onSale == false">
                                                     ADD TO Basket
                                                 </v-btn>
                                             </v-col>

@@ -49,7 +49,7 @@
                                     </v-row>
                                 </td>
                             </tr>
-                            <tr v-if="originalNo == undefined">
+                            <tr v-if="originalNo == undefined && pageID != 'faq'">
                                 <td> 파일 첨부 </td>
                                 <td>
                                     <v-row>
@@ -339,7 +339,6 @@ export default {
                     originalNo: this.originalNo,
                     content: this.content,
                     id: "admin",
-                    image: "image1.jpg"
                 }
             }).then(() => {
                 alert("답변 등록 완료");
@@ -351,6 +350,40 @@ export default {
 
         // 글쓰기
         noticeForm() {
+            // let image = null;
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         if (image == null) {
+            //             image = this.imageFiles[i].name;
+            //         } else {
+            //             image = image + ";" + this.imageFiles[i].name;
+            //         }
+            //     }
+            // }
+            // let data = {
+            //     title: this.titleDetail,
+            //     content: this.content,
+            //     id: "admin123",
+            //     image: image,
+            // };
+            // let formData = new FormData();
+            // formData.append('data', new Blob([JSON.stringify(data)], {
+            //     type: "application/json"
+            // }));
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         formData.append(`fileList`, this.imageFiles[i])
+            //     }
+            // }
+            // axios.post(`/api/notice/insertNotice`, formData)
+            //     .then(() => {
+            //         alert("공지사항 등록 완료");
+            //         this.$router.go(-1);
+            //     }).catch((err) => {
+            //         alert("등록 실패");
+            //         console.log(err);
+            //     })
+
             axios({
                 method: 'post',
                 url: `/api/notice/insertNotice`,
@@ -366,7 +399,6 @@ export default {
             }).catch((err) => {
                 alert("등록 실패");
                 console.log(err);
-
             })
         },
         faqForm() {
@@ -385,6 +417,42 @@ export default {
 
         },
         qnaForm() {
+            // let image = null;
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         if (image == null) {
+            //             image = this.imageFiles[i].name;
+            //         } else {
+            //             image = image + ";" + this.imageFiles[i].name;
+            //         }
+            //     }
+            // }
+            // let data = {
+            //     productNo: this.productNo,
+            //     type: this.titleSelected,
+            //     reply: false,
+            //     content: this.content,
+            //     id: "tester",
+            //     secret: this.secret,
+            //     image: image,
+            // };
+            // let formData = new FormData();
+            // formData.append('data', new Blob([JSON.stringify(data)], {
+            //     type: "application/json"
+            // }));
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         formData.append(`fileList`, this.imageFiles[i])
+            //     }
+            // }
+            // axios.post(`/api/qna/insertqna`, formData)
+            //     .then(() => {
+            //         alert("문의글이 등록되었습니다.");
+            //         this.$router.go(-1);
+            //     }).catch((err) => {
+            //         console.log(err);
+            //     })
+
             axios({
                 method: 'post',
                 url: `/api/qna/insertqna`,
@@ -411,6 +479,20 @@ export default {
                 .then((res) => {
                     this.titleDetail = res.data.title;
                     this.content = res.data.content;
+                    let imageList = res.data.image.split(';');
+                    for (let i = 0; i < imageList.length; i++) {
+                        axios.get(`/api/notice/noticeImage/${this.num}/${imageList[i]}`, {
+                                responseType: "blob",
+                            })
+                            .then(res => {
+                                var file = new File([res.data], imageList[i], {
+                                    type: "image/*",
+                                    lastModified: Date.now()
+                                });
+                                this.imageFiles[i] = file;
+                                this.onImageChange(i);
+                            })
+                    }
                 }).catch((err) => {
                     alert("정보를 불러오는데 실패했습니다.");
                     console.log(err);
@@ -421,6 +503,20 @@ export default {
                 .then((res) => {
                     this.content = res.data.content;
                     this.star = res.data.star;
+                    let imageList = res.data.image.split(';');
+                    for (let i = 0; i < imageList.length; i++) {
+                        axios.get(`/api/review/reviewImage/${this.num}/${imageList[i]}`, {
+                                responseType: "blob",
+                            })
+                            .then(res => {
+                                var file = new File([res.data], imageList[i], {
+                                    type: "image/*",
+                                    lastModified: Date.now()
+                                });
+                                this.imageFiles[i] = file;
+                                this.onImageChange(i);
+                            })
+                    }
                 }).catch((err) => {
                     alert("정보를 불러오는데 실패했습니다.");
                     console.log(err);
@@ -440,8 +536,24 @@ export default {
         getQnA() {
             axios.get(`/api/qna/getQna/${this.num}`)
                 .then((res) => {
+                    console.log(res.data);
                     this.titleSelected = res.data.type;
                     this.content = res.data.content;
+                    this.secret = res.data.secret;
+                    let imageList = res.data.image.split(';');
+                    for (let i = 0; i < imageList.length; i++) {
+                        axios.get(`/api/qna/qnaImage/${this.num}/${imageList[i]}`, {
+                                responseType: "blob",
+                            })
+                            .then(res => {
+                                var file = new File([res.data], imageList[i], {
+                                    type: "image/*",
+                                    lastModified: Date.now()
+                                });
+                                this.imageFiles[i] = file;
+                                this.onImageChange(i);
+                            })
+                    }
                 }).catch((err) => {
                     alert("정보를 불러오는데 실패했습니다.");
                     console.log(err);
@@ -450,6 +562,40 @@ export default {
 
         // 수정
         noticeFormUpdate() {
+            // let image = null;
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         if (image == null) {
+            //             image = this.imageFiles[i].name;
+            //         } else {
+            //             image = image + ";" + this.imageFiles[i].name;
+            //         }
+            //     }
+            // }
+            // let data = {
+            //     noticeNo: this.num,
+            //     title: this.titleDetail,
+            //     content: this.content,
+            //     image: image,
+            // };
+            // let formData = new FormData();
+            // formData.append('data', new Blob([JSON.stringify(data)], {
+            //     type: "application/json"
+            // }));
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         formData.append(`fileList`, this.imageFiles[i])
+            //     }
+            // }
+            // axios.post(`/api/notice/updateNotice`, formData)
+            //     .then(() => {
+            //         alert("공지사항 수정 완료");
+            //         this.$router.go(-1);
+            //     }).catch((err) => {
+            //         alert("수정 실패");
+            //         console.log(err);
+            //     })
+
             axios({
                 method: 'patch',
                 url: `/api/notice/updateNotice`,
@@ -468,6 +614,40 @@ export default {
             })
         },
         reviewFormUpdate() {
+            // let image = null;
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         if (image == null) {
+            //             image = this.imageFiles[i].name;
+            //         } else {
+            //             image = image + ";" + this.imageFiles[i].name;
+            //         }
+            //     }
+            // }
+            // let data = {
+            //     reviewNo: this.num,
+            //     content: this.content,
+            //     star: this.star,
+            //     image: image,
+            // };
+            // let formData = new FormData();
+            // formData.append('data', new Blob([JSON.stringify(data)], {
+            //     type: "application/json"
+            // }));
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         formData.append(`fileList`, this.imageFiles[i])
+            //     }
+            // }
+            // axios.post(`/api/review/update`, formData)
+            //     .then(() => {
+            //         alert("수정이 완료되었습니다.")
+            //         this.$router.go(-1);
+            //     }).catch((err) => {
+            //         alert('수정에 실패하셨습니다.');
+            //         console.log(err);
+            //     })
+
             axios({
                     method: 'patch',
                     url: `/api/review/update`,
@@ -502,6 +682,42 @@ export default {
             })
         },
         qnaFormUpdate() {
+            // let image = null;
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         if (image == null) {
+            //             image = this.imageFiles[i].name;
+            //         } else {
+            //             image = image + ";" + this.imageFiles[i].name;
+            //         }
+            //     }
+            // }
+            // let data = {
+            //     productNo: this.productNo,
+            //     qnaNo: this.num,
+            //     type: this.titleSelected,
+            //     content: this.content,
+            //     secret: this.secret,
+            //     image: image,
+            // };
+            // let formData = new FormData();
+            // formData.append('data', new Blob([JSON.stringify(data)], {
+            //     type: "application/json"
+            // }));
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         formData.append(`fileList`, this.imageFiles[i])
+            //     }
+            // }
+            // axios.post(`/api/qna/updateqna`, formData)
+            //     .then(() => {
+            //         alert("수정이 완료되었습니다.");
+            //         this.$router.go(-1);
+            //     }).catch((err) => {
+            //         console.log(err);
+            //         alert("수정에 실패했습니다.");
+            //     })
+
             axios({
                 method: 'patch',
                 url: `/api/qna/updateqna`,

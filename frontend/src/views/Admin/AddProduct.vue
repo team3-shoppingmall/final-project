@@ -319,7 +319,6 @@ export default {
             for (let i = 0; i < this.detailImageFiles.length; i++) {
                 formData.append(`fileList`, this.detailImageFiles[i])
             }
-            console.log(formData);
             axios.post('/api/product/insertProduct', formData)
                 .then(res => {
                     console.log(res.status);
@@ -442,7 +441,6 @@ export default {
             for (let i = 0; i < this.detailImageFiles.length; i++) {
                 formData.append(`fileList`, this.detailImageFiles[i])
             }
-            console.log(formData);
             axios.patch('/api/product/updateProduct', formData)
                 .then(res => {
                     console.log(res.status);

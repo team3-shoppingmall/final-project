@@ -85,8 +85,15 @@
                                         <ckeditor :editor="editor" v-model="content" :config="editorConfig"></ckeditor>
                                         <span :class="contentColor">{{content.length}}/600</span>
                                     </v-col>
-                                    <v-col cols="12">
-                                        <v-file-input accept="image/*"></v-file-input>
+                                    <v-col cols="12" v-for="(idx) in 4" :key="idx" align="center">
+                                        <v-card :loading="false" class="mx-auto my-5">
+                                            <v-card-title>
+                                                <v-img max-height="250" :src="imageUrl[idx-1]" min-height="250" contain @click="fileInputClick(idx-1)" />
+                                            </v-card-title>
+                                            <v-card-actions>
+                                                <v-file-input v-model="imageFiles[idx-1]" :id="`fileInput${idx-1}`" accept="image/*" truncate-length="14" class="pa-0" hide-details @change="onImageChange(idx-1)"></v-file-input>
+                                            </v-card-actions>
+                                        </v-card>
                                     </v-col>
                                 </v-row>
                             </v-container>
@@ -181,7 +188,8 @@ export default {
             star: 5,
             content: '',
             contentColor: 'black--text',
-            image1: 'test1.jpg',
+            imageFiles: [null, null, null, null],
+            imageUrl: [null, null, null, null],
 
         }
     },
@@ -209,11 +217,64 @@ export default {
                 this.loading = false;
             })
         },
+
+        // 이미지
+        fileInputClick(idx) {
+            document.getElementById(`fileInput${idx}`).click();
+        },
+        onImageChange(index) {
+            const file = this.imageFiles[index];
+            if (file) {
+                this.imageUrl[index] = URL.createObjectURL(file);
+                URL.revokeObjectURL(file);
+            } else {
+                this.imageUrl[index] = null;
+            }
+        },
+
         addReview() {
             if (this.content == '') {
                 alert('후기를 입력해주세요');
                 return;
             }
+
+            // let image = null;
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         if (image == null) {
+            //             image = this.imageFiles[i].name;
+            //         } else {
+            //             image = image + ";" + this.imageFiles[i].name;
+            //         }
+            //     }
+            // }
+            // let data = {
+            //     productNo: this.productNo,
+            //     star: this.star,
+            //     content: this.content,
+            //     image: image,
+            //     id: "test1",
+            // };
+            // let formData = new FormData();
+            // formData.append('data', new Blob([JSON.stringify(data)], {
+            //     type: "application/json"
+            // }));
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         formData.append(`fileList`, this.imageFiles[i])
+            //     }
+            // }
+            // axios.post(`/api/review/insert`, formData)
+            //     .then(() => {
+            //         this.dialog = false;
+            //         this.content = '';
+            //         alert("리뷰 등록 완료");
+            //         this.$router.go();
+            //     }).catch((err) => {
+            //         alert('리뷰 작성에 실패했습니다.')
+            //         console.log(err);
+            //     })
+
             axios({
                 method: 'post',
                 url: `/api/review/insert`,

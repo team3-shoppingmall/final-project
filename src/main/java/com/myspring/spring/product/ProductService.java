@@ -21,6 +21,22 @@ public class ProductService {
 		this.productMapper = productMapper;
 	}
 
+	public ResponseEntity<?> getProductAll(int page, int perPage, String type1, String type2, String search,
+			String searchWord1, String searchWord2) {
+		int start = (page - 1) * perPage;
+		List<ProductVO> productList = productMapper.getProductAll(start, perPage, type1, type2, search, searchWord1,
+				searchWord2);
+		int count = productMapper.getProductAllCount(type1, type2, search, searchWord1, searchWord2);
+		if (productList == null || count == 0)
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		else {
+			Map<String, Object> resMap = new HashMap<>();
+			resMap.put("productList", productList);
+			resMap.put("count", count);
+			return new ResponseEntity<>(resMap, HttpStatus.OK);
+		}
+	}
+
 	// 상품 리스트 조회
 	public ResponseEntity<?> getProductList(int page, int perPage, String type1, String type2, String searchWord,
 			int minPrice, int maxPrice, String searchOrder) {
@@ -141,5 +157,14 @@ public class ProductService {
 			entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return entity;
+	}
+
+	public ResponseEntity<?> updateOnSale(int productNo) {
+		int res = productMapper.updateOnSale(productNo);
+		if (res == 0)
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(HttpStatus.OK);
+
 	}
 }

@@ -123,8 +123,8 @@ public class QnaController {
 	// 문의 삭제 & 댓글 삭제
 	// 댓글 삭제시 originalNo 없이 삭제할때
 	// reply true -> false
-	@DeleteMapping("/deleteqna")
-	public ResponseEntity<?> deleteQna(@RequestParam("qnaNo") int qnaNo) {
+	@DeleteMapping("/deleteqna/{qnaNo}")
+	public ResponseEntity<?> deleteQna(@PathVariable("qnaNo") int qnaNo) {
 		return qnaService.deleteQna(qnaNo);
 	}
 

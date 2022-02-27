@@ -7,7 +7,7 @@
                     <tr>
                         <td style="width:20%">상품명</td>
                         <td>
-                            <v-text-field hide-details v-model="productName"></v-text-field>
+                            <v-text-field hide-details v-model="product.productName"></v-text-field>
                         </td>
                     </tr>
                     <tr>
@@ -19,13 +19,19 @@
                     <tr>
                         <td>상품 가격</td>
                         <td>
-                            <v-text-field hide-details v-model="price"></v-text-field>
+                            <v-text-field hide-details v-model="product.price"></v-text-field>
+                        </td>
+                    </tr>
+                    <tr v-if="pageID != undefined">
+                        <td>상품 가격</td>
+                        <td>
+                            <v-text-field hide-details v-model="product.discount"></v-text-field>
                         </td>
                     </tr>
                     <tr>
                         <td>재고</td>
                         <td>
-                            <v-text-field hide-details v-model="amount"></v-text-field>
+                            <v-text-field hide-details v-model="product.amount"></v-text-field>
                         </td>
                     </tr>
                     <tr>
@@ -88,7 +94,8 @@
             </v-simple-table>
             <v-row justify="center">
                 <v-col align="center">
-                    <v-btn @click="sendFile" color="primary" class="mr-5">등록</v-btn>
+                    <v-btn @click="addFile" color="primary" class="mr-5" v-if="this.pageID == undefined">등록</v-btn>
+                    <v-btn @click="updateFile" color="primary" class="mr-5" v-if="this.pageID != undefined">수정</v-btn>
                     <v-btn color="primary" class="ml-5">초기화</v-btn>
                 </v-col>
             </v-row>
@@ -121,15 +128,18 @@
 import axios from 'axios'
 
 export default {
-
     data() {
         return {
-            productName: null,
+            pageID: '',
+            product: {
+                productName: null,
+                price: '',
+                discount: '',
+                amount: '',
+            },
             typeSelected: null,
-            price: '',
             colorList: [],
             sizeList: [],
-            amount: '',
             imageFiles: [null],
             imageUrl: [null],
             detailImageFiles: [null],
@@ -195,8 +205,8 @@ export default {
                 this.detailImageUrl[index] = null;
             }
         },
-        sendFile() {
-            if (this.productName == null) {
+        addFile() {
+            if (this.product.productName == null) {
                 alert('상품명을 입력해주세요');
                 return;
             }
@@ -204,11 +214,11 @@ export default {
                 alert('상품 타입을 선택해주세요');
                 return;
             }
-            if (!(this.price > 0 && (this.price == Math.round(this.price)) && this.price != '')) {
+            if (!(this.product.price > 0 && (this.product.price == Math.round(this.product.price)) && this.product.price != '')) {
                 alert('상품 가격이 유효하지 않습니다')
                 return;
             }
-            if (!(this.amount >= 0 && (this.amount == Math.round(this.amount)) && this.amount != '')) {
+            if (!(this.product.amount >= 0 && (this.product.amount == Math.round(this.product.amount)) && this.product.amount != '')) {
                 alert('상품 수량이 유효하지 않습니다')
                 return;
             }
@@ -275,14 +285,14 @@ export default {
             }
 
             let data = {
-                productName: this.productName,
+                productName: this.product.productName,
                 type1: type1,
                 type2: type2,
                 imageName: imageName,
-                price: this.price,
+                price: this.product.price,
                 color: color,
                 size: size,
-                amount: this.amount,
+                amount: this.product.amount,
                 detailImageName: detailImageName,
             }
 
@@ -308,6 +318,140 @@ export default {
                         alert("error")
                 })
         },
+        updateFile() {
+            if (this.product.productName == null) {
+                alert('상품명을 입력해주세요');
+                return;
+            }
+            if (this.typeSelected == null) {
+                alert('상품 타입을 선택해주세요');
+                return;
+            }
+            if (!(this.product.price > 0 && (this.product.price == Math.round(this.product.price)) && this.product.price != '')) {
+                alert('상품 가격이 유효하지 않습니다')
+                return;
+            }
+            if (!(this.product.amount >= 0 && (this.product.amount == Math.round(this.product.amount)) && this.product.amount != '')) {
+                alert('상품 수량이 유효하지 않습니다')
+                return;
+            }
+            if (this.colorList.length == 0 && this.sizeList.length == 0) {
+                alert('색상, 사이즈 중 하나를 추가해주세요');
+                return;
+            }
+            if (this.imageFiles.length == 0) {
+                alert('상품 사진을 추가해주세요');
+                return;
+            }
+            if (this.detailImageFiles.length == 0) {
+                alert('상품 상세 사진을 추가해주세요');
+                return;
+            }
+
+            let type1 = null;
+            let type2 = null;
+            type1 = this.typeSelected.split(';')[0];
+            type2 = this.typeSelected.split(';')[1];
+
+            let color = null;
+            for (let i = 0; i < this.colorList.length; i++) {
+                if (color == null) {
+                    color = this.colorList[i];
+                } else {
+                    color = color + ";" + this.colorList[i];
+                }
+            }
+
+            let size = null;
+            for (let i = 0; i < this.sizeList.length; i++) {
+                if (size == null) {
+                    size = this.sizeList[i];
+                } else {
+                    size = size + ";" + this.sizeList[i];
+                }
+            }
+
+            let imageName = null;
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] == null) {
+                    alert('파일을 추가하거나 입력칸을 삭제해주세요')
+                    return;
+                }
+                if (imageName == null) {
+                    imageName = this.imageFiles[i].name;
+                } else {
+                    imageName = imageName + ";" + this.imageFiles[i].name;
+                }
+            }
+
+            let detailImageName = null;
+            for (let i = 0; i < this.detailImageFiles.length; i++) {
+                if (this.detailImageFiles[i] == null) {
+                    alert('파일을 추가하거나 입력칸을 삭제해주세요')
+                    return;
+                }
+                if (detailImageName == null) {
+                    detailImageName = this.detailImageFiles[i].name;
+                } else {
+                    detailImageName = detailImageName + ";" + this.detailImageFiles[i].name;
+                }
+            }
+
+            let data = {
+                productName: this.product.productName,
+                type1: type1,
+                type2: type2,
+                imageName: imageName,
+                price: this.product.price,
+                color: color,
+                size: size,
+                amount: this.product.amount,
+                detailImageName: detailImageName,
+            }
+
+            let formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }))
+
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                formData.append(`fileList`, this.imageFiles[i])
+            }
+            for (let i = 0; i < this.detailImageFiles.length; i++) {
+                formData.append(`fileList`, this.detailImageFiles[i])
+            }
+            console.log(formData);
+            axios.post('/api/product/insertProduct', formData)
+                .then(res => {
+                    console.log(res.status);
+                    alert("상품을 추가하셨습니다");
+                    this.$router.go();
+                }).catch(err => {
+                    if (err.response.status === 404)
+                        alert("error")
+                })
+        },
+        getProduct() {
+            axios.get(`/api/product/getProduct/${this.pageID}`)
+                .then(res => {
+                    this.product = res.data;
+                    let imageList = this.product.imageName.split(';');
+                    for (let i = 0; i < this.imageList.length; i++) {
+                        axios.get(`/api/product/productImage/${this.pageID}/${imageList[i]}`)
+                            .then(res => {
+                                this.imageFiles[i] = res.data;
+                            })
+                    }
+
+                    let detailImageList = this.product.detailImageName.split(';');
+                    for (let i = 0; i < this.detailImageList.length; i++) {
+                        axios.get(`/api/product/detailImage/${this.pageID}/${detailImageList[i]}`)
+                            .then(res => {
+                                this.detailImageFiles[i] = res.data;
+                            })
+                    }
+                })
+        }
     },
     watch: {
         imageFiles(val) {
@@ -324,6 +468,12 @@ export default {
             }
         },
     },
+    mounted() {
+        this.pageID = this.$route.params.id;
+        if (this.pageID != undefined) {
+            this.getProduct();
+        }
+    }
 }
 </script>
 

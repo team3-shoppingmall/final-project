@@ -146,6 +146,10 @@ export default {
                 console.log(err);
             })
         },
+        AddComma(num) {
+            var regexp = /\B(?=(\d{3})+(?!\d))/g;
+            return `${num}`.toString().replace(regexp, ",");
+        },
         moveToDetail(num) {
             this.$router.push(`/productDetail/${num}`)
         },

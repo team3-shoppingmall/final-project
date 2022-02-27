@@ -77,13 +77,13 @@ public interface QnaMapper {
 //	// 배송 후 교환&반품 카테고리 전체 갯수 가져오기
 //	@Select("select count(*) from qnatable where ${search} like CONCAT('%',#{searchWord},'%') AND type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply')")
 //	int getQnaAfterDeliveryCount(@Param("search") String search, @Param("searchWord") String searchWord);
-//	
+
 	// 문의 등록
-	@Insert("insert into qnatable(productNo, type, reply, content, id, secret, image) values(#{in.productNo}, #{in.type}, #{in.reply}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
+	@Insert("call autoQuestion(#{in.productNo}, #{in.type}, #{in.reply}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
 	int insertQna(@Param("in") QnaVO qnaVO);
 
 	// 댓글 등록
-	@Insert("insert into qnatable(type, originalNo, content, id, secret, image) values(#{in.type}, #{in.originalNo}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
+	@Insert("call autoReply(#{in.type}, #{in.originalNo}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
 	int insertReply(@Param("in") QnaVO qnaVO);
 
 	// 댓글 등록시 reply 업데이트

@@ -274,7 +274,7 @@ export default {
             } else if (this.pageID == 'faq') {
                 this.faqForm();
             } else {
-                this.getQnA();
+                this.qnaForm();
             }
         },
         getData() {

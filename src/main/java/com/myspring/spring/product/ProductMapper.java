@@ -14,6 +14,15 @@ import org.apache.ibatis.annotations.Update;
 public interface ProductMapper {
 
 	// 상품 리스트 조회
+	@SelectProvider(type = ProductUtils.class, method = "getProductAll")
+	public List<ProductVO> getProductAll(int start, int perPage, String type1, String type2, String search,
+			String searchWord1, String searchWord2);
+
+	// 상품 리스트 전체 개수 조회
+	@SelectProvider(type = ProductUtils.class, method = "getProductAllCount")
+	int getProductAllCount(String type1, String type2, String search, String searchWord1, String searchWord2);
+
+	// 상품 리스트 조회
 	@SelectProvider(type = ProductUtils.class, method = "getProductList")
 	public List<ProductVO> getProductList(int start, int perPage, String type1, String type2, String searchWord,
 			int minPrice, int maxPrice, String searchOrder);
@@ -39,5 +48,8 @@ public interface ProductMapper {
 			+ "discount = #{in.discount}, color = #{in.color}, size = #{in.size}, amount= #{in.amount} , "
 			+ "imageName = #{in.imageName}, detailImagename = #{in.detailImagename} where productNo = #{in.productNo}")
 	int updateProduct(@Param("in") ProductVO in, @Param("result") ProductVO result);
+	
+	@Update("update producttable set onSale = not onSale where productNo = #{productNo}")
+	int updateOnSale(@Param("productNo") int productNo);
 
 }

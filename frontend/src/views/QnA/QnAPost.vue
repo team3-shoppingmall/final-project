@@ -1,9 +1,10 @@
 <template>
 <v-container>
+    {{qna}}
     <v-row justify="center">
         <v-col align-self="center" cols="7">
             <div class="text-h3">문의</div>
-            <div v-if="qna.type == 'product'">
+            <div v-if="qna.type == 'product' && qna.productNo != 0">
                 <ProductDetailDisplay :productNo="qna.productNo" />
             </div>
             <v-simple-table>
@@ -130,18 +131,14 @@ export default {
                 this.$router.push(`/updatePost/qna/${this.qna.qnaNo}`);
         },
         deleteQnA() {
-            console.log(this.qna.qnaNo);
-            axios.delete(`/api/qna/deleteqna`, {
-                params: {
-                    qnaNo: this.qna.qnaNo
-                }
-            }).then(res => {
-                console.log(res.data);
-                alert("삭제되었습니다.");
-                this.$router.go(-1);
-            }).catch((err) => {
-                console.log(err);
-            })
+            axios.delete(`/api/qna/deleteqna/${this.qna.qnaNo}`)
+                .then(res => {
+                    console.log(res.data);
+                    alert("삭제되었습니다.");
+                    this.$router.go(-1);
+                }).catch((err) => {
+                    console.log(err);
+                })
         },
 
     },

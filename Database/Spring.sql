@@ -204,9 +204,9 @@ insert into membertable values('tester212','Asdqwe123','유저2','01045614561','
 insert into membertable values('tester222','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 -- 상품
 insert into producttable(productname, type1, type2, imagename, price, color, size, amount, detailimagename) 
-values('스노우 버튼 모직스커트', 'skirt','mini','image1.png;image2.png',38000,'그레이지;소프트민트','S;M;L', 100,'detail1.jpg;detail2.jpg');
+values('스노우 버튼 모직스커트', 'skirt','mini','nature-3082832__480.jpg;photo-1433086966358-54859d0ed716.jfif',38000,'그레이지;소프트민트','S;M;L', 100,'photo-1447752875215-b2761acb3c5d.jfif;photo-1469474968028-56623f02e42e.jfif');
 insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, detailimagename)
-values('실키 여리핏 히든블라우스', 'shirt','blouse','image3.png',34900,5000,'아이보리;피치베이지;워터리블루;블랙',null, 100,'4231.jpg;copy-1642379566-2.jpg');
+values('실키 여리핏 히든블라우스', 'shirt','blouse','photo-1465146344425-f00d5f5c8f07.jfif;photo-1426604966848-d7adac402bff.jfif',34900,5000,'아이보리;피치베이지;워터리블루;블랙',null, 100,'photo-1475924156734-496f6cac6ec1.jfif;photo-1586348943529-beaae6c28db9.jfif');
 -- 장바구니
 insert into baskettable(id, productno, selectedcolor, selectedsize, amount) values('tester',1,'소프트민트','S',2);
 insert into baskettable(id, productno, selectedcolor, selectedsize, amount) values('tester',2,'아이보리',null,5);

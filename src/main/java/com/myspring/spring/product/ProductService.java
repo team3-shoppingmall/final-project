@@ -79,7 +79,7 @@ public class ProductService {
 				MultipartFile multipartFile = fileList.get(i);
 				FileOutputStream writer = new FileOutputStream(
 						"./images/product/" + productNo + "/product/" + multipartFile.getOriginalFilename());
-				System.out.println(multipartFile.getOriginalFilename());
+//				System.out.println(multipartFile.getOriginalFilename());
 				writer.write(multipartFile.getBytes());
 				writer.close();
 			}
@@ -87,7 +87,7 @@ public class ProductService {
 				MultipartFile multipartFile = fileList.get(i);
 				FileOutputStream writer = new FileOutputStream(
 						"./images/product/" + productNo + "/detail/" + multipartFile.getOriginalFilename());
-				System.out.println(multipartFile.getOriginalFilename());
+//				System.out.println(multipartFile.getOriginalFilename());
 				writer.write(multipartFile.getBytes());
 				writer.close();
 			}
@@ -100,39 +100,46 @@ public class ProductService {
 		return entity;
 	}
 
-	public ResponseEntity<?> updateProduct(ProductVO requestData, List<MultipartFile> file1,
-			List<MultipartFile> file2) {
-		ProductVO result = new ProductVO();
+	public ResponseEntity<?> updateProduct(ProductVO requestData, List<MultipartFile> fileList) {
 		ResponseEntity<?> entity = null;
 
 		try {
-			productMapper.updateProduct(requestData, result);
-//			int productno = result.getProductno();
+			int res = productMapper.updateProduct(requestData);
+			if (res == 0) {
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			File file;
 			File[] underDir;
-			FileOutputStream writer;
-			String[] path = { "/product/", "/detail/" };
 
-			if (file1 != null) {
-				file = new File("./images/product/" + requestData.getProductNo() + path[0]);
-				underDir = file.listFiles();
-				for (int i = 0; i < underDir.length; i++) {
-					underDir[i].delete();
-				}
-				writer = new FileOutputStream("./src/main/resources/images/product/" + requestData.getProductNo()
-						+ path[0] + file1.get(0).getOriginalFilename());
-				writer.write(file1.get(0).getBytes());
+//			폴더 내 모든 파일 삭제
+			file = new File("./images/product/" + requestData.getProductNo() + "/product/");
+			underDir = file.listFiles();
+			for (int i = 0; i < underDir.length; i++) {
+				underDir[i].delete();
+			}
+			file = new File("./images/product/" + requestData.getProductNo() + "/detail/");
+			underDir = file.listFiles();
+			for (int i = 0; i < underDir.length; i++) {
+				underDir[i].delete();
+			}
+
+			String[] imageName = requestData.getImageName().split(";");
+			String[] detailImageName = requestData.getDetailImageName().split(";");
+
+			for (int i = 0; i < imageName.length; i++) {
+				MultipartFile multipartFile = fileList.get(i);
+				FileOutputStream writer = new FileOutputStream("./images/product/" + requestData.getProductNo()
+						+ "/product/" + multipartFile.getOriginalFilename());
+//				System.out.println(multipartFile.getOriginalFilename());
+				writer.write(multipartFile.getBytes());
 				writer.close();
 			}
-			if (file2 != null) {
-				file = new File("./images/product/" + requestData.getProductNo() + path[1]);
-				underDir = file.listFiles();
-				for (int i = 0; i < underDir.length; i++) {
-					underDir[i].delete();
-				}
-				writer = new FileOutputStream("./images/product/" + requestData.getProductNo() + path[1]
-						+ file2.get(0).getOriginalFilename());
-				writer.write(file2.get(0).getBytes());
+			for (int i = imageName.length; i < detailImageName.length + imageName.length; i++) {
+				MultipartFile multipartFile = fileList.get(i);
+				FileOutputStream writer = new FileOutputStream("./images/product/" + requestData.getProductNo()
+						+ "/detail/" + multipartFile.getOriginalFilename());
+//				System.out.println(multipartFile.getOriginalFilename());
+				writer.write(multipartFile.getBytes());
 				writer.close();
 			}
 
@@ -147,6 +154,15 @@ public class ProductService {
 
 	public ResponseEntity<?> updateOnSale(int productNo) {
 		int res = productMapper.updateOnSale(productNo);
+		if (res == 0)
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(HttpStatus.OK);
+
+	}
+	
+	public ResponseEntity<?> deleteProduct(int productNo) {
+		int res = productMapper.deleteProduct(productNo);
 		if (res == 0)
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		else

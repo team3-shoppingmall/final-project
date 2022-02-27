@@ -28,6 +28,12 @@
                             <v-text-field hide-details v-model="product.discount"></v-text-field>
                         </td>
                     </tr>
+                    <tr v-if="pageID != undefined">
+                        <td>최종 가격</td>
+                        <td>
+                            <span :class="product.price - product.discount >= 0 ? 'black--text' : 'red--text'" hide-details>{{AddComma(product.price - product.discount)}}원</span>
+                        </td>
+                    </tr>
                     <tr>
                         <td>재고</td>
                         <td>
@@ -221,11 +227,11 @@ export default {
                 return;
             }
             if (!(this.product.price > 0 && (this.product.price == Math.round(this.product.price)) && this.product.price != '')) {
-                alert('상품 가격이 유효하지 않습니다')
+                alert('상품 가격이 유효하지 않습니다');
                 return;
             }
             if (!(this.product.amount >= 0 && (this.product.amount == Math.round(this.product.amount)) && this.product.amount != '')) {
-                alert('상품 수량이 유효하지 않습니다')
+                alert('상품 수량이 유효하지 않습니다');
                 return;
             }
             if (this.colorList.length == 0 && this.sizeList.length == 0) {
@@ -334,11 +340,19 @@ export default {
                 return;
             }
             if (!(this.product.price > 0 && (this.product.price == Math.round(this.product.price)) && this.product.price != '')) {
-                alert('상품 가격이 유효하지 않습니다')
+                alert('상품 가격이 유효하지 않습니다');
+                return;
+            }
+            if (!(this.product.discount > 0 && (this.product.discount == Math.round(this.product.discount)) && this.product.discount != '')) {
+                alert('할인 가격이 유효하지 않습니다');
+                return;
+            }
+            if (Number(this.product.discount) > Number(this.product.price)) {
+                alert('할인 가격이 상품 가격보다 높습니다');
                 return;
             }
             if (!(this.product.amount >= 0 && (this.product.amount == Math.round(this.product.amount)) && this.product.amount != '')) {
-                alert('상품 수량이 유효하지 않습니다')
+                alert('상품 수량이 유효하지 않습니다');
                 return;
             }
             if (this.colorList.length == 0 && this.sizeList.length == 0) {
@@ -404,11 +418,13 @@ export default {
             }
 
             let data = {
+                productNo: this.pageID,
                 productName: this.product.productName,
                 type1: type1,
                 type2: type2,
                 imageName: imageName,
                 price: this.product.price,
+                discount: this.product.discount,
                 color: color,
                 size: size,
                 amount: this.product.amount,
@@ -427,18 +443,18 @@ export default {
                 formData.append(`fileList`, this.detailImageFiles[i])
             }
             console.log(formData);
-            axios.post('/api/product/insertProduct', formData)
+            axios.patch('/api/product/updateProduct', formData)
                 .then(res => {
                     console.log(res.status);
-                    alert("상품을 추가하셨습니다");
+                    alert("상품을 수정하셨습니다");
                     this.$router.go();
                 }).catch(err => {
                     if (err.response.status === 404)
                         alert("error")
                 })
         },
-        getProduct() {
-            axios.get(`/api/product/getProduct/${this.pageID}`)
+        async getProduct() {
+            await axios.get(`/api/product/getProduct/${this.pageID}`)
                 .then(res => {
                     this.product = res.data;
                     this.typeSelected = this.product.type1 + ";" + this.product.type2;
@@ -486,7 +502,11 @@ export default {
             theBlob.lastModifiedDate = new Date();
             theBlob.name = fileName;
             return theBlob;
-        }
+        },
+        AddComma(num) {
+            var regexp = /\B(?=(\d{3})+(?!\d))/g;
+            return `${num}`.toString().replace(regexp, ",");
+        },
     },
     watch: {
         imageFiles(val) {

@@ -3,7 +3,7 @@
     <v-row justify="center">
         <v-col cols="9">
             <div class="text-h3">장바구니</div>
-            <v-data-table :headers="headers" :items="baskets" :options.sync="options" :server-items-length="totalDesserts" :loading="loading" hide-default-footer show-select="show-select" item-key="name" class="elevation-1">
+            <v-data-table :headers="headers" :items="baskets" :options.sync="options" :server-items-length="totalDesserts" :loading="loading" hide-default-footer show-select="show-select" item-key="name" class="elevation-1" no-data-text="장바구니가 비었습니다">
                 <template v-slot:[`item.info`]="{ item }">
                     <ProductDetailDisplay :productNo="item.productNo" />
                 </template>

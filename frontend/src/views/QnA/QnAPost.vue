@@ -1,9 +1,10 @@
 <template>
 <v-container>
+    {{qna}}
     <v-row justify="center">
         <v-col align-self="center" cols="7">
             <div class="text-h3">문의</div>
-            <div v-if="qna.productNo != 0 && qna.productNo != undefined">
+            <div v-if="qna.type == 'product' && qna.productNo != 0">
                 <ProductDetailDisplay :productNo="qna.productNo" />
             </div>
             <v-simple-table>
@@ -29,33 +30,16 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                <div v-html="qna.content"></div>
-                            </td>
-                        </tr>
-                        <tr v-if="image1 != ''">
-                            <td rowspan="5"> 파일 첨부 </td>
-                            <td>
-                                {{image1}}
-                            </td>
-                        </tr>
-                        <tr v-if="image2 != ''">
-                            <td>
-                                {{image2}}
-                            </td>
-                        </tr>
-                        <tr v-if="image3 != ''">
-                            <td>
-                                {{image3}}
-                            </td>
-                        </tr>
-                        <tr v-if="image4 != ''">
-                            <td>
-                                {{image4}}
-                            </td>
-                        </tr>
-                        <tr v-if="image5 != ''">
-                            <td>
-                                {{image5}}
+                                <v-row v-if="images != []">
+                                    <v-col cols="3" v-for="(image, idx) in images" :key="idx">
+                                        <v-img contain :src="`/api/qna/qnaImage/${pageID}/${image}`"></v-img>
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <v-col>
+                                        <div v-html="qna.content"></div>
+                                    </v-col>
+                                </v-row>
                             </td>
                         </tr>
                     </tbody>
@@ -64,21 +48,20 @@
             <v-divider></v-divider>
             <v-row justify="end" class="mt-3">
                 <v-col cols="auto">
-                    <v-btn @click="moveToBefore" outlined>목록</v-btn>
+                    <v-btn @click="moveToBefore" color="primary">목록</v-btn>
                 </v-col>
-                <v-col cols="auto" v-if="!qna.reply">
-                    <v-btn @click="moveToReply" outlined>답변</v-btn>
+                <v-col cols="auto" v-if="qna.reply">
+                    <v-btn @click="moveToReply" color="primary">답변보기</v-btn>
                 </v-col>
                 <v-col cols="auto" v-if="admin && (qna.qnaNo == qna.originalNo) && !qna.reply">
-                    <v-btn @click="moveToWriteReply" outlined>답변</v-btn>
+                    <v-btn @click="moveToWriteReply" color="primary">답변하기</v-btn>
                 </v-col>
                 <v-col cols="auto">
-                    <v-btn @click="moveToUpdate" outlined>수정</v-btn>
+                    <v-btn @click="moveToUpdate" color="primary">수정</v-btn>
                 </v-col>
                 <v-col cols="auto">
-                    <v-btn @click="deleteQnA" outlined>삭제</v-btn>
+                    <v-btn @click="deleteQnA" color="primary">삭제</v-btn>
                 </v-col>
-                {{qna}}
             </v-row>
         </v-col>
     </v-row>
@@ -105,26 +88,20 @@ export default {
             pageID: '',
             admin: true,
             qna: '',
-            image1: '',
-            image2: '',
-            image3: '',
-            image4: '',
-            image5: '',
+            images: [],
         }
     },
     methods: {
         getQnA() {
-            this.pageID = this.$route.params.id;
-            axios.get(`/api/qna/getqnabyqnaNo`, {
-                params: {
-                    qnaNo: this.pageID
-                }
-            }).then((res) => {
-                this.qna = res.data;
-                this.dataLoaded = true;
-            }).catch((err) => {
-                console.log(err);
-            })
+            this.dataLoaded = false;
+            axios.get(`/api/qna/getQna/${this.pageID}`)
+                .then((res) => {
+                    this.qna = res.data;
+                    this.images = this.qna.image.split(';');
+                    this.dataLoaded = true;
+                }).catch((err) => {
+                    console.log(err);
+                })
         },
         moveToBefore() {
             this.$router.go(-1);
@@ -154,22 +131,19 @@ export default {
                 this.$router.push(`/updatePost/qna/${this.qna.qnaNo}`);
         },
         deleteQnA() {
-            console.log(this.qna.qnaNo);
-            axios.delete(`/api/qna/deleteqna`, {
-                params: {
-                    qnaNo: this.qna.qnaNo
-                }
-            }).then(res => {
-                console.log(res.data);
-                alert("삭제되었습니다.");
-                this.$router.go(-1);
-            }).catch((err) => {
-                console.log(err);
-            })
+            axios.delete(`/api/qna/deleteqna/${this.qna.qnaNo}`)
+                .then(res => {
+                    console.log(res.data);
+                    alert("삭제되었습니다.");
+                    this.$router.go(-1);
+                }).catch((err) => {
+                    console.log(err);
+                })
         },
 
     },
     mounted() {
+        this.pageID = this.$route.params.id;
         this.getQnA();
     }
 }

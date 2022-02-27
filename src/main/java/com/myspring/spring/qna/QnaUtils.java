@@ -31,23 +31,18 @@ public class QnaUtils {
 					WHERE("type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply')");
 					break;
 				}
-				if (search.equals("productName")) {
+				if (searchWord != null && !searchWord.equals("")) {
 					AND();
 					String[] words = searchWord.split(" ");
 					for (int i = 0; i < words.length; i++) {
 						if (i > 0) {
 							OR();
 						}
-						WHERE("producttable.productName like " + "'%" + words[i] + "%'");
-					}
-				} else {
-					AND();
-					String[] words = searchWord.split(" ");
-					for (int i = 0; i < words.length; i++) {
-						if (i > 0) {
-							OR();
+						if (search.equals("productName")) {
+							WHERE("producttable.productName like " + "'%" + words[i] + "%'");
+						} else {
+							WHERE(search + " like " + "'%" + words[i] + "%'");
 						}
-						WHERE(search + " like " + "'%" + words[i] + "%'");
 					}
 				}
 				ORDER_BY("originalNo desc, qnaNo asc");
@@ -55,7 +50,7 @@ public class QnaUtils {
 				OFFSET(start);
 			}
 		};
-//	      System.out.println(sql.toString());
+//		System.out.println(sql.toString());
 		return sql.toString();
 	}
 
@@ -64,6 +59,7 @@ public class QnaUtils {
 			{
 				SELECT("count(*)");
 				FROM("qnatable");
+				LEFT_OUTER_JOIN("producttable on producttable.productNo = qnatable.productNo");
 				switch (type) {
 				case "product":
 					WHERE("type in ('general', 'product', 'productNotice', 'productReply', 'generalReply')");
@@ -78,19 +74,23 @@ public class QnaUtils {
 					WHERE("type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply')");
 					break;
 				}
-				if (searchWord != null) {
+				if (searchWord != null && !searchWord.equals("")) {
 					AND();
 					String[] words = searchWord.split(" ");
 					for (int i = 0; i < words.length; i++) {
 						if (i > 0) {
 							OR();
 						}
-						WHERE(search + " like " + "'%" + words[i] + "%'");
+						if (search.equals("productName")) {
+							WHERE("producttable.productName like " + "'%" + words[i] + "%'");
+						} else {
+							WHERE(search + " like " + "'%" + words[i] + "%'");
+						}
 					}
 				}
 			}
 		};
-//      System.out.println(sql.toString());
+//		System.out.println(sql.toString());
 		return sql.toString();
 	}
 
@@ -100,30 +100,32 @@ public class QnaUtils {
 				SELECT("*");
 				FROM("qnatable");
 				WHERE("productNo=" + productNo);
-				AND();
-				String[] words = searchWord.split(" ");
-				for (int i = 0; i < words.length; i++) {
-					if (i > 0) {
-						OR();
+				if (searchWord != null && !searchWord.equals("")) {
+					AND();
+					String[] words = searchWord.split(" ");
+					for (int i = 0; i < words.length; i++) {
+						if (i > 0) {
+							OR();
+						}
+						WHERE(search + " like " + "'%" + words[i] + "%'");
 					}
-					WHERE(search + " like " + "'%" + words[i] + "%'");
 				}
 				ORDER_BY("originalNo desc, qnaNo asc");
 				LIMIT(perPage);
 				OFFSET(start);
 			}
 		};
-	//	System.out.println(sql.toString());
+//		System.out.println(sql.toString());
 		return sql.toString();
 	}
-	
+
 	public String getQnaCountByProductNo(String search, String searchWord, int productNo) {
 		SQL sql = new SQL() {
 			{
 				SELECT("count(*)");
 				FROM("qnatable");
 				WHERE("productNo=" + productNo);
-				if (searchWord != null) {
+				if (searchWord != null && !searchWord.equals("")) {
 					AND();
 					String[] words = searchWord.split(" ");
 					for (int i = 0; i < words.length; i++) {
@@ -135,7 +137,7 @@ public class QnaUtils {
 				}
 			}
 		};
-      System.out.println(sql.toString());
+//		System.out.println(sql.toString());
 		return sql.toString();
 	}
 

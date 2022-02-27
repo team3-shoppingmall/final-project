@@ -1,11 +1,13 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
             <template #[`item.productName`]="{item}">
-                <div class="text-left">
-                    {{ item.productName }}
-                </div>
+                <v-btn text :to="`/productDetail/${item.productNo}`" v-if="item.productNo > 0">
+                    <div class="text-truncate" style="max-width: 250px;">
+                        {{ item.productName }}
+                    </div>
+                </v-btn>
             </template>
             <template #[`item.type`]="{item}">
                 <div class="text-left">
@@ -13,7 +15,7 @@
                 </div>
             </template>
             <template #[`item.id`]="{item}">
-                <div class="text-left">
+                <div>
                     <HideId :id="item.id" />
                 </div>
             </template>
@@ -29,18 +31,18 @@
         <v-col cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
                 <v-col cols="4">
-                    <v-select :items="searches" v-model="search"></v-select>
+                    <v-select :items="searches" v-model="search" hide-details></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord"></v-text-field>
+                    <v-text-field v-model="searchWord" hide-details></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon @click="getQnA">검색</v-btn>
+                    <v-btn @click="getQnA" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
         <v-col cols="auto">
-            <v-btn :to="'/writePost/productQnA'" outlined>글쓰기</v-btn>
+            <v-btn :to="'/writePost/productQnA'" color="primary">글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -113,7 +115,7 @@ export default {
     },
     methods: {
         getQnA() {
-            this.loading = true
+            this.loading = true;
             const {
                 page,
                 itemsPerPage
@@ -129,7 +131,6 @@ export default {
                     type: link
                 }
             }).then(res => {
-                console.log(res.data);
                 this.contents = res.data.qnaList;
                 this.totalContents = res.data.count;
                 this.loading = false;

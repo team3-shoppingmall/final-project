@@ -135,15 +135,15 @@ public class QnaService {
 
 	}
 
-	//댓글 등록 시 원글에 productNo가 있을 때 댓글 productNo도 넣어줘야함 =====
+	// 댓글 등록 시 원글에 productNo가 있을 때 댓글 productNo도 넣어줘야함 =====
 	// 댓글 등록 - originalNo 받아서 reply = true로 바꿔주기
 	public ResponseEntity<?> insertReply(QnaVO qnaVO) {
 		int res = qnaMapper.insertReply(qnaVO);
 		int originalNo = qnaVO.getOriginalNo();
 		int resReply = qnaMapper.updateReplyTrue(originalNo);
-		
+
 		QnaVO qna = qnaMapper.getQna(originalNo);
-		if(qna.getProductNo() != 0) {
+		if (qna.getProductNo() != 0) {
 			qnaVO.setProductNo(qna.getProductNo());
 		}
 
@@ -229,17 +229,11 @@ public class QnaService {
 		int start = (page - 1) * perPage;
 		List<QnaAndProductVO> qnaList = qnaMapper.getQnaListByType(start, perPage, search, searchWord, type);
 		int count = qnaMapper.getQnaCountByType(search, searchWord, type);
-		
 
-		if (qnaList == null || count == 0) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		} else {
-			Map<String, Object> resMap = new HashMap<>();
-			resMap.put("qnaList", qnaList);
-			resMap.put("count", count);
-			return new ResponseEntity<>(resMap, HttpStatus.OK);
-		}
-
+		Map<String, Object> resMap = new HashMap<>();
+		resMap.put("qnaList", qnaList);
+		resMap.put("count", count);
+		return new ResponseEntity<>(resMap, HttpStatus.OK);
 	}
 
 	// originalNo로 조회
@@ -252,21 +246,18 @@ public class QnaService {
 		}
 	}
 
-	//productDetail qna 불러오기
+	// productDetail qna 불러오기
 	public ResponseEntity<?> getQnaListByProductNo(int page, int perPage, String search, String searchWord, String type,
 			int productNo) {
 		int start = (page - 1) * perPage;
 		List<QnaVO> productQnaList = qnaMapper.getQnaListByProductNo(start, perPage, search, searchWord, productNo);
 		int count = qnaMapper.getQnaCountByProductNo(search, searchWord, productNo);
-		if (productQnaList == null || count == 0) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		} else {
-			Map<String, Object> resMap = new HashMap<>();
-			resMap.put("productQnaList", productQnaList);
-			resMap.put("count", count);
-			return new ResponseEntity<>(resMap, HttpStatus.OK);
-		}
-		
+
+		Map<String, Object> resMap = new HashMap<>();
+		resMap.put("productQnaList", productQnaList);
+		resMap.put("count", count);
+		return new ResponseEntity<>(resMap, HttpStatus.OK);
+
 	}
 
 //	//기간으로 문의 검색(일주일)

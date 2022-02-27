@@ -2,16 +2,22 @@
 <v-container>
     <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
         <template #[`item.image`]="{item}">
-            <div class="text-left">
-                <v-dialog width="500">
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.productNo}/${item.image.split(';')[0]}`"></v-img>
-                    </template>
-                    <v-card>
-                        <v-img :src="`/api/review/reviewImage/${item.productNo}/${item.image}`"></v-img>
-                    </v-card>
-                </v-dialog>
-            </div>
+            <v-row justify="center">
+                <v-col cols="auto">
+                    <v-carousel :show-arrows="false" cycle interval="3000" hide-delimiters style="height:100px;width:100px">
+                        <v-carousel-item v-for="(image,i) in item.image.split(';')" :key="i">
+                            <v-dialog max-width="700">
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.productNo}/${image}`" contain></v-img>
+                                </template>
+                                <v-card>
+                                    <v-img :src="`/api/review/reviewImage/${item.productNo}/${image}`"></v-img>
+                                </v-card>
+                            </v-dialog>
+                        </v-carousel-item>
+                    </v-carousel>
+                </v-col>
+            </v-row>
         </template>
         <template #[`item.productName`]="{item}">
             <v-btn text :to="`/productDetail/${item.productNo}`">

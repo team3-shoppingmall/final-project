@@ -1,12 +1,14 @@
 <template>
 <v-container class="mt-5">
-    <v-row justify="center">
+    <v-row justify="center" v-if="dataLoaded">
         <v-col cols="9">
-            <v-row style="height:600px">
+            <v-row>
                 <v-col cols="6" class="pa-5">
                     <v-row>
                         <v-col align="center">
-                            <v-img min-height="200" max-height="500" max-width="500" :src="`https://picsum.photos/seed/1/500/500`"></v-img>
+                            <v-carousel :show-arrows="false" cycle interval="2000" hide-delimiters>
+                                <v-carousel-item v-for="(image,i) in images" :key="i" :src="`/api/product/productImage/${pageID}/${image}`" contain></v-carousel-item>
+                            </v-carousel>
                         </v-col>
                     </v-row>
                 </v-col>
@@ -18,48 +20,51 @@
                                     <td colspan="3">
                                         <div class="text-h6">
                                             {{product.productName}}
-                                            - <span v-if="sizeOption != ''">{{sizeOption.length}} size</span>
-                                            <span v-if="sizeOption == ''">{{colorOption.length}} color</span>
+                                            - <span v-if="sizeOption != null">{{sizeOption.length}} size</span>
+                                            <span v-if="sizeOption == null">{{colorOption.length}} color</span>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td style="width:20%"> 가격 </td>
-                                    <td colspan="2" v-if="product.discount != 0" class="text-decoration-line-through">
+                                    <td colspan="2" v-if="product.discount != 0 && product.amount > 0 && product.onSale == true" class="text-decoration-line-through">
                                         {{product.price}}원
                                     </td>
-                                    <td colspan="2" v-if="product.discount == 0">
+                                    <td colspan="2" v-if="product.discount == 0 && product.amount > 0 && product.onSale == true">
                                         {{product.price}}원
+                                    </td>
+                                    <td colspan="2" v-if="product.amount == 0 || product.onSale == false" class="red--text">
+                                        품절 상품입니다
                                     </td>
                                 </tr>
-                                <tr v-if="product.discount != 0">
+                                <tr v-if="product.discount != 0 && product.amount > 0 && product.onSale == true">
                                     <td style="width:10%"> 할인가 </td>
                                     <td colspan="2">
                                         {{product.price-product.discount}}원
                                     </td>
                                 </tr>
-                                <tr v-if="colorOption != ''">
+                                <tr v-if="colorOption != null">
                                     <td style="width:10%"> COLOR </td>
                                     <td colspan="2">
                                         <!-- size 있을 때 -->
-                                        <v-chip-group v-model="colorSelection" active-class="deep-purple--text text--accent-4" v-if="sizeOption != ''">
-                                            <v-chip label outlined v-for="color in colorOption" :key="color" :value="color">
+                                        <v-chip-group v-model="colorSelection" active-class="deep-purple--text text--accent-4" v-if="sizeOption != null">
+                                            <v-chip label outlined v-for="color in colorOption" :key="color" :value="color" :disabled="product.amount == 0 || product.onSale == false">
                                                 {{ color }}
                                             </v-chip>
                                         </v-chip-group>
                                         <!-- size 없을 때 -->
-                                        <v-chip-group active-class="deep-purple--text text--accent-4" v-if="sizeOption == ''">
-                                            <v-chip label outlined v-for="color in colorOption" :key="color" :value="color" @click="addSelected(color, null)">
+                                        <v-chip-group active-class="deep-purple--text text--accent-4" v-if="sizeOption == null">
+                                            <v-chip label outlined v-for="color in colorOption" :key="color" :value="color" @click="addSelected(color, null)" :disabled="product.amount == 0 || product.onSale == false">
                                                 {{ color }}
                                             </v-chip>
                                         </v-chip-group>
                                     </td>
                                 </tr>
-                                <tr v-if="sizeOption != ''">
+                                <tr v-if="sizeOption != null">
                                     <td style="width:10%"> SIZE </td>
                                     <td colspan="2">
                                         <v-chip-group active-class="deep-purple--text text--accent-4">
-                                            <v-chip label outlined v-for="size in sizeOption" :key="size" :value="size" :disabled="colorOption != '' && colorSelection == ''" @click="addSelected(colorSelection, size)">
+                                            <v-chip label outlined v-for="size in sizeOption" :key="size" :value="size" :disabled="(colorOption != null && colorSelection == null) || product.amount == 0 || product.onSale == false" @click="addSelected(colorSelection, size)">
                                                 {{ size }}
                                             </v-chip>
                                         </v-chip-group>
@@ -100,12 +105,12 @@
                                     <td colspan="3">
                                         <v-row justify="center">
                                             <v-col cols="auto">
-                                                <v-btn @click="buyItNow">
+                                                <v-btn @click="buyItNow" :disabled="product.amount == 0 || product.onSale == false">
                                                     BUY IT NOW
                                                 </v-btn>
                                             </v-col>
                                             <v-col cols="auto">
-                                                <v-btn @click="addToBasket">
+                                                <v-btn @click="addToBasket" :disabled="product.amount == 0 || product.onSale == false">
                                                     ADD TO Basket
                                                 </v-btn>
                                             </v-col>
@@ -139,8 +144,10 @@
             </v-row>
 
             <v-row justify="center">
-                <v-col v-for="(image, idx) in images" :key="idx" cols="9">
-                    <v-img max-height="300" max-width="auto" :src="`https://picsum.photos/seed/${randomNumber(idx)}/1000/500`"></v-img>
+                <v-col v-for="(image, idx) in detailImages" :key="idx" cols="9">
+                    <v-lazy :options="{threshold: .5}" min-height="200" transition="fade-transition">
+                        <v-img max-height="auto" max-width="auto" :src="`/api/product/detailImage/${pageID}/${image}`"></v-img>
+                    </v-lazy>
                 </v-col>
             </v-row>
 
@@ -160,78 +167,10 @@
             </v-row>
 
             <v-row justify="center">
-                <v-col cols="9">
-                    <v-simple-table>
-                        <template slot="default">
-                            <tbody>
-                                <tr>
-                                    <td colspan="2"></td>
-                                </tr>
-                                <tr>
-                                    <td style="width:20%" class="pa-5"> 상품 결제정보 </td>
-                                    <td class="pa-5">
-                                        <div>
-                                            <p>고액결제의 경우 안전을 위해 카드사에서 확인전화를 드릴 수도 있습니다. 확인과정에서 도난 카드의 사용이나 타인 명의의 주문등 정상적인 주문이 아니라고 판단될 경우 임의로 주문을 보류 또는 취소할 수 있습니다.</p>
-
-                                            <p>무통장 입금은 상품 구매 대금은 PC뱅킹, 인터넷뱅킹, 텔레뱅킹 혹은 가까운 은행에서 직접 입금하시면 됩니다.<br>
-                                                주문 시 입력한 입금자명과 실제입금자의 성명이 반드시 일치하여야 하며, 7일 이내로 입금을 하셔야 하며 입금되지 않은 주문은 자동취소 됩니다.</p>
-
-                                            <p>A/S 책임자 : 070-1234-5678 Spring 고객센터<br>
-                                                품질보증기준: 전자상거래 소비자 보호법에 의거하여 소비자 청약철회 가능한 기준에 따름.<br>
-                                                구매자가 미성년자일 경우 법정 대리인이 계약에 동의하지 않을 때 구매를 취소할 수 있습니다.</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width:20%" class="pa-5"> 배송정보 </td>
-                                    <td class="pa-5">
-                                        <div>
-                                            <p>Spring은 대한민국 택배 no.1 우체국택배를 이용하여<br>
-                                                가장 안전하고, 신속하게 배송하여 드립니다 :)<br>
-                                                대부분 출고 다음날에 바로 도착하며 (주말 제외)<br>
-                                                지역 택배 기사님들의 일정과 기상상황에 따라 변동이 있을 수 있습니다.<br>
-                                                기본 배송 준비일은 입고지연 상품 제외, 2~5일 정도가 소요되고 있습니다.</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width:20%" class="pa-5"> 교환 및 반품정보 </td>
-                                    <td class="pa-5">
-                                        <div>
-                                            <p>[교환/반품 안내]<br>
-                                                물품 수령 후(택배 도착일자 기준) 7일 이내에 Q&amp;A "배송 후 교환/반품" 게시판 또는 고객센터 [070-1234-5678]
-                                                로 반드시 접수 해주세요. 글쓰기시 양식이 자동으로 등록되어 있으며, 사전에 신청해 주신 상품에 한해서만 교환/반품이 가능합니다.<br>
-                                                접수 시 Spring에서 우체국 택배 회수접수를 도와드리고 있습니다.
-                                            </p>
-
-                                            <p>
-                                                *패킹하여 보내실 때는 물품 수령시와 동일하게 포장해 주세요.<br>
-                                                택에 손상이 있는 경우에는 반품과 교환이 모두 불가합니다. <br>
-                                                성함,주소,전화번호,보내시는 상품,사유등 반품카드 양식에 맞게 적어 보내주셔야 처리가 가능합니다.
-                                            </p>
-
-                                            <p>보내시는 주소지 : 서울시 동대문구 천호대로4 동대문우체국 소포실 물류창고</p>
-
-                                            <p>
-                                                &lt;교환반품 불가사항&gt; <br>
-                                                - 상품 수령 후 7일 이상 경과된 경우 <br>
-                                                - 상품 구매시 교환/환불 불가능이 명시되어 있는경우 <br>
-                                                - 사용 흔적(집냄새,향수냄새,체취) / 텍 제거 및 바코드 훼손, 오염이 발견된 상품 <br>
-                                                - 세일상품
-                                            </p>
-
-                                            <p>-배송시 생긴 구김, 마감 박음질, 제작과정에서 발생하는 냄새나 초크자국 등 대량생산으로 인해 생긴 사유는 불량으로 간주되지 않습니다.</p>
-
-                                            <p>*불량상품의 재발송 시 왕복배송비는 Spring이 부담합니다.</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2"></td>
-                                </tr>
-                            </tbody>
-                        </template>
-                    </v-simple-table>
+                <v-col cols="10">
+                    <v-lazy :options="{threshold: .5}" min-height="200" transition="fade-transition">
+                        <Guide />
+                    </v-lazy>
                 </v-col>
             </v-row>
 
@@ -250,9 +189,11 @@
                 </v-col>
             </v-row>
 
-            <v-row>
-                <v-col>
-                    <ProductDetailReview :productNo="pageID" />
+            <v-row justify="center">
+                <v-col cols="10">
+                    <v-lazy v-model="isActive" :options="{threshold: .5}" min-height="1210" transition="fade-transition">
+                        <ProductDetailReview :productNo="pageID" />
+                    </v-lazy>
                 </v-col>
             </v-row>
 
@@ -271,9 +212,11 @@
                 </v-col>
             </v-row>
 
-            <v-row>
-                <v-col>
-                    <ProductDetailQnA :productNo="pageID" />
+            <v-row justify="center">
+                <v-col cols="10">
+                    <v-lazy v-model="isActive" :options="{threshold: .5}" min-height="200" transition="fade-transition">
+                        <ProductDetailQnA :productNo="pageID" />
+                    </v-lazy>
                 </v-col>
             </v-row>
         </v-col>
@@ -283,29 +226,33 @@
 
 <script>
 import axios from 'axios'
-import ProductDetailReview from '@/components/ProductDetailReview.vue'
+import Guide from '@/components/Guide.vue'
 import ProductDetailQnA from '@/components/ProductDetailQnA.vue'
+import ProductDetailReview from '@/components/ProductDetailReview.vue'
 export default {
     components: {
-        ProductDetailReview,
+        Guide,
         ProductDetailQnA,
+        ProductDetailReview,
     },
     data() {
         return {
-            pageID: '',
-            product: '',
-            colorOption: '',
-            colorSelection: '',
-            sizeOption: '',
-            images: [{}, {}, {}, {}, {}, {}, {}, {}, ],
+            dataLoaded: false,
+            isActive: false,
+            pageID: null,
+            product: null,
+            colorOption: null,
+            colorSelection: null,
+            sizeOption: null,
             selected: [],
+            images: [],
+            detailImages: [],
             totalPrice: 0,
             number: 0,
             numberRule: val => {
                 if (val == '') return '개수를 입력해주세요'
                 return true
-            }
-
+            },
         }
     },
     methods: {
@@ -313,18 +260,21 @@ export default {
             return Math.floor(Math.random() * 100) + count;
         },
         getProudct() {
+            this.dataLoaded = false;
             axios.get(`/api/product/getProduct/${this.pageID}`).then(res => {
-                if (res.status == 200) {
-                    this.product = res.data;
-                    if (this.product.color != null) {
-                        this.colorOption = this.product.color.split(';');
-                    }
-                    if (this.product.size != null) {
-                        this.sizeOption = this.product.size.split(';');
-                    }
-                } else {
-                    console.log(res.status);
+                this.product = res.data;
+                if (this.product.color != null) {
+                    this.colorOption = this.product.color.split(';');
                 }
+                if (this.product.size != null) {
+                    this.sizeOption = this.product.size.split(';');
+                }
+                this.images = this.product.imageName.split(';');
+                this.detailImages = this.product.detailImageName.split(';');
+                this.dataLoaded = true;
+            }).catch(err => {
+                console.log(err);
+                this.dataLoaded = true;
             })
         },
         addSelected(color, size) {
@@ -351,7 +301,6 @@ export default {
         },
         amountFilter() {
             let amount = 0;
-            console.log(this.selected);
             for (let i = 0; i < this.selected.length; i++) {
                 console.log(this.selected[i].amount);
                 if (this.selected[i].amount > 0 && this.selected[i].amount == Math.round(this.selected[i].amount)) {
@@ -365,6 +314,10 @@ export default {
             this.totalPrice = amount * (this.product.price - this.product.discount);
         },
         buyItNow() {
+            if (this.selected.length == 0) {
+                alert('구매할 상품이 없습니다');
+                return;
+            }
             this.$router.push({
                 name: "Payment",
                 params: {
@@ -411,9 +364,16 @@ export default {
             });
         },
     },
+    watch: {
+        '$route'() {
+            this.pageID = this.$route.params.id;
+            this.getProudct();
+        }
+    },
     mounted() {
         this.pageID = this.$route.params.id;
         this.getProudct();
+
     }
 }
 </script>

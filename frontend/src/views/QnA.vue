@@ -1,7 +1,7 @@
 <template>
 <v-container>
-    <v-row justify="center">
-        <v-col xs="12" sm="12" md="12" lg="9" xl="8">
+    <v-row justify="center" class="mt-1">
+        <v-col xs="12" sm="12" md="12" lg="9" xl="9">
             <div class="text-h3">{{pagename}}</div>
             <v-row justify="center">
                 <v-col cols="auto">
@@ -17,7 +17,7 @@
                     <v-btn :to="'/qna/afterDeliveryQnA'">배송 후 교환/반품</v-btn>
                 </v-col>
             </v-row>
-            <router-view></router-view>
+            <router-view class="mt-5"></router-view>
         </v-col>
     </v-row>
 </v-container>

@@ -1,13 +1,13 @@
 <template>
 <v-container fluid>
     <v-row justify="center">
-        <v-col cols="9">
+        <v-col>
             <MyPageReview class="mt-0" />
         </v-col>
     </v-row>
     <v-divider class="my-5"></v-divider>
     <v-row justify="center">
-        <v-col cols="9">
+        <v-col>
             <MyPageQnA class="mt-0" />
         </v-col>
     </v-row>

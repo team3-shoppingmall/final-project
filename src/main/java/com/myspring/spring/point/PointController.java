@@ -13,29 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/point")
 public class PointController {
-	private PointService productService;
+	private PointService pointService;
 
 	@Autowired
-	public PointController(PointService productService) {
-		this.productService = productService;
+	public PointController(PointService pointService) {
+		this.pointService = pointService;
 	}
 	
-	// 멤버 등록
-	@PostMapping(value = "/insert")
-	public ResponseEntity<?> insertMember(@RequestBody PointVO member) {
-		productService.insertMember(member);
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
-	
-	// 전체 멤버 조회
-	@GetMapping(value = "/getAllmembers")
-	public ResponseEntity<?> getAllmembers() {
-		return 	productService.getAllmembers();
-	}
-	
-	// 아이디로 멤버 조회
-	@GetMapping(value = "/getMember/{id}")
-	public ResponseEntity<?> getMember(@PathVariable("id") String id) {
-		return 	productService.getMember(id);
+	//전체 조회
+    @GetMapping("/getAll")
+    public ResponseEntity<?> getPointAll() {
+    	return pointService.getPointAll();
 	}
 }

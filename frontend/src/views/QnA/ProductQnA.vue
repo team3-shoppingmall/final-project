@@ -1,11 +1,13 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
-            <template #[`item.productNo`]="{item}">
-                <div class="text-left">
-                    <ProductNameDisplay :productNo="item.productNo" />
-                </div>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
+            <template #[`item.productName`]="{item}">
+                <v-btn text :to="`/productDetail/${item.productNo}`" v-if="item.productNo > 0">
+                    <div class="text-truncate" style="max-width: 250px;">
+                        {{ item.productName }}
+                    </div>
+                </v-btn>
             </template>
             <template #[`item.type`]="{item}">
                 <div class="text-left">
@@ -13,7 +15,7 @@
                 </div>
             </template>
             <template #[`item.id`]="{item}">
-                <div class="text-left">
+                <div>
                     <HideId :id="item.id" />
                 </div>
             </template>
@@ -29,18 +31,18 @@
         <v-col cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
                 <v-col cols="4">
-                    <v-select :items="searches" v-model="search"></v-select>
+                    <v-select :items="searches" v-model="search" hide-details></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord"></v-text-field>
+                    <v-text-field v-model="searchWord" hide-details></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon @click="getQnA">검색</v-btn>
+                    <v-btn @click="getQnA" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
         <v-col cols="auto">
-            <v-btn :to="'/writePost/productQnA'" outlined>글쓰기</v-btn>
+            <v-btn :to="'/writePost/productQnA'" color="primary">글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -51,18 +53,17 @@ import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 import QnATitleDisplay from '@/components/QnATitleDisplay.vue'
-import ProductNameDisplay from '@/components/ProductNameDisplay.vue'
 export default {
     components: {
         HideId,
         DateDisplay,
         QnATitleDisplay,
-        ProductNameDisplay,
     },
     data() {
         return {
             totalContents: 0,
             contents: [],
+            nameList: [],
             options: {},
             loading: true,
             headers: [{
@@ -74,7 +75,7 @@ export default {
                 },
                 {
                     text: '상품명',
-                    value: 'productNo',
+                    value: 'productName',
                     width: '20%',
                     align: 'center',
                     divider: true
@@ -101,21 +102,12 @@ export default {
                 },
             ],
             searches: [{
-                    text: '상품명',
-                    value: 'productname'
-                }, {
-                    text: '제목',
-                    value: 'title'
-                },
-                {
-                    text: '내용',
-                    value: 'content'
-                },
-                {
-                    text: '작성자',
-                    value: 'id'
-                }
-            ],
+                text: '상품명',
+                value: 'productName'
+            }, {
+                text: '작성자',
+                value: 'id'
+            }],
             search: 'id',
             searchWord: '',
 
@@ -123,33 +115,26 @@ export default {
     },
     methods: {
         getQnA() {
-            this.loading = true
+            this.loading = true;
             const {
                 page,
                 itemsPerPage
             } = this.options
             let link = document.location.href;
             link = link.slice(26, link.length - 3);
-            axios.get( `/api/qna/getproductAll`, {
-                    params: {
-                        page: page,
-                        perPage: itemsPerPage,
-                        search: this.search,
-                        searchWord: this.searchWord,
-                    }
-                }).then(res => {
-                    this.contents = res.data;
-                    axios.get('/api/qna/getCount', {
-                            params: {
-                                search: this.search,
-                                searchWord: this.searchWord,
-                                type: link
-                            }
-                        }).then(res => {
-                            this.totalContents = res.data;
-                            this.loading = false
-                        })
-                })
+            axios.get(`/api/qna/getQnaListByType`, {
+                params: {
+                    page: page,
+                    perPage: itemsPerPage,
+                    search: this.search,
+                    searchWord: this.searchWord,
+                    type: link
+                }
+            }).then(res => {
+                this.contents = res.data.qnaList;
+                this.totalContents = res.data.count;
+                this.loading = false;
+            })
         },
         moveto(item) {
             this.$router.push(`/qna/${item.qnaNo}`)
@@ -167,4 +152,5 @@ export default {
 </script>
 
 <style scoped>
+
 </style>

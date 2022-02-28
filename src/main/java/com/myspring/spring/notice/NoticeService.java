@@ -44,14 +44,11 @@ public class NoticeService {
 		int count = noticeMapper.getCount(search, searchWord);
 		List<NoticeVO> noticeList = noticeMapper.getNotice(start, perPage, search, searchWord);
 		
-		if (noticeList == null || count == 0)
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		else {
 			Map<String, Object> resMap = new HashMap<>();
 			resMap.put("noticeList", noticeList);
 			resMap.put("count", count);
 			return new ResponseEntity<>(resMap, HttpStatus.OK);
-		}
+		
 	}
 	
 
@@ -87,6 +84,7 @@ public class NoticeService {
 		
 	// 공지사항 삭제
 	public ResponseEntity<?> deleteNotice(int noticeNo) {
+		System.out.println(noticeNo);
 		int res = noticeMapper.deleteNotice(noticeNo);
 
 		if (res == 0)

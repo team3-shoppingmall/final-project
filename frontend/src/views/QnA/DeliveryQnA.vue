@@ -1,14 +1,14 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
             <template #[`item.type`]="{item}">
                 <div class="text-left">
                     <QnATitleDisplay :type="item.type" />
                 </div>
             </template>
             <template #[`item.id`]="{item}">
-                <div class="text-left">
+                <div>
                     <HideId :id="item.id" />
                 </div>
             </template>
@@ -24,18 +24,18 @@
         <v-col cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
                 <v-col cols="4">
-                    <v-select :items="searches" v-model="search"></v-select>
+                    <v-select :items="searches" v-model="search" hide-details></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord"></v-text-field>
+                    <v-text-field v-model="searchWord" hide-details></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon @click="getQnA">검색</v-btn>
+                    <v-btn @click="getQnA" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
         <v-col cols="auto">
-            <v-btn :to="'/writePost/deliveryQnA'" outlined>글쓰기</v-btn>
+            <v-btn :to="'/writePost/deliveryQnA'" color="primary">글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -91,51 +91,35 @@ export default {
                 },
             ],
             searches: [{
-                    text: '제목',
-                    value: 'title'
-                },
-                {
-                    text: '내용',
-                    value: 'content'
-                },
-                {
-                    text: '작성자',
-                    value: 'id'
-                }
-            ],
+                text: '작성자',
+                value: 'id'
+            }],
             search: 'id',
             searchWord: '',
         }
     },
     methods: {
         getQnA() {
-            this.loading = true
+            this.loading = true;
             const {
                 page,
                 itemsPerPage
             } = this.options
             let link = document.location.href;
             link = link.slice(26, link.length - 3);
-            axios.get( `/api/qna/getdeliveryAll`, {
-                    params: {
-                        page: page,
-                        perPage: itemsPerPage,
-                        search: this.search,
-                        searchWord: this.searchWord,
-                    }
-                }).then(res => {
-                    this.contents = res.data;
-                    axios.get('/api/qna/getCount', {
-                            params: {
-                                search: this.search,
-                                searchWord: this.searchWord,
-                                type: link
-                            }
-                        }).then(res => {
-                            this.totalContents = res.data;
-                            this.loading = false
-                        })
-                })
+            axios.get(`/api/qna/getQnaListByType`, {
+                params: {
+                    page: page,
+                    perPage: itemsPerPage,
+                    search: this.search,
+                    searchWord: this.searchWord,
+                    type: link
+                }
+            }).then(res => {
+                this.contents = res.data.qnaList;
+                this.totalContents = res.data.count;
+                this.loading = false;
+            })
         },
         moveto(item) {
             this.$router.push(`/qna/${item.qnaNo}`)
@@ -153,11 +137,4 @@ export default {
 </script>
 
 <style scoped>
-table td {
-    border-right: 1px solid #dddddd;
-}
-
-table td:last-child {
-    border-right: none
-}
 </style>

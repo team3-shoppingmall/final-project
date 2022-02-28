@@ -705,7 +705,7 @@ export default {
                     formData.append(`fileList`, this.imageFiles[i])
                 }
             }
-            axios.post(`/api/qna/updateqna`, formData)
+            axios.patch(`/api/qna/updateqna`, formData)
                 .then(() => {
                     alert("수정이 완료되었습니다.");
                     this.$router.go(-1);

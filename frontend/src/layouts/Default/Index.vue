@@ -45,6 +45,18 @@
             </v-row>
         </v-col>
     </v-main>
+    <v-col  style="position:fixed; top:63%; right:10px">
+            <v-row justify="end" class="mb-0">
+                <v-btn  fab dark elevation="2" right color="#FF8EA0" :to="'/'">
+                    <v-icon>mdi-home</v-icon>
+                </v-btn>
+            </v-row>
+            <v-row justify="end">
+                <v-btn v-scroll="onScroll" v-show="fab" fab dark elevation="2" right color="#FF8EA0" @click="toTop">
+                    <v-icon>mdi-chevron-up</v-icon>
+                </v-btn>
+            </v-row>
+        </v-col>
     <v-footer color="primary lighten-1" padless>
         <Footer />
     </v-footer>

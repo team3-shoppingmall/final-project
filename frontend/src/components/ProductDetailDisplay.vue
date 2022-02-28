@@ -1,8 +1,8 @@
 <template>
-<v-card outlined class="ma-5">
+<v-card outlined class="ma-5" v-if="dataLoaded">
     <v-list-item three-line>
         <v-list-item-avatar tile size="100" color="grey">
-            <v-img :src="`/api/product/productImage/${product.productNo}/${product.imageName.split(';')[0]}`"></v-img>
+            <v-img :src="`/api/product/productImage/${product.productNo}/${image}`"></v-img>
         </v-list-item-avatar>
         <v-list-item-content>
             <v-list-item-title class="text-h5 mb-1">
@@ -28,24 +28,29 @@ export default {
             product: '',
             sizeOption: '',
             colorOption: '',
+            image: '',
+            dataLoaded: false,
         }
     },
     props: ['productNo'],
     methods: {
         getProduct() {
+            this.dataLoaded = false;
             axios.get(`/api/product/getProduct/${this.productNo}`).then(res => {
-                if (res.status == 200) {
-                    this.product = res.data;
-                    if (this.product.color != null) {
-                        this.colorOption = this.product.color.split(';');
-                    }
-                    if (this.product.size != null) {
-                        this.sizeOption = this.product.size.split(';');
-                    }
-                } else {
-                    this.product = 'error';
+                this.product = res.data;
+                this.image = this.product.imageName.split(';')[0];
+                if (this.product.color != null) {
+                    this.colorOption = this.product.color.split(';');
                 }
-            })
+                if (this.product.size != null) {
+                    this.sizeOption = this.product.size.split(';');
+                }
+                console.log(this.product);
+            }).catch(() => {
+                this.product = [];
+            }).finally(
+                this.dataLoaded = true,
+            )
         }
     },
     mounted() {

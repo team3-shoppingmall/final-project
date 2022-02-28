@@ -1,32 +1,22 @@
 <template>
-    <v-container>
-    
-        <div>
-    
-            <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
-    
-                <template #[`item.type`]="{item}">
-    
-                    <div class="text-left">
-    
-                        <QnATitleDisplay :type="item.type" />
-    
-                    </div>
-</template>
-<template #[`item.id`]="{item}">
-    <div class="text-left">
-    
-        <HideId :id="item.id" />
-    
-    </div>
-</template>
-<template #[`item.regDate`]="{item}">
+<v-container>
     <div>
-    
-        <DateDisplay :regDate="item.regDate" />
-    
-    </div>
-</template>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort no-data-text="검색된 자료가 없습니다">
+            <template #[`item.type`]="{item}">
+                <div class="text-left">
+                    <QnATitleDisplay :type="item.type" />
+                </div>
+            </template>
+            <template #[`item.id`]="{item}">
+                <div>
+                    <HideId :id="item.id" />
+                </div>
+            </template>
+            <template #[`item.regDate`]="{item}">
+                <div>
+                    <DateDisplay :regDate="item.regDate" />
+                </div>
+            </template>
         </v-data-table>
     </div>
     <v-row align="center" justify="space-between">
@@ -70,49 +60,33 @@ export default {
             options: {},
             loading: true,
             headers: [{
-                    text: '번호',
-                    value: 'qnaNo',
-                    width: '10%',
-                    align: 'center',
-                    divider: true,
-                },
-                {
-                    text: '상품명',
-                    value: 'productNo',
-                    width: '20%',
-                    align: 'center',
-                    divider: true
-                },
-                {
-                    text: '제목',
-                    value: 'type',
-                    width: '45%',
-                    align: 'center',
-                    divider: true
-                },
-                {
-                    text: '작성자',
-                    value: 'id',
-                    width: '10%',
-                    align: 'center',
-                    divider: true
-                },
-                {
-                    text: '작성일',
-                    value: 'regDate',
-                    width: '15%',
-                    align: 'center',
-                },
-            ],
+                text: '번호',
+                value: 'qnaNo',
+                width: '10%',
+                align: 'center',
+                divider: true,
+            }, {
+                text: '제목',
+                value: 'type',
+                width: '45%',
+                align: 'center',
+                divider: true
+            }, {
+                text: '작성자',
+                value: 'id',
+                width: '10%',
+                align: 'center',
+                divider: true
+            }, {
+                text: '작성일',
+                value: 'regDate',
+                width: '15%',
+                align: 'center',
+            }, ],
             searches: [{
-                    text: '상품명',
-                    value: 'productname'
-                },
-                {
-                    text: '작성자',
-                    value: 'id'
-                }
-            ],
+                text: '작성자',
+                value: 'id'
+            }],
             search: 'id',
             searchWord: '',
         }
@@ -135,7 +109,7 @@ export default {
                     type: link,
                     productNo: this.productNo
                 }
-            }).then(res => {
+            }).then((res) => {
                 console.log(res.data);
                 this.contents = res.data.productQnaList;
                 this.totalContents = res.data.count;

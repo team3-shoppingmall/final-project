@@ -229,6 +229,11 @@ const routes = [
                 component: AddProduct,
             },
             {
+                path: 'updateProduct/:id',
+                name: 'UpdateProduct',
+                component: AddProduct,
+            },
+            {
                 path: 'admin3',
                 name: 'Admin3',
                 component: Admin_Child3,

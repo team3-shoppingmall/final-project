@@ -84,6 +84,7 @@ public class NoticeService {
 		
 	// 공지사항 삭제
 	public ResponseEntity<?> deleteNotice(int noticeNo) {
+		System.out.println(noticeNo);
 		int res = noticeMapper.deleteNotice(noticeNo);
 
 		if (res == 0)

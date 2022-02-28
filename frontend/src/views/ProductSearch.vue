@@ -1,6 +1,6 @@
 <template>
 <v-container>
-    <v-row justify="center">
+    <v-row justify="center" class="mt-1">
         <v-col cols="9">
             <v-row class="text-h3 md-10">
                 SEARCH ITEMS
@@ -64,19 +64,21 @@
                 <v-col>
                     <v-row>
                         <v-col v-for="(product, idx) in products" :key="idx" cols="3">
-                            <v-card @click="moveToDetail(product.productNo)" min-height="385">
-                                <v-img min-height="300" max-height="300" :src="`/api/product/productImage/${product.productNo}/${product.imageName.split(';')[0]}`"></v-img>
-                                <v-card-text style="height:120px">
-                                    <div style="height:50px">
-                                        {{product.productName}}
-                                        - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
-                                        <span v-if="product.size == null">{{product.color.split(';').length-1}} color</span>
-                                    </div>
-                                    <div v-if="product.discount != 0" class="text-decoration-line-through">{{product.price}}원</div>
-                                    <div v-if="product.discount == 0">{{product.price}}원</div>
-                                    <div v-if="product.discount != 0">{{product.price-product.discount}}원</div>
-                                </v-card-text>
-                            </v-card>
+                            <v-lazy :options="{threshold: .5}" transition="fade-transition">
+                                <v-card @click="moveToDetail(product.productNo)" min-height="385">
+                                    <v-img min-height="300" max-height="300" :src="`/api/product/productImage/${product.productNo}/${product.imageName.split(';')[0]}`"></v-img>
+                                    <v-card-text style="height:120px">
+                                        <div style="height:50px">
+                                            {{product.productName}}
+                                            - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
+                                            <span v-if="product.size == null">{{product.color.split(';').length-1}} color</span>
+                                        </div>
+                                        <div v-if="product.discount != 0" class="text-decoration-line-through">{{product.price}}원</div>
+                                        <div v-if="product.discount == 0">{{product.price}}원</div>
+                                        <div v-if="product.discount != 0">{{product.price-product.discount}}원</div>
+                                    </v-card-text>
+                                </v-card>
+                            </v-lazy>
                         </v-col>
                     </v-row>
                 </v-col>
@@ -162,6 +164,7 @@ export default {
             totalLength: 0,
             products: [],
             noSearch: false,
+            dialog: false,
 
         }
     },

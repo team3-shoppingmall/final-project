@@ -1,6 +1,15 @@
 package com.myspring.spring.qna;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +19,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping(value = "/api/qna")
@@ -21,13 +32,6 @@ public class QnaController {
 	public QnaController(QnaService qnaService) {
 		this.qnaService = qnaService;
 	}
-
-//	// 전체 개수 가져오기
-//	@GetMapping("/getCount")
-//	public ResponseEntity<?> getCount(@RequestParam("search") String search,
-//			@RequestParam("searchWord") String searchWord, @RequestParam("type") String type) {
-//		return qnaService.getCount(search, searchWord, type);
-//	}
 
 	// 문의게시판 목록 출력
 	@GetMapping("/getQnaPage")
@@ -42,8 +46,9 @@ public class QnaController {
 		return qnaService.getQnaAll();
 	}
 
-	@GetMapping("/getqnabyqnaNo")
-	public ResponseEntity<?> getQnaByQnaNo(@RequestParam("qnaNo") int qnaNo) {
+	// qnaNo로 문의 가져오기
+	@GetMapping("/getQna/{qnaNo}")
+	public ResponseEntity<?> getQnaByQnaNo(@PathVariable("qnaNo") int qnaNo) {
 		return qnaService.getQnaByQnaNo(qnaNo);
 	}
 
@@ -74,42 +79,11 @@ public class QnaController {
 	public ResponseEntity<?> getQnaByOrignalNo(@RequestParam("originalNo") int originalNo) {
 		return qnaService.getQnaByOriginalNo(originalNo);
 	}
-
-//	// 상품문의 카테고리 전체 조회
-//	@GetMapping("/getproductAll")
-//	public ResponseEntity<?> getQnaProductAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
-//			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord ) {
-//		return qnaService.getQnaProductAll(page, perPage, search, searchWord);
-//	}
-//	
-//
-//	// 배송 문의 카테고리 전체 조회
-//	@GetMapping("/getdeliveryAll")
-//	public ResponseEntity<?> getQnaDeliveryAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
-//			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-//		return qnaService.getQnaDeliveryAll(page, perPage, search, searchWord);
-//	}
-//	
-//
-//	// 배송 전 변경&취소 카테고리 전체 조회
-//	@GetMapping("/getbeforedeliveryAll")
-//	public ResponseEntity<?> getQnaBeforeDeliveryAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
-//			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-//		return qnaService.getQnaBeforeDeliveryAll(page, perPage, search, searchWord);
-//	}
-//	
-//
-//	// 배송 후 교환&반품 카테고리 전체 조회
-//	@GetMapping("/getafterdeliveryAll")
-//	public ResponseEntity<?> getQnaAfterDeliveryAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
-//			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-//		return qnaService.getQnaAfterDeliveryAll(page, perPage, search, searchWord);
-//	}
-
+	
 	// 문의 등록
 	@PostMapping("/insertqna")
-	public ResponseEntity<?> insertQna(@RequestBody QnaVO qnaVO) {
-		return qnaService.insertQna(qnaVO);
+	public ResponseEntity<?> insertQna(@RequestPart(value = "data") QnaVO requestData, @RequestParam("fileList") List<MultipartFile> fileList) throws NotFoundException {
+		return qnaService.insertQna(requestData, fileList);
 	}
 
 	// 댓글 등록
@@ -121,17 +95,16 @@ public class QnaController {
 	// 문의글 수정 시 댓글이 있으면 수정 불가
 	// 문의 수정 & 댓글 수정
 	@PatchMapping("/updateqna")
-	public ResponseEntity<?> updateQna(@RequestParam("qnaNo") int qnaNo, @RequestParam("type") String type,
-			@RequestParam("content") String content, @RequestParam("secret") boolean secret,
-			@RequestParam("image") String image) {
-		return qnaService.updateQna(qnaNo, type, content, secret, image);
+	public ResponseEntity<?> updateQna(@RequestPart(value = "data") QnaVO requestData,
+			@RequestParam("fileList") List<MultipartFile> fileList) throws NotFoundException {
+		return qnaService.updateQna(requestData, fileList);
 	}
 
 	// 문의 삭제 & 댓글 삭제
 	// 댓글 삭제시 originalNo 없이 삭제할때
 	// reply true -> false
-	@DeleteMapping("/deleteqna")
-	public ResponseEntity<?> deleteQna(@RequestParam("qnaNo") int qnaNo) {
+	@DeleteMapping("/deleteqna/{qnaNo}")
+	public ResponseEntity<?> deleteQna(@PathVariable("qnaNo") int qnaNo) {
 		return qnaService.deleteQna(qnaNo);
 	}
 
@@ -145,6 +118,21 @@ public class QnaController {
 	@GetMapping("/searchQnaByContent")
 	public ResponseEntity<?> searchQnaByContent(@RequestParam("content") String content) {
 		return qnaService.searchQnaByContent(content);
+	}
+	
+	// 서버에서 이미지 가져오기
+	@GetMapping("/qnaImage/{qnaNo}/{image}")
+	public ResponseEntity<?> productimage(@PathVariable("qnaNo") int qnaNo, @PathVariable("image") String image)
+			throws IOException {
+		InputStream imageStream;
+		try {
+			imageStream = new FileInputStream("./images/qna/" + qnaNo + "/" + image);
+		} catch (FileNotFoundException e) {
+			imageStream = new FileInputStream("./images/error.png");
+		}
+		byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+		imageStream.close();
+		return new ResponseEntity<byte[]>(imageByteArray, HttpStatus.OK);
 	}
 
 //	//기간으로 문의 검색(일주일)

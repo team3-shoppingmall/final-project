@@ -95,7 +95,7 @@ public class ProductController {
 
 //	서버에서 이미지 가져오기
 	@GetMapping("/productImage/{productNo}/{image}")
-	public ResponseEntity<?> productimage(@PathVariable("productNo") int productNo, @PathVariable("image") String image)
+	public ResponseEntity<?> productImage(@PathVariable("productNo") int productNo, @PathVariable("image") String image)
 			throws IOException {
 		InputStream imageStream;
 		try {
@@ -109,7 +109,7 @@ public class ProductController {
 	}
 
 	@GetMapping("/detailImage/{productNo}/{image}")
-	public ResponseEntity<?> detailimage(@PathVariable("productNo") int productNo, @PathVariable("image") String image)
+	public ResponseEntity<?> detailImage(@PathVariable("productNo") int productNo, @PathVariable("image") String image)
 			throws IOException {
 		InputStream imageStream;
 		try {

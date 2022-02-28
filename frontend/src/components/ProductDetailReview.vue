@@ -85,13 +85,13 @@
                                         <ckeditor :editor="editor" v-model="content" :config="editorConfig"></ckeditor>
                                         <span :class="contentColor">{{content.length}}/600</span>
                                     </v-col>
-                                    <v-col cols="12" v-for="(idx) in 4" :key="idx" align="center">
+                                    <v-col cols="12" align="center">
                                         <v-card :loading="false" class="mx-auto my-5">
                                             <v-card-title>
-                                                <v-img max-height="250" :src="imageUrl[idx-1]" min-height="250" contain @click="fileInputClick(idx-1)" />
+                                                <v-img max-height="250" :src="imageUrl" min-height="250" contain @click="fileInputClick" />
                                             </v-card-title>
                                             <v-card-actions>
-                                                <v-file-input v-model="imageFiles[idx-1]" :id="`fileInput${idx-1}`" accept="image/*" truncate-length="14" class="pa-0" hide-details @change="onImageChange(idx-1)"></v-file-input>
+                                                <v-file-input v-model="imageFile" :id="`fileInput`" accept="image/*" truncate-length="14" class="pa-0" hide-details @change="onImageChange"></v-file-input>
                                             </v-card-actions>
                                         </v-card>
                                     </v-col>
@@ -188,8 +188,10 @@ export default {
             star: 5,
             content: '',
             contentColor: 'black--text',
-            imageFiles: [null, null, null, null],
-            imageUrl: [null, null, null, null],
+            imageFile: '',
+            imageUrl: '',
+
+            id: 'tester',
 
         }
     },
@@ -219,16 +221,16 @@ export default {
         },
 
         // 이미지
-        fileInputClick(idx) {
-            document.getElementById(`fileInput${idx}`).click();
+        fileInputClick() {
+            document.getElementById(`fileInput`).click();
         },
-        onImageChange(index) {
-            const file = this.imageFiles[index];
+        onImageChange() {
+            const file = this.imageFile;
             if (file) {
-                this.imageUrl[index] = URL.createObjectURL(file);
+                this.imageUrl = URL.createObjectURL(file);
                 URL.revokeObjectURL(file);
             } else {
-                this.imageUrl[index] = null;
+                this.imageUrl = null;
             }
         },
 
@@ -238,42 +240,29 @@ export default {
                 return;
             }
 
-            let image = null;
-            for (let i = 0; i < this.imageFiles.length; i++) {
-                if (this.imageFiles[i] != null) {
-                    if (image == null) {
-                        image = this.imageFiles[i].name;
-                    } else {
-                        image = image + ";" + this.imageFiles[i].name;
-                    }
-                }
-            }
-            let data = {
-                productNo: this.productNo,
-                star: this.star,
-                content: this.content,
-                image: image,
-                id: "test1",
-            };
-            let formData = new FormData();
-            formData.append('data', new Blob([JSON.stringify(data)], {
-                type: "application/json"
-            }));
-            for (let i = 0; i < this.imageFiles.length; i++) {
-                if (this.imageFiles[i] != null) {
-                    formData.append(`fileList`, this.imageFiles[i])
-                }
-            }
-            axios.post(`/api/review/insert`, formData)
-                .then(() => {
-                    this.dialog = false;
-                    this.content = '';
-                    alert("리뷰 등록 완료");
-                    this.$router.go();
-                }).catch((err) => {
-                    alert('리뷰 작성에 실패했습니다.')
-                    console.log(err);
-                })
+            // 밑에거 주석 처리 후 이거 사용하시면 됩니다
+            // let data = {
+            //     productNo: this.productNo,
+            //     star: this.star,
+            //     content: this.content,
+            //     image: this.imageFile.name,
+            //     id: this.id,
+            // };
+            // let formData = new FormData();
+            // formData.append('data', new Blob([JSON.stringify(data)], {
+            //     type: "application/json"
+            // }));
+            // formData.append(`fileList`, this.imageFile);
+            // axios.post(`/api/review/insert`, formData)
+            //     .then(() => {
+            //         this.dialog = false;
+            //         this.content = '';
+            //         alert("리뷰 등록 완료");
+            //         this.$router.go();
+            //     }).catch((err) => {
+            //         alert('리뷰 작성에 실패했습니다.')
+            //         console.log(err);
+            //     })
 
             axios({
                 method: 'post',
@@ -283,7 +272,7 @@ export default {
                     star: this.star,
                     content: this.content,
                     image: this.image,
-                    id: "test1",
+                    id: this.id,
                 }
             }).then(() => {
                 this.dialog = false;

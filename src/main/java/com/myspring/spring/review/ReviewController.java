@@ -51,8 +51,8 @@ public class ReviewController {
 	// 리뷰 작성
 	@PostMapping("/insert")
 	public ResponseEntity<?> insertReview(@RequestPart(value = "data") ReviewVO requestData,
-			@RequestParam("fileList") List<MultipartFile> fileList) throws NotFoundException {
-		return reviewService.insertReview(requestData, fileList);
+			@RequestParam(value="filList", required = false) List<MultipartFile> filList) throws NotFoundException {
+		return reviewService.insertReview(requestData, filList);
 	}
 
 	// 리뷰 삭제

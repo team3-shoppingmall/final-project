@@ -21,14 +21,13 @@ public class ReviewService {
 	private ReviewMapper reviewMapper;
 	private ProductMapper productMapper;
 
-	
 	@Autowired
 	public ReviewService(ReviewMapper reviewMapper, ProductMapper productMapper) {
-		 this.reviewMapper = reviewMapper;
-	     this.productMapper = productMapper;
+		this.reviewMapper = reviewMapper;
+		this.productMapper = productMapper;
 	}
-		
-	//리뷰 전체보기
+
+	// 리뷰 전체보기
 	public ResponseEntity<?> getAllReviews(int page, int perPage, String search, String searchWord) {
 		int start = (page - 1) * perPage;
 		List<ReviewAndProductVO> reviewList = reviewMapper.getAllReviews(start, perPage, search, searchWord);
@@ -38,43 +37,41 @@ public class ReviewService {
 		resMap.put("count", count);
 		return new ResponseEntity<>(resMap, HttpStatus.OK);
 	}
-	
-	//리뷰 상세보기
-		public ResponseEntity<?> getReview(int reviewNo) {
-			ReviewVO res = reviewMapper.getReview(reviewNo);
-			if (res == null)
-				return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-			else
-				return new ResponseEntity<>(res, HttpStatus.OK);
+
+	// 리뷰 상세보기
+	public ResponseEntity<?> getReview(int reviewNo) {
+		ReviewVO res = reviewMapper.getReview(reviewNo);
+		if (res == null)
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
+	// 리뷰 작성
+	public ResponseEntity<?> insertReview(ReviewVO requestData, List<MultipartFile> fileList) {
+		ReviewVO result = new ReviewVO();
+		ResponseEntity<?> entity = null;
+
+		try {
+			reviewMapper.insertReview(requestData, result);
+			int reviewNo = result.getReviewNo();
+
+			File file = new File("./images/review/" + reviewNo + "/");
+			file.mkdir();
+
+			MultipartFile multipartFile = fileList.get(0);
+			FileOutputStream writer = new FileOutputStream(
+					"./images/review/" + reviewNo + "/" + multipartFile.getOriginalFilename());
+			writer.write(multipartFile.getBytes());
+			writer.close();
+			entity = new ResponseEntity<>(HttpStatus.OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	
-	//리뷰 작성
-		public ResponseEntity<?> insertReview(ReviewVO requestData, List<MultipartFile> fileList) {
-			ReviewVO result = new ReviewVO();
-			ResponseEntity<?> entity = null;
-
-			try {
-				reviewMapper.insertReview(requestData, result);
-				int reviewNo = result.getReviewNo();
-
-				File file = new File("./images/review/" + reviewNo + "/");
-				file.mkdir();
-
-				for (int i = 0; i < fileList.size(); i++) {
-					MultipartFile multipartFile = fileList.get(i);
-					FileOutputStream writer = new FileOutputStream(
-							"./images/review/" + reviewNo + "/" + multipartFile.getOriginalFilename());
-					writer.write(multipartFile.getBytes());
-					writer.close();
-				}
-				entity = new ResponseEntity<>(HttpStatus.OK);
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-			return entity;
-		}	
+		return entity;
+	}
 //	public ResponseEntity<?> insertReview(ReviewVO reviewVO) {
 //		int res = reviewMapper.insertReview(reviewVO);
 //		if(res == 0) {
@@ -83,28 +80,28 @@ public class ReviewService {
 //			return new ResponseEntity<>(HttpStatus.OK);
 //		}
 //	}
-	
-	//리뷰 삭제
+
+	// 리뷰 삭제
 	public ResponseEntity<?> deleteReview(int reviewNo) {
 		int res = reviewMapper.deleteReview(reviewNo);
-		if(res == 0) {
+		if (res == 0) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}else {
+		} else {
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
 	}
-	
-	//리뷰 수정
-	
+
+	// 리뷰 수정
+
 	public ResponseEntity<?> updateReview(int reviewNo, String content, int star) {
 		int res = reviewMapper.updateReview(reviewNo, content, star);
-		
+
 		if (res == 0)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
 			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
-	
+
 	/*
 	 * //리뷰 상세보기 public ResponseEntity<?> getFindByReviewNo(int reviewNo) {
 	 * List<ReviewVO> res = reviewMapper.getFindByReviewNo(reviewNo); if(res ==

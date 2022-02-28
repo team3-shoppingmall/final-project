@@ -66,7 +66,7 @@ CREATE TABLE baskettable (
 	PRODUCTNO INT NOT NULL,
 	SELECTEDCOLOR VARCHAR(50),
 	SELECTEDSIZE VARCHAR(50),
-	AMOUNT INT NOT NULL
+	BASKETAMOUNT INT NOT NULL
 --     CONSTRAINT basket_fk_id FOREIGN KEY (ID)
 --         REFERENCES membertable (ID),
 --     CONSTRAINT basket_fk_productno FOREIGN KEY (PRODUCTNO)
@@ -208,8 +208,8 @@ values('스노우 버튼 모직스커트', 'skirt','mini','nature-3082832__480.j
 insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, detailimagename)
 values('실키 여리핏 히든블라우스', 'shirt','blouse','photo-1465146344425-f00d5f5c8f07.jfif;photo-1426604966848-d7adac402bff.jfif',34900,5000,'아이보리;피치베이지;워터리블루;블랙',null, 100,'photo-1475924156734-496f6cac6ec1.jfif;photo-1586348943529-beaae6c28db9.jfif');
 -- 장바구니
-insert into baskettable(id, productno, selectedcolor, selectedsize, amount) values('tester',1,'소프트민트','S',2);
-insert into baskettable(id, productno, selectedcolor, selectedsize, amount) values('tester',2,'아이보리',null,5);
+insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('tester',1,'소프트민트','S',2);
+insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('tester',2,'아이보리',null,5);
 -- 관심상품
 insert into wishlisttable(id, productno) values('tester', 1);
 insert into wishlisttable(id, productno) values('tester', 2);

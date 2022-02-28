@@ -628,13 +628,13 @@ export default {
             //     reviewNo: this.num,
             //     content: this.content,
             //     star: this.star,
-            //     image: this.imageFile.name,
+            //     image: this.imageFile[0].name,
             // };
             // let formData = new FormData();
             // formData.append('data', new Blob([JSON.stringify(data)], {
             //     type: "application/json"
             // }));
-            // formData.append(`fileList`, this.imageFile);
+            // formData.append(`fileList`, this.imageFile[0]);
             // axios.patch(`/api/review/update`, formData)
             //     .then(() => {
             //         alert("수정이 완료되었습니다.")

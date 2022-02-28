@@ -1,6 +1,6 @@
 <template>
 <v-app>
-    <v-main>
+    <v-main >
         <router-view />
     </v-main>
     <v-footer color="primary lighten-1" padless>

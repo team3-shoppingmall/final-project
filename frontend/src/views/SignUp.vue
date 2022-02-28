@@ -1,6 +1,6 @@
 <template>
 <v-container>
-    <v-row justify="center">
+    <v-row justify="center" style="height: 970px">
         <v-col align-self="center" cols="4">
             <div class="text-h3">JOIN US</div>
             <v-divider class="my-5"></v-divider>
@@ -36,12 +36,12 @@
                                 <td> 주소 </td>
                                 <td>
                                     <div class="d-flex ">
-                                        <v-text-field v-model="zipcode" outlined hide-details label="우편번호" dense></v-text-field>
-                                        <v-btn class="align-self-center ml-2 py-3 px-1 primary" height="100%" style="font-size:1.2rem">검색</v-btn>
+                                        <v-text-field v-model="zipcode" class="my-2" outlined hide-details label="우편번호" dense></v-text-field>
+                                        <v-btn class="align-self-center ml-2 py-2 px-1 primary" height="100%" style="font-size:1.1rem">검색</v-btn>
                                     </div>
 
-                                    <v-text-field v-model="addr1" outlined hide-details label="기본주소" dense></v-text-field>
-                                    <v-text-field v-model="addr2" outlined hide-details label="상세주소" dense></v-text-field>
+                                    <v-text-field v-model="addr1" class="mt-1" outlined hide-details label="기본주소" dense></v-text-field>
+                                    <v-text-field v-model="addr2" class="mt-3 mb-2" outlined hide-details label="상세주소" dense></v-text-field>
                                 </td>
                             </tr>
                             <tr>

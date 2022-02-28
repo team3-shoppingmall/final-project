@@ -61,6 +61,10 @@ export default {
                     // 정렬 후 하나씩 더해서 추가하기
                     this.changeOrder(data);
                     this.banners.push(data);
+                    // push 할때 악시오스를 실행하도록
+                    // changeORder일때 업데이트할것 
+                    // 혹은 then then 처리할것
+                    
                     this.file = null;
                     this.link = null;
                     this.image = null;

@@ -6,18 +6,19 @@ public class BasketVO {
 	private int productNo;
 	private String selectedColor;
 	private String selectedSize;
-	private int amount;
+	private int basketAmount;
 
 	public BasketVO() {
 	}
 
-	public BasketVO(long basketIdx, String id, int productNo, String selectedColor, String selectedSize, int amount) {
+	public BasketVO(long basketIdx, String id, int productNo, String selectedColor, String selectedSize,
+			int basketAmount) {
 		this.basketIdx = basketIdx;
 		this.id = id;
 		this.productNo = productNo;
 		this.selectedColor = selectedColor;
 		this.selectedSize = selectedSize;
-		this.amount = amount;
+		this.basketAmount = basketAmount;
 	}
 
 	public long getBasketIdx() {
@@ -60,12 +61,12 @@ public class BasketVO {
 		this.selectedSize = selectedSize;
 	}
 
-	public int getAmount() {
-		return amount;
+	public int getBasketAmount() {
+		return basketAmount;
 	}
 
-	public void setAmount(int amount) {
-		this.amount = amount;
+	public void setBasketAmount(int basketAmount) {
+		this.basketAmount = basketAmount;
 	}
 
 }

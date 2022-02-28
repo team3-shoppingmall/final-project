@@ -36,6 +36,12 @@ public class BasketController {
 		return basketService.getBasketById(id);
 	}
 
+	// 장바구니 조회
+	@GetMapping(value = "/getBasketCount/{id}")
+	public ResponseEntity<?> getBasketCountById(@PathVariable("id") String id) {
+		return basketService.getBasketCountById(id);
+	}
+	
 //	장바구니 개수 변경
 	@PatchMapping(value = "/updateBasketAmount")
 	public ResponseEntity<?> updateBasketAmount(@RequestParam("basketIdx") long basketIdx,

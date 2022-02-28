@@ -18,17 +18,30 @@ public class BasketService {
 
 	// 장바구니 추가
 	public ResponseEntity<?> insertBakset(List<BasketVO> basketList) {
+		int count = 0;
 		for (BasketVO basket : basketList) {
-			int res = basketMapper.insertBakset(basket);
-			if (res == 0)
-				return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+			int res = basketMapper.basketCheck(basket);
+			if (res > 0) {
+				count++;
+			} else {
+				res = basketMapper.insertBakset(basket);
+				if (res == 0)
+					return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		}
-		return new ResponseEntity<>(HttpStatus.OK);
+		System.out.println(count);
+		return new ResponseEntity<>(count, HttpStatus.OK);
 	}
 
 	// 장바구니 조회
 	public ResponseEntity<?> getBasketById(String id) {
 		List<BasketAndProductVO> res = basketMapper.getBasketById(id);
+		return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
+	// 장바구니 개수 조회
+	public ResponseEntity<?> getBasketCountById(String id) {
+		int res = basketMapper.getBasketCountById(id);
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 

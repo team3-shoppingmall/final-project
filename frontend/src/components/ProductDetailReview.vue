@@ -5,13 +5,13 @@
             <v-row justify="center">
                 <v-col cols="auto">
                     <v-carousel :show-arrows="false" cycle interval="3000" hide-delimiters style="height:100px;width:100px">
-                        <v-carousel-item v-for="(image,i) in item.image.split(';')" :key="i">
+                        <v-carousel-item>
                             <v-dialog max-width="700">
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.productNo}/${image}`" contain></v-img>
+                                    <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.reviewNo}/${image}`" contain></v-img>
                                 </template>
                                 <v-card>
-                                    <v-img :src="`/api/review/reviewImage/${item.reviewNo}/${image}`"></v-img>
+                                    <v-img :src="`/api/review/reviewImage/${item.reviewNo}/${item.image}`"></v-img>
                                 </v-card>
                             </v-dialog>
                         </v-carousel-item>
@@ -239,50 +239,29 @@ export default {
                 alert('후기를 입력해주세요');
                 return;
             }
-
             // 밑에거 주석 처리 후 이거 사용하시면 됩니다
-            // let data = {
-            //     productNo: this.productNo,
-            //     star: this.star,
-            //     content: this.content,
-            //     image: this.imageFile.name,
-            //     id: this.id,
-            // };
-            // let formData = new FormData();
-            // formData.append('data', new Blob([JSON.stringify(data)], {
-            //     type: "application/json"
-            // }));
-            // formData.append(`fileList`, this.imageFile);
-            // axios.post(`/api/review/insert`, formData)
-            //     .then(() => {
-            //         this.dialog = false;
-            //         this.content = '';
-            //         alert("리뷰 등록 완료");
-            //         this.$router.go();
-            //     }).catch((err) => {
-            //         alert('리뷰 작성에 실패했습니다.')
-            //         console.log(err);
-            //     })
-
-            axios({
-                method: 'post',
-                url: `/api/review/insert`,
-                data: {
-                    productNo: this.productNo,
-                    star: this.star,
-                    content: this.content,
-                    image: this.image,
-                    id: this.id,
-                }
-            }).then(() => {
-                this.dialog = false;
-                this.content = '';
-                alert("리뷰 등록 완료");
-                this.$router.go();
-            }).catch((err) => {
-                alert('리뷰 작성에 실패했습니다.')
-                console.log(err);
-            })
+            let data = {
+                productNo: this.productNo,
+                star: this.star,
+                content: this.content,
+                image: this.imageFile.name,
+                id: this.id,
+            };
+            let formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            formData.append(`fileList`, this.imageFile);
+            axios.post(`/api/review/insert`, formData)
+                .then(() => {
+                    this.dialog = false;
+                    this.content = '';
+                    alert("리뷰 등록 완료");
+                    this.$router.go();
+                }).catch((err) => {
+                    alert('리뷰 작성에 실패했습니다.')
+                    console.log(err);
+                })
         },
         deleteReview(num) {
             axios.delete(`/api/review/delete/${num}`)

@@ -362,56 +362,56 @@ export default {
 
         // 글쓰기
         noticeForm() {
-            // let image = null;
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         if (image == null) {
-            //             image = this.imageFiles[i].name;
-            //         } else {
-            //             image = image + ";" + this.imageFiles[i].name;
-            //         }
-            //     }
-            // }
-            // let data = {
-            //     title: this.titleDetail,
-            //     content: this.content,
-            //     id: "admin123",
-            //     image: image,
-            // };
-            // let formData = new FormData();
-            // formData.append('data', new Blob([JSON.stringify(data)], {
-            //     type: "application/json"
-            // }));
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         formData.append(`fileList`, this.imageFiles[i])
-            //     }
-            // }
-            // axios.post(`/api/notice/insertNotice`, formData)
-            //     .then(() => {
-            //         alert("공지사항 등록 완료");
-            //         this.$router.go(-1);
-            //     }).catch((err) => {
-            //         alert("등록 실패");
-            //         console.log(err);
-            //     })
-
-            axios({
-                method: 'post',
-                url: `/api/notice/insertNotice`,
-                data: {
-                    title: this.titleDetail,
-                    content: this.content,
-                    id: "admin123",
-                    image: "test.jpg",
+            let image = null;
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] != null) {
+                    if (image == null) {
+                        image = this.imageFiles[i].name;
+                    } else {
+                        image = image + ";" + this.imageFiles[i].name;
+                    }
                 }
-            }).then(() => {
-                alert("공지사항 등록 완료");
-                this.$router.go(-1);
-            }).catch((err) => {
-                alert("등록 실패");
-                console.log(err);
-            })
+            }
+            let data = {
+                title: this.titleDetail,
+                content: this.content,
+                id: "admin123",
+                image: image,
+            };
+            let formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] != null) {
+                    formData.append(`fileList`, this.imageFiles[i])
+                }
+            }
+            axios.post(`/api/notice/insertNotice`, formData)
+                .then(() => {
+                    alert("공지사항 등록 완료");
+                    this.$router.go(-1);
+                }).catch((err) => {
+                    alert("등록 실패");
+                    console.log(err);
+                })
+
+            // axios({
+            //     method: 'post',
+            //     url: `/api/notice/insertNotice`,
+            //     data: {
+            //         title: this.titleDetail,
+            //         content: this.content,
+            //         id: "admin123",
+            //         image: "test.jpg",
+            //     }
+            // }).then(() => {
+            //     alert("공지사항 등록 완료");
+            //     this.$router.go(-1);
+            // }).catch((err) => {
+            //     alert("등록 실패");
+            //     console.log(err);
+            // })
         },
         faqForm() {
             axios.post('/api/faq/insertfaq', {
@@ -571,56 +571,56 @@ export default {
 
         // 수정
         noticeFormUpdate() {
-            // let image = null;
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         if (image == null) {
-            //             image = this.imageFiles[i].name;
-            //         } else {
-            //             image = image + ";" + this.imageFiles[i].name;
-            //         }
-            //     }
-            // }
-            // let data = {
-            //     noticeNo: this.num,
-            //     title: this.titleDetail,
-            //     content: this.content,
-            //     image: image,
-            // };
-            // let formData = new FormData();
-            // formData.append('data', new Blob([JSON.stringify(data)], {
-            //     type: "application/json"
-            // }));
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         formData.append(`fileList`, this.imageFiles[i])
-            //     }
-            // }
-            // axios.post(`/api/notice/updateNotice`, formData)
-            //     .then(() => {
-            //         alert("공지사항 수정 완료");
-            //         this.$router.go(-1);
-            //     }).catch((err) => {
-            //         alert("수정 실패");
-            //         console.log(err);
-            //     })
-
-            axios({
-                method: 'patch',
-                url: `/api/notice/updateNotice`,
-                params: {
-                    noticeNo: this.num,
-                    title: this.titleDetail,
-                    content: this.content,
-                    image: "test.jpg",
+            let image = null;
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] != null) {
+                    if (image == null) {
+                        image = this.imageFiles[i].name;
+                    } else {
+                        image = image + ";" + this.imageFiles[i].name;
+                    }
                 }
-            }).then(() => {
-                alert("공지사항 수정 완료");
-                this.$router.go(-1);
-            }).catch((err) => {
-                alert("수정 실패");
-                console.log(err);
-            })
+            }
+            let data = {
+                noticeNo: this.num,
+                title: this.titleDetail,
+                content: this.content,
+                image: image,
+            };
+            let formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] != null) {
+                    formData.append(`fileList`, this.imageFiles[i])
+                }
+            }
+            axios.patch(`/api/notice/updateNotice`, formData)
+                .then(() => {
+                    alert("공지사항 수정 완료");
+                    this.$router.go(-1);
+                }).catch((err) => {
+                    alert("수정 실패");
+                    console.log(err);
+                })
+
+            // axios({
+            //     method: 'patch',
+            //     url: `/api/notice/updateNotice`,
+            //     params: {
+            //         noticeNo: this.num,
+            //         title: this.titleDetail,
+            //         content: this.content,
+            //         image: "test.jpg",
+            //     }
+            // }).then(() => {
+            //     alert("공지사항 수정 완료");
+            //     this.$router.go(-1);
+            // }).catch((err) => {
+            //     alert("수정 실패");
+            //     console.log(err);
+            // })
         },
         reviewFormUpdate() {
             // 밑에거 주석 처리 후 이거 사용하시면 됩니다

@@ -52,7 +52,7 @@
                             <tr v-if="originalNo == undefined && pageID != 'faq'">
                                 <td> 파일 첨부 </td>
                                 <td>
-                                    <v-row>
+                                    <v-row v-if="pageID != 'review'">
                                         <v-col cols="3" v-for="(idx) in 4" :key="idx" align="center">
                                             <v-card :loading="false" class="mx-auto my-5">
                                                 <v-card-title>
@@ -60,6 +60,18 @@
                                                 </v-card-title>
                                                 <v-card-actions>
                                                     <v-file-input v-model="imageFiles[idx-1]" :id="`fileInput${idx-1}`" accept="image/*" truncate-length="14" class="pa-0" hide-details @change="onImageChange(idx-1)"></v-file-input>
+                                                </v-card-actions>
+                                            </v-card>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row v-if="pageID == 'review'">
+                                        <v-col align="center">
+                                            <v-card :loading="false" class="mx-auto my-5">
+                                                <v-card-title>
+                                                    <v-img max-height="250" :src="imageUrl[0]" min-height="250" contain @click="fileInputClick(0)" />
+                                                </v-card-title>
+                                                <v-card-actions>
+                                                    <v-file-input v-model="imageFiles[0]" :id="`fileInput0`" accept="image/*" truncate-length="14" class="pa-0" hide-details @change="onImageChange(0)"></v-file-input>
                                                 </v-card-actions>
                                             </v-card>
                                         </v-col>
@@ -417,60 +429,60 @@ export default {
 
         },
         qnaForm() {
-            // let image = null;
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         if (image == null) {
-            //             image = this.imageFiles[i].name;
-            //         } else {
-            //             image = image + ";" + this.imageFiles[i].name;
-            //         }
-            //     }
-            // }
-            // let data = {
-            //     productNo: this.productNo,
-            //     type: this.titleSelected,
-            //     reply: false,
-            //     content: this.content,
-            //     id: "tester",
-            //     secret: this.secret,
-            //     image: image,
-            // };
-            // let formData = new FormData();
-            // formData.append('data', new Blob([JSON.stringify(data)], {
-            //     type: "application/json"
-            // }));
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         formData.append(`fileList`, this.imageFiles[i])
-            //     }
-            // }
-            // axios.post(`/api/qna/insertqna`, formData)
-            //     .then(() => {
-            //         alert("문의글이 등록되었습니다.");
-            //         this.$router.go(-1);
-            //     }).catch((err) => {
-            //         console.log(err);
-            //     })
-
-            axios({
-                method: 'post',
-                url: `/api/qna/insertqna`,
-                data: {
-                    productNo: this.productNo,
-                    type: this.titleSelected,
-                    reply: false,
-                    content: this.content,
-                    id: "tester",
-                    secret: this.secret,
-                    image: "image1.jpg"
+            let image = null;
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] != null) {
+                    if (image == null) {
+                        image = this.imageFiles[i].name;
+                    } else {
+                        image = image + ";" + this.imageFiles[i].name;
+                    }
                 }
-            }).then(() => {
-                alert("문의글이 등록되었습니다.");
-                this.$router.go(-1);
-            }).catch((err) => {
-                console.log(err);
-            })
+            }
+            let data = {
+                productNo: this.productNo,
+                type: this.titleSelected,
+                reply: false,
+                content: this.content,
+                id: "tester",
+                secret: this.secret,
+                image: image,
+            };
+            let formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] != null) {
+                    formData.append(`fileList`, this.imageFiles[i])
+                }
+            }
+            axios.post(`/api/qna/insertqna`, formData)
+                .then(() => {
+                    alert("문의글이 등록되었습니다.");
+                    this.$router.go(-1);
+                }).catch((err) => {
+                    console.log(err);
+                })
+
+            // axios({
+            //     method: 'post',
+            //     url: `/api/qna/insertqna`,
+            //     data: {
+            //         productNo: this.productNo,
+            //         type: this.titleSelected,
+            //         reply: false,
+            //         content: this.content,
+            //         id: "tester",
+            //         secret: this.secret,
+            //         image: "image1.jpg"
+            //     }
+            // }).then(() => {
+            //     alert("문의글이 등록되었습니다.");
+            //     this.$router.go(-1);
+            // }).catch((err) => {
+            //     console.log(err);
+            // })
         },
 
         // 수정 시 기존 데이터 넣기
@@ -503,20 +515,17 @@ export default {
                 .then((res) => {
                     this.content = res.data.content;
                     this.star = res.data.star;
-                    let imageList = res.data.image.split(';');
-                    for (let i = 0; i < imageList.length; i++) {
-                        axios.get(`/api/review/reviewImage/${this.num}/${imageList[i]}`, {
-                                responseType: "blob",
-                            })
-                            .then(res => {
-                                var file = new File([res.data], imageList[i], {
-                                    type: "image/*",
-                                    lastModified: Date.now()
-                                });
-                                this.imageFiles[i] = file;
-                                this.onImageChange(i);
-                            })
-                    }
+                    axios.get(`/api/review/reviewImage/${this.num}/${res.data.image}`, {
+                            responseType: "blob",
+                        })
+                        .then(res => {
+                            var file = new File([res.data], res.data.image, {
+                                type: "image/*",
+                                lastModified: Date.now()
+                            });
+                            this.imageFiles[0] = file;
+                            this.onImageChange(0);
+                        })
                 }).catch((err) => {
                     alert("정보를 불러오는데 실패했습니다.");
                     console.log(err);
@@ -614,32 +623,19 @@ export default {
             })
         },
         reviewFormUpdate() {
-            // let image = null;
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         if (image == null) {
-            //             image = this.imageFiles[i].name;
-            //         } else {
-            //             image = image + ";" + this.imageFiles[i].name;
-            //         }
-            //     }
-            // }
+            // 밑에거 주석 처리 후 이거 사용하시면 됩니다
             // let data = {
             //     reviewNo: this.num,
             //     content: this.content,
             //     star: this.star,
-            //     image: image,
+            //     image: this.imageFile[0].name,
             // };
             // let formData = new FormData();
             // formData.append('data', new Blob([JSON.stringify(data)], {
             //     type: "application/json"
             // }));
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         formData.append(`fileList`, this.imageFiles[i])
-            //     }
-            // }
-            // axios.post(`/api/review/update`, formData)
+            // formData.append(`fileList`, this.imageFile[0]);
+            // axios.patch(`/api/review/update`, formData)
             //     .then(() => {
             //         alert("수정이 완료되었습니다.")
             //         this.$router.go(-1);
@@ -682,60 +678,60 @@ export default {
             })
         },
         qnaFormUpdate() {
-            // let image = null;
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         if (image == null) {
-            //             image = this.imageFiles[i].name;
-            //         } else {
-            //             image = image + ";" + this.imageFiles[i].name;
-            //         }
-            //     }
-            // }
-            // let data = {
-            //     productNo: this.productNo,
-            //     qnaNo: this.num,
-            //     type: this.titleSelected,
-            //     content: this.content,
-            //     secret: this.secret,
-            //     image: image,
-            // };
-            // let formData = new FormData();
-            // formData.append('data', new Blob([JSON.stringify(data)], {
-            //     type: "application/json"
-            // }));
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         formData.append(`fileList`, this.imageFiles[i])
-            //     }
-            // }
-            // axios.post(`/api/qna/updateqna`, formData)
-            //     .then(() => {
-            //         alert("수정이 완료되었습니다.");
-            //         this.$router.go(-1);
-            //     }).catch((err) => {
-            //         console.log(err);
-            //         alert("수정에 실패했습니다.");
-            //     })
-
-            axios({
-                method: 'patch',
-                url: `/api/qna/updateqna`,
-                params: {
-                    productNo: this.productNo,
-                    qnaNo: this.num,
-                    type: this.titleSelected,
-                    content: this.content,
-                    secret: this.secret,
-                    image: "test.jpg"
+            let image = null;
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] != null) {
+                    if (image == null) {
+                        image = this.imageFiles[i].name;
+                    } else {
+                        image = image + ";" + this.imageFiles[i].name;
+                    }
                 }
-            }).then(() => {
-                alert("수정이 완료되었습니다.");
-                this.$router.go(-1);
-            }).catch((err) => {
-                console.log(err);
-                alert("수정에 실패했습니다.");
-            })
+            }
+            let data = {
+                productNo: this.productNo,
+                qnaNo: this.num,
+                type: this.titleSelected,
+                content: this.content,
+                secret: this.secret,
+                image: image,
+            };
+            let formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] != null) {
+                    formData.append(`fileList`, this.imageFiles[i])
+                }
+            }
+            axios.post(`/api/qna/updateqna`, formData)
+                .then(() => {
+                    alert("수정이 완료되었습니다.");
+                    this.$router.go(-1);
+                }).catch((err) => {
+                    console.log(err);
+                    alert("수정에 실패했습니다.");
+                })
+
+            // axios({
+            //     method: 'patch',
+            //     url: `/api/qna/updateqna`,
+            //     params: {
+            //         productNo: this.productNo,
+            //         qnaNo: this.num,
+            //         type: this.titleSelected,
+            //         content: this.content,
+            //         secret: this.secret,
+            //         image: "test.jpg"
+            //     }
+            // }).then(() => {
+            //     alert("수정이 완료되었습니다.");
+            //     this.$router.go(-1);
+            // }).catch((err) => {
+            //     console.log(err);
+            //     alert("수정에 실패했습니다.");
+            // })
         },
     },
 

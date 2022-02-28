@@ -146,7 +146,7 @@ export default {
             product: {
                 productName: null,
                 price: '',
-                discount: '',
+                discount: 0,
                 amount: '',
             },
             typeSelected: null,
@@ -342,9 +342,12 @@ export default {
                 alert('상품 가격이 유효하지 않습니다');
                 return;
             }
-            if (!(this.product.discount > 0 && (this.product.discount == Math.round(this.product.discount)) && this.product.discount != '')) {
+            if (!(this.product.discount >= 0 && (this.product.discount == Math.round(this.product.discount)))) {
                 alert('할인 가격이 유효하지 않습니다');
                 return;
+            }
+            if (this.product.discount == '') {
+                this.product.discount = 0;
             }
             if (Number(this.product.discount) > Number(this.product.price)) {
                 alert('할인 가격이 상품 가격보다 높습니다');

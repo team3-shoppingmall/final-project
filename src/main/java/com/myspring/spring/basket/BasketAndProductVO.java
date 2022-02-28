@@ -1,24 +1,32 @@
 package com.myspring.spring.basket;
 
-public class BasketVO {
+public class BasketAndProductVO {
 	private long basketIdx;
 	private String id;
 	private int productNo;
 	private String selectedColor;
 	private String selectedSize;
 	private int basketAmount;
+	private int price;
+	private int discount;
+	private int amount;
+	private boolean onSale;
 
-	public BasketVO() {
+	public BasketAndProductVO() {
 	}
 
-	public BasketVO(long basketIdx, String id, int productNo, String selectedColor, String selectedSize,
-			int basketAmount) {
+	public BasketAndProductVO(long basketIdx, String id, int productNo, String selectedColor, String selectedSize,
+			int basketAmount, int price, int discount, int amount, boolean onSale) {
 		this.basketIdx = basketIdx;
 		this.id = id;
 		this.productNo = productNo;
 		this.selectedColor = selectedColor;
 		this.selectedSize = selectedSize;
 		this.basketAmount = basketAmount;
+		this.price = price;
+		this.discount = discount;
+		this.amount = amount;
+		this.onSale = onSale;
 	}
 
 	public long getBasketIdx() {
@@ -67,6 +75,38 @@ public class BasketVO {
 
 	public void setBasketAmount(int basketAmount) {
 		this.basketAmount = basketAmount;
+	}
+
+	public int getPrice() {
+		return price;
+	}
+
+	public void setPrice(int price) {
+		this.price = price;
+	}
+
+	public int getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(int discount) {
+		this.discount = discount;
+	}
+
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
+	public boolean isOnSale() {
+		return onSale;
+	}
+
+	public void setOnSale(boolean onSale) {
+		this.onSale = onSale;
 	}
 
 }

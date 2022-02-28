@@ -30,6 +30,11 @@ public interface MemberMapper {
 	@SelectProvider(type = MemberUtils.class, method = "getMembers")
 	List<MemberVO> getMembers(int start, int perPage, String condition, Object param);
 
+	// 멤버 정보 조회
+	// select ~ from membertable where id ='id'
+	@Select("select name, tel, email, zipcode, addr1, addr2 from membertable where id = #{id}")
+	MemberVO getMemberInfo(@Param("id") String id);
+
 	// 멤버 정보 수정
 	// update membertable set ? = ?, ... where id = ?
 	@UpdateProvider(type = MemberUtils.class, method = "updateMember")

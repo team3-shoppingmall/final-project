@@ -37,6 +37,12 @@ public class MemberService {
 		return new ResponseEntity<>(resMap, HttpStatus.OK);
 	}
 
+	// 멤버 정보 조회
+	public ResponseEntity<?> getMemberInfo(String id) {
+		MemberVO res = memberMapper.getMemberInfo(id);
+		return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
 	// 맴버 정보 수정
 	public ResponseEntity<?> updateMember(MemberVO member) {
 		int res = memberMapper.updateMember(member);

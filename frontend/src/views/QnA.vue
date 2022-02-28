@@ -1,5 +1,5 @@
 <template>
-<v-container>
+<v-container >
     <v-row justify="center" class="mt-1">
         <v-col xs="12" sm="12" md="12" lg="9" xl="9">
             <div class="text-h3">{{pagename}}</div>

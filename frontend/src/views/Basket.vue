@@ -3,35 +3,26 @@
     <v-row justify="center">
         <v-col cols="9">
             <div class="text-h3">장바구니</div>
-            <v-data-table :headers="headers" :items="baskets" :options.sync="options" :server-items-length="totalDesserts" :loading="loading" hide-default-footer show-select="show-select" item-key="name" class="elevation-1" no-data-text="장바구니가 비었습니다">
+            <v-data-table v-model="selected" :headers="headers" :items="baskets" :options.sync="options" :loading="loading" hide-default-footer show-select="show-select" item-key="basketIdx" class="elevation-1" disable-sort no-data-text="장바구니가 비었습니다">
                 <template v-slot:[`item.info`]="{ item }">
-                    <ProductDetailDisplay :productNo="item.productNo" />
+                    <div class="text-left">
+                        <ProductDetailDisplay :productNo="item.productNo" />
+                    </div>
                 </template>
-                <template v-slot:[`item.option`]="{ item }">
-                    <v-simple-table>
-                        <tbody>
-                            <tr>
-                                <td>색상</td>
-                                <td>{{item.selectedColor}}</td>
-                            </tr>
-                            <tr>
-                                <td>사이즈</td>
-                                <td>{{item.selectedSize}}</td>
-                            </tr>
-                            <tr>
-                                <td>개수</td>
-                                <td>{{item.amount}}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" class="text-center">
-                                    <v-btn outlined="outlined">옵션변경</v-btn>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </v-simple-table>
+                <template v-slot:[`item.selectedColor`]="{ item }">
+                    {{item.selectedColor}}
+                </template>
+                <template v-slot:[`item.selectedSize`]="{ item }">
+                    {{item.selectedSize}}
+                </template>
+                <template v-slot:[`item.basketAmount`]="{ item }">
+                    <v-text-field type="number" min="1" :rules="[numberRule]" v-model="item.basketAmount" @click="amountFilter(item)"></v-text-field>
+                    <v-btn color="primary" @click="amountFilter(item)">변경</v-btn>
                 </template>
                 <template v-slot:[`item.totalPrice`]="{ item }">
-                    {{item.price * item.amount}}
+                    <div class="text-right" max-width="150">
+                        {{AddComma((item.price - item.discount) * item.basketAmount)}}원
+                    </div>
                 </template>
                 <template v-slot:footer="{ }">
                     <v-divider></v-divider>
@@ -43,23 +34,22 @@
                         </v-col>
                     </v-row>
                 </template>
-
             </v-data-table>
             <v-row class="my-3 px-16" justify="space-between">
                 <v-col cols="auto">
                     <v-row>
                         <v-col>
-                            <v-btn class="primary">전체 선택</v-btn>
+                            <v-btn class="primary" @click="selectAll">전체 선택</v-btn>
                         </v-col>
                         <v-col>
-                            <v-btn class="primary">선택 삭제하기</v-btn>
+                            <v-btn class="primary" @click="deleteSelected">선택 삭제하기</v-btn>
                         </v-col>
                     </v-row>
                 </v-col>
                 <v-col cols="auto">
                     <v-row>
                         <v-col>
-                            <v-btn class="primary">주문하기</v-btn>
+                            <v-btn class="primary" @click="goToOrder">주문하기</v-btn>
                         </v-col>
                     </v-row>
                 </v-col>
@@ -80,42 +70,150 @@ export default {
     data() {
         return {
             baskets: [],
+            selected: [],
             totalPrice: 0,
-            totalDesserts: 1,
             loading: false,
             options: {
                 itemsPerPage: 50,
             },
             headers: [{
                 text: '상품정보',
-                value: 'info'
+                value: 'info',
+                divider: true,
+                align: 'center',
+                width: '55%',
             }, {
-                text: '선택 옵션',
-                value: 'option'
+                text: '색상',
+                value: 'selectedColor',
+                divider: true,
+                align: 'center',
+                width: '10%',
+            }, {
+                text: '사이즈',
+                value: 'selectedSize',
+                divider: true,
+                align: 'center',
+                width: '10%',
+            }, {
+                text: '개수',
+                value: 'basketAmount',
+                divider: true,
+                align: 'center',
+                width: '10%',
             }, {
                 text: '합계',
-                value: 'totalPrice'
-            }, ]
+                value: 'totalPrice',
+                divider: true,
+                align: 'center',
+                width: '15%',
+            }, ],
+            id: 'tester',
+            numberRule: val => {
+                if (val == '') return '개수를 입력해주세요'
+                return true
+            },
         }
     },
     methods: {
-        getBasket() {
-            axios.get(`/api/basket/getBasket/${'tester'}`)
-                .then(res => {
-                    this.baskets = res.data;
-                })
-        },
         AddComma(num) {
             var regexp = /\B(?=(\d{3})+(?!\d))/g;
             return `${num}`.toString().replace(regexp, ",");
         },
-        test() {
-            console.log("test")
+        getBasket() {
+            this.loading = true;
+            axios.get(`/api/basket/getBasket/${this.id}`)
+                .then(res => {
+                    this.baskets = res.data;
+                }).finally(
+                    this.loading = false
+                )
+        },
+        amountFilter(item) {
+            if (!(item.basketAmount > 0 && item.basketAmount == Math.round(item.basketAmount))) {
+                alert('잘못된 입력입니다.');
+                this.$router.go();
+                return;
+            } else if (item.basketAmount > 9999) {
+                alert('주문량이 너무 많습니다');
+                this.$router.go();
+                return;
+            } else if (item.basketAmount > item.amount) {
+                alert('재고보다 주문량이 많습니다');
+                this.$router.go();
+                return;
+            } else {
+                axios({
+                        method: 'patch',
+                        url: `/api/basket/updateBasketAmount`,
+                        params: {
+                            basketIdx: item.basketIdx,
+                            basketAmount: item.basketAmount
+                        }
+                    })
+                    .catch(err => {
+                        alert('변경에 실패하였습니다')
+                        console.log(err);
+                    })
+
+            }
+        },
+        selectAll() {
+            if (this.selected.length != this.baskets.length) {
+                this.selected = this.baskets;
+            } else {
+                this.selected = [];
+            }
+        },
+        deleteSelected() {
+            let deletes = [];
+            for (let i = 0; i < this.selected.length; i++) {
+                deletes.push(this.selected[i].basketIdx);
+            }
+            axios.delete(`/api/basket/deleteBasket`, {
+                    data: deletes
+                })
+                .then(() => {
+                    alert('선택한 장바구니가 삭제되었습니다.');
+                    this.getBasket();
+                }).catch(err => {
+                    alert('삭제에 실패하였습니다');
+                    console.log(err);
+                })
+        },
+        goToOrder() {
+            if (this.selected.length == 0) {
+                alert('구매할 상품이 없습니다');
+                return;
+            }
+            this.$router.push({
+                name: "Payment",
+                params: {
+                    Payment: this.selected
+                }
+            });
         }
-        // selectAll(event) {     let checkAll = event.value;     if (checkAll) for (let
-        // i = 0; i < this.desserts.length; i++) { this.desserts[i].isCheck = true; }
-        // else         for (let i = 0; i < this.desserts.length; i++) {
-        // this.desserts[i].isCheck = false; } },
+    },
+    watch: {
+        selected: {
+            handler() {
+                this.totalPrice = 0;
+                for (let i = 0; i < this.selected.length; i++) {
+                    if (this.selected[i].onSale == false || this.selected[i].amount == 0) {
+                        this.selected.splice(i, 1);
+                        alert('품절 상품입니다');
+                    } else if (this.selected[i].basketAmount > this.selected[i].amount) {
+                        this.selected.splice(i, 1);
+                        alert('재고보다 주문량이 많습니다');
+                    } else {
+                        this.totalPrice += (this.selected[i].price - this.selected[i].discount) * this.selected[i].basketAmount;
+                    }
+                }
+                console.log(this.selected);
+            }
+        }
+    },
+    mounted() {
+        this.getBasket();
     }
 }
 </script>

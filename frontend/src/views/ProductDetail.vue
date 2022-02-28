@@ -86,7 +86,7 @@
                                             <v-col cols="3">
                                                 <v-row>
                                                     <v-col cols="6">
-                                                        <v-text-field type="number" min="1" :rules="[numberRule]" v-model="option.amount" @keyup="amountFilter" @click="amountFilter"></v-text-field>
+                                                        <v-text-field type="number" min="1" :rules="[numberRule]" v-model="option.basketAmount" @keyup="amountFilter" @click="amountFilter"></v-text-field>
                                                     </v-col>
                                                     <v-col cols="6" class="mt-5">
                                                         <v-icon @click="deleteSelected(idx)">mdi-delete</v-icon>
@@ -253,6 +253,8 @@ export default {
                 if (val == '') return '개수를 입력해주세요'
                 return true
             },
+
+            id: 'tester',
         }
     },
     methods: {
@@ -279,11 +281,11 @@ export default {
         },
         addSelected(color, size) {
             let data = {
-                id: 'tester',
+                id: this.id,
                 productNo: this.product.productNo,
                 selectedColor: color,
                 selectedSize: size,
-                amount: 1,
+                basketAmount: 1,
                 price: this.product.price - this.product.discount
             }
             for (let i = 0; i < this.selected.length; i++) {
@@ -302,13 +304,13 @@ export default {
         amountFilter() {
             let amount = 0;
             for (let i = 0; i < this.selected.length; i++) {
-                console.log(this.selected[i].amount);
-                if (this.selected[i].amount > 0 && this.selected[i].amount == Math.round(this.selected[i].amount)) {
-                    amount += Number(this.selected[i].amount);
+                console.log(this.selected[i].basketAmount);
+                if (this.selected[i].basketAmount > 0 && this.selected[i].basketAmount == Math.round(this.selected[i].basketAmount)) {
+                    amount += Number(this.selected[i].basketAmount);
                 } else {
                     alert('잘못된 입력입니다.');
-                    this.selected[i].amount = 1;
-                    amount += Number(this.selected[i].amount);
+                    this.selected[i].basketAmount = 1;
+                    amount += Number(this.selected[i].basketAmount);
                 }
             }
             this.totalPrice = amount * (this.product.price - this.product.discount);
@@ -326,18 +328,30 @@ export default {
             });
         },
         addToBasket() {
-            axios.post(`/api/basket/insert`, this.selected)
-                .then(() => {
-                    alert('장바구니에 저장하셨습니다');
-                    this.$router.go();
-                }).catch((err) => {
-                    alert('저장에 실패하셨습니다');
-                    console.log(err);
+            axios.get(`/api/basket/getBasketCount/${this.id}`)
+                .then(res => {
+                    if (res.data + this.selected.length > 50) {
+                        alert('장바구니에는 50개까지만 저장이 가능합니다.')
+                    } else {
+                        axios.post(`/api/basket/insert`, this.selected)
+                            .then(res => {
+                                console.log(res.data);
+                                if (res.data > 0) {
+                                    alert(`중복된 ${res.data}개의 상품을 제외하고 장바구니에 저장하였습니다.`)
+                                } else {
+                                    alert('장바구니에 저장하셨습니다');
+                                }
+                                this.$router.go();
+                            }).catch((err) => {
+                                alert('저장에 실패하셨습니다');
+                                console.log(err);
+                            })
+                    }
                 })
         },
         addToWishList() {
             axios.post(`/api/wishList/insert`, {
-                    id: 'tester',
+                    id: this.id,
                     productNo: this.pageID
                 })
                 .then(() => {

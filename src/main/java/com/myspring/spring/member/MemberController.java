@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,12 @@ public class MemberController {
 	public ResponseEntity<?> insertMember(@RequestBody MemberVO member) {
 		memberService.insertMember(member);
 		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	// 멤버 등록
+	@GetMapping(value = "/getMemberInfo/{id}")
+	public ResponseEntity<?> getMemberInfo(@PathVariable("id") String id) {
+		return memberService.getMemberInfo(id);
 	}
 
 	@PutMapping(value = "/updateMember")

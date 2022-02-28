@@ -1,6 +1,6 @@
 <template>
 <v-container>
-    <v-row justify="center" style="height: 965px">
+    <v-row justify="center" style="height: 970px">
         <v-col cols="3" align-self="center">
             <!-- <v-row class="mb-10" justify="center">
                 <v-img :src="require(`@/assets/SignIn_Logo.png`)" max-height="300" max-width="450"></v-img>
@@ -11,7 +11,7 @@
                 <v-text-field v-model="password" :rules="rules.pwd" label="PASSWORD" type="password" required></v-text-field>
                 <v-row class="mt-10" justify="center">
                     <v-btn class="mr-5 primary pl-2 pr-3" @click="goBack">
-                            <v-icon class="pr-1">mdi-home</v-icon>
+                        <v-icon class="pr-1">mdi-home</v-icon>
                         Home
                     </v-btn>
                     <v-btn class="mr-5 primary pl-2 pr-3" @click="signIn">
@@ -19,7 +19,7 @@
                         sign In
                     </v-btn>
                     <v-btn class="primary pl-2 pr-3" @click="signUp">
-                          <v-icon class="pr-1">mdi-account</v-icon>
+                        <v-icon class="pr-1">mdi-account</v-icon>
                         sign Up
                     </v-btn>
                 </v-row>

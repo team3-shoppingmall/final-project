@@ -18,8 +18,8 @@ public interface ReviewMapper {
 	public int getCount(@Param("search") String search, @Param("searchWord") String searchWord);
 		
 	//리뷰 전체보기
-	@Select("select * from reviewtable where ${search} like CONCAT('%', #{searchWord}, '%') order by reviewno desc limit #{start}, #{perPage}")
-	public List<ReviewVO> getAllReviews(@Param("start") int start, @Param("perPage") int perPage, 
+	@Select("select * from reviewtable left join producttable on producttable.productNo = reviewtable.productNo where ${search} like CONCAT('%', #{searchWord}, '%') order by reviewno desc limit #{start}, #{perPage}")
+	public List<ReviewAndProductVO> getAllReviews(@Param("start") int start, @Param("perPage") int perPage, 
 				@Param("search") String search, @Param("searchWord") String searchWord);
 	
 	//리뷰 상세보기

@@ -1,27 +1,20 @@
 <template>
 <v-container>
     <v-row justify="center" class="pa-5">
-        <v-col cols="2">
-            <v-btn @click="getFAQ('all')" :color="colorPicker('all')">전체보기</v-btn>
-        </v-col>
-        <v-col cols="2">
-            <v-btn @click="getFAQ('product')" :color="colorPicker('product')">상품관련</v-btn>
-        </v-col>
-        <v-col cols="2">
-            <v-btn @click="getFAQ('delivery')" :color="colorPicker('delivery')">배송관련</v-btn>
-        </v-col>
-        <v-col cols="2">
-            <v-btn @click="getFAQ('return')" :color="colorPicker('return')">교환/반품관련</v-btn>
-        </v-col>
-        <v-col cols="2">
-            <v-btn @click="getFAQ('etc')" :color="colorPicker('etc')">기타관련</v-btn>
+        <v-col cols="8">
+            <v-row justify="space-between">
+                <v-btn width="150px" @click="getFAQ('all')" :color="colorPicker('all')">전체보기</v-btn>
+                <v-btn width="150px" @click="getFAQ('product')" :color="colorPicker('product')">상품관련</v-btn>
+                <v-btn width="150px" @click="getFAQ('delivery')" :color="colorPicker('delivery')">배송관련</v-btn>
+                <v-btn width="150px" @click="getFAQ('return')" :color="colorPicker('return')">교환/반품관련</v-btn>
+                <v-btn width="150px" @click="getFAQ('etc')" :color="colorPicker('etc')">기타관련</v-btn>
+            </v-row>
         </v-col>
     </v-row>
-    <v-data-table :headers="headers" :options.sync="options" :items="contents" item-key="faqNo" hide-default-footer="hide-default-footer" :loading="loading" disable-sort="disable-sort" show-expand="show-expand" :single-expand="true" :expanded.sync="expanded" class="elevation-1" @click:row="(item, slot) => slot.expand(!slot.isExpanded)">
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" item-key="faqNo" hide-default-footer="hide-default-footer" :loading="loading" disable-sort="disable-sort" show-expand="show-expand" :single-expand="true" :expanded.sync="expanded" class="elevation-1" @click:row="(item, slot) => slot.expand(!slot.isExpanded)" no-data-text="검색된 자료가 없습니다">
         <template v-slot:expanded-item="{ headers, item }">
-            <td :colspan="headers.length">
+            <td :colspan="headers.length" class="pa-5">
                 <div v-html="item.content"></div>
-
             </td>
         </template>
         <template #[`item.type`]="{item}">
@@ -44,7 +37,7 @@
     </v-data-table>
     <v-row justify="end" class="mt-2">
         <v-col cols="auto">
-            <v-btn :to="'/writePost/faq'" outlined>글쓰기</v-btn>
+            <v-btn :to="'/writePost/faq'" color="primary">글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -75,13 +68,13 @@ export default {
                 }, {
                     text: '종류',
                     value: 'type',
-                    width: '10%',
+                    width: '12%',
                     align: 'center',
                 },
                 {
                     text: '제목',
                     value: 'title',
-                    width: '85%',
+                    width: '83%',
                     align: 'center',
                 },
                 {
@@ -94,34 +87,23 @@ export default {
         }
     },
     methods: {
-        getFAQ(selectedType) {
-            this.loading = true
-            this.search = selectedType;
-            this.expanded = [];
-            axios({
-                    method: 'get',
-                    url: `/api/faq/get/${selectedType}`,
-
-                })
-                .then(res => {
-                    this.contents = res.data;
-                    this.loading = false
-
-                })
-        },
         colorPicker(put) {
             if (this.search == put) {
                 return 'primary'
             }
         },
-        deleteFAQ(num) {
-            axios({
-                    method: 'delete',
-                    url: `/api/faq/deletefaq`,
-                    params: {
-                        faqNo: num
-                    }
+        getFAQ(selectedType) {
+            this.loading = true
+            this.search = selectedType;
+            this.expanded = [];
+            axios.get(`/api/faq/get/${selectedType}`)
+                .then(res => {
+                    this.contents = res.data;
+                    this.loading = false
                 })
+        },
+        deleteFAQ(num) {
+            axios.delete(`/api/faq/deletefaq/${num}`)
                 .then(() => {
                     alert("삭제가 완료되었습니다.")
                     this.$router.go();

@@ -34,45 +34,43 @@ public class NoticeController {
 			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
 		return noticeService.getNotice(page, perPage, search, searchWord);
 	}
-	
+
 	// 공지사항 게시물 보기
 	@GetMapping("/list/{noticeNo}")
 	public ResponseEntity<?> getNoticeFindByID(@PathVariable("noticeNo") int noticeNo) {
 		return noticeService.getNoticeFindByID(noticeNo);
 	}
-	
+
 	// 공지사항 게시물 작성
 	@PostMapping("/insertNotice")
 	public ResponseEntity<?> insertNotice(@RequestBody NoticeVO noticeVO) {
 		return noticeService.insertNotice(noticeVO);
 	}
-		
+
 	// 공지사항 수정
 	@PatchMapping("/updateNotice")
 	public ResponseEntity<?> updateNotice(@RequestParam int noticeNo, String title, String content, String image) {
 		return noticeService.updateNotice(noticeNo, title, content, image);
 	}
-	
+
 	// 공지사항 삭제
-	@DeleteMapping("/deleteNotice")
-	public ResponseEntity<?> deleteNotice(@RequestParam("noticeNo") int noticeNo) {
+	@DeleteMapping("/deleteNotice/{noticeNo}")
+	public ResponseEntity<?> deleteNotice(@PathVariable("noticeNo") int noticeNo) {
 		return noticeService.deleteNotice(noticeNo);
 	}
-	
-	
-	
+
 	// 공지사항 수정
 //	@PatchMapping("/updateNotice")
 //	public ResponseEntity<?> updateNotice(@RequestBody NoticeVO noticeVO) {
 //		return noticeService.updateNotice(noticeVO);
 //	}	
-	
+
 //	// 공지사항 목록 출력
 //	@GetMapping("/getNotice")
 //	public ResponseEntity<?> getNotice(@RequestBody NoticeVO noticeVO) {
 //		return noticeService.getNotice(noticeVO);
 //	}
-	
+
 //	// 공지사항 목록 출력
 //	@GetMapping("/getNotice")
 //	public List<NoticeVO> list(@RequestParam("page") int page, @RequestParam("perPage") int perPage) {

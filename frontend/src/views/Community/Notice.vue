@@ -1,14 +1,14 @@
 <template>
 <v-container>
     <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="noticeNo" class="elevation-1" @click:row="moveto" disable-sort>
+        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="noticeNo" class="elevation-1" @click:row="moveto" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
             <template #[`item.title`]="{item}">
                 <div class="text-left">
                     {{ item.title }}
                 </div>
             </template>
             <template #[`item.id`]="{item}">
-                <div class="text-left">
+                <div>
                     <HideId :id="item.id" />
                 </div>
             </template>
@@ -19,18 +19,18 @@
         <v-col cols="8" sm="7" md="5" lg="4" xl="3">
             <v-row>
                 <v-col cols="4">
-                    <v-select :items="searches" v-model="search"></v-select>
+                    <v-select :items="searches" v-model="search" hide-details></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord"></v-text-field>
+                    <v-text-field v-model="searchWord" hide-details></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon @click="getNotice">검색</v-btn>
+                    <v-btn @click="getNotice" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
         <v-col cols="auto">
-            <v-btn :to="'/writePost/notice'" outlined>글쓰기</v-btn>
+            <v-btn :to="'/writePost/notice'" color="primary">글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -71,14 +71,9 @@ export default {
                 },
             ],
             searches: [{
-                    text: '제목',
-                    value: 'title'
-                },
-                {
-                    text: '작성자',
-                    value: 'id'
-                }
-            ],
+                text: '제목',
+                value: 'title'
+            }, ],
             search: 'title',
             searchWord: '',
         }
@@ -103,20 +98,9 @@ export default {
                 .then(res => {
                     this.contents = res.data.noticeList;
                     this.totalContents = res.data.count;
-                    this.loading = false;
-                    // axios({
-                    //         method: 'get',
-                    //         url: '/api/notice/getCount',
-                    //         params: {
-                    //             search: this.search,
-                    //             searchWord: this.searchWord,
-                    //         }
-                    //     })
-                    //     .then(res => {
-                    //         this.totalContents = res.data;
-                    //         this.loading = false;
-                    //     })
-                })
+                }).finally(
+                    this.loading = false
+                )
         },
         moveto(item) {
             this.$router.push(`/community/noticePost/${item.noticeNo}`)

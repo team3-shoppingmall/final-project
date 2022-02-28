@@ -29,8 +29,14 @@
     </v-app-bar>
     <v-main>
         <router-view />
+        <!-- <v-btn v-show="fab" fab dark fixed bottom right color="#FF8EA0">
+            ChatBot
+        </v-btn> -->
+        <v-btn v-scroll="onScroll" v-show="fab" fab dark fixed bottom right color="#FF8EA0" @click="toTop">
+            <v-icon>mdi-chevron-up</v-icon>
+        </v-btn>
     </v-main>
-    <v-footer  color="primary lighten-1" padless>
+    <v-footer color="primary lighten-1" padless>
         <Footer />
     </v-footer>
 </v-app>
@@ -41,6 +47,7 @@ import Footer from '@/components/Footer.vue'
 export default {
     data() {
         return {
+            fab: false,
             pages: [{
                 name: 'MAIN',
                 to: '/',
@@ -110,6 +117,16 @@ export default {
     },
     components: {
         Footer,
+    },
+    methods: {
+        onScroll(e) {
+            if (typeof window === 'undefined') return
+            const top = window.pageYOffset || e.target.scrollTop || 0
+            this.fab = top > 20
+        },
+        toTop() {
+            this.$vuetify.goTo(0)
+        }
     }
 
 }

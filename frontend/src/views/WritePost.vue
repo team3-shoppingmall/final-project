@@ -1,12 +1,15 @@
 <template>
 <v-container>
     <v-row justify="center">
-        <v-col align-self="center" cols="7">
+        <v-col align-self="center" cols="9">
             <div class="text-h3" v-if="originalNo == undefined">글쓰기</div>
+
+            <!-- 답글일 경우 출력 -->
             <div class="text-h3" v-if="originalNo != undefined">답변</div>
             <div v-if="productNo != 0 && productNo != undefined">
                 <ProductDetailDisplay :productNo="productNo" />
             </div>
+
             <v-divider class="my-5"></v-divider>
             <v-form ref="form">
                 <v-simple-table>
@@ -36,20 +39,29 @@
                                 <td>
                                     <v-row>
                                         <v-col>
-                                            <div v-html="content" style="border:1px black solid"></div>
-                                            <div style="border:1px black solid">{{content}}</div>
+                                            <div>
+                                                {{content}}
+                                            </div>
                                             <ckeditor :editor="editor" v-model="content" :config="editorConfig"></ckeditor>
-                                            <span :class="contentColor">{{content.length}}/2000</span>
+                                            <span :class="contentColor" v-if="pageID != 'notice'">{{content.length}}/2000</span>
+                                            <span :class="contentColor" v-if="pageID == 'notice'">{{content.length}}/10000</span>
                                         </v-col>
                                     </v-row>
                                 </td>
                             </tr>
-                            <tr v-if="originalNo == undefined">
+                            <tr v-if="originalNo == undefined && pageID != 'faq'">
                                 <td> 파일 첨부 </td>
                                 <td>
-                                    <v-row v-for="(idx) in 5" :key="idx" align="center" dense>
-                                        <v-col cols="8">
-                                            <v-file-input v-model="files[idx-1]" accept="image/*" truncate-length="50" class="pa-0"></v-file-input>
+                                    <v-row>
+                                        <v-col cols="3" v-for="(idx) in 4" :key="idx" align="center">
+                                            <v-card :loading="false" class="mx-auto my-5">
+                                                <v-card-title>
+                                                    <v-img max-height="250" :src="imageUrl[idx-1]" min-height="250" contain @click="fileInputClick(idx-1)" />
+                                                </v-card-title>
+                                                <v-card-actions>
+                                                    <v-file-input v-model="imageFiles[idx-1]" :id="`fileInput${idx-1}`" accept="image/*" truncate-length="14" class="pa-0" hide-details @change="onImageChange(idx-1)"></v-file-input>
+                                                </v-card-actions>
+                                            </v-card>
                                         </v-col>
                                     </v-row>
                                 </td>
@@ -68,43 +80,14 @@
                 </v-simple-table>
                 <v-divider></v-divider>
                 <v-row justify="end" class="mt-3">
-                    <v-col cols="auto" v-if="originalNo != undefined">
-                        <v-btn @click="replyForm" outlined>답변 작성</v-btn>
+                    <v-col cols="auto" v-if="num == undefined">
+                        <v-btn @click="form" color="primary">작성</v-btn>
                     </v-col>
-                    <!-- <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
-                        <v-btn @click="form" outlined>작성</v-btn>
-                    </v-col>
-                    <v-col cols="auto" v-if="num != '' && num != undefined">
-                        <v-btn @click="formUpdate" outlined>수정</v-btn>
-                    </v-col> -->
-
-                    <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
-                        <v-btn @click="noticeForm" outlined>Notice 작성</v-btn>
-                    </v-col>
-                    <v-col cols="auto" v-if="num != '' && num != undefined">
-                        <v-btn @click="noticeFormUpdate" outlined>Notice 수정</v-btn>
-                    </v-col>
-
-                    <v-col cols="auto" v-if="num != '' && num != undefined">
-                        <v-btn @click="reviewFormUpdate" outlined>review 수정</v-btn>
-                    </v-col>
-
-                    <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
-                        <v-btn @click="qnaForm" outlined>QNA 작성</v-btn>
-                    </v-col>
-                    <v-col cols="auto" v-if="num != '' && num != undefined">
-                        <v-btn @click="qnaFormUpdate" outlined>QNA 수정</v-btn>
-                    </v-col>
-
-                    <v-col cols="auto" v-if="(num == '' || num == undefined) && originalNo == undefined">
-                        <v-btn @click="faqForm" outlined>FAQ 작성</v-btn>
-                    </v-col>
-                    <v-col cols="auto" v-if="num != '' && num != undefined">
-                        <v-btn @click="faqFormUpdate" outlined>FAQ 수정</v-btn>
-
+                    <v-col cols="auto" v-if="num != undefined">
+                        <v-btn @click="updateForm" color="primary">수정</v-btn>
                     </v-col>
                     <v-col cols="auto">
-                        <v-btn @click="moveToBefore" outlined>취소</v-btn>
+                        <v-btn @click="moveToBefore" color="primary">취소</v-btn>
                     </v-col>
                 </v-row>
             </v-form>
@@ -209,25 +192,18 @@ export default {
             star: '',
             content: '',
             contentColor: 'black--text',
-            files: [null],
+            imageFiles: [null, null, null, null],
+            imageUrl: [null, null, null, null],
             secret: true,
         }
     },
     methods: {
+        // 글쓰기일 경우 초기 설정
         currentURL() {
-            let pageList = ['notice', 'faq']
-            for (let i = 0; i < pageList.length; i++) {
-                if (this.pageID == pageList[i]) {
-                    this.admin = true;
-                    this.titleSelected = this.pageID;
-                }
-            }
-            if (this.admin == false) {
-                this.setSelectItems();
-            }
-        },
-        setSelectItems() {
-            if (this.pageID != '') {
+            if (this.pageID == 'notice' || this.pageID == 'faq') {
+                this.admin = true;
+                this.titleSelected = this.pageID;
+            } else {
                 for (let i = this.titles.length - 1; i > 0; i--) {
                     if (this.pageID != this.titles[i].type) {
                         this.titles.splice(i, 1);
@@ -235,207 +211,126 @@ export default {
                 }
             }
         },
-        moveto() {
-            if (this.pageID == 'notice' || this.pageID == 'faq') {
-                this.$router.push(`/community/${this.pageID}`)
-            } else {
-                this.$router.push(`/qna/${this.pageID}`)
+
+        // 질문 종류 선택 시 내용에 양식 넣어줌
+        setContent(target) {
+            for (let i = 0; i < this.titles.length; i++) {
+                if (target == this.titles[i].value) {
+                    this.content = this.titles[i].content;
+                }
             }
         },
-        qnaForm() {
-            if (this.pageID != 'notice' && this.pageID != 'faq') {
+
+        // 이미지
+        fileInputClick(idx) {
+            document.getElementById(`fileInput${idx}`).click();
+        },
+        onImageChange(index) {
+            const file = this.imageFiles[index];
+            if (file) {
+                this.imageUrl[index] = URL.createObjectURL(file);
+                URL.revokeObjectURL(file);
+            } else {
+                this.imageUrl[index] = null;
+            }
+        },
+
+        // 취소
+        moveToBefore() {
+            this.$router.go(-1);
+        },
+
+        form() {
+            if (this.admin) {
+                if (this.titleDetail == '' && this.originalNo == undefined) {
+                    alert('제목을 입력해주세요');
+                    return;
+                }
+            } else {
                 if (this.titleSelected == 'default') {
                     alert('제목을 선택해주세요')
                     return;
                 }
             }
 
-            axios({
-                method: 'post',
-                url: `/api/qna/insertqna`,
-                data: {
-                    type: this.titleSelected,
-                    reply: false,
-                    content: this.content,
-                    id: "user123",
-                    secret: this.secret,
-                    image: "image1.jpg"
-                }
-            }).then((res) => {
-                if (res.status == 200) {
-                    console.log(res.data);
-                    alert("문의글이 등록되었습니다.");
-                    this.$router.go(-1);
-                }
-            }).catch((err) => {
-                console.log(err);
-            })
+            if (this.content == '') {
+                alert('내용을 입력해주세요');
+                return;
+            }
 
-            // // notice or faq or qna관련
-            // console.log(this.titleSelected);
+            let limit = 2000;
+            if (this.pageID == 'notice') {
+                limit = 10000;
+            }
+            if (this.content.length > limit) {
+                alert('글자 수 제한을 넘기셨습니다');
+                return;
+            }
 
-            // // notice or faq일 경우 제목 보내는 용도
-            // console.log(this.titleDetail);
-
-            // // 아닐 경우 어떤 종류의 문의인지 찾기
-            // console.log(this.titleSelected);
-
-            // // 현재 내용
-            // console.log(this.content);
-
-            // 파일은 방법 찾아보시거나 일단 임시로 넣어서 실험하시면 됩니다
-
-            // // 비밀글 여부
-            // console.log(this.secret);
-
-            // alert('완료');
-            // this.$router.go(-1);
+            if (this.originalNo != undefined) {
+                this.replyForm();
+            } else if (this.pageID == 'notice') {
+                this.noticeForm();
+            } else if (this.pageID == 'faq') {
+                this.faqForm();
+            } else {
+                this.qnaForm();
+            }
         },
-        noticeForm() {
-            axios({
-                method: 'post',
-                url: `/api/notice/insertNotice`,
-                data: {
-                    title: this.titleDetail,
-                    content: this.content,
-                    id: "admin123",
-                    image: "",
-                }
-            }).then((res) => {
-                {
-                    console.log(res.data, res.status);
-                    alert("공지사항 등록 완료");
-                    this.$router.go(-1);
-                }
-            }).catch((err) => {
-                alert("등록 실패");
-                console.log(err);
-
-            })
-            // // notice or faq or qna관련
-            // console.log(this.titleSelected);
-
-            // // notice or faq일 경우 제목 보내는 용도
-            // console.log(this.titleDetail);
-
-            // // 아닐 경우 어떤 종류의 문의인지 찾기
-            // console.log(this.titleSelected);
-
-            // // 현재 내용
-            // console.log(this.content);
-
-            // 파일은 방법 찾아보시거나 일단 임시로 넣어서 실험하시면 됩니다
-
-            // // 비밀글 여부
-            // console.log(this.secret);
-
-            //axios status==200 안으로 넣어야 함
-            // alert('완료');
-            // this.$router.go(-1);
+        getData() {
+            this.titleSelected = this.pageID;
+            if (this.pageID == 'notice') {
+                this.admin = true;
+                this.getNotice();
+            } else if (this.pageID == 'review') {
+                this.getReview();
+            } else if (this.pageID == 'faq') {
+                this.admin = true;
+                this.getFAQ();
+            } else if (this.pageID == 'qna') {
+                this.getQnA();
+            }
         },
-        getReview() {
-            axios({
-                method: 'get',
-                url: `/api/review/detail`,
-                params: {
-                    reviewNo: this.num
+        updateForm() {
+            if (this.admin) {
+                if (this.titleDetail == '') {
+                    alert('제목을 입력해주세요');
+                    return;
                 }
-            }).then((res) => {
-                this.content = res.data.content;
-                this.star = res.data.star;
-            })
-        },
-        getQnA() {
-            axios({
-                method: 'get',
-                url: `/api/qna/getqnabyqnaNo`,
-                params: {
-                    qnaNo: this.num
+            } else {
+                if (this.titleSelected == 'default') {
+                    alert('제목을 선택해주세요')
+                    return;
                 }
-            }).then((res) => {
-                this.titleSelected = res.data.type;
-                this.content = res.data.content;
-            }).catch((err) => {
-                console.log(err);
-            })
-        },
-        getFAQ() {
-            axios({
-                method: 'get',
-                url: `/api/faq/getfaqbyfaqNo`,
-                params: {
-                    faqNo: this.num
-                }
-            }).then((res) => {
-                this.titleDetail = res.data.title;
-                this.faqTypeSelected = res.data.type;
-                this.content = res.data.content;
-            })
+            }
 
+            if (this.content == '') {
+                alert('내용을 입력해주세요');
+                return;
+            }
+
+            let limit = 2000;
+            if (this.pageID == 'notice') {
+                limit = 10000;
+            }
+            if (this.content.length > limit) {
+                alert('글자 수 제한을 넘기셨습니다');
+                return;
+            }
+
+            if (this.pageID == 'notice') {
+                this.noticeFormUpdate();
+            } else if (this.pageID == 'review') {
+                this.reviewFormUpdate();
+            } else if (this.pageID == 'faq') {
+                this.faqFormUpdate();
+            } else {
+                this.qnaFormUpdate();
+            }
         },
 
-        getNotice() {
-            axios({
-                method: 'get',
-                url: `/api/notice/list/${this.num}`,
-                params: {
-                    noticeNo: this.num
-                }
-            }).then((res) => {
-                // this.notice = res.data;
-                this.titleDetail = res.data.title;
-                this.content = res.data.content;
-                console.log(res.status);
-            }).catch((err) => {
-                alert("목록을 불러오는데 실패했습니다.");
-                console.log(err);
-            })
-        },
-
-        noticeFormUpdate() {
-            axios({
-                method: 'patch',
-                url: `/api/notice/updateNotice`,
-                params: {
-                    noticeNo: this.num,
-                    title: this.titleDetail,
-                    content: this.content,
-                    image: "",
-                }
-            }).then((res) => {
-                console.log(res.data, res.status);
-                alert("공지사항 수정 완료");
-                this.$router.go(-1);
-            }).catch((err) => {
-                alert("수정 실패");
-                console.log(err);
-            })
-        },
-
-        moveToBefore() {
-            this.$router.go(-1);
-        },
-
-        reviewFormUpdate() {
-            axios({
-                    method: 'patch',
-                    url: `/api/review/update`,
-                    params: {
-                        reviewNo: this.num,
-                        content: this.content,
-                        star: this.star
-                    }
-                })
-                .then(() => {
-                    alert("수정이 완료되었습니다.")
-                    this.$router.go(-1);
-                }).catch((err) => {
-                    alert('수정에 실패하셨습니다.');
-                    console.log(err);
-                })
-        },
+        // 답변 작성
         replyForm() {
-            console.log(this.pageID);
             axios({
                 method: 'post',
                 url: `/api/qna/insertReply`,
@@ -444,13 +339,65 @@ export default {
                     originalNo: this.originalNo,
                     content: this.content,
                     id: "admin",
-                    image: "image1.jpg"
                 }
-            }).then((res) => {
-                console.log(res.data, res.status);
+            }).then(() => {
                 alert("답변 등록 완료");
                 this.$router.go(-2);
             }).catch((err) => {
+                console.log(err);
+            })
+        },
+
+        // 글쓰기
+        noticeForm() {
+            // let image = null;
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         if (image == null) {
+            //             image = this.imageFiles[i].name;
+            //         } else {
+            //             image = image + ";" + this.imageFiles[i].name;
+            //         }
+            //     }
+            // }
+            // let data = {
+            //     title: this.titleDetail,
+            //     content: this.content,
+            //     id: "admin123",
+            //     image: image,
+            // };
+            // let formData = new FormData();
+            // formData.append('data', new Blob([JSON.stringify(data)], {
+            //     type: "application/json"
+            // }));
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         formData.append(`fileList`, this.imageFiles[i])
+            //     }
+            // }
+            // axios.post(`/api/notice/insertNotice`, formData)
+            //     .then(() => {
+            //         alert("공지사항 등록 완료");
+            //         this.$router.go(-1);
+            //     }).catch((err) => {
+            //         alert("등록 실패");
+            //         console.log(err);
+            //     })
+
+            axios({
+                method: 'post',
+                url: `/api/notice/insertNotice`,
+                data: {
+                    title: this.titleDetail,
+                    content: this.content,
+                    id: "admin123",
+                    image: "test.jpg",
+                }
+            }).then(() => {
+                alert("공지사항 등록 완료");
+                this.$router.go(-1);
+            }).catch((err) => {
+                alert("등록 실패");
                 console.log(err);
             })
         },
@@ -461,14 +408,263 @@ export default {
                     content: this.content
                 })
 
-                .then(res => {
-                    console.log(res.data, res.status);
+                .then(() => {
                     alert("FAQ 등록 완료");
                     this.$router.go(-1);
                 }).catch((err) => {
                     console.log(err);
                 })
 
+        },
+        qnaForm() {
+            // let image = null;
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         if (image == null) {
+            //             image = this.imageFiles[i].name;
+            //         } else {
+            //             image = image + ";" + this.imageFiles[i].name;
+            //         }
+            //     }
+            // }
+            // let data = {
+            //     productNo: this.productNo,
+            //     type: this.titleSelected,
+            //     reply: false,
+            //     content: this.content,
+            //     id: "tester",
+            //     secret: this.secret,
+            //     image: image,
+            // };
+            // let formData = new FormData();
+            // formData.append('data', new Blob([JSON.stringify(data)], {
+            //     type: "application/json"
+            // }));
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         formData.append(`fileList`, this.imageFiles[i])
+            //     }
+            // }
+            // axios.post(`/api/qna/insertqna`, formData)
+            //     .then(() => {
+            //         alert("문의글이 등록되었습니다.");
+            //         this.$router.go(-1);
+            //     }).catch((err) => {
+            //         console.log(err);
+            //     })
+
+            axios({
+                method: 'post',
+                url: `/api/qna/insertqna`,
+                data: {
+                    productNo: this.productNo,
+                    type: this.titleSelected,
+                    reply: false,
+                    content: this.content,
+                    id: "tester",
+                    secret: this.secret,
+                    image: "image1.jpg"
+                }
+            }).then(() => {
+                alert("문의글이 등록되었습니다.");
+                this.$router.go(-1);
+            }).catch((err) => {
+                console.log(err);
+            })
+        },
+
+        // 수정 시 기존 데이터 넣기
+        getNotice() {
+            axios.get(`/api/notice/list/${this.num}`)
+                .then((res) => {
+                    this.titleDetail = res.data.title;
+                    this.content = res.data.content;
+                    let imageList = res.data.image.split(';');
+                    for (let i = 0; i < imageList.length; i++) {
+                        axios.get(`/api/notice/noticeImage/${this.num}/${imageList[i]}`, {
+                                responseType: "blob",
+                            })
+                            .then(res => {
+                                var file = new File([res.data], imageList[i], {
+                                    type: "image/*",
+                                    lastModified: Date.now()
+                                });
+                                this.imageFiles[i] = file;
+                                this.onImageChange(i);
+                            })
+                    }
+                }).catch((err) => {
+                    alert("정보를 불러오는데 실패했습니다.");
+                    console.log(err);
+                })
+        },
+        getReview() {
+            axios.get(`/api/review/getReview/${this.num}`)
+                .then((res) => {
+                    this.content = res.data.content;
+                    this.star = res.data.star;
+                    let imageList = res.data.image.split(';');
+                    for (let i = 0; i < imageList.length; i++) {
+                        axios.get(`/api/review/reviewImage/${this.num}/${imageList[i]}`, {
+                                responseType: "blob",
+                            })
+                            .then(res => {
+                                var file = new File([res.data], imageList[i], {
+                                    type: "image/*",
+                                    lastModified: Date.now()
+                                });
+                                this.imageFiles[i] = file;
+                                this.onImageChange(i);
+                            })
+                    }
+                }).catch((err) => {
+                    alert("정보를 불러오는데 실패했습니다.");
+                    console.log(err);
+                })
+        },
+        getFAQ() {
+            axios.get(`/api/faq/getFaq/${this.num}`)
+                .then((res) => {
+                    this.titleDetail = res.data.title;
+                    this.faqTypeSelected = res.data.type;
+                    this.content = res.data.content;
+                }).catch((err) => {
+                    alert("정보를 불러오는데 실패했습니다.");
+                    console.log(err);
+                })
+        },
+        getQnA() {
+            axios.get(`/api/qna/getQna/${this.num}`)
+                .then((res) => {
+                    console.log(res.data);
+                    this.titleSelected = res.data.type;
+                    this.content = res.data.content;
+                    this.secret = res.data.secret;
+                    let imageList = res.data.image.split(';');
+                    for (let i = 0; i < imageList.length; i++) {
+                        axios.get(`/api/qna/qnaImage/${this.num}/${imageList[i]}`, {
+                                responseType: "blob",
+                            })
+                            .then(res => {
+                                var file = new File([res.data], imageList[i], {
+                                    type: "image/*",
+                                    lastModified: Date.now()
+                                });
+                                this.imageFiles[i] = file;
+                                this.onImageChange(i);
+                            })
+                    }
+                }).catch((err) => {
+                    alert("정보를 불러오는데 실패했습니다.");
+                    console.log(err);
+                })
+        },
+
+        // 수정
+        noticeFormUpdate() {
+            // let image = null;
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         if (image == null) {
+            //             image = this.imageFiles[i].name;
+            //         } else {
+            //             image = image + ";" + this.imageFiles[i].name;
+            //         }
+            //     }
+            // }
+            // let data = {
+            //     noticeNo: this.num,
+            //     title: this.titleDetail,
+            //     content: this.content,
+            //     image: image,
+            // };
+            // let formData = new FormData();
+            // formData.append('data', new Blob([JSON.stringify(data)], {
+            //     type: "application/json"
+            // }));
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         formData.append(`fileList`, this.imageFiles[i])
+            //     }
+            // }
+            // axios.post(`/api/notice/updateNotice`, formData)
+            //     .then(() => {
+            //         alert("공지사항 수정 완료");
+            //         this.$router.go(-1);
+            //     }).catch((err) => {
+            //         alert("수정 실패");
+            //         console.log(err);
+            //     })
+
+            axios({
+                method: 'patch',
+                url: `/api/notice/updateNotice`,
+                params: {
+                    noticeNo: this.num,
+                    title: this.titleDetail,
+                    content: this.content,
+                    image: "test.jpg",
+                }
+            }).then(() => {
+                alert("공지사항 수정 완료");
+                this.$router.go(-1);
+            }).catch((err) => {
+                alert("수정 실패");
+                console.log(err);
+            })
+        },
+        reviewFormUpdate() {
+            // let image = null;
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         if (image == null) {
+            //             image = this.imageFiles[i].name;
+            //         } else {
+            //             image = image + ";" + this.imageFiles[i].name;
+            //         }
+            //     }
+            // }
+            // let data = {
+            //     reviewNo: this.num,
+            //     content: this.content,
+            //     star: this.star,
+            //     image: image,
+            // };
+            // let formData = new FormData();
+            // formData.append('data', new Blob([JSON.stringify(data)], {
+            //     type: "application/json"
+            // }));
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         formData.append(`fileList`, this.imageFiles[i])
+            //     }
+            // }
+            // axios.post(`/api/review/update`, formData)
+            //     .then(() => {
+            //         alert("수정이 완료되었습니다.")
+            //         this.$router.go(-1);
+            //     }).catch((err) => {
+            //         alert('수정에 실패하셨습니다.');
+            //         console.log(err);
+            //     })
+
+            axios({
+                    method: 'patch',
+                    url: `/api/review/update`,
+                    params: {
+                        reviewNo: this.num,
+                        content: this.content,
+                        star: this.star,
+                        image: "test.jpg"
+                    }
+                })
+                .then(() => {
+                    alert("수정이 완료되었습니다.")
+                    this.$router.go(-1);
+                }).catch((err) => {
+                    alert('수정에 실패하셨습니다.');
+                    console.log(err);
+                })
         },
         faqFormUpdate() {
             axios({
@@ -479,41 +675,61 @@ export default {
                     type: this.faqTypeSelected,
                     title: this.titleDetail,
                     content: this.content,
-
                 }
-            }).then((res) => {
-
-                console.log(res.data, res.status);
+            }).then(() => {
                 alert("FAQ 수정 완료");
                 this.$router.go(-1);
             })
-
-            // .then(res => {
-            //     if (res.status == 200) {
-            //         alert("수정이 완료되었습니다.")
-            //         this.$router.go(-1);
-            //     }
-            // })
         },
         qnaFormUpdate() {
+            // let image = null;
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         if (image == null) {
+            //             image = this.imageFiles[i].name;
+            //         } else {
+            //             image = image + ";" + this.imageFiles[i].name;
+            //         }
+            //     }
+            // }
+            // let data = {
+            //     productNo: this.productNo,
+            //     qnaNo: this.num,
+            //     type: this.titleSelected,
+            //     content: this.content,
+            //     secret: this.secret,
+            //     image: image,
+            // };
+            // let formData = new FormData();
+            // formData.append('data', new Blob([JSON.stringify(data)], {
+            //     type: "application/json"
+            // }));
+            // for (let i = 0; i < this.imageFiles.length; i++) {
+            //     if (this.imageFiles[i] != null) {
+            //         formData.append(`fileList`, this.imageFiles[i])
+            //     }
+            // }
+            // axios.post(`/api/qna/updateqna`, formData)
+            //     .then(() => {
+            //         alert("수정이 완료되었습니다.");
+            //         this.$router.go(-1);
+            //     }).catch((err) => {
+            //         console.log(err);
+            //         alert("수정에 실패했습니다.");
+            //     })
 
-            // this.sendType => 게시글 종류(notice, faq, qna(product, delivery) 등)
-
-            //axios status==200 안으로 넣어야 함
-            // alert('완료');
-            // this.$router.go(-1);
             axios({
                 method: 'patch',
                 url: `/api/qna/updateqna`,
                 params: {
+                    productNo: this.productNo,
                     qnaNo: this.num,
                     type: this.titleSelected,
                     content: this.content,
                     secret: this.secret,
-                    image: ""
+                    image: "test.jpg"
                 }
-            }).then((res) => {
-                console.log(res.data);
+            }).then(() => {
                 alert("수정이 완료되었습니다.");
                 this.$router.go(-1);
             }).catch((err) => {
@@ -521,51 +737,21 @@ export default {
                 alert("수정에 실패했습니다.");
             })
         },
-        setContent(target) {
-            for (let i = 0; i < this.titles.length; i++) {
-                if (target == this.titles[i].value) {
-                    this.content = this.titles[i].content;
-                }
-            }
-        }
-        /* 수정기능 완성 x
-        faqFormUpdate() {
-
-            axios({
-                method: 'patch',
-                url: `/api/faq/updatefaq`,
-                params: {
-                    faqNo: this.faqNo,
-                    type: this.faqTypeSelected,
-                    title: this.titleDetail,
-                    content: this.content,
-
-                }
-            }).then((res) => {
-                console.log(res.data, res.status);
-                alert("수정 완료");
-                this.$router.go(-1);
-            }).catch((err) => {
-                console.log(err);
-            })
-        }, */
     },
 
     watch: {
         content: {
             handler() {
-                // 2000자를 넘어서면 빨간 글씨
-                if (this.content.length > 2000) {
+                let limit = 2000;
+                if (this.pageID == 'notice') {
+                    limit = 10000;
+                }
+                // 2000자를 넘어서면 빨간 글씨(공지사항은 1만자)
+                if (this.content.length > limit) {
                     this.contentColor = 'red--text';
                 } else {
                     this.contentColor = 'black--text';
                 }
-            }
-        },
-        files(val) {
-            if (val.length > 5) {
-                this.$nextTick(() => this.files.pop());
-                alert('이미지는 5개까지 첨부 가능합니다')
             }
         },
     },
@@ -579,25 +765,12 @@ export default {
         // 상세 페이지에서 문의 버튼 클릭 시 상품 번호
         this.productNo = this.$route.params.productNo;
 
-        // 수정
-        if (this.num != '' && this.num != undefined) {
-            if (this.pageID == 'notice' || this.pageID == 'faq') {
-                this.admin = true;
-            }
-            this.titleSelected = this.pageID;
-            if (this.pageID == 'notice') {
-                this.getNotice();
-            } else if (this.pageID == 'review') {
-                this.getReview();
-            } else if (this.pageID == 'faq') {
-                this.getFAQ();
-            } else if (this.pageID == 'qna') {
-                this.getQnA();
-            }
-        } else if (this.originalNo != '' && this.originalNo != undefined) {
+        if (this.$route.params.num != undefined) {
+            // 수정
+            this.getData();
+        } else if (this.$route.params.original != undefined) {
             // 답변
             this.admin = true;
-            this.titleSelected = 'reply';
         } else {
             // 단순 글쓰기 
             this.currentURL();

@@ -15,20 +15,22 @@ import com.myspring.spring.product.ProductMapper;
 @Service
 public class QnaService {
 	private QnaMapper qnaMapper;
-    private ProductMapper productMapper;
+	private ProductMapper productMapper;
 
-    @Autowired
-    public QnaService(QnaMapper qnaMapper, ProductMapper productMapper) {
-       this.qnaMapper = qnaMapper;
-       this.productMapper = productMapper;
-    }
-
+	@Autowired
+	public QnaService(QnaMapper qnaMapper, ProductMapper productMapper) {
+		this.qnaMapper = qnaMapper;
+		this.productMapper = productMapper;
+	}
 
 	// 카테고리별 전체 개수 가져오기
-	// product => 'general', 'product', 'productNotice', 'productReply', 'generalReply'
-	// beforeDelivery => 'cancel', 'change', 'changeaddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply'
+	// product => 'general', 'product', 'productNotice', 'productReply',
+	// 'generalReply'
+	// beforeDelivery => 'cancel', 'change', 'changeaddress', 'cancelNotice',
+	// 'cancelReply', 'changeReply', 'changeaddressReply'
 	// delivery => 'delivery', 'deliveryNotice', 'deliveryReply'
-	// afterDelivery => 'return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply'
+	// afterDelivery => 'return', 'exchange', 'error', 'returnNotice',
+	// 'returnReply', 'exchangeReply', 'errorReply'
 //	public ResponseEntity<?> getCount(String search, String searchWord, String type) {
 //		int res = 0;
 //		System.out.println(type);
@@ -133,11 +135,17 @@ public class QnaService {
 
 	}
 
+	// 댓글 등록 시 원글에 productNo가 있을 때 댓글 productNo도 넣어줘야함 =====
 	// 댓글 등록 - originalNo 받아서 reply = true로 바꿔주기
 	public ResponseEntity<?> insertReply(QnaVO qnaVO) {
 		int res = qnaMapper.insertReply(qnaVO);
 		int originalNo = qnaVO.getOriginalNo();
 		int resReply = qnaMapper.updateReplyTrue(originalNo);
+
+		QnaVO qna = qnaMapper.getQna(originalNo);
+		if (qna.getProductNo() != 0) {
+			qnaVO.setProductNo(qna.getProductNo());
+		}
 
 		if (res == 0) {
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -165,16 +173,16 @@ public class QnaService {
 	// 댓글을 삭제 시 원글의 originalNo를 qnaNo와 같도록 세팅
 	public ResponseEntity<?> deleteQna(int qnaNo) {
 		QnaVO res = qnaMapper.getQna(qnaNo);
-
 		// 문의 삭제
 		int resQna = qnaMapper.deleteQna(qnaNo);
+		int resDelReply = qnaMapper.deleteReply(qnaNo);
 
-		int resReply;
-
+		// 답글이 삭제될때 원글의 reply가 false로 바꾸기
 		// reply글의 originalNo를 받아와서 그 originalNo의 reply를 false로 바꿔주기
 		// qnaNo != originalNo 일 때는 답글없다는 의미 -> updateReplyFalse()
 		if (res.getQnaNo() != res.getOriginalNo()) {
-			resReply = qnaMapper.updateReplyFalse(res.getOriginalNo());
+			// qna가 삭제될때 reply도 같이 삭제하기
+			int resReply = qnaMapper.updateReplyFalse(res.getOriginalNo());
 			res.setOriginalNo(res.getQnaNo());
 			if (resReply == 0)
 				return new ResponseEntity<>(resReply, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -182,7 +190,7 @@ public class QnaService {
 				return new ResponseEntity<>(resReply, HttpStatus.OK);
 		}
 
-		if (resQna == 0)
+		if (resQna == 0 || resDelReply == 0)
 			return new ResponseEntity<>(resQna, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
 			return new ResponseEntity<>(resQna, HttpStatus.OK);
@@ -216,38 +224,41 @@ public class QnaService {
 			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
-	//카테고리별로 qna목록 출력
+	// 카테고리별로 qna목록 출력
 	public ResponseEntity<?> getQnaListByType(int page, int perPage, String search, String searchWord, String type) {
 		int start = (page - 1) * perPage;
-		List<QnaVO> qnaList = qnaMapper.getQnaListByType(start, perPage, search, searchWord, type);
+		List<QnaAndProductVO> qnaList = qnaMapper.getQnaListByType(start, perPage, search, searchWord, type);
 		int count = qnaMapper.getQnaCountByType(search, searchWord, type);
-		List<String> nameList = new ArrayList<String>();
 
-		for (QnaVO qnaVO : qnaList) {
-	         String name = null;
-	         try {
-	            name = productMapper.getProductByNo(qnaVO.getProductNo()).getProductName();
-	         } catch (NullPointerException ne) {
-	            name = null;
-	         } catch (Exception e) {
-	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	         }
-	         nameList.add(name);
-	      }
-
-		if (qnaList == null || count == 0) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}else {
-			 Map<String, Object> resMap = new HashMap<>();
-			 resMap.put("qnaList", qnaList);
-	         resMap.put("count", count);
-			 resMap.put("nameList", nameList);
-			 return new ResponseEntity<>(resMap, HttpStatus.OK);
-		}
-		
-			
+		Map<String, Object> resMap = new HashMap<>();
+		resMap.put("qnaList", qnaList);
+		resMap.put("count", count);
+		return new ResponseEntity<>(resMap, HttpStatus.OK);
 	}
-	
+
+	// originalNo로 조회
+	public ResponseEntity<?> getQnaByOriginalNo(int originalNo) {
+		QnaVO res = qnaMapper.getQnaByOriginalNo(originalNo);
+		if (res == null) {
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		} else {
+			return new ResponseEntity<>(res, HttpStatus.OK);
+		}
+	}
+
+	// productDetail qna 불러오기
+	public ResponseEntity<?> getQnaListByProductNo(int page, int perPage, String search, String searchWord, String type,
+			int productNo) {
+		int start = (page - 1) * perPage;
+		List<QnaVO> productQnaList = qnaMapper.getQnaListByProductNo(start, perPage, search, searchWord, productNo);
+		int count = qnaMapper.getQnaCountByProductNo(search, searchWord, productNo);
+
+		Map<String, Object> resMap = new HashMap<>();
+		resMap.put("productQnaList", productQnaList);
+		resMap.put("count", count);
+		return new ResponseEntity<>(resMap, HttpStatus.OK);
+
+	}
 
 //	//기간으로 문의 검색(일주일)
 //	public ResponseEntity<?> searchQnaByWeek() {

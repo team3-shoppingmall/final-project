@@ -1,6 +1,6 @@
 <template>
 <v-container>
-    <v-row justify="center">
+    <v-row justify="center" class="mt-1">
         <v-col cols="9">
             <v-row class="text-h4">
                 BEST ITEMS
@@ -10,9 +10,9 @@
                     <v-row>
                         <v-col v-for="(product, idx) in bestProducts" :key="idx" cols="3">
                             <v-card @click="moveToDetail(product.productNo)">
-                                <v-img max-height="300" max-width="auto" :src="`https://picsum.photos/seed/${randomNumber(idx)}/300/250`"></v-img>
-                                <v-card-text>
-                                    <div>
+                                <v-img min-height="300" max-height="300" :src="`/api/product/productImage/${product.productNo}/${product.imageName.split(';')[0]}`"></v-img>
+                                <v-card-text style="height:120px">
+                                    <div style="height:50px">
                                         {{product.productName}}
                                         - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
                                         <span v-if="product.size == null">{{product.color.split(';').length-1}} color</span>
@@ -41,19 +41,21 @@
                 <v-col>
                     <v-row>
                         <v-col v-for="(product, idx) in products" :key="idx" cols="3">
-                            <v-card @click="moveToDetail(product.productNo)">
-                                <v-img max-height="300" max-width="auto" :src="`https://picsum.photos/seed/${randomNumber(idx)}/300/250`"></v-img>
-                                <v-card-text>
-                                    <div>
-                                        {{product.productName}}
-                                        - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
-                                        <span v-if="product.size == null">{{product.color.split(';').length-1}} color</span>
-                                    </div>
-                                    <div v-if="product.discount != 0" class="text-decoration-line-through">{{product.price}}원</div>
-                                    <div v-if="product.discount == 0">{{product.price}}원</div>
-                                    <div v-if="product.discount != 0">{{product.price-product.discount}}원</div>
-                                </v-card-text>
-                            </v-card>
+                            <v-lazy :options="{threshold: .5}" transition="fade-transition">
+                                <v-card @click="moveToDetail(product.productNo)">
+                                    <v-img min-height="300" max-height="300" :src="`/api/product/productImage/${product.productNo}/${product.imageName.split(';')[0]}`"></v-img>
+                                    <v-card-text style="height:120px">
+                                        <div style="height:50px">
+                                            {{product.productName}}
+                                            - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
+                                            <span v-if="product.size == null">{{product.color.split(';').length-1}} color</span>
+                                        </div>
+                                        <div v-if="product.discount != 0" class="text-decoration-line-through">{{product.price}}원</div>
+                                        <div v-if="product.discount == 0">{{product.price}}원</div>
+                                        <div v-if="product.discount != 0">{{product.price-product.discount}}원</div>
+                                    </v-card-text>
+                                </v-card>
+                            </v-lazy>
                         </v-col>
                     </v-row>
                 </v-col>
@@ -71,13 +73,13 @@ import axios from 'axios'
 export default {
     data() {
         return {
-            mainCategory: 'SKIRT',
+            mainCategory: '',
             subCategory: '',
-            selectedCategory: 'all',
+            selectedCategory: '',
 
             page: 1,
             itemsPerPage: 12,
-            pageLength: 7,
+            pageLength: 0,
             visibleLength: 5,
 
             bestProducts: [],
@@ -138,34 +140,19 @@ export default {
                     maxPrice: 99999999,
                 }
             }).then(res => {
-                console.log(res.data);
                 this.products = res.data.productList;
                 this.pageLength = Math.ceil(res.data.count / this.page);
-                // this.products = res.data;
-                // axios({
-                //     method: 'get',
-                //     url: `/api/product/getProductCountByType`,
-                //     params: {
-                //         type1: this.mainCategory,
-                //         type2: this.selectedCategory,
-                //         minPrice: 0,
-                //         maxPrice: 99999999,
-                //     }
-                // }).then(res => {
-                //     this.pageLength = Math.ceil(res.data / this.page);
-                // }).catch((err) => {
-                //     console.log(err);
-                // })
             }).catch((err) => {
                 console.log(err);
             })
         },
+        AddComma(num) {
+            var regexp = /\B(?=(\d{3})+(?!\d))/g;
+            return `${num}`.toString().replace(regexp, ",");
+        },
         moveToDetail(num) {
             this.$router.push(`/productDetail/${num}`)
         },
-        randomNumber(count) {
-            return Math.floor(Math.random() * 100) + count;
-        }
     },
     watch: {
         '$route'() {
@@ -173,6 +160,11 @@ export default {
             this.selectedCategory = this.$route.params.sub;
             this.getProductList();
             this.setSubCategory();
+        },
+        page: {
+            handler() {
+                this.getProductList();
+            }
         }
     },
     mounted() {

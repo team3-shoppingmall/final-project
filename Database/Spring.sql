@@ -15,9 +15,11 @@ drop table if exists baskettable;
 drop table if exists producttable;
 drop table if exists membertable;
 
--- drop trigger
+-- drop trigger and procedure
 DROP TRIGGER IF EXISTS `springdb`.`membertable_BEFORE_INSERT`;
 DROP TRIGGER IF EXISTS `springdb`.`pointtable_BEFORE_INSERT`;
+DROP procedure IF EXISTS `autoQuestion`;
+DROP procedure IF EXISTS `autoReply`;
 
 -- create table and trigger
 CREATE TABLE membertable (
@@ -47,7 +49,7 @@ CREATE TABLE producttable(
 	PRODUCTNAME VARCHAR(100) NOT NULL,
 	TYPE1 VARCHAR(50) NOT NULL,
 	TYPE2 VARCHAR(50) NOT NULL,
-	IMAGENAME VARCHAR(100) NOT NULL,
+	IMAGENAME VARCHAR(400) NOT NULL,
 	PRICE INT NOT NULL,
 	DISCOUNT INT DEFAULT 0,
 	COLOR VARCHAR(1000),
@@ -123,9 +125,9 @@ DELIMITER ;
 CREATE TABLE noticetable (
 	NOTICENO INT PRIMARY KEY AUTO_INCREMENT,
 	TITLE VARCHAR(100) NOT NULL,
-	CONTENT VARCHAR(2000) NOT NULL,
+	CONTENT VARCHAR(10000) NOT NULL,
 	ID VARCHAR(50) NOT NULL,
-	IMAGE VARCHAR(500)
+	IMAGE VARCHAR(400)
 );
 
 CREATE TABLE faqtable (
@@ -141,13 +143,13 @@ CREATE TABLE reviewTable(
 	CONTENT VARCHAR(600) NOT NULL,
 	id VARCHAR(50) NOT NULL,
 	REGDATE TIMESTAMP DEFAULT (current_timestamp),
-	IMAGE VARCHAR(100),
+	IMAGE VARCHAR(400),
 	STAR INT NOT NULL
 --     CONSTRAINT review_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
 );
 
 CREATE TABLE qnatable(
-	QNANO BIGINT PRIMARY KEY AUTO_INCREMENT,
+	QNANO BIGINT DEFAULT 0,
 	PRODUCTNO INT,
 	TYPE VARCHAR(200) NOT NULL,
 	ORIGINALNO BIGINT,
@@ -156,15 +158,35 @@ CREATE TABLE qnatable(
 	ID VARCHAR(50) NOT NULL,
 	REGDATE TIMESTAMP DEFAULT (current_timestamp),
 	SECRET BOOLEAN NOT NULL,
-	IMAGE VARCHAR(500) NOT NULL
+	IMAGE VARCHAR(400),
+    CONSTRAINT primary_qna PRIMARY KEY (QNANO, ORIGINALNO)
 );
+
+DELIMITER $$
+USE `springdb`$$
+CREATE PROCEDURE `autoQuestion` (qna_productNo INT, qna_type VARCHAR(200), qna_reply BOOLEAN, qna_content VARCHAR(2000), qna_id VARCHAR(50), qna_secret BOOLEAN, qna_image VARCHAR(400))
+BEGIN
+DECLARE getMaxQnaNo BIGINT;
+SET getMaxQnaNo = (SELECT max(qnaNo) FROM qnatable) + 1;
+insert into qnatable(QNANO, PRODUCTNO, type, originalNo, reply, content, id, secret, image) values(getMaxQnaNo, qna_productNo, qna_type, getMaxQnaNo, qna_reply, qna_content, qna_id, qna_secret, qna_image);
+END$$
+DELIMITER ;
+
+DELIMITER $$
+USE `springdb`$$
+CREATE PROCEDURE `autoReply` (qna_type VARCHAR(200), qna_originalNo BIGINT, qna_content VARCHAR(2000), qna_id VARCHAR(50), qna_secret BOOLEAN, qna_image VARCHAR(400))
+BEGIN
+DECLARE getMaxQnaNo BIGINT;
+SET getMaxQnaNo = (SELECT max(qnaNo) FROM qnatable) + 1;
+insert into qnatable(QNANO, type, originalNo, content, id, secret, image) values(getMaxQnaNo, qna_type, qna_originalNo, qna_content, qna_id, qna_secret, qna_image);
+END$$
+DELIMITER ;
 
 CREATE TABLE bannertable (
 	NUM INT PRIMARY KEY AUTO_INCREMENT,
 	IMAGE VARCHAR(100) NOT NULL,
 	LINK VARCHAR(100) NOT NULL
 );
-
 -- insert data
 -- 회원
 insert into membertable values('admin','admin','관리자','0212345678','spring@gmail.com','12345','서울 강남구 테헤란로 212 (멀티캠퍼스)','2층 201호',false,null,'ROLE_ADMIN');
@@ -182,9 +204,9 @@ insert into membertable values('tester212','Asdqwe123','유저2','01045614561','
 insert into membertable values('tester222','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 -- 상품
 insert into producttable(productname, type1, type2, imagename, price, color, size, amount, detailimagename) 
-values('스노우 버튼 모직스커트', 'skirt','mini','image1.png;image2.png',38000,'그레이지;소프트민트','S;M;L', 100,'detail1.jpg;detail2.jpg');
+values('스노우 버튼 모직스커트', 'skirt','mini','nature-3082832__480.jpg;photo-1433086966358-54859d0ed716.jfif',38000,'그레이지;소프트민트','S;M;L', 100,'photo-1447752875215-b2761acb3c5d.jfif;photo-1469474968028-56623f02e42e.jfif');
 insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, detailimagename)
-values('실키 여리핏 히든블라우스', 'shirt','blouse','image3.png',34900,5000,'아이보리;피치베이지;워터리블루;블랙',null, 100,'4231.jpg;copy-1642379566-2.jpg');
+values('실키 여리핏 히든블라우스', 'shirt','blouse','photo-1465146344425-f00d5f5c8f07.jfif;photo-1426604966848-d7adac402bff.jfif',34900,5000,'아이보리;피치베이지;워터리블루;블랙',null, 100,'photo-1475924156734-496f6cac6ec1.jfif;photo-1586348943529-beaae6c28db9.jfif');
 -- 장바구니
 insert into baskettable(id, productno, selectedcolor, selectedsize, amount) values('tester',1,'소프트민트','S',2);
 insert into baskettable(id, productno, selectedcolor, selectedsize, amount) values('tester',2,'아이보리',null,5);
@@ -329,22 +351,22 @@ insert into reviewtable(productno, content, id, image, star) values(1,'이번에
 insert into reviewtable(productno, content, id, image, star) values(1,'요즘 옷들이 작아서 안 맞을까 걱정했는데(ㅠㅠ) 불편하지 않게 딱 맞아요! 핏도 맘에 들고 만족스러워용^.^','tester5', 'image5.jpg','5');
 insert into reviewtable(productno, content, id, image, star) values(1,'딱 봄 가을에 입기 좋을 얇은 두께입니다 겨울에는 너무 추울 것 같아요 에스 사이즈로 샀는데 조금 크게 나온 것 같아요 그래서인지 핏하게 예쁘게 떨어지지는 않아 조금 아쉽습니다 ㅠㅠ','tester5', 'image5.jpg','4');
 -- 문의
-insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(1,'product', 1, true, '질문 내용', 'tester', true, 'image1.jpg');
-insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(2,'product', last_insert_id()+1, false, '질문 내용', 'tester',true, 'image1.jpg');
-insert into qnatable(type, originalNo, content, id, secret, image) values('productReply', 1, '답변 내용', 'admin',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('general', last_insert_id()+1, false, '질문 내용', 'tester',true, 'image1.jpg');
-insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(1,'product', last_insert_id()+1, true, '질문 내용', 'tester',true, 'image1.jpg');
-insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(2,'product', last_insert_id()+1, true, '질문 내용', 'tester2',true, 'image1.jpg');
-insert into qnatable(type, originalNo, content, id, secret, image) values('productReply', 5, '답변 내용', 'admin',true, 'image1.jpg');
-insert into qnatable(type, originalNo, content, id, secret, image) values('productReply', 6, '답변 내용', 'admin',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('general', last_insert_id()+1, false, '질문 내용', 'tester',true, 'image1.jpg');
-insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(2,'product', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('delivery', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('cancel', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('exchange', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
+insert into qnatable(qnaNo, productno, type, originalNo, reply, content, id, secret, image) values(1, 1,'product', 1, true, '질문 내용', 'tester', true, 'image1.jpg');
+call autoQuestion(2,'product', false, '질문 내용', 'tester',true, 'image1.jpg');
+call autoReply('productReply', 1, '답변 내용', 'admin',true, 'image1.jpg');
+call autoQuestion(null, 'general', false, '질문 내용', 'tester',true, 'image1.jpg');
+call autoQuestion(1,'product', true, '질문 내용', 'tester',true, 'image1.jpg');
+call autoQuestion(2,'product', true, '질문 내용', 'tester2',true, 'image1.jpg');
+call autoReply('productReply', 5, '답변 내용', 'admin',true, 'image1.jpg');
+call autoReply('productReply', 6, '답변 내용', 'admin',true, 'image1.jpg');
+call autoQuestion(null, 'general', false, '질문 내용', 'tester',true, 'image1.jpg');
+call autoQuestion(2,'product', false, '질문 내용', 'tester2',true, 'image1.jpg');
+call autoQuestion(null, 'delivery', false, '질문 내용', 'tester2',true, 'image1.jpg');
+call autoQuestion(null, 'cancel', false, '질문 내용', 'tester2',true, 'image1.jpg');
+call autoQuestion(null, 'exchange', false, '질문 내용', 'tester2',true, 'image1.jpg');
 -- 배너
-insert into bannertable(image, link) values('test1.jpg','testlink1');
-insert into bannertable(image, link) values('test2.jpg','testlink2');
+-- insert into bannertable(image, link) values('test1.jpg','testlink1'); 
+-- insert into bannertable(image, link) values('test2.jpg','testlink2');
 
 commit;
 

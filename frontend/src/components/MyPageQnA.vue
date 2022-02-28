@@ -1,46 +1,38 @@
 <template>
 <v-container>
-    <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort>
-            <template #[`item.productName`]="{index}">
-                <div class="text-left">
-                    {{ nameList[index] }}
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
+        <template #[`item.productName`]="{item}">
+            <v-btn text :to="`/productDetail/${item.productNo}`" v-if="item.productNo > 0">
+                <div class="text-truncate" style="max-width: 250px;">
+                    {{ item.productName }}
                 </div>
-            </template>
-            <template #[`item.type`]="{item}">
-                <div class="text-left">
-                    <QnATitleDisplay :type="item.type" />
-                </div>
-            </template>
-            <template #[`item.id`]="{item}">
-                <div class="text-left">
-                    <HideId :id="item.id" />
-                </div>
-            </template>
-            <template #[`item.regDate`]="{item}">
-                <div>
-                    <DateDisplay :regDate="item.regDate" />
-                </div>
-            </template>
-        </v-data-table>
-    </div>
+            </v-btn>
+        </template>
+        <template #[`item.type`]="{item}">
+            <div class="text-left">
+                <QnATitleDisplay :type="item.type" />
+            </div>
+        </template>
+        <template #[`item.regDate`]="{item}">
+            <div>
+                <DateDisplay :regDate="item.regDate" />
+            </div>
+        </template>
+    </v-data-table>
 
     <v-row align="center" justify="space-between">
         <v-col cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
                 <v-col cols="4">
-                    <v-select :items="searches" v-model="search"></v-select>
+                    <v-select :items="searches" value="productName" hide-details></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord"></v-text-field>
+                    <v-text-field v-model="searchWord" hide-details></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon @click="getQnA">검색</v-btn>
+                    <v-btn @click="getQnA" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
-        </v-col>
-        <v-col cols="auto">
-            <v-btn :to="'/writePost/productQnA'" outlined>글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -48,12 +40,10 @@
 
 <script>
 import axios from 'axios'
-import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 import QnATitleDisplay from '@/components/QnATitleDisplay.vue'
 export default {
     components: {
-        HideId,
         DateDisplay,
         QnATitleDisplay,
     },
@@ -61,7 +51,6 @@ export default {
         return {
             totalContents: 0,
             contents: [],
-            nameList: [],
             options: {},
             loading: true,
             headers: [{
@@ -102,24 +91,18 @@ export default {
             searches: [{
                 text: '상품명',
                 value: 'productName'
-            }, {
-                text: '제목',
-                value: 'type'
-            }, {
-                text: '내용',
-                value: 'content'
-            }, {
-                text: '작성자',
-                value: 'id'
-            }],
-            search: 'id',
+            }, ],
             searchWord: '',
+
+            id: 'tester'
 
         }
     },
     methods: {
+        // id에 대해 조회만 해주시면 됩니다
+        // getQnA하실 때 검색 조건이 상품명밖에 없으므로 search: 'productName'로 해주시면 됩니다.
         getQnA() {
-            this.loading = true
+            this.loading = true;
             const {
                 page,
                 itemsPerPage
@@ -130,26 +113,14 @@ export default {
                 params: {
                     page: page,
                     perPage: itemsPerPage,
-                    search: this.search,
+                    search: 'productName',
                     searchWord: this.searchWord,
                     type: link
                 }
             }).then(res => {
-                console.log(res);
-                this.nameList = res.data.nameList;
                 this.contents = res.data.qnaList;
                 this.totalContents = res.data.count;
                 this.loading = false;
-                // axios.get('/api/qna/getCount', {
-                //         params: {
-                //             search: this.search,
-                //             searchWord: this.searchWord,
-                //             type: link
-                //         }
-                //     }).then(res => {
-                //         this.totalContents = res.data;
-                //         this.loading = false
-                //     })
             })
         },
         moveto(item) {

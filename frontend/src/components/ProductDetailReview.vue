@@ -91,7 +91,7 @@
                                                 <v-img max-height="250" :src="imageUrl" min-height="250" contain @click="fileInputClick" />
                                             </v-card-title>
                                             <v-card-actions>
-                                                <v-file-input v-model="imageFiles" :id="`fileInput`" accept="image/*" truncate-length="14" class="pa-0" hide-details @change="onImageChange"></v-file-input>
+                                                <v-file-input v-model="imageFile" :id="`fileInput`" accept="image/*" truncate-length="14" class="pa-0" hide-details @change="onImageChange"></v-file-input>
                                             </v-card-actions>
                                         </v-card>
                                     </v-col>
@@ -188,8 +188,10 @@ export default {
             star: 5,
             content: '',
             contentColor: 'black--text',
-            imageFiles: '',
+            imageFile: '',
             imageUrl: '',
+
+            id: 'tester',
 
         }
     },
@@ -223,7 +225,7 @@ export default {
             document.getElementById(`fileInput`).click();
         },
         onImageChange() {
-            const file = this.imageFiles;
+            const file = this.imageFile;
             if (file) {
                 this.imageUrl = URL.createObjectURL(file);
                 URL.revokeObjectURL(file);
@@ -238,28 +240,19 @@ export default {
                 return;
             }
 
-            // let image = null;
-            // if (this.imageFiles != null) {
-            //     if (image == null) {
-            //         image = this.imageFiles[i].name;
-            //     } else {
-            //         image = image + ";" + this.imageFiles[i].name;
-            //     }
-            // }
+            // 밑에거 주석 처리 후 이거 사용하시면 됩니다
             // let data = {
             //     productNo: this.productNo,
             //     star: this.star,
             //     content: this.content,
-            //     image: image,
-            //     id: "test1",
+            //     image: this.imageFile.name,
+            //     id: this.id,
             // };
             // let formData = new FormData();
             // formData.append('data', new Blob([JSON.stringify(data)], {
             //     type: "application/json"
             // }));
-            // if (this.imageFiles != null) {
-            //     formData.append(`fileList`, this.imageFiles);
-            // }
+            // formData.append(`fileList`, this.imageFile);
             // axios.post(`/api/review/insert`, formData)
             //     .then(() => {
             //         this.dialog = false;
@@ -279,7 +272,7 @@ export default {
                     star: this.star,
                     content: this.content,
                     image: this.image,
-                    id: "test1",
+                    id: this.id,
                 }
             }).then(() => {
                 this.dialog = false;

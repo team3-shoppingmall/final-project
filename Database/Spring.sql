@@ -392,5 +392,3 @@ select * from bannertable;
 -- 많이 팔린 순으로 정렬
 -- select productno, sum(amount) from ordertable group by productno order by sum(amount) desc;
 -- select * from producttable left join ordertable on producttable.productno = ordertable.productno where type1 = 'skirt' group by ordertable.productno order by sum(ordertable.amount) desc limit 0,8;
-insert into qnatable(QNANO, PRODUCTNO, type, originalNo, reply, content, id, secret, image)
- values( (select A.num from (SELECT MAX(qnaNo)+1 as num FROM qnatable) A), null, 'exchange', (select A.num from (SELECT MAX(qnaNo)+1 as num FROM qnatable) A), false, '질문 내용', 'tester2', true, 'image1.jpg');

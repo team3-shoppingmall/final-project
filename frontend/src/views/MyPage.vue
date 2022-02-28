@@ -1,5 +1,5 @@
 <template>
-<v-container style="min-height: 910px;">
+<v-container >
     <v-row justify="center">
         <v-col cols="9">
             <div class="text-h3">MY PAGE</div>

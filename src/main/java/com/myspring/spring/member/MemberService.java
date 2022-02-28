@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.myspring.spring.point.PointVO;
+
 @Service
 public class MemberService {
 	private MemberMapper memberMapper;
@@ -48,6 +50,13 @@ public class MemberService {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		else
 			return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	// 전체 조회
+	public ResponseEntity<?> getMemberPoint() {
+       List<MemberVO> res = memberMapper.getMemberPoint();
+      
+    	   return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 }

@@ -25,4 +25,5 @@ public class PointController {
     public ResponseEntity<?> getPointAll() {
     	return pointService.getPointAll();
 	}
+ 
 }

@@ -19,11 +19,8 @@ public class PointService {
 	// 전체 조회
 	public ResponseEntity<?> getPointAll() {
        List<PointVO> res = pointMapper.getPointAll();
-       if (res == null)
-    	   return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-       else
+      
     	   return new ResponseEntity<>(res, HttpStatus.OK);
 	}
-
 
 }

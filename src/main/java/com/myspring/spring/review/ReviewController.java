@@ -63,11 +63,11 @@ public class ReviewController {
 
 	// 리뷰 수정
 	@PatchMapping("/update")
-	public ResponseEntity<?> updateReview(@RequestParam("reviewNo") int reviewNo,
-			@RequestParam("content") String content, @RequestParam("star") int star) {
-//		@RequestParam("image") String image, 
-		return reviewService.updateReview(reviewNo, content, star);
+	public ResponseEntity<?> updateReview(@RequestPart(value = "data") ReviewVO requestData,
+			@RequestParam("fileList") List<MultipartFile> fileList) throws NotFoundException {
+		return reviewService.updateReview(requestData, fileList);
 	}
+	
 	// 서버에서 이미지 가져오기
 	@GetMapping("/reviewImage/{reviewNo}/{image}")
 	public ResponseEntity<?> productimage(@PathVariable("reviewNo") int reviewNo, @PathVariable("image") String image)

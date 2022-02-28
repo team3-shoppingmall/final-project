@@ -58,7 +58,11 @@ public class QnaService {
 		try {
 			qnaMapper.insertQna(requestData, result);
 			int qnaNo = result.getQnaNo();
+<<<<<<< HEAD
 //			System.out.println("qnaNo:" + qnaNo);
+=======
+			System.out.println("qnaNo:" + qnaNo);
+>>>>>>> c37896439c5d09ae50c72e1c724772f3c76d8af1
 			File file = new File("./images/qna/" + qnaNo + "/");
 			file.mkdir();
 			if (fileList != null) {

@@ -429,60 +429,60 @@ export default {
 
         },
         qnaForm() {
-            // let image = null;
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         if (image == null) {
-            //             image = this.imageFiles[i].name;
-            //         } else {
-            //             image = image + ";" + this.imageFiles[i].name;
-            //         }
-            //     }
-            // }
-            // let data = {
-            //     productNo: this.productNo,
-            //     type: this.titleSelected,
-            //     reply: false,
-            //     content: this.content,
-            //     id: "tester",
-            //     secret: this.secret,
-            //     image: image,
-            // };
-            // let formData = new FormData();
-            // formData.append('data', new Blob([JSON.stringify(data)], {
-            //     type: "application/json"
-            // }));
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         formData.append(`fileList`, this.imageFiles[i])
-            //     }
-            // }
-            // axios.post(`/api/qna/insertqna`, formData)
-            //     .then(() => {
-            //         alert("문의글이 등록되었습니다.");
-            //         this.$router.go(-1);
-            //     }).catch((err) => {
-            //         console.log(err);
-            //     })
-
-            axios({
-                method: 'post',
-                url: `/api/qna/insertqna`,
-                data: {
-                    productNo: this.productNo,
-                    type: this.titleSelected,
-                    reply: false,
-                    content: this.content,
-                    id: "tester",
-                    secret: this.secret,
-                    image: "image1.jpg"
+            let image = null;
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] != null) {
+                    if (image == null) {
+                        image = this.imageFiles[i].name;
+                    } else {
+                        image = image + ";" + this.imageFiles[i].name;
+                    }
                 }
-            }).then(() => {
-                alert("문의글이 등록되었습니다.");
-                this.$router.go(-1);
-            }).catch((err) => {
-                console.log(err);
-            })
+            }
+            let data = {
+                productNo: this.productNo,
+                type: this.titleSelected,
+                reply: false,
+                content: this.content,
+                id: "tester",
+                secret: this.secret,
+                image: image,
+            };
+            let formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] != null) {
+                    formData.append(`fileList`, this.imageFiles[i])
+                }
+            }
+            axios.post(`/api/qna/insertqna`, formData)
+                .then(() => {
+                    alert("문의글이 등록되었습니다.");
+                    this.$router.go(-1);
+                }).catch((err) => {
+                    console.log(err);
+                })
+
+            // axios({
+            //     method: 'post',
+            //     url: `/api/qna/insertqna`,
+            //     data: {
+            //         productNo: this.productNo,
+            //         type: this.titleSelected,
+            //         reply: false,
+            //         content: this.content,
+            //         id: "tester",
+            //         secret: this.secret,
+            //         image: "image1.jpg"
+            //     }
+            // }).then(() => {
+            //     alert("문의글이 등록되었습니다.");
+            //     this.$router.go(-1);
+            // }).catch((err) => {
+            //     console.log(err);
+            // })
         },
 
         // 수정 시 기존 데이터 넣기
@@ -678,60 +678,60 @@ export default {
             })
         },
         qnaFormUpdate() {
-            // let image = null;
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         if (image == null) {
-            //             image = this.imageFiles[i].name;
-            //         } else {
-            //             image = image + ";" + this.imageFiles[i].name;
-            //         }
-            //     }
-            // }
-            // let data = {
-            //     productNo: this.productNo,
-            //     qnaNo: this.num,
-            //     type: this.titleSelected,
-            //     content: this.content,
-            //     secret: this.secret,
-            //     image: image,
-            // };
-            // let formData = new FormData();
-            // formData.append('data', new Blob([JSON.stringify(data)], {
-            //     type: "application/json"
-            // }));
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         formData.append(`fileList`, this.imageFiles[i])
-            //     }
-            // }
-            // axios.post(`/api/qna/updateqna`, formData)
-            //     .then(() => {
-            //         alert("수정이 완료되었습니다.");
-            //         this.$router.go(-1);
-            //     }).catch((err) => {
-            //         console.log(err);
-            //         alert("수정에 실패했습니다.");
-            //     })
-
-            axios({
-                method: 'patch',
-                url: `/api/qna/updateqna`,
-                params: {
-                    productNo: this.productNo,
-                    qnaNo: this.num,
-                    type: this.titleSelected,
-                    content: this.content,
-                    secret: this.secret,
-                    image: "test.jpg"
+            let image = null;
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] != null) {
+                    if (image == null) {
+                        image = this.imageFiles[i].name;
+                    } else {
+                        image = image + ";" + this.imageFiles[i].name;
+                    }
                 }
-            }).then(() => {
-                alert("수정이 완료되었습니다.");
-                this.$router.go(-1);
-            }).catch((err) => {
-                console.log(err);
-                alert("수정에 실패했습니다.");
-            })
+            }
+            let data = {
+                productNo: this.productNo,
+                qnaNo: this.num,
+                type: this.titleSelected,
+                content: this.content,
+                secret: this.secret,
+                image: image,
+            };
+            let formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] != null) {
+                    formData.append(`fileList`, this.imageFiles[i])
+                }
+            }
+            axios.post(`/api/qna/updateqna`, formData)
+                .then(() => {
+                    alert("수정이 완료되었습니다.");
+                    this.$router.go(-1);
+                }).catch((err) => {
+                    console.log(err);
+                    alert("수정에 실패했습니다.");
+                })
+
+            // axios({
+            //     method: 'patch',
+            //     url: `/api/qna/updateqna`,
+            //     params: {
+            //         productNo: this.productNo,
+            //         qnaNo: this.num,
+            //         type: this.titleSelected,
+            //         content: this.content,
+            //         secret: this.secret,
+            //         image: "test.jpg"
+            //     }
+            // }).then(() => {
+            //     alert("수정이 완료되었습니다.");
+            //     this.$router.go(-1);
+            // }).catch((err) => {
+            //     console.log(err);
+            //     alert("수정에 실패했습니다.");
+            // })
         },
     },
 

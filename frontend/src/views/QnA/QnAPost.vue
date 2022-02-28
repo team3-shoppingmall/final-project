@@ -96,6 +96,7 @@ export default {
             this.dataLoaded = false;
             axios.get(`/api/qna/getQna/${this.pageID}`)
                 .then((res) => {
+                    console.log(res.data.qnaNo);
                     this.qna = res.data;
                     this.images = this.qna.image.split(';');
                     this.dataLoaded = true;

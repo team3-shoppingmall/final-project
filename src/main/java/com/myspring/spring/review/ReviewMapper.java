@@ -5,9 +5,12 @@ import java.util.List;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+
+import com.myspring.spring.product.ProductVO;
 
 
 @Mapper
@@ -28,7 +31,8 @@ public interface ReviewMapper {
 	
 	//리뷰 작성
 	@Insert("insert into reviewtable(productNo, content, id, image, star) values(#{in.productNo}, #{in.content}, #{in.id}, #{in.image}, #{in.star})")
-	public int insertReview(@Param("in") ReviewVO reviewVO);
+	@Options(useGeneratedKeys = true, keyProperty = "result.productNo", keyColumn = "productNo")
+	public int insertReview(@Param("in") ReviewVO in, @Param("result") ReviewVO result);
 	
 	//리뷰 삭제
 	@Delete("delete from reviewtable where reviewNo = #{reviewNo}")
@@ -38,5 +42,7 @@ public interface ReviewMapper {
 	@Update("update reviewtable set content=#{content}, star=#{star} where reviewNo = #{reviewNo}")
 	public int updateReview(@Param("reviewNo") int reviewNo, @Param("content") String content, @Param("star") int star);
 //	@Param("image") String image, 
+
+//	public void insertReview(ReviewVO requestData, ReviewVO result);
 
 }

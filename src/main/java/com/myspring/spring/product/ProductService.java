@@ -58,7 +58,7 @@ public class ProductService {
 		ProductVO res = productMapper.getProductByNo(productNo);
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
-
+//insert
 	public ResponseEntity<?> insertProduct(ProductVO requestData, List<MultipartFile> fileList) {
 		ProductVO result = new ProductVO();
 		ResponseEntity<?> entity = null;
@@ -72,8 +72,8 @@ public class ProductService {
 			file.mkdir();
 			file = new File("./images/product/" + productNo + "/product/");
 			file.mkdir();
-			file = new File("./images/product/" + productNo + "/detail/");
-			file.mkdir();
+//			file = new File("./images/product/" + productNo + "/detail/");
+//			file.mkdir();
 
 			for (int i = 0; i < imageName.length; i++) {
 				MultipartFile multipartFile = fileList.get(i);
@@ -83,14 +83,14 @@ public class ProductService {
 				writer.write(multipartFile.getBytes());
 				writer.close();
 			}
-			for (int i = imageName.length; i < detailImageName.length + imageName.length; i++) {
-				MultipartFile multipartFile = fileList.get(i);
-				FileOutputStream writer = new FileOutputStream(
-						"./images/product/" + productNo + "/detail/" + multipartFile.getOriginalFilename());
-//				System.out.println(multipartFile.getOriginalFilename());
-				writer.write(multipartFile.getBytes());
-				writer.close();
-			}
+//			for (int i = imageName.length; i < detailImageName.length + imageName.length; i++) {
+//				MultipartFile multipartFile = fileList.get(i);
+//				FileOutputStream writer = new FileOutputStream(
+//						"./images/product/" + productNo + "/detail/" + multipartFile.getOriginalFilename());
+////				System.out.println(multipartFile.getOriginalFilename());
+//				writer.write(multipartFile.getBytes());
+//				writer.close();
+//			}
 			entity = new ResponseEntity<>(HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -99,7 +99,8 @@ public class ProductService {
 		}
 		return entity;
 	}
-
+	
+//update
 	public ResponseEntity<?> updateProduct(ProductVO requestData, List<MultipartFile> fileList) {
 		ResponseEntity<?> entity = null;
 

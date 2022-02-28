@@ -238,42 +238,42 @@ export default {
                 return;
             }
 
-            // let image = null;
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         if (image == null) {
-            //             image = this.imageFiles[i].name;
-            //         } else {
-            //             image = image + ";" + this.imageFiles[i].name;
-            //         }
-            //     }
-            // }
-            // let data = {
-            //     productNo: this.productNo,
-            //     star: this.star,
-            //     content: this.content,
-            //     image: image,
-            //     id: "test1",
-            // };
-            // let formData = new FormData();
-            // formData.append('data', new Blob([JSON.stringify(data)], {
-            //     type: "application/json"
-            // }));
-            // for (let i = 0; i < this.imageFiles.length; i++) {
-            //     if (this.imageFiles[i] != null) {
-            //         formData.append(`fileList`, this.imageFiles[i])
-            //     }
-            // }
-            // axios.post(`/api/review/insert`, formData)
-            //     .then(() => {
-            //         this.dialog = false;
-            //         this.content = '';
-            //         alert("리뷰 등록 완료");
-            //         this.$router.go();
-            //     }).catch((err) => {
-            //         alert('리뷰 작성에 실패했습니다.')
-            //         console.log(err);
-            //     })
+            let image = null;
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] != null) {
+                    if (image == null) {
+                        image = this.imageFiles[i].name;
+                    } else {
+                        image = image + ";" + this.imageFiles[i].name;
+                    }
+                }
+            }
+            let data = {
+                productNo: this.productNo,
+                star: this.star,
+                content: this.content,
+                image: image,
+                id: "test1",
+            };
+            let formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            for (let i = 0; i < this.imageFiles.length; i++) {
+                if (this.imageFiles[i] != null) {
+                    formData.append(`fileList`, this.imageFiles[i])
+                }
+            }
+            axios.post(`/api/review/insert`, formData)
+                .then(() => {
+                    this.dialog = false;
+                    this.content = '';
+                    alert("리뷰 등록 완료");
+                    this.$router.go();
+                }).catch((err) => {
+                    alert('리뷰 작성에 실패했습니다.')
+                    console.log(err);
+                })
 
             axios({
                 method: 'post',

@@ -1,5 +1,7 @@
 package com.myspring.spring.review;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.myspring.spring.product.ProductMapper;
+import com.myspring.spring.product.ProductVO;
 
 @Service
 public class ReviewService {
@@ -45,14 +49,40 @@ public class ReviewService {
 		}
 	
 	//리뷰 작성
-	public ResponseEntity<?> insertReview(ReviewVO reviewVO) {
-		int res = reviewMapper.insertReview(reviewVO);
-		if(res == 0) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}else {
-			return new ResponseEntity<>(HttpStatus.OK);
-		}
-	}
+		public ResponseEntity<?> insertReview(ReviewVO requestData, List<MultipartFile> fileList) {
+			ReviewVO result = new ReviewVO();
+			ResponseEntity<?> entity = null;
+
+			try {
+				reviewMapper.insertReview(requestData, result);
+				int reviewNo = result.getReviewNo();
+
+				File file = new File("./images/review/" + reviewNo + "/");
+				file.mkdir();
+
+				for (int i = 0; i < fileList.size(); i++) {
+					MultipartFile multipartFile = fileList.get(i);
+					FileOutputStream writer = new FileOutputStream(
+							"./images/review/" + reviewNo + "/" + multipartFile.getOriginalFilename());
+					writer.write(multipartFile.getBytes());
+					writer.close();
+				}
+				entity = new ResponseEntity<>(HttpStatus.OK);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			return entity;
+		}	
+//	public ResponseEntity<?> insertReview(ReviewVO reviewVO) {
+//		int res = reviewMapper.insertReview(reviewVO);
+//		if(res == 0) {
+//			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//		}else {
+//			return new ResponseEntity<>(HttpStatus.OK);
+//		}
+//	}
 	
 	//리뷰 삭제
 	public ResponseEntity<?> deleteReview(int reviewNo) {
@@ -65,6 +95,7 @@ public class ReviewService {
 	}
 	
 	//리뷰 수정
+	
 	public ResponseEntity<?> updateReview(int reviewNo, String content, int star) {
 		int res = reviewMapper.updateReview(reviewNo, content, star);
 		

@@ -9,9 +9,11 @@
     </v-row>
     <v-row justify="center">
         <v-col cols="9">
-            <v-data-table :headers="headers"></v-data-table>
-        </v-col>
+            <v-data-table :headers="headers" :items="points"></v-data-table>
+
+        </v-col> 
     </v-row>
+    
 </v-container>
 </template>
 
@@ -30,11 +32,10 @@ export default {
                 text: '포인트',
                 value: 'point',
                 align: 'center',
-            }, {
-                text: '내용',
-                value: 'content',
-                align: 'center',
-            }, ],
+            }, 
+             
+             ],
+             points: '',
             
         }
     },
@@ -43,16 +44,30 @@ export default {
             this.loading = true;
             axios({
                 method: 'get',
-                url: `/api/point/getAll`,
+                url: `/api/point/getAll`
+
+            })
+            .then(res => {
+             
+                
+                this.points = res.data;
+                
+                this.loading = false;
+            })
+        },
+        getMemberPoint() {
+            this.loading = true;
+            axios({
+                method: 'get',
+                url:`/api/member/getMemberPoint`
 
             })
             .then(res => {
                 
-                this.pointdate = res.data.pointDate;
                 this.point = res.data.point;
-                this.content = res.data.content;
                 this.loading = false;
             })
+
         }
     },
 }

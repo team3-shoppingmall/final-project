@@ -9,6 +9,8 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.UpdateProvider;
 
+import com.myspring.spring.point.PointVO;
+
 @Mapper
 public interface MemberMapper {
 	// 멤버 등록
@@ -32,5 +34,9 @@ public interface MemberMapper {
 	// update membertable set ? = ?, ... where id = ?
 	@UpdateProvider(type = MemberUtils.class, method = "updateMember")
 	int updateMember(MemberVO member);
+
+	// 멤버 포인트 조회
+	@Select("select point from membertable where id = 'tester';")
+	List<MemberVO> getMemberPoint();
 
 }

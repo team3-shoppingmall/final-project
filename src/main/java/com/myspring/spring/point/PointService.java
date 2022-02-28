@@ -23,5 +23,4 @@ public class PointService {
     	   return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
-
 }

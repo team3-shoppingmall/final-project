@@ -57,17 +57,18 @@ public class QnaService {
 
 		try {
 			qnaMapper.insertQna(requestData, result);
-			int qnaNo = result.getQnaNo();		
-			System.out.println("qnaNo:"+qnaNo);
+			int qnaNo = result.getQnaNo();
+			System.out.println("qnaNo:" + qnaNo);
 			File file = new File("./images/qna/" + qnaNo + "/");
 			file.mkdir();
-			
-			for (int i = 0; i < fileList.size(); i++) {
-				MultipartFile multipartFile = fileList.get(i);
-				FileOutputStream writer = new FileOutputStream(
-						"./images/qna/" + qnaNo + "/" + multipartFile.getOriginalFilename());
-				writer.write(multipartFile.getBytes());
-				writer.close();
+			if (fileList != null) {
+				for (int i = 0; i < fileList.size(); i++) {
+					MultipartFile multipartFile = fileList.get(i);
+					FileOutputStream writer = new FileOutputStream(
+							"./images/qna/" + qnaNo + "/" + multipartFile.getOriginalFilename());
+					writer.write(multipartFile.getBytes());
+					writer.close();
+				}
 			}
 			entity = new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {

@@ -11,7 +11,7 @@
                                     <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.productNo}/${image}`" contain></v-img>
                                 </template>
                                 <v-card>
-                                    <v-img :src="`/api/review/reviewImage/${item.productNo}/${image}`"></v-img>
+                                    <v-img :src="`/api/review/reviewImage/${item.reviewNo}/${image}`"></v-img>
                                 </v-card>
                             </v-dialog>
                         </v-carousel-item>

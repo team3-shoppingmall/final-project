@@ -1,33 +1,27 @@
 <template>
-<v-container style="min-height: 910px;">
-    {{selected}}
+<v-container>
     <v-row justify="center">
         <v-col cols="9">
             <div class="text-h3">ORDER</div>
-            <v-data-table :headers="headers" :items="selected" :options.sync="options" :server-items-length="totalDesserts" :loading="loading" hide-default-footer show-select="show-select" item-key="name" class="elevation-1">
+            <v-data-table :headers="headers" :items="selected" hide-default-footer item-key="idx" class="elevation-1" disable-sort no-data-text="데이터가 없습니다.">
                 <template v-slot:[`item.info`]="{ item }">
-                    <ProductDetailDisplay :productNo="item.productNo" />
+                    <div class="text-left">
+                        <ProductDetailDisplay :productNo="item.productNo" />
+                    </div>
                 </template>
-                <template v-slot:[`item.option`]="{ item }">
-                    <v-simple-table>
-                        <tbody>
-                            <tr>
-                                <td>색상</td>
-                                <td>{{item.selectedColor}}</td>
-                            </tr>
-                            <tr>
-                                <td>사이즈</td>
-                                <td>{{item.selectedSize}}</td>
-                            </tr>
-                            <tr>
-                                <td>개수</td>
-                                <td>{{item.amount}}</td>
-                            </tr>
-                        </tbody>
-                    </v-simple-table>
+                <template v-slot:[`item.selectedColor`]="{ item }">
+                    {{item.selectedColor}}
+                </template>
+                <template v-slot:[`item.selectedSize`]="{ item }">
+                    {{item.selectedSize}}
+                </template>
+                <template v-slot:[`item.basketAmount`]="{ item }">
+                    {{item.basketAmount}}
                 </template>
                 <template v-slot:[`item.totalPrice`]="{ item }">
-                    {{item.price * item.amount}}
+                    <div class="text-right" max-width="150">
+                        {{AddComma((item.price - item.discount) * item.basketAmount)}}원
+                    </div>
                 </template>
                 <template v-slot:footer="{ }">
                     <v-divider></v-divider>
@@ -41,94 +35,101 @@
                 </template>
             </v-data-table>
 
-            <div class="text-t6 mt-10">주문 정보</div>
-            <v-form ref="form">
-                <v-simple-table>
-                    <template slot="default">
-                        <tbody>
-                            <tr>
-                                <td> 주문하시는 분 </td>
-                                <td>
-                                    <v-text-field v-model="name" outlined hide-details dense></v-text-field>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td> 주소 </td>
-                                <td>
-                                    <div class="d-flex ">
-                                        <v-text-field v-model="zipcode" outlined hide-details label="우편번호" dense></v-text-field>
-                                        <v-btn class="align-self-center ml-2 py-3 px-1 primary" height="100%" style="font-size:1.2rem">검색</v-btn>
-                                    </div>
+            <v-row>
+                <v-col cols="7">
+                    <div class="text-t5 mt-10 mb-5">주문 정보</div>
+                    <v-form ref="form">
+                        <v-simple-table>
+                            <template slot="default">
+                                <tbody>
+                                    <tr>
+                                        <td style="width:20%"> 주문하시는 분 </td>
+                                        <td>
+                                            <v-text-field v-model="memberInfo.name" outlined hide-details dense></v-text-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td> 주소 </td>
+                                        <td>
+                                            <div class="d-flex mt-2">
+                                                <v-text-field v-model="memberInfo.zipcode" outlined hide-details label="우편번호" dense></v-text-field>
+                                                <v-btn color="primary" class="mx-1">검색</v-btn>
+                                            </div>
 
-                                    <v-text-field v-model="addr1" outlined hide-details label="기본주소" dense></v-text-field>
-                                    <v-text-field v-model="addr2" outlined hide-details label="상세주소" dense></v-text-field>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td> 전화번호 </td>
-                                <td>
-                                    <v-text-field v-model="tel" outlined hide-details dense></v-text-field>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td> 이메일 </td>
-                                <td>
-                                    <v-text-field v-model="email" outlined hide-details dense></v-text-field>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </template>
-                </v-simple-table>
-            </v-form>
+                                            <v-text-field v-model="memberInfo.addr1" outlined hide-details label="기본주소" dense class="mt-2"></v-text-field>
+                                            <v-text-field v-model="memberInfo.addr2" outlined hide-details label="상세주소" dense class="mt-2"></v-text-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td> 전화번호 </td>
+                                        <td>
+                                            <v-text-field v-model="memberInfo.tel" outlined hide-details dense></v-text-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td> 이메일 </td>
+                                        <td>
+                                            <v-text-field v-model="memberInfo.email" outlined hide-details dense></v-text-field>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </template>
+                        </v-simple-table>
+                    </v-form>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="7">
+                    <div class="text-t6 mt-10">배송 정보</div>
+                    <v-form ref="form">
+                        <v-simple-table>
+                            <template slot="default">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 20%"> 배송지 선택 </td>
+                                        <td>
+                                            <v-radio-group row v-model="deliverySelect">
+                                                <v-radio label="주문자 정보와 동일" :value="true"></v-radio>
+                                                <v-radio label="새로운 배송지" :value="false"></v-radio>
+                                            </v-radio-group>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td> 받으시는 분 </td>
+                                        <td>
+                                            <v-text-field v-model="delivery.name" outlined hide-details dense></v-text-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td> 주소 </td>
+                                        <td>
+                                            <div class="d-flex ">
+                                                <v-text-field v-model="delivery.zipcode" outlined hide-details label="우편번호" dense class="mt-2"></v-text-field>
+                                                <v-btn class="align-self-center ml-2 py-3 px-1 primary" height="100%" style="font-size:1.2rem">검색</v-btn>
+                                            </div>
 
-            <div class="text-t6 mt-10">배송 정보</div>
-            <v-form ref="form">
-                <v-simple-table>
-                    <template slot="default">
-                        <tbody>
-                            <tr>
-                                <td> 배송지 선택 </td>
-                                <td>
-                                    <v-radio-group v-model="secret" row>
-                                        <v-radio label="주문자 정보와 동일" :value="true"></v-radio>
-                                        <v-radio label="새로운 배송지" :value="false"></v-radio>
-                                    </v-radio-group>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td> 받으시는 분 </td>
-                                <td>
-                                    <v-text-field v-model="name" outlined hide-details dense></v-text-field>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td> 주소 </td>
-                                <td>
-                                    <div class="d-flex ">
-                                        <v-text-field v-model="zipcode" outlined hide-details label="우편번호" dense></v-text-field>
-                                        <v-btn class="align-self-center ml-2 py-3 px-1 primary" height="100%" style="font-size:1.2rem">검색</v-btn>
-                                    </div>
-
-                                    <v-text-field v-model="addr1" outlined hide-details label="기본주소" dense></v-text-field>
-                                    <v-text-field v-model="addr2" outlined hide-details label="상세주소" dense></v-text-field>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td> 전화번호 </td>
-                                <td>
-                                    <v-text-field v-model="tel" outlined hide-details dense></v-text-field>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td> 배송메세지 </td>
-                                <td>
-                                    <v-text-field v-model="email" outlined hide-details dense></v-text-field>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </template>
-                </v-simple-table>
-            </v-form>
+                                            <v-text-field v-model="delivery.addr1" outlined hide-details label="기본주소" dense class="mt-2"></v-text-field>
+                                            <v-text-field v-model="delivery.addr2" outlined hide-details label="상세주소" dense class="mt-2"></v-text-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td> 전화번호 </td>
+                                        <td>
+                                            <v-text-field v-model="delivery.tel" outlined hide-details dense></v-text-field>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td> 배송메세지 </td>
+                                        <td>
+                                            <v-text-field v-model="deliveryMessage" outlined hide-details dense></v-text-field>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </template>
+                        </v-simple-table>
+                    </v-form>
+                </v-col>
+            </v-row>
 
             <div class="text-t6 mt-10">결제 예정 금액</div>
             <v-simple-table>
@@ -152,9 +153,9 @@
                 <tbody>
                     <tr>
                         <td>
-                            <v-radio-group v-model="secret" row>
-                                <v-radio label="주문자 정보와 동일" :value="true"></v-radio>
-                                <v-radio label="새로운 배송지" :value="false"></v-radio>
+                            <v-radio-group v-model="payMethod" row>
+                                <v-radio label="무통장 입금" value="cash"></v-radio>
+                                <v-radio label="신용카드/체크카드" value="credit"></v-radio>
                             </v-radio-group>
                         </td>
                     </tr>
@@ -171,7 +172,7 @@
 </template>
 
 <script>
-// import axios from 'axios'
+import axios from 'axios'
 import ProductDetailDisplay from '@/components/ProductDetailDisplay.vue'
 export default {
     components: {
@@ -182,21 +183,50 @@ export default {
         return {
             selected: [],
             totalPrice: 0,
-            totalDesserts: 1,
             loading: false,
             options: {
                 itemsPerPage: 50,
             },
             headers: [{
                 text: '상품정보',
-                value: 'info'
+                value: 'info',
+                divider: true,
+                align: 'center',
+                width: '55%',
             }, {
-                text: '선택 옵션',
-                value: 'option'
+                text: '색상',
+                value: 'selectedColor',
+                divider: true,
+                align: 'center',
+                width: '10%',
+            }, {
+                text: '사이즈',
+                value: 'selectedSize',
+                divider: true,
+                align: 'center',
+                width: '10%',
+            }, {
+                text: '개수',
+                value: 'basketAmount',
+                divider: true,
+                align: 'center',
+                width: '10%',
             }, {
                 text: '합계',
-                value: 'totalPrice'
-            }, ]
+                value: 'totalPrice',
+                divider: true,
+                align: 'center',
+                width: '15%',
+            }, ],
+
+            memberInfo: '',
+
+            deliverySelect: false,
+            delivery: '',
+            deliveryMessage: '',
+            payMethod: 'credit',
+
+            id: 'tester'
         }
     },
     methods: {
@@ -204,18 +234,37 @@ export default {
             var regexp = /\B(?=(\d{3})+(?!\d))/g;
             return `${num}`.toString().replace(regexp, ",");
         },
-        test() {
-            console.log("test")
+        getMember() {
+            axios.get(`/api/member/getMemberInfo/${this.id}`)
+                .then(res => {
+                    this.memberInfo = res.data;
+                })
         }
-        // selectAll(event) {     let checkAll = event.value;     if (checkAll) for (let
-        // i = 0; i < this.desserts.length; i++) { this.desserts[i].isCheck = true; }
-        // else         for (let i = 0; i < this.desserts.length; i++) {
-        // this.desserts[i].isCheck = false; } },
+    },
+    watch: {
+        deliverySelect: {
+            handler() {
+                if (this.deliverySelect == true) {
+                    this.delivery = this.memberInfo;
+                } else {
+                    this.delivery = {
+                        name: '',
+                        zipCode: '',
+                        address: '',
+                        detailAddr: '',
+                        tel: '',
+                        message: '',
+                    };
+                }
+            }
+        }
     },
     mounted() {
         this.selected = this.$route.params.Payment;
+        console.log(this.selected);
+        this.getMember();
         for (let i = 0; i < this.selected.length; i++) {
-            this.totalPrice += this.selected[i].price * this.selected[i].amount;
+            this.totalPrice += (this.selected[i].price - this.selected[i].discount) * this.selected[i].basketAmount;
         }
     }
 }

@@ -99,7 +99,8 @@ CREATE TABLE ordertable (
 	TEL VARCHAR(11) NOT NULL,
 	ZIPCODE VARCHAR(5) NOT NULL,
 	ADDRESS VARCHAR(200) NOT NULL,
-	DETAILADDR VARCHAR(50) NOT NULL
+	DETAILADDR VARCHAR(50) NOT NULL,
+    MESSAGE VARCHAR(50)
 --     CONSTRAINT order_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID),
 --     CONSTRAINT order_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
 );
@@ -203,10 +204,10 @@ insert into membertable values('tester29','Asdqwe123','유저2','01045614561','u
 insert into membertable values('tester212','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 insert into membertable values('tester222','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 -- 상품
-insert into producttable(productname, type1, type2, imagename, price, color, size, amount, detailimagename) 
-values('스노우 버튼 모직스커트', 'skirt','mini','nature-3082832__480.jpg;photo-1433086966358-54859d0ed716.jfif',38000,'그레이지;소프트민트','S;M;L', 100,'photo-1447752875215-b2761acb3c5d.jfif;photo-1469474968028-56623f02e42e.jfif');
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, detailimagename)
-values('실키 여리핏 히든블라우스', 'shirt','blouse','photo-1465146344425-f00d5f5c8f07.jfif;photo-1426604966848-d7adac402bff.jfif',34900,5000,'아이보리;피치베이지;워터리블루;블랙',null, 100,'photo-1475924156734-496f6cac6ec1.jfif;photo-1586348943529-beaae6c28db9.jfif');
+insert into producttable(productname, type1, type2, imagename, price, color, size, amount, detailimagename, onSale) 
+values('스노우 버튼 모직스커트', 'skirt','mini','nature-3082832__480.jpg;photo-1433086966358-54859d0ed716.jfif',38000,'그레이지;소프트민트','S;M;L', 100,'photo-1447752875215-b2761acb3c5d.jfif;photo-1469474968028-56623f02e42e.jfif', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, detailimagename, onSale)
+values('실키 여리핏 히든블라우스', 'shirt','blouse','photo-1465146344425-f00d5f5c8f07.jfif;photo-1426604966848-d7adac402bff.jfif',34900,5000,'아이보리;피치베이지;워터리블루;블랙',null, 100,'photo-1475924156734-496f6cac6ec1.jfif;photo-1586348943529-beaae6c28db9.jfif', true);
 -- 장바구니
 insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('tester',1,'소프트민트','S',2);
 insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('tester',2,'아이보리',null,5);
@@ -215,11 +216,11 @@ insert into wishlisttable(id, productno) values('tester', 1);
 insert into wishlisttable(id, productno) values('tester', 2);
 -- 주문
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, amount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',1,1,'그레이지','S',1,38000,'피치베이지','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('tester',1,1,'그레이지','S',1,38000,'cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, amount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester2',1,2,'소프트민트','M',1,38000,'credit','유저2','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('tester2',1,2,'소프트민트','M',1,38000,'credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, amount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester2',2,2,'피치베이지',null,4,59800,'credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('tester2',2,2,'피치베이지',null,4,119600,'credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 -- 포인트 내역
 insert into pointtable(id, point) values ('tester',-2000);
 insert into pointtable(id, point) values ('tester',500);

@@ -181,7 +181,16 @@ export default {
                 })
         },
         goToOrder() {
-
+            if (this.selected.length == 0) {
+                alert('구매할 상품이 없습니다');
+                return;
+            }
+            this.$router.push({
+                name: "Payment",
+                params: {
+                    Payment: this.selected
+                }
+            });
         }
     },
     watch: {

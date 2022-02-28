@@ -1,173 +1,125 @@
 package com.myspring.spring.product;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.HashMap;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-@Service
-public class ProductService {
-	private ProductMapper productMapper;
+@RestController
+@RequestMapping(value = "/api/product")
+public class ProductController {
+	private ProductService productService;
 
 	@Autowired
-	public ProductService(ProductMapper productMapper) {
-		this.productMapper = productMapper;
+	public ProductController(ProductService productService) {
+		this.productService = productService;
 	}
 
-	public ResponseEntity<?> getProductAll(int page, int perPage, String type1, String type2, String search,
-			String searchWord1, String searchWord2) {
-		int start = (page - 1) * perPage;
-		List<ProductVO> productList = productMapper.getProductAll(start, perPage, type1, type2, search, searchWord1,
-				searchWord2);
-		int count = productMapper.getProductAllCount(type1, type2, search, searchWord1, searchWord2);
-		Map<String, Object> resMap = new HashMap<>();
-		resMap.put("productList", productList);
-		resMap.put("count", count);
-		return new ResponseEntity<>(resMap, HttpStatus.OK);
+//	 상품 리스트 조회
+	@GetMapping(value = "/getProductAll")
+	public ResponseEntity<?> getProductAll(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+			@RequestParam(value = "type1", required = false) String type1,
+			@RequestParam(value = "type2", required = false) String type2,
+			@RequestParam(value = "search", required = false) String search,
+			@RequestParam(value = "searchWord1", required = false) String searchWord1,
+			@RequestParam(value = "searchWord2", required = false) String searchWord2) {
+		return productService.getProductAll(page, perPage, type1, type2, search, searchWord1, searchWord2);
 	}
 
-	// 상품 리스트 조회
-	public ResponseEntity<?> getProductList(int page, int perPage, String type1, String type2, String searchWord,
-			int minPrice, int maxPrice, String searchOrder) {
-		int start = (page - 1) * perPage;
-		List<ProductVO> productList = productMapper.getProductList(start, perPage, type1, type2, searchWord, minPrice,
-				maxPrice, searchOrder);
-		int count = productMapper.getProductCount(type1, type2, searchWord, minPrice, maxPrice);
-		Map<String, Object> resMap = new HashMap<>();
-		resMap.put("productList", productList);
-		resMap.put("count", count);
-		return new ResponseEntity<>(resMap, HttpStatus.OK);
-
+//	 상품 리스트 조회
+	@GetMapping(value = "/getProductList")
+	public ResponseEntity<?> getProductList(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+			@RequestParam(value = "type1", required = false) String type1,
+			@RequestParam(value = "type2", required = false) String type2,
+			@RequestParam(value = "searchWord", required = false) String searchWord,
+			@RequestParam("minPrice") int minPrice, @RequestParam("maxPrice") int maxPrice,
+			@RequestParam(value = "searchOrder", required = false) String searchOrder) {
+		return productService.getProductList(page, perPage, type1, type2, searchWord, minPrice, maxPrice, searchOrder);
 	}
 
-	// 많이 팔린 상품 조회
-	public ResponseEntity<?> getBestProductList(String type1, String type2) {
-		List<ProductVO> res = productMapper.getBestProductList(type1, type2);
-		return new ResponseEntity<>(res, HttpStatus.OK);
+//	 많이 팔린 상품 조회
+	@GetMapping(value = "/getBestProductList")
+	public ResponseEntity<?> getBestProductList(@RequestParam("type1") String type1,
+			@RequestParam("type2") String type2) {
+		return productService.getBestProductList(type1, type2);
 	}
 
-	// 상품 정보 조회
-	public ResponseEntity<?> getProductByNo(int productNo) {
-		ProductVO res = productMapper.getProductByNo(productNo);
-		return new ResponseEntity<>(res, HttpStatus.OK);
+//	 상품 정보 조회
+	@GetMapping(value = "/getProduct/{productNo}")
+	public ResponseEntity<?> getProductByNo(@PathVariable("productNo") int productNo) {
+		return productService.getProductByNo(productNo);
 	}
-//insert
-	public ResponseEntity<?> insertProduct(ProductVO requestData, List<MultipartFile> fileList) {
-		ProductVO result = new ProductVO();
-		ResponseEntity<?> entity = null;
 
-		try {
-			productMapper.insertProduct(requestData, result);
-			int productNo = result.getProductNo();
-			String[] imageName = requestData.getImageName().split(";");
-			String[] detailImageName = requestData.getDetailImageName().split(";");
-			File file = new File("./images/product/" + productNo + "/");
-			file.mkdir();
-			file = new File("./images/product/" + productNo + "/product/");
-			file.mkdir();
-//			file = new File("./images/product/" + productNo + "/detail/");
-//			file.mkdir();
+//	상품 추가
+	@PostMapping("/insertProduct")
+	public ResponseEntity<?> insertProduct(@RequestPart(value = "data") ProductVO requestData,
+			@RequestParam("fileList") List<MultipartFile> fileList) throws NotFoundException {
+		return productService.insertProduct(requestData, fileList);
+	}
 
-			for (int i = 0; i < imageName.length; i++) {
-				MultipartFile multipartFile = fileList.get(i);
-				FileOutputStream writer = new FileOutputStream(
-						"./images/product/" + productNo + "/product/" + multipartFile.getOriginalFilename());
-//				System.out.println(multipartFile.getOriginalFilename());
-				writer.write(multipartFile.getBytes());
-				writer.close();
-			}
-//			for (int i = imageName.length; i < detailImageName.length + imageName.length; i++) {
-//				MultipartFile multipartFile = fileList.get(i);
-//				FileOutputStream writer = new FileOutputStream(
-//						"./images/product/" + productNo + "/detail/" + multipartFile.getOriginalFilename());
-////				System.out.println(multipartFile.getOriginalFilename());
-//				writer.write(multipartFile.getBytes());
-//				writer.close();
-//			}
-			entity = new ResponseEntity<>(HttpStatus.OK);
+//	상품 수정
+	@PatchMapping("/updateProduct")
+	public ResponseEntity<?> updateProduct(@RequestPart(value = "data") ProductVO requestData,
+			@RequestParam("fileList") List<MultipartFile> fileList) throws NotFoundException {
+		return productService.updateProduct(requestData, fileList);
+	}
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		return entity;
+//	판매 여부 변경
+	@PatchMapping("/updateOnSale/{productNo}")
+	public ResponseEntity<?> updateOnSale(@PathVariable("productNo") int proudctNo) {
+		return productService.updateOnSale(proudctNo);
 	}
 	
-//update
-	public ResponseEntity<?> updateProduct(ProductVO requestData, List<MultipartFile> fileList) {
-		ResponseEntity<?> entity = null;
+//	판매 여부 변경
+	@DeleteMapping("/deleteProduct/{productNo}")
+	public ResponseEntity<?> deleteProduct(@PathVariable("productNo") int proudctNo) {
+		return productService.updateOnSale(proudctNo);
+	}
 
+//	서버에서 이미지 가져오기
+	@GetMapping("/productImage/{productNo}/{image}")
+	public ResponseEntity<?> productImage(@PathVariable("productNo") int productNo, @PathVariable("image") String image)
+			throws IOException {
+		InputStream imageStream;
 		try {
-			int res = productMapper.updateProduct(requestData);
-			if (res == 0) {
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-			File file;
-			File[] underDir;
-
-//			폴더 내 모든 파일 삭제
-			file = new File("./images/product/" + requestData.getProductNo() + "/product/");
-			underDir = file.listFiles();
-			for (int i = 0; i < underDir.length; i++) {
-				underDir[i].delete();
-			}
-			file = new File("./images/product/" + requestData.getProductNo() + "/detail/");
-			underDir = file.listFiles();
-			for (int i = 0; i < underDir.length; i++) {
-				underDir[i].delete();
-			}
-
-			String[] imageName = requestData.getImageName().split(";");
-			String[] detailImageName = requestData.getDetailImageName().split(";");
-
-			for (int i = 0; i < imageName.length; i++) {
-				MultipartFile multipartFile = fileList.get(i);
-				FileOutputStream writer = new FileOutputStream("./images/product/" + requestData.getProductNo()
-						+ "/product/" + multipartFile.getOriginalFilename());
-//				System.out.println(multipartFile.getOriginalFilename());
-				writer.write(multipartFile.getBytes());
-				writer.close();
-			}
-			for (int i = imageName.length; i < detailImageName.length + imageName.length; i++) {
-				MultipartFile multipartFile = fileList.get(i);
-				FileOutputStream writer = new FileOutputStream("./images/product/" + requestData.getProductNo()
-						+ "/detail/" + multipartFile.getOriginalFilename());
-//				System.out.println(multipartFile.getOriginalFilename());
-				writer.write(multipartFile.getBytes());
-				writer.close();
-			}
-
-			entity = new ResponseEntity<>(HttpStatus.OK);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			imageStream = new FileInputStream("./images/product/" + productNo + "/product/" + image);
+		} catch (FileNotFoundException e) {
+			imageStream = new FileInputStream("./images/error.png");
 		}
-		return entity;
+		byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+		imageStream.close();
+		return new ResponseEntity<byte[]>(imageByteArray, HttpStatus.OK);
 	}
 
-	public ResponseEntity<?> updateOnSale(int productNo) {
-		int res = productMapper.updateOnSale(productNo);
-		if (res == 0)
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(HttpStatus.OK);
-
+	@GetMapping("/detailImage/{productNo}/{image}")
+	public ResponseEntity<?> detailImage(@PathVariable("productNo") int productNo, @PathVariable("image") String image)
+			throws IOException {
+		InputStream imageStream;
+		try {
+			imageStream = new FileInputStream("./images/product/" + productNo + "/detail/" + image);
+		} catch (FileNotFoundException e) {
+			imageStream = new FileInputStream("./images/error.png");
+		}
+		byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+		imageStream.close();
+		return new ResponseEntity<byte[]>(imageByteArray, HttpStatus.OK);
 	}
-	
-	public ResponseEntity<?> deleteProduct(int productNo) {
-		int res = productMapper.deleteProduct(productNo);
-		if (res == 0)
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(HttpStatus.OK);
 
-	}
 }

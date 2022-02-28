@@ -8,11 +8,7 @@
                         <v-carousel-item>
                             <v-dialog max-width="700">
                                 <template v-slot:activator="{ on, attrs }">
-<<<<<<< HEAD
-                                    <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.reviewNo}/${image}`" contain></v-img>
-=======
                                     <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.reviewNo}/${item.image}`" contain></v-img>
->>>>>>> 4d0a28b18521ca75c4f8628b5d4cfd98c9b68351
                                 </template>
                                 <v-card>
                                     <v-img :src="`/api/review/reviewImage/${item.reviewNo}/${item.image}`"></v-img>
@@ -243,7 +239,6 @@ export default {
                 alert('후기를 입력해주세요');
                 return;
             }
-            // 밑에거 주석 처리 후 이거 사용하시면 됩니다
             let data = {
                 productNo: this.productNo,
                 star: this.star,
@@ -266,8 +261,6 @@ export default {
                     alert('리뷰 작성에 실패했습니다.')
                     console.log(err);
                 })
-<<<<<<< HEAD
-=======
 
             // axios({
             //     method: 'post',
@@ -288,7 +281,6 @@ export default {
             //     alert('리뷰 작성에 실패했습니다.')
             //     console.log(err);
             // })
->>>>>>> 4d0a28b18521ca75c4f8628b5d4cfd98c9b68351
         },
         deleteReview(num) {
             axios.delete(`/api/review/delete/${num}`)

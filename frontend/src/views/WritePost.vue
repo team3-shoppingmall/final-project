@@ -623,37 +623,19 @@ export default {
             })
         },
         reviewFormUpdate() {
-            // 밑에거 주석 처리 후 이거 사용하시면 됩니다
-            // let data = {
-            //     reviewNo: this.num,
-            //     content: this.content,
-            //     star: this.star,
-            //     image: this.imageFile[0].name,
-            // };
-            // let formData = new FormData();
-            // formData.append('data', new Blob([JSON.stringify(data)], {
-            //     type: "application/json"
-            // }));
-            // formData.append(`fileList`, this.imageFile[0]);
-            // axios.patch(`/api/review/update`, formData)
-            //     .then(() => {
-            //         alert("수정이 완료되었습니다.")
-            //         this.$router.go(-1);
-            //     }).catch((err) => {
-            //         alert('수정에 실패하셨습니다.');
-            //         console.log(err);
-            //     })
-
-            axios({
-                    method: 'patch',
-                    url: `/api/review/update`,
-                    params: {
-                        reviewNo: this.num,
-                        content: this.content,
-                        star: this.star,
-                        image: "test.jpg"
-                    }
-                })
+            let data = {
+                reviewNo: this.num,
+                content: this.content,
+                star: this.star,
+                image: this.imageFiles[0].name,
+            };
+            let formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            
+            formData.append(`fileList`, this.imageFiles[0]);
+            axios.patch(`/api/review/update`, formData)
                 .then(() => {
                     alert("수정이 완료되었습니다.")
                     this.$router.go(-1);
@@ -661,6 +643,24 @@ export default {
                     alert('수정에 실패하셨습니다.');
                     console.log(err);
                 })
+
+            // axios({
+            //         method: 'patch',
+            //         url: `/api/review/update`,
+            //         params: {
+            //             reviewNo: this.num,
+            //             content: this.content,
+            //             star: this.star,
+            //             image: "test.jpg"
+            //         }
+            //     })
+            //     .then(() => {
+            //         alert("수정이 완료되었습니다.")
+            //         this.$router.go(-1);
+            //     }).catch((err) => {
+            //         alert('수정에 실패하셨습니다.');
+            //         console.log(err);
+            //     })
         },
         faqFormUpdate() {
             axios({

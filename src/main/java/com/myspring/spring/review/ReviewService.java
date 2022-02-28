@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.myspring.spring.product.ProductMapper;
@@ -58,12 +56,14 @@ public class ReviewService {
 			int reviewNo = result.getReviewNo();
 			File file = new File("./images/review/" + reviewNo + "/");
 			file.mkdir();
-
+			
+			if (fileList != null) {
 			MultipartFile multipartFile = fileList.get(0);
 			FileOutputStream writer = new FileOutputStream(
 					"./images/review/" + reviewNo + "/" + multipartFile.getOriginalFilename());
 			writer.write(multipartFile.getBytes());
 			writer.close();
+			}
 			entity = new ResponseEntity<>(HttpStatus.OK);
 
 		} catch (Exception e) {

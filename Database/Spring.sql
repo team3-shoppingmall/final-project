@@ -15,9 +15,11 @@ drop table if exists baskettable;
 drop table if exists producttable;
 drop table if exists membertable;
 
--- drop trigger
+-- drop trigger and procedure
 DROP TRIGGER IF EXISTS `springdb`.`membertable_BEFORE_INSERT`;
 DROP TRIGGER IF EXISTS `springdb`.`pointtable_BEFORE_INSERT`;
+DROP procedure IF EXISTS `autoQuestion`;
+DROP procedure IF EXISTS `autoReply`;
 
 -- create table and trigger
 CREATE TABLE membertable (
@@ -142,13 +144,13 @@ CREATE TABLE reviewTable(
 	CONTENT VARCHAR(600) NOT NULL,
 	id VARCHAR(50) NOT NULL,
 	REGDATE TIMESTAMP DEFAULT (current_timestamp),
-	IMAGE VARCHAR(100),
+	IMAGE VARCHAR(400),
 	STAR INT NOT NULL
 --     CONSTRAINT review_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
 );
 
 CREATE TABLE qnatable(
-	QNANO BIGINT PRIMARY KEY AUTO_INCREMENT,
+	QNANO BIGINT PRIMARY KEY auto_increment,
 	PRODUCTNO INT,
 	TYPE VARCHAR(200) NOT NULL,
 	ORIGINALNO BIGINT,
@@ -161,12 +163,31 @@ CREATE TABLE qnatable(
     -- CONSTRAINT primary_qna PRIMARY KEY (QNANO, ORIGINALNO)
 );
 
+DELIMITER $$
+USE `springdb`$$
+CREATE PROCEDURE `autoQuestion` (qna_productNo INT, qna_type VARCHAR(200), qna_reply BOOLEAN, qna_content VARCHAR(2000), qna_id VARCHAR(50), qna_secret BOOLEAN, qna_image VARCHAR(400))
+BEGIN
+DECLARE getMaxQnaNo BIGINT;
+SET getMaxQnaNo = (SELECT max(qnaNo) FROM qnatable) + 1;
+insert into qnatable(QNANO, PRODUCTNO, type, originalNo, reply, content, id, secret, image) values(getMaxQnaNo, qna_productNo, qna_type, getMaxQnaNo, qna_reply, qna_content, qna_id, qna_secret, qna_image);
+END$$
+DELIMITER ;
+
+DELIMITER $$
+USE `springdb`$$
+CREATE PROCEDURE `autoReply` (qna_type VARCHAR(200), qna_originalNo BIGINT, qna_content VARCHAR(2000), qna_id VARCHAR(50), qna_secret BOOLEAN, qna_image VARCHAR(400))
+BEGIN
+DECLARE getMaxQnaNo BIGINT;
+SET getMaxQnaNo = (SELECT max(qnaNo) FROM qnatable) + 1;
+insert into qnatable(QNANO, type, originalNo, content, id, secret, image) values(getMaxQnaNo, qna_type, qna_originalNo, qna_content, qna_id, qna_secret, qna_image);
+END$$
+DELIMITER ;
+
 CREATE TABLE bannertable (
 	NUM INT PRIMARY KEY AUTO_INCREMENT,
 	IMAGE VARCHAR(100) NOT NULL,
 	LINK VARCHAR(100) NOT NULL
 );
-
 -- insert data
 -- 회원
 insert into membertable values('admin','admin','관리자','0212345678','spring@gmail.com','12345','서울 강남구 테헤란로 212 (멀티캠퍼스)','2층 201호',false,null,'ROLE_ADMIN');
@@ -201,9 +222,8 @@ values('tester2',1,2,'소프트민트','M',1,38000,'credit','유저2','010456145
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, amount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
 values('tester2',2,2,'피치베이지',null,4,119600,'credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 -- 포인트 내역
-insert into pointtable(id, point,content) values ('tester',-2000,'포인트사용');
-insert into pointtable(id, point,content) values ('tester',500, '리뷰이벤트');
-insert into pointtable(id, point,content) values ('tester2',2000, '신규회원적립');
+insert into pointtable(id, point) values ('tester',-2000);
+insert into pointtable(id, point) values ('tester',500);
 -- 공지사항
 insert into noticetable(title, content, id, image) values("test1", "content1", "admin1", "test1.png");
 insert into noticetable(title, content, id, image) values("test2", "content2", "admin2", "test2.png");
@@ -332,22 +352,22 @@ insert into reviewtable(productno, content, id, image, star) values(1,'이번에
 insert into reviewtable(productno, content, id, image, star) values(1,'요즘 옷들이 작아서 안 맞을까 걱정했는데(ㅠㅠ) 불편하지 않게 딱 맞아요! 핏도 맘에 들고 만족스러워용^.^','tester5', 'image5.jpg','5');
 insert into reviewtable(productno, content, id, image, star) values(1,'딱 봄 가을에 입기 좋을 얇은 두께입니다 겨울에는 너무 추울 것 같아요 에스 사이즈로 샀는데 조금 크게 나온 것 같아요 그래서인지 핏하게 예쁘게 떨어지지는 않아 조금 아쉽습니다 ㅠㅠ','tester5', 'image5.jpg','4');
 -- 문의
-insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(1,'product', 1, true, '질문 내용', 'tester', true, 'image1.jpg');
-insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(2,'product', last_insert_id()+1, false, '질문 내용', 'tester',true, 'image1.jpg');
-insert into qnatable(type, originalNo, content, id, secret, image) values('productReply', 1, '답변 내용', 'admin',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('general', last_insert_id()+1, false, '질문 내용', 'tester',true, 'image1.jpg');
-insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(1,'product', last_insert_id()+1, true, '질문 내용', 'tester',true, 'image1.jpg');
-insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(2,'product', last_insert_id()+1, true, '질문 내용', 'tester2',true, 'image1.jpg');
-insert into qnatable(type, originalNo, content, id, secret, image) values('productReply', 5, '답변 내용', 'admin',true, 'image1.jpg');
-insert into qnatable(type, originalNo, content, id, secret, image) values('productReply', 6, '답변 내용', 'admin',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('general', last_insert_id()+1, false, '질문 내용', 'tester',true, 'image1.jpg');
-insert into qnatable(productno,type, originalNo, reply, content, id, secret, image) values(2,'product', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('delivery', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('cancel', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
-insert into qnatable(type, originalNo, reply, content, id, secret, image) values('exchange', last_insert_id()+1, false, '질문 내용', 'tester2',true, 'image1.jpg');
+insert into qnatable(qnaNo, productno, type, originalNo, reply, content, id, secret, image) values(1, 1,'product', 1, true, '질문 내용', 'tester', true, 'image1.jpg');
+call autoQuestion(2,'product', false, '질문 내용', 'tester',true, 'image1.jpg');
+call autoReply('productReply', 1, '답변 내용', 'admin',true, 'image1.jpg');
+call autoQuestion(null, 'general', false, '질문 내용', 'tester',true, 'image1.jpg');
+call autoQuestion(1,'product', true, '질문 내용', 'tester',true, 'image1.jpg');
+call autoQuestion(2,'product', true, '질문 내용', 'tester2',true, 'image1.jpg');
+call autoReply('productReply', 5, '답변 내용', 'admin',true, 'image1.jpg');
+call autoReply('productReply', 6, '답변 내용', 'admin',true, 'image1.jpg');
+call autoQuestion(null, 'general', false, '질문 내용', 'tester',true, 'image1.jpg');
+call autoQuestion(2,'product', false, '질문 내용', 'tester2',true, 'image1.jpg');
+call autoQuestion(null, 'delivery', false, '질문 내용', 'tester2',true, 'image1.jpg');
+call autoQuestion(null, 'cancel', false, '질문 내용', 'tester2',true, 'image1.jpg');
+call autoQuestion(null, 'exchange', false, '질문 내용', 'tester2',true, 'image1.jpg');
 -- 배너
-insert into bannertable(image, link) values('test1.jpg','testlink1');
-insert into bannertable(image, link) values('test2.jpg','testlink2');
+-- insert into bannertable(image, link) values('test1.jpg','testlink1'); 
+-- insert into bannertable(image, link) values('test2.jpg','testlink2');
 
 commit;
 
@@ -372,5 +392,3 @@ select * from bannertable;
 -- 많이 팔린 순으로 정렬
 -- select productno, sum(amount) from ordertable group by productno order by sum(amount) desc;
 -- select * from producttable left join ordertable on producttable.productno = ordertable.productno where type1 = 'skirt' group by ordertable.productno order by sum(ordertable.amount) desc limit 0,8;
-insert into qnatable(QNANO, PRODUCTNO, type, originalNo, reply, content, id, secret, image)
- values( (SELECT MAX(qnaNo)+1 as num FROM qnatable), null, 'exchange', (SELECT MAX(qnaNo)+1 as num FROM qnatable), false, '질문 내용', 'tester2', true, 'image1.jpg');

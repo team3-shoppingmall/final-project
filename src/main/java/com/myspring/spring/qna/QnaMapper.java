@@ -47,7 +47,10 @@ public interface QnaMapper {
 	QnaVO getQnaByOriginalNo(@Param("originalNo") int originalNo);
 
 	// 문의 등록
-	@Insert("call autoQuestion(#{in.productNo}, #{in.type}, #{in.reply}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
+//	@Insert("call autoQuestion(#{in.productNo}, #{in.type}, #{in.reply}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
+	@Insert("insert into qnatable(qnaNo, productNo, type, originalNo, reply, content, id, secret, image) "
+			+ "values((select A.num from (SELECT MAX(qnaNo)+1 as num FROM qnatable) A), #{in.productNo}, #{in.type}, "
+			+ "(select A.num from (SELECT MAX(qnaNo)+1 as num FROM qnatable) A), #{in.reply}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
 	@Options(useGeneratedKeys = true, keyProperty = "result.qnaNo", keyColumn = "qnaNo")
 	int insertQna(@Param("in") QnaVO in, @Param("result") QnaVO result);
 

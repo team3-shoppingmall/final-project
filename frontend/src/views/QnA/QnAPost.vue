@@ -66,8 +66,11 @@
                 <v-col cols="auto">
                     <v-btn @click="moveToBefore" outlined>목록</v-btn>
                 </v-col>
-                <v-col cols="auto" v-if="admin && (qna.qnaNo == qna.originalNo)">
+                <v-col cols="auto" v-if="!qna.reply">
                     <v-btn @click="moveToReply" outlined>답변</v-btn>
+                </v-col>
+                <v-col cols="auto" v-if="admin && (qna.qnaNo == qna.originalNo) && !qna.reply">
+                    <v-btn @click="moveToWriteReply" outlined>답변</v-btn>
                 </v-col>
                 <v-col cols="auto">
                     <v-btn @click="moveToUpdate" outlined>수정</v-btn>
@@ -127,6 +130,18 @@ export default {
             this.$router.go(-1);
         },
         moveToReply() {
+            axios.get(`/api/qna/getQnaByOriginalNo`, {
+                params: {
+                    originalNo: this.pageID
+                }
+            }).then((res) => {
+                const link = res.data.qnaNo;
+                this.$router.push(`/qna/${link}`)
+            }).catch((err) => {
+                console.log(err);
+            })
+        },
+        moveToWriteReply() {
             if (this.qna.reply == true)
                 alert("이미 답변이 등록된 문의글입니다.");
             else
@@ -140,7 +155,7 @@ export default {
         },
         deleteQnA() {
             console.log(this.qna.qnaNo);
-            axios.delete( `/api/qna/deleteqna`, {
+            axios.delete(`/api/qna/deleteqna`, {
                 params: {
                     qnaNo: this.qna.qnaNo
                 }

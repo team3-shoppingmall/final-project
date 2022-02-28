@@ -1,7 +1,9 @@
 <template>
 <v-card outlined class="ma-5">
     <v-list-item three-line>
-        <v-list-item-avatar tile size="100" color="grey">이미지</v-list-item-avatar>
+        <v-list-item-avatar tile size="100" color="grey">
+            <v-img :src="`/api/product/productImage/${product.productNo}/${product.imageName.split(';')[0]}`"></v-img>
+        </v-list-item-avatar>
         <v-list-item-content>
             <v-list-item-title class="text-h5 mb-1">
                 {{product.productName}}

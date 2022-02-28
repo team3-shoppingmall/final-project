@@ -9,31 +9,21 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PointService {
-	private PointMapper productMapper;
+	private PointMapper pointMapper;
 
 	@Autowired
 	public PointService(PointMapper productMapper) {
-		this.productMapper = productMapper;
+		this.pointMapper = productMapper;
+	}
+    
+	// 전체 조회
+	public ResponseEntity<?> getPointAll() {
+       List<PointVO> res = pointMapper.getPointAll();
+       if (res == null)
+    	   return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+       else
+    	   return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
-	// 멤버 등록
-	public ResponseEntity<?> insertMember(PointVO member) {
-		productMapper.insertMember(member);
-		return null;
-	}
 
-	// 전체 멤버 조회
-	public ResponseEntity<?> getAllmembers() {
-		List<PointVO> res = productMapper.getAllMembers();
-		return new ResponseEntity<>(res, HttpStatus.OK);
-	}
-
-	// 아이디로 멤버 조회
-	public ResponseEntity<?> getMember(String id) {
-		PointVO res = productMapper.getMember(id);
-		if (res != null)
-			return new ResponseEntity<>(res, HttpStatus.OK);
-		else
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
 }

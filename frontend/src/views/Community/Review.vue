@@ -1,9 +1,10 @@
 <template>
 <v-container>
+    {{contents}}
     <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
-        <template #[`item.productName`]="{index}">
+        <template #[`item.productName`]="{item}">
             <div class="text-left">
-                {{ nameList[index] }}
+                {{ item.productName }}
             </div>
         </template>
         <template #[`item.star`]="{item}">
@@ -131,7 +132,7 @@ export default {
             }).then(res => {
                 this.contents = res.data.reviewList;
                 this.totalContents = res.data.count;
-                this.nameList = res.data.nameList;
+            }).finally(() => {
                 this.loading = false;
             })
         },

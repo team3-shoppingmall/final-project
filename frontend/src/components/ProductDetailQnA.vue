@@ -109,10 +109,12 @@ export default {
                     type: link,
                     productNo: this.productNo
                 }
-            }).then(res => {
+            }).then((res) => {
                 console.log(res.data);
                 this.contents = res.data.productQnaList;
                 this.totalContents = res.data.count;
+
+            }).fianlly(()=>{
                 this.loading = false;
             })
         },

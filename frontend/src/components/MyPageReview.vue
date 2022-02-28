@@ -1,10 +1,30 @@
 <template>
 <v-container>
-    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort>
-        <template #[`item.productName`]="{index}">
-            <div class="text-left">
-                {{ nameList[index] }}
-            </div>
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="reviewNo" class="elevation-1" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
+        <template #[`item.image`]="{item}">
+            <v-row justify="center">
+                <v-col cols="auto">
+                    <v-carousel :show-arrows="false" cycle interval="3000" hide-delimiters style="height:100px;width:100px">
+                        <v-carousel-item>
+                            <v-dialog max-width="700">
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.reviewNo}/${item.image}`" contain></v-img>
+                                </template>
+                                <v-card>
+                                    <v-img :src="`/api/review/reviewImage/${item.reviewNo}/${item.image}`"></v-img>
+                                </v-card>
+                            </v-dialog>
+                        </v-carousel-item>
+                    </v-carousel>
+                </v-col>
+            </v-row>
+        </template>
+        <template #[`item.productName`]="{item}">
+            <v-btn text :to="`/productDetail/${item.productNo}`">
+                <div class="text-left text-truncate" style="max-width: 100px;">
+                    {{ item.productName }}
+                </div>
+            </v-btn>
         </template>
         <template #[`item.star`]="{item}">
             <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" length="5" readonly size="10" :value="item.star"></v-rating>
@@ -20,11 +40,6 @@
                 </v-col>
             </v-row>
         </template>
-        <template #[`item.id`]="{item}">
-            <div class="text-left">
-                <HideId :id="item.id" />
-            </div>
-        </template>
         <template #[`item.regDate`]="{item}">
             <DateDisplay :regDate="item.regDate" />
         </template>
@@ -34,13 +49,13 @@
         <v-col class="d-flex" cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>
                 <v-col cols="4">
-                    <v-select :items="searches" v-model="search"></v-select>
+                    <v-select :items="searches" value="productName"></v-select>
                 </v-col>
                 <v-col cols="7">
                     <v-text-field v-model="searchWord"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon="icon" @click="getReview">검색</v-btn>
+                    <v-btn @click="getReview" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -50,11 +65,9 @@
 
 <script>
 import axios from 'axios'
-import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 export default {
     components: {
-        HideId,
         DateDisplay,
     },
     data() {
@@ -74,7 +87,7 @@ export default {
             }, {
                 text: '상품명',
                 value: 'productName',
-                width: '10%',
+                width: '13%',
                 align: 'center',
                 divider: true
             }, {
@@ -86,13 +99,7 @@ export default {
             }, {
                 text: '후기',
                 value: 'content',
-                width: '45%',
-                align: 'center',
-                divider: true
-            }, {
-                text: '작성자',
-                value: 'id',
-                width: '10%',
+                width: '52%',
                 align: 'center',
                 divider: true
             }, {
@@ -104,15 +111,15 @@ export default {
             searches: [{
                 text: '상품명',
                 value: 'productName'
-            }, {
-                text: '작성자',
-                value: 'id'
             }],
-            search: 'id',
-            searchWord: ''
+            searchWord: '',
+
+            id: 'tester'
         }
     },
     methods: {
+        // id에 대해 조회만 해주시면 됩니다
+        // getReview하실 때 검색 조건이 상품명밖에 없으므로 search: 'productName'로 해주시면 됩니다.
         getReview() {
             this.loading = true;
             const {
@@ -125,37 +132,28 @@ export default {
                 params: {
                     page: page,
                     perPage: itemsPerPage,
-                    search: this.search,
+                    search: 'productName',
                     searchWord: this.searchWord
                 }
             }).then(res => {
                 this.contents = res.data.reviewList;
                 this.totalContents = res.data.count;
-                this.nameList = res.data.nameList;
+            }).finally(() => {
                 this.loading = false;
             })
         },
-
         deleteReview(num) {
-            axios({
-                    method: 'delete',
-                    url: `/api/review/delete`,
-                    params: {
-                        reviewNo: num
-                    }
-                })
-                .then(res => {
-                    console.log(res.data);
-                    if (res.status == 200) {
-                        alert("삭제가 완료되었습니다.")
-                        this.$router.go();
-                    }
+            axios.delete(`/api/review/delete/${num}`)
+                .then(() => {
+                    alert("삭제가 완료되었습니다.")
+                    this.$router.go();
+                }).catch(err => {
+                    console.log(err);
                 })
         },
-
         updateReview(num) {
             this.$router.push(`/updatePost/review/${num}`);
-        }
+        },
     },
     watch: {
         options: {

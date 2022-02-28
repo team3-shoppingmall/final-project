@@ -1,5 +1,6 @@
 <template>
 <v-container>
+    {{selected}}
     <v-row justify="center">
         <v-col cols="9">
             <div class="text-h3">ORDER</div>
@@ -153,7 +154,7 @@
                 <tbody>
                     <tr>
                         <td>
-                            <v-radio-group v-model="payMethod" row>
+                            <v-radio-group v-model="orderMethod" row>
                                 <v-radio label="무통장 입금" value="cash"></v-radio>
                                 <v-radio label="신용카드/체크카드" value="credit"></v-radio>
                             </v-radio-group>
@@ -161,7 +162,7 @@
                     </tr>
                     <tr>
                         <td>
-                            결제 버튼 등
+                            <v-btn @click="addOrder">결제</v-btn>
                         </td>
                     </tr>
                 </tbody>
@@ -222,9 +223,15 @@ export default {
             memberInfo: '',
 
             deliverySelect: false,
-            delivery: '',
+            delivery: {
+                name: '',
+                zipcode: '',
+                addr1: '',
+                addr2: '',
+                tel: '',
+            },
             deliveryMessage: '',
-            payMethod: 'credit',
+            orderMethod: 'credit',
 
             id: 'tester'
         }
@@ -239,7 +246,44 @@ export default {
                 .then(res => {
                     this.memberInfo = res.data;
                 })
-        }
+        },
+        addOrder() {
+            console.log(this.delivery.name);
+            if (this.delivery.name == '') {
+                alert('받으시는 분의 성함을 입력해주세요');
+                return;
+            }
+            if (this.delivery.zipcode == '' || this.delivery.addr1 == '' || this.delivery.addr2 == '') {
+                alert('받으시는 분의 주소를 입력해주세요');
+                return;
+            }
+            if (this.delivery.tel == '') {
+                alert('받으시는 분의 전화번호를 입력해주세요');
+                return;
+            }
+
+            let orderList = [];
+            for (let i = 0; i < this.selected.length; i++) {
+                let order = {
+                    id: this.id,
+                    productNo: this.selected[i].productNo,
+                    selectedColor: this.selected[i].selectedColor,
+                    selectedSize: this.selected[i].selectedSize,
+                    orderAmount: this.selected[i].basketAmount,
+                    totalPrice: (this.selected[i].price - this.selected[i].discount) * this.selected[i].basketAmount,
+                    orderMethod: this.orderMethod,
+                    name: this.delivery.name,
+                    tel: this.delivery.tel,
+                    zipCode: this.delivery.zipcode,
+                    address: this.delivery.addr1,
+                    detailAddr: this.delivery.addr2,
+                    message: this.deliveryMessage
+                }
+                orderList.push(order);
+            }
+            console.log(orderList);
+
+        },
     },
     watch: {
         deliverySelect: {
@@ -249,12 +293,12 @@ export default {
                 } else {
                     this.delivery = {
                         name: '',
-                        zipCode: '',
-                        address: '',
-                        detailAddr: '',
+                        zipcode: '',
+                        addr1: '',
+                        addr2: '',
                         tel: '',
-                        message: '',
                     };
+                    this.deliveryMessage = '';
                 }
             }
         }

@@ -82,7 +82,8 @@ public class QnaController {
 	
 	// 문의 등록
 	@PostMapping("/insertqna")
-	public ResponseEntity<?> insertQna(@RequestPart(value = "data") QnaVO requestData, @RequestParam("fileList") List<MultipartFile> fileList) throws NotFoundException {
+	public ResponseEntity<?> insertQna(@RequestPart(value = "data") QnaVO requestData,
+			@RequestParam(value = "fileList", required = false) List<MultipartFile> fileList) throws NotFoundException {
 		return qnaService.insertQna(requestData, fileList);
 	}
 
@@ -96,7 +97,7 @@ public class QnaController {
 	// 문의 수정 & 댓글 수정
 	@PatchMapping("/updateqna")
 	public ResponseEntity<?> updateQna(@RequestPart(value = "data") QnaVO requestData,
-			@RequestParam("fileList") List<MultipartFile> fileList) throws NotFoundException {
+			@RequestParam(value = "fileList", required = false) List<MultipartFile> fileList) throws NotFoundException {
 		return qnaService.updateQna(requestData, fileList);
 	}
 

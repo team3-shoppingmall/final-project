@@ -115,10 +115,11 @@ export default {
                         searchWord: this.searchWord,
                         type: link
                     }
-                })
-                .then(res => {
+                }).then(res => {
                     this.contents = res.data.qnaList;
                     this.totalContents = res.data.count;
+                    this.loading = false;
+                }).finally(()=>{
                     this.loading = false;
                 })
         },

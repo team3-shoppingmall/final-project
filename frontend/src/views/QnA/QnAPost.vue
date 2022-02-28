@@ -96,9 +96,12 @@ export default {
             this.dataLoaded = false;
             axios.get(`/api/qna/getQna/${this.pageID}`)
                 .then((res) => {
-                    console.log(res.data.qnaNo);
                     this.qna = res.data;
-                    this.images = this.qna.image.split(';');
+                    //답글일 경우 image로딩을 실행시키지 않음
+                    const reply = res.data.type.slice(-5);
+                    if(reply != "Reply" ){
+                        this.images = this.qna.image.split(';');
+                    }
                     this.dataLoaded = true;
                 }).catch((err) => {
                     console.log(err);

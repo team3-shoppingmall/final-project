@@ -79,7 +79,7 @@ public class QnaController {
 	public ResponseEntity<?> getQnaByOrignalNo(@RequestParam("originalNo") int originalNo) {
 		return qnaService.getQnaByOriginalNo(originalNo);
 	}
-	
+
 	// 문의 등록
 	@PostMapping("/insertqna")
 	public ResponseEntity<?> insertQna(@RequestPart(value = "data") QnaVO requestData,
@@ -120,7 +120,7 @@ public class QnaController {
 	public ResponseEntity<?> searchQnaByContent(@RequestParam("content") String content) {
 		return qnaService.searchQnaByContent(content);
 	}
-	
+
 	// 서버에서 이미지 가져오기
 	@GetMapping("/qnaImage/{qnaNo}/{image}")
 	public ResponseEntity<?> productimage(@PathVariable("qnaNo") int qnaNo, @PathVariable("image") String image)

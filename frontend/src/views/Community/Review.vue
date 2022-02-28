@@ -5,13 +5,13 @@
             <v-row justify="center">
                 <v-col cols="auto">
                     <v-carousel :show-arrows="false" cycle interval="3000" hide-delimiters style="height:100px;width:100px">
-                        <v-carousel-item v-for="(image,i) in item.image.split(';')" :key="i">
+                        <v-carousel-item>
                             <v-dialog max-width="700">
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.productNo}/${image}`" contain></v-img>
+                                    <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.reviewNo}/${item.image}`" contain></v-img>
                                 </template>
                                 <v-card>
-                                    <v-img :src="`/api/review/reviewImage/${item.productNo}/${image}`"></v-img>
+                                    <v-img :src="`/api/review/reviewImage/${item.reviewNo}/${item.image}`"></v-img>
                                 </v-card>
                             </v-dialog>
                         </v-carousel-item>

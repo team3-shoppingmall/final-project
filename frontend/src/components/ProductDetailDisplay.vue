@@ -1,5 +1,5 @@
 <template>
-<v-card outlined class="ma-5" v-if="dataLoaded">
+<v-card v-if="dataLoaded">
     <v-list-item three-line>
         <v-list-item-avatar tile size="100" color="grey">
             <v-img :src="`/api/product/productImage/${product.productNo}/${image}`"></v-img>
@@ -10,8 +10,20 @@
                 - <span v-if="sizeOption != ''">{{sizeOption.length}} size</span>
                 <span v-if="sizeOption == ''">{{colorOption.length}} color</span>
             </v-list-item-title>
-            <v-list-item-subtitle>{{product.price-product.discount}}원</v-list-item-subtitle>
-
+            <v-list-item-subtitle>
+                <span v-if="product.discount != 0 && product.amount > 0 && product.onSale == true" class="text-decoration-line-through">
+                    {{product.price}}원
+                </span>
+                <span v-if="product.discount == 0 && product.amount > 0 && product.onSale == true">
+                    {{product.price}}원
+                </span>
+                <span v-if="product.amount == 0 || product.onSale == false" class="red--text">
+                    품절 상품입니다
+                </span>
+                <span v-if="product.discount != 0 && product.amount > 0 && product.onSale == true">
+                    {{product.price-product.discount}}원
+                </span>
+            </v-list-item-subtitle>
             <v-btn outlined :to="`/productDetail/${product.productNo}`" max-width="150">
                 상품 상세보기
             </v-btn>

@@ -57,17 +57,18 @@ public class QnaService {
 
 		try {
 			qnaMapper.insertQna(requestData, result);
-			int qnaNo = result.getQnaNo();		
-			System.out.println("qnaNo:"+qnaNo);
+			int qnaNo = result.getQnaNo();
+//			System.out.println("qnaNo:" + qnaNo);
 			File file = new File("./images/qna/" + qnaNo + "/");
 			file.mkdir();
-			
-			for (int i = 0; i < fileList.size(); i++) {
-				MultipartFile multipartFile = fileList.get(i);
-				FileOutputStream writer = new FileOutputStream(
-						"./images/qna/" + qnaNo + "/" + multipartFile.getOriginalFilename());
-				writer.write(multipartFile.getBytes());
-				writer.close();
+			if (fileList != null) {
+				for (int i = 0; i < fileList.size(); i++) {
+					MultipartFile multipartFile = fileList.get(i);
+					FileOutputStream writer = new FileOutputStream(
+							"./images/qna/" + qnaNo + "/" + multipartFile.getOriginalFilename());
+					writer.write(multipartFile.getBytes());
+					writer.close();
+				}
 			}
 			entity = new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
@@ -111,13 +112,14 @@ public class QnaService {
 			for (int i = 0; i < underDir.length; i++) {
 				underDir[i].delete();
 			}
-
-			for (int i = 0; i < fileList.size(); i++) {
-				MultipartFile multipartFile = fileList.get(i);
-				FileOutputStream writer = new FileOutputStream(
-						"./images/qna/+" + requestData.getQnaNo() + "/qna/" + multipartFile.getOriginalFilename());
-				writer.write(multipartFile.getBytes());
-				writer.close();
+			if (fileList != null) {
+				for (int i = 0; i < fileList.size(); i++) {
+					MultipartFile multipartFile = fileList.get(i);
+					FileOutputStream writer = new FileOutputStream(
+							"./images/qna/" + requestData.getQnaNo() + "/" + multipartFile.getOriginalFilename());
+					writer.write(multipartFile.getBytes());
+					writer.close();
+				}
 			}
 			entity = new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
@@ -135,6 +137,7 @@ public class QnaService {
 		// 문의 삭제
 		int resQna = qnaMapper.deleteQna(qnaNo);
 
+		// 댓글 삭제
 		if (res.isReply() == true) {
 			int resDelReply = qnaMapper.deleteReply(qnaNo);
 			if (resDelReply == 0)

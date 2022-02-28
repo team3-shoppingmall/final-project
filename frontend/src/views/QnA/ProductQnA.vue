@@ -134,6 +134,8 @@ export default {
                 this.contents = res.data.qnaList;
                 this.totalContents = res.data.count;
                 this.loading = false;
+            }).finally(()=>{
+                this.loading = false;
             })
         },
         moveto(item) {

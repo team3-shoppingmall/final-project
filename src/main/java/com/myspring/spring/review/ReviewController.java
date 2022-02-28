@@ -1,6 +1,15 @@
 package com.myspring.spring.review;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +19,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.myspring.spring.product.ProductVO;
 
 @RestController
 @RequestMapping(value = "/api/review")
@@ -37,8 +50,9 @@ public class ReviewController {
 
 	// 리뷰 작성
 	@PostMapping("/insert")
-	public ResponseEntity<?> insertReview(@RequestBody ReviewVO reviewVO) {
-		return reviewService.insertReview(reviewVO);
+	public ResponseEntity<?> insertReview(@RequestPart(value = "data") ReviewVO requestData,
+			@RequestParam(value="fileList", required = false) List<MultipartFile> filList) throws NotFoundException {
+		return reviewService.insertReview(requestData, filList);
 	}
 
 	// 리뷰 삭제
@@ -49,12 +63,25 @@ public class ReviewController {
 
 	// 리뷰 수정
 	@PatchMapping("/update")
-	public ResponseEntity<?> updateReview(@RequestParam("reviewNo") int reviewNo,
-			@RequestParam("content") String content, @RequestParam("star") int star) {
-//		@RequestParam("image") String image, 
-		return reviewService.updateReview(reviewNo, content, star);
+	public ResponseEntity<?> updateReview(@RequestPart(value = "data") ReviewVO requestData,
+			@RequestParam("fileList") List<MultipartFile> fileList) throws NotFoundException {
+		return reviewService.updateReview(requestData, fileList);
 	}
-
+	
+	// 서버에서 이미지 가져오기
+	@GetMapping("/reviewImage/{reviewNo}/{image}")
+	public ResponseEntity<?> productimage(@PathVariable("reviewNo") int reviewNo, @PathVariable("image") String image)
+			throws IOException {
+		InputStream imageStream;
+		try {
+			imageStream = new FileInputStream("./images/review/" + reviewNo + "/" + image);
+		} catch (FileNotFoundException e) {
+			imageStream = new FileInputStream("./images/error.png");
+		}
+		byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+		imageStream.close();
+		return new ResponseEntity<byte[]>(imageByteArray, HttpStatus.OK);
+	}
 	// 리뷰 상세보기
 	/*
 	 * @GetMapping("/detail/{reviewNo}") public ResponseEntity<?>

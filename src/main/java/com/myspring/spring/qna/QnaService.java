@@ -135,15 +135,15 @@ public class QnaService {
 
 	}
 
-	//댓글 등록 시 원글에 productNo가 있을 때 댓글 productNo도 넣어줘야함 =====
+	// 댓글 등록 시 원글에 productNo가 있을 때 댓글 productNo도 넣어줘야함 =====
 	// 댓글 등록 - originalNo 받아서 reply = true로 바꿔주기
 	public ResponseEntity<?> insertReply(QnaVO qnaVO) {
 		int res = qnaMapper.insertReply(qnaVO);
 		int originalNo = qnaVO.getOriginalNo();
 		int resReply = qnaMapper.updateReplyTrue(originalNo);
-		
-		QnaVO qna = qnaMapper.getQna(originalNo);
-		if(qna.getProductNo() != 0) {
+
+		QnaVO qna = qnaMapper.getQnaByQnaNo(originalNo);
+		if (qna.getProductNo() != 0) {
 			qnaVO.setProductNo(qna.getProductNo());
 		}
 
@@ -175,8 +175,15 @@ public class QnaService {
 		QnaVO res = qnaMapper.getQna(qnaNo);
 		// 문의 삭제
 		int resQna = qnaMapper.deleteQna(qnaNo);
-		int resDelReply = qnaMapper.deleteReply(qnaNo);
 
+
+		if (res.isReply() == true) {
+			int resDelReply = qnaMapper.deleteReply(qnaNo);
+			if (resDelReply == 0 )
+				return new ResponseEntity<>(resDelReply, HttpStatus.INTERNAL_SERVER_ERROR);
+			else
+				return new ResponseEntity<>(resDelReply, HttpStatus.OK);
+		}else {
 		// 답글이 삭제될때 원글의 reply가 false로 바꾸기
 		// reply글의 originalNo를 받아와서 그 originalNo의 reply를 false로 바꿔주기
 		// qnaNo != originalNo 일 때는 답글없다는 의미 -> updateReplyFalse()
@@ -189,8 +196,8 @@ public class QnaService {
 			else
 				return new ResponseEntity<>(resReply, HttpStatus.OK);
 		}
-
-		if (resQna == 0 || resDelReply == 0)
+		}
+		if (resQna == 0 )
 			return new ResponseEntity<>(resQna, HttpStatus.INTERNAL_SERVER_ERROR);
 		else
 			return new ResponseEntity<>(resQna, HttpStatus.OK);
@@ -229,7 +236,6 @@ public class QnaService {
 		int start = (page - 1) * perPage;
 		List<QnaAndProductVO> qnaList = qnaMapper.getQnaListByType(start, perPage, search, searchWord, type);
 		int count = qnaMapper.getQnaCountByType(search, searchWord, type);
-		
 
 		if (qnaList == null || count == 0) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -252,7 +258,7 @@ public class QnaService {
 		}
 	}
 
-	//productDetail qna 불러오기
+	// productDetail qna 불러오기
 	public ResponseEntity<?> getQnaListByProductNo(int page, int perPage, String search, String searchWord, String type,
 			int productNo) {
 		int start = (page - 1) * perPage;
@@ -266,7 +272,7 @@ public class QnaService {
 			resMap.put("count", count);
 			return new ResponseEntity<>(resMap, HttpStatus.OK);
 		}
-		
+
 	}
 
 //	//기간으로 문의 검색(일주일)

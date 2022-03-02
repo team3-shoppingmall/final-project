@@ -82,12 +82,4 @@ public class ReviewController {
 		imageStream.close();
 		return new ResponseEntity<byte[]>(imageByteArray, HttpStatus.OK);
 	}
-	// 리뷰 상세보기
-	/*
-	 * @GetMapping("/detail/{reviewNo}") public ResponseEntity<?>
-	 * getReviewFindByID(@PathVariable("reviewNo") int reviewNo) { return
-	 * reviewService.getFindByReviewNo(reviewNo); }
-	 */
-
-	// 리뷰 정렬 by star
 }

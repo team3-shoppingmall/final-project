@@ -9,7 +9,7 @@ public class OrderVO {
 	private long orderNo;
 	private String selectedColor;
 	private String selectedSize;
-	private int amount;
+	private int orderAmount;
 	private int totalPrice;
 	private Date orderDate;
 	private String state;
@@ -24,7 +24,7 @@ public class OrderVO {
 	}
 
 	public OrderVO(long orderIdx, String id, int productNo, long orderNo, String selectedColor, String selectedSize,
-			int amount, int totalPrice, Date orderDate, String state, String orderMethod, String name, String tel,
+			int orderAmount, int totalPrice, Date orderDate, String state, String orderMethod, String name, String tel,
 			String zipCode, String address, String detailAddr) {
 		this.orderIdx = orderIdx;
 		this.id = id;
@@ -32,7 +32,7 @@ public class OrderVO {
 		this.orderNo = orderNo;
 		this.selectedColor = selectedColor;
 		this.selectedSize = selectedSize;
-		this.amount = amount;
+		this.orderAmount = orderAmount;
 		this.totalPrice = totalPrice;
 		this.orderDate = orderDate;
 		this.state = state;
@@ -92,12 +92,12 @@ public class OrderVO {
 		this.selectedSize = selectedSize;
 	}
 
-	public int getAmount() {
-		return amount;
+	public int getOrderAmount() {
+		return orderAmount;
 	}
 
-	public void setAmount(int amount) {
-		this.amount = amount;
+	public void setOrderAmount(int orderAmount) {
+		this.orderAmount = orderAmount;
 	}
 
 	public int getTotalPrice() {

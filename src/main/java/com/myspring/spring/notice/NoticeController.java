@@ -32,12 +32,6 @@ public class NoticeController {
 		this.noticeService = noticeService;
 	}
 
-//	// 전체 개수 가져오기
-//	@GetMapping("/getCount")
-//	public ResponseEntity<?> getCount(@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-//		return noticeService.getCount(search, searchWord);
-//	}
-
 	// 공지사항 목록 출력
 	@GetMapping("/getNotice")
 	public ResponseEntity<?> getNotice(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
@@ -51,24 +45,11 @@ public class NoticeController {
 		return noticeService.getNoticeFindByID(noticeNo);
 	}
 
-	// 공지사항 게시물 작성
-//	@PostMapping("/insertNotice")
-//	public ResponseEntity<?> insertNotice(@RequestBody NoticeVO noticeVO) {
-//		return noticeService.insertNotice(noticeVO);
-//	}
-
-	// 공지사항 수정
-//	@PatchMapping("/updateNotice")
-//	public ResponseEntity<?> updateNotice(@RequestParam int noticeNo, String title, String content, String image) {
-//		return noticeService.updateNotice(noticeNo, title, content, image);
-//	}
-
 	// 공지사항 삭제
 	@DeleteMapping("/deleteNotice/{noticeNo}")
 	public ResponseEntity<?> deleteNotice(@PathVariable("noticeNo") int noticeNo) {
 		return noticeService.deleteNotice(noticeNo);
 	}
-
 
 	// 공지사항 추가 + 파일
 	@PostMapping("/insertNotice")
@@ -79,7 +60,7 @@ public class NoticeController {
 	
 	// 공지사항 수정 + 파일
 	@PatchMapping("/updateNotice")
-	public ResponseEntity<?> updataNotice(@RequestPart(value = "data") NoticeVO requestData,
+	public ResponseEntity<?> updateNotice(@RequestPart(value = "data") NoticeVO requestData,
 					@RequestParam(value = "fileList", required = false) List<MultipartFile> fileList) throws NotFoundException {
 		return noticeService.updateNotice(requestData, fileList);
 	}
@@ -101,25 +82,4 @@ public class NoticeController {
 		return new ResponseEntity<byte[]> (imageByteArray, HttpStatus.OK);
 	}
 	
-	
-	
-	
-	// 공지사항 수정
-//	@PatchMapping("/updateNotice")
-//	public ResponseEntity<?> updateNotice(@RequestBody NoticeVO noticeVO) {
-//		return noticeService.updateNotice(noticeVO);
-//	}	
-
-//	// 공지사항 목록 출력
-//	@GetMapping("/getNotice")
-//	public ResponseEntity<?> getNotice(@RequestBody NoticeVO noticeVO) {
-//		return noticeService.getNotice(noticeVO);
-//	}
-
-//	// 공지사항 목록 출력
-//	@GetMapping("/getNotice")
-//	public List<NoticeVO> list(@RequestParam("page") int page, @RequestParam("perPage") int perPage) {
-//		return noticeService.getAllMembers(page, perPage);
-//	}
-
 }

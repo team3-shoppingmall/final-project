@@ -374,7 +374,6 @@ export default {
             }
             window.scrollTo({
                 top: scroll,
-                behavior: 'smooth'
             });
         },
     },

@@ -33,6 +33,7 @@ public interface BasketMapper {
 	int updateBasketAmount(@Param("basketIdx") long basketIdx, @Param("basketAmount") int basketAmount);
 
 //	장바구니 삭제
+//	주문 시 장바구니 삭제도 이거로 작동(orderService에서 호출)
 	@Delete("Delete from baskettable where basketIdx = #{basketIdx}")
 	int deleteBasket(@Param("basketIdx") long basketIdx);
 }

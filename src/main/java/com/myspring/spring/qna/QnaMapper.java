@@ -43,8 +43,8 @@ public interface QnaMapper {
 	List<QnaVO> getQnaByType(@Param("type") String type);
 
 	// originalNo로 조회
-	@Select("select * from qnatable where originalNo = #{orignalNo} AND reply = false")
-	QnaVO getQnaByOriginalNo(@Param("originalNo") int originalNo);
+	@Select("select qnaNo from qnatable where originalNo = #{originalNo} AND reply = false")
+	int getQnaByOriginalNo(@Param("originalNo") int originalNo);
 
 	// 문의 등록
 //	@Insert("call autoQuestion(#{in.productNo}, #{in.type}, #{in.reply}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")

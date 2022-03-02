@@ -228,10 +228,12 @@ export default {
             }
             if (!(this.product.price > 0 && (this.product.price == Math.round(this.product.price)) && this.product.price != '')) {
                 alert('상품 가격이 유효하지 않습니다');
+                this.product.price = 0;
                 return;
             }
             if (!(this.product.amount >= 0 && (this.product.amount == Math.round(this.product.amount)) && this.product.amount != '')) {
                 alert('상품 수량이 유효하지 않습니다');
+                this.product.amount = 0;
                 return;
             }
             if (this.colorList.length == 0 && this.sizeList.length == 0) {
@@ -340,10 +342,12 @@ export default {
             }
             if (!(this.product.price > 0 && (this.product.price == Math.round(this.product.price)) && this.product.price != '')) {
                 alert('상품 가격이 유효하지 않습니다');
+                this.product.price = 0;
                 return;
             }
             if (!(this.product.discount >= 0 && (this.product.discount == Math.round(this.product.discount)))) {
                 alert('할인 가격이 유효하지 않습니다');
+                this.product.discount = 0;
                 return;
             }
             if (this.product.discount == '') {
@@ -351,10 +355,12 @@ export default {
             }
             if (Number(this.product.discount) > Number(this.product.price)) {
                 alert('할인 가격이 상품 가격보다 높습니다');
+                this.product.discount = 0;
                 return;
             }
             if (!(this.product.amount >= 0 && (this.product.amount == Math.round(this.product.amount)) && this.product.amount != '')) {
                 alert('상품 수량이 유효하지 않습니다');
+                this.product.amount = 0;
                 return;
             }
             if (this.colorList.length == 0 && this.sizeList.length == 0) {

@@ -90,11 +90,11 @@ CREATE TABLE ordertable (
 	ORDERNO BIGINT,
 	SELECTEDCOLOR VARCHAR(100),
 	SELECTEDSIZE VARCHAR(100),
-	AMOUNT INT NOT NULL,
+	ORDERAMOUNT INT NOT NULL,
 	TOTALPRICE INT NOT NULL,
 	ORDERDATE TIMESTAMP DEFAULT (current_timestamp),
 	STATE VARCHAR(20) DEFAULT '결제 완료',
-	ORDERMETHOD VARCHAR(40) NOT NULL,
+	ORDERMETHOD VARCHAR(100) NOT NULL,
 	NAME VARCHAR(50) NOT NULL,
 	TEL VARCHAR(11) NOT NULL,
 	ZIPCODE VARCHAR(5) NOT NULL,
@@ -215,11 +215,11 @@ insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount
 insert into wishlisttable(id, productno) values('tester', 1);
 insert into wishlisttable(id, productno) values('tester', 2);
 -- 주문
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, amount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
 values('tester',1,1,'그레이지','S',1,38000,'cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, amount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
 values('tester2',1,2,'소프트민트','M',1,38000,'credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, amount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
 values('tester2',2,2,'피치베이지',null,4,119600,'credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 -- 포인트 내역
 insert into pointtable(id, point) values ('tester',-2000);

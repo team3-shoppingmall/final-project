@@ -99,7 +99,7 @@ public class QnaUtils {
 			{
 				SELECT("*");
 				FROM("qnatable");
-				WHERE("productNo=" + productNo);
+				WHERE("productNo = " + productNo);
 				if (searchWord != null && !searchWord.equals("")) {
 					AND();
 					String[] words = searchWord.split(" ");

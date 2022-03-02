@@ -113,8 +113,7 @@ export default {
                 console.log(res.data);
                 this.contents = res.data.productQnaList;
                 this.totalContents = res.data.count;
-                this.loading = false;
-            }).fianlly(()=>{
+            }).finally(()=>{
                 this.loading = false;
             })
         },

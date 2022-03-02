@@ -98,8 +98,7 @@ export default {
                 .then((res) => {
                     this.qna = res.data;
                     //답글일 경우 image로딩을 실행시키지 않음
-                    const reply = res.data.type.slice(-5);
-                    if(reply != "Reply" ){
+                    if(this.qna.image != null){
                         this.images = this.qna.image.split(';');
                     }
                     this.dataLoaded = true;

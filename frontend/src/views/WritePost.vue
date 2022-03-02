@@ -349,6 +349,7 @@ export default {
                 data: {
                     type: this.pageID + 'Reply',
                     originalNo: this.originalNo,
+                    productNo: this.productNo,
                     content: this.content,
                     id: "admin",
                 }
@@ -549,19 +550,21 @@ export default {
                     this.titleSelected = res.data.type;
                     this.content = res.data.content;
                     this.secret = res.data.secret;
-                    let imageList = res.data.image.split(';');
-                    for (let i = 0; i < imageList.length; i++) {
-                        axios.get(`/api/qna/qnaImage/${this.num}/${imageList[i]}`, {
-                                responseType: "blob",
-                            })
-                            .then(res => {
-                                var file = new File([res.data], imageList[i], {
-                                    type: "image/*",
-                                    lastModified: Date.now()
-                                });
-                                this.imageFiles[i] = file;
-                                this.onImageChange(i);
-                            })
+                    if(res.data.image != null){
+                        let imageList = res.data.image.split(';');
+                        for (let i = 0; i < imageList.length; i++) {
+                            axios.get(`/api/qna/qnaImage/${this.num}/${imageList[i]}`, {
+                                    responseType: "blob",
+                                })
+                                .then(res => {
+                                    var file = new File([res.data], imageList[i], {
+                                        type: "image/*",
+                                        lastModified: Date.now()
+                                    });
+                                    this.imageFiles[i] = file;
+                                    this.onImageChange(i);
+                                })
+                        }
                     }
                 }).catch((err) => {
                     alert("정보를 불러오는데 실패했습니다.");

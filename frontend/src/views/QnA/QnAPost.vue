@@ -89,6 +89,7 @@ export default {
             admin: true,
             qna: '',
             images: [],
+            returnCount: -1,
         }
     },
     methods: {
@@ -99,7 +100,7 @@ export default {
                     this.qna = res.data;
                     //답글일 경우 image로딩을 실행시키지 않음
                     const reply = res.data.type.slice(-5);
-                    if(reply != "Reply" ){
+                    if (reply != "Reply") {
                         this.images = this.qna.image.split(';');
                     }
                     this.dataLoaded = true;
@@ -108,7 +109,7 @@ export default {
                 })
         },
         moveToBefore() {
-            this.$router.go(-1);
+            this.$router.go(this.returnCount);
         },
         moveToReply() {
             axios.get(`/api/qna/getQnaByOriginalNo`, {
@@ -116,7 +117,8 @@ export default {
                     originalNo: this.pageID
                 }
             }).then((res) => {
-                const link = res.data.qnaNo;
+                const link = res.data;
+                console.log(link);
                 this.$router.push(`/qna/${link}`)
             }).catch((err) => {
                 console.log(err);
@@ -139,12 +141,21 @@ export default {
                 .then(res => {
                     console.log(res.data);
                     alert("삭제되었습니다.");
-                    this.$router.go(-1);
+                    this.$router.go(this.returnCount);
                 }).catch((err) => {
                     console.log(err);
                 })
         },
 
+    },
+    watch: {
+        '$route'(from) {
+            if (from.name == 'QnAPost') {
+                this.returnCount = -2;
+            }
+            this.pageID = this.$route.params.id;
+            this.getQnA();
+        },
     },
     mounted() {
         this.pageID = this.$route.params.id;

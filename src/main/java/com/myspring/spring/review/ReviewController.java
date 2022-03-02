@@ -38,8 +38,9 @@ public class ReviewController {
 	// 리뷰 전체보기
 	@GetMapping("/getAllReviews")
 	public ResponseEntity<?> getAllReviews(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
-			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-		return reviewService.getAllReviews(page, perPage, search, searchWord);
+			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord,
+			@RequestParam("productNo") int productNo) {
+		return reviewService.getAllReviews(page, perPage, search, searchWord, productNo);
 	}
 
 	// 리뷰 상세보기
@@ -51,7 +52,7 @@ public class ReviewController {
 	// 리뷰 작성
 	@PostMapping("/insert")
 	public ResponseEntity<?> insertReview(@RequestPart(value = "data") ReviewVO requestData,
-			@RequestParam(value="fileList", required = false) List<MultipartFile> filList) throws NotFoundException {
+			@RequestParam(value = "fileList", required = false) List<MultipartFile> filList) throws NotFoundException {
 		return reviewService.insertReview(requestData, filList);
 	}
 
@@ -67,7 +68,7 @@ public class ReviewController {
 			@RequestParam("fileList") List<MultipartFile> fileList) throws NotFoundException {
 		return reviewService.updateReview(requestData, fileList);
 	}
-	
+
 	// 서버에서 이미지 가져오기
 	@GetMapping("/reviewImage/{reviewNo}/{image}")
 	public ResponseEntity<?> productimage(@PathVariable("reviewNo") int reviewNo, @PathVariable("image") String image)

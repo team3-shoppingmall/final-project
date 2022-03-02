@@ -26,10 +26,10 @@ public class ReviewService {
 	}
 
 	// 리뷰 전체보기
-	public ResponseEntity<?> getAllReviews(int page, int perPage, String search, String searchWord) {
+	public ResponseEntity<?> getAllReviews(int page, int perPage, String search, String searchWord, int productNo) {
 		int start = (page - 1) * perPage;
-		List<ReviewAndProductVO> reviewList = reviewMapper.getAllReviews(start, perPage, search, searchWord);
-		int count = reviewMapper.getCount(search, searchWord);
+		List<ReviewAndProductVO> reviewList = reviewMapper.getReivewList(start, perPage, search, searchWord, productNo);
+		int count = reviewMapper.getReviewCount(search, searchWord, productNo);
 		Map<String, Object> resMap = new HashMap<>();
 		resMap.put("reviewList", reviewList);
 		resMap.put("count", count);

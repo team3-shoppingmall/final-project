@@ -18,7 +18,7 @@ public interface ReviewMapper {
 
 	// 전체 개수 가져오기(Utils)
 	@SelectProvider(type = ReviewUtils.class, method = "getReviewCount")
-	int getReviewCount(String search, String searchWord);
+	int getReviewCount(String search, String searchWord, int productNo);
 	
 	// 전체 개수 가져오기
 	@Select("select count(*) from reviewtable where ${search} like CONCAT('%',#{searchWord},'%')")
@@ -26,7 +26,7 @@ public interface ReviewMapper {
 	
 	//리뷰 목록 조회(Utils)
 	@SelectProvider(type = ReviewUtils.class, method = "getReviewList")
-	List<ReviewAndProductVO> getReivewList(int start, int perPage, String search, String searchWord);
+	List<ReviewAndProductVO> getReivewList(int start, int perPage, String search, String searchWord, int productNo);
 	
 	// 리뷰 전체보기
 	@Select("select * from reviewtable left join producttable on producttable.productNo = reviewtable.productNo where ${search} like CONCAT('%', #{searchWord}, '%') order by reviewno desc limit #{start}, #{perPage}")

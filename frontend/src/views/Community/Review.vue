@@ -152,7 +152,8 @@ export default {
                     page: page,
                     perPage: itemsPerPage,
                     search: this.search,
-                    searchWord: this.searchWord
+                    searchWord: this.searchWord,
+                    productNo: 0,
                 }
             }).then(res => {
                 this.contents = res.data.reviewList;

@@ -72,14 +72,6 @@ public class ReviewService {
 		}
 		return entity;
 	}
-//	public ResponseEntity<?> insertReview(ReviewVO reviewVO) {
-//		int res = reviewMapper.insertReview(reviewVO);
-//		if(res == 0) {
-//			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//		}else {
-//			return new ResponseEntity<>(HttpStatus.OK);
-//		}
-//	}
 
 	// 리뷰 삭제
 	public ResponseEntity<?> deleteReview(int reviewNo) {
@@ -103,7 +95,7 @@ public class ReviewService {
 	         File file;
 	         File[] underDir;
 
-//	         폴더 내 모든 파일 삭제
+	         // 폴더 내 모든 파일 삭제
 	         file = new File("./images/review/" + requestData.getReviewNo() + "/");
 	         underDir = file.listFiles();
 	         for (int i = 0; i < underDir.length; i++) {
@@ -123,20 +115,4 @@ public class ReviewService {
 	      }
 	      return entity;
 	   }
-
-//	public ResponseEntity<?> updateReview(int reviewNo, String content, int star) {
-//		int res = reviewMapper.updateReview(reviewNo, content, star);
-//
-//		if (res == 0)
-//			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-//		else
-//			return new ResponseEntity<>(res, HttpStatus.OK);
-//	}
-
-	/*
-	 * //리뷰 상세보기 public ResponseEntity<?> getFindByReviewNo(int reviewNo) {
-	 * List<ReviewVO> res = reviewMapper.getFindByReviewNo(reviewNo); if(res ==
-	 * null) { return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); }else
-	 * { return new ResponseEntity<>(HttpStatus.OK); } }
-	 */
 }

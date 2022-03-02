@@ -464,27 +464,7 @@ export default {
                 }).catch((err) => {
                     console.log(err);
                 })
-
-            // axios({
-            //     method: 'post',
-            //     url: `/api/qna/insertqna`,
-            //     data: {
-            //         productNo: this.productNo,
-            //         type: this.titleSelected,
-            //         reply: false,
-            //         content: this.content,
-            //         id: "tester",
-            //         secret: this.secret,
-            //         image: "image1.jpg"
-            //     }
-            // }).then(() => {
-            //     alert("문의글이 등록되었습니다.");
-            //     this.$router.go(-1);
-            // }).catch((err) => {
-            //     console.log(err);
-            // })
         },
-
         // 수정 시 기존 데이터 넣기
         getNotice() {
             axios.get(`/api/notice/list/${this.num}`)
@@ -549,19 +529,21 @@ export default {
                     this.titleSelected = res.data.type;
                     this.content = res.data.content;
                     this.secret = res.data.secret;
-                    let imageList = res.data.image.split(';');
-                    for (let i = 0; i < imageList.length; i++) {
-                        axios.get(`/api/qna/qnaImage/${this.num}/${imageList[i]}`, {
-                                responseType: "blob",
-                            })
-                            .then(res => {
-                                var file = new File([res.data], imageList[i], {
-                                    type: "image/*",
-                                    lastModified: Date.now()
-                                });
-                                this.imageFiles[i] = file;
-                                this.onImageChange(i);
-                            })
+                    if(res.data.image != null){
+                        let imageList = res.data.image.split(';');
+                        for (let i = 0; i < imageList.length; i++) {
+                            axios.get(`/api/qna/qnaImage/${this.num}/${imageList[i]}`, {
+                                    responseType: "blob",
+                                })
+                                .then(res => {
+                                    var file = new File([res.data], imageList[i], {
+                                        type: "image/*",
+                                        lastModified: Date.now()
+                                    });
+                                    this.imageFiles[i] = file;
+                                    this.onImageChange(i);
+                                })
+                        }
                     }
                 }).catch((err) => {
                     alert("정보를 불러오는데 실패했습니다.");
@@ -713,25 +695,6 @@ export default {
                     console.log(err);
                     alert("수정에 실패했습니다.");
                 })
-
-            // axios({
-            //     method: 'patch',
-            //     url: `/api/qna/updateqna`,
-            //     params: {
-            //         productNo: this.productNo,
-            //         qnaNo: this.num,
-            //         type: this.titleSelected,
-            //         content: this.content,
-            //         secret: this.secret,
-            //         image: "test.jpg"
-            //     }
-            // }).then(() => {
-            //     alert("수정이 완료되었습니다.");
-            //     this.$router.go(-1);
-            // }).catch((err) => {
-            //     console.log(err);
-            //     alert("수정에 실패했습니다.");
-            // })
         },
     },
 

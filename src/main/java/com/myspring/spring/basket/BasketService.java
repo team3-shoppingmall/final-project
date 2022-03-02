@@ -54,7 +54,7 @@ public class BasketService {
 
 	}
 
-//	장바구니 개수 변경
+//	장바구니 삭제
 	public ResponseEntity<?> deleteBasket(List<Long> deletes) {
 		for (long basketIdx : deletes) {
 			int res = basketMapper.deleteBasket(basketIdx);

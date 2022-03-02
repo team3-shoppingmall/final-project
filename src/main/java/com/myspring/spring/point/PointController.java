@@ -20,10 +20,16 @@ public class PointController {
 		this.pointService = pointService;
 	}
 	
-	//전체 조회
-    @GetMapping("/getAll")
-    public ResponseEntity<?> getPointAll() {
-    	return pointService.getPointAll();
+	/*
+	 * //전체 조회
+	 * 
+	 * @GetMapping("/getAll") public ResponseEntity<?> getPointAll() { return
+	 * pointService.getPointAll(); }
+	 */
+	
+	@GetMapping("/get/{id}")
+	public ResponseEntity<?> getPointAll(@PathVariable("id") String id) {
+		return pointService.getPointAll(id);
 	}
  
 }

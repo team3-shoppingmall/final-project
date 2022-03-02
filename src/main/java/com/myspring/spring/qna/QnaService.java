@@ -206,9 +206,9 @@ public class QnaService {
 
 	// originalNo로 조회
 	public ResponseEntity<?> getQnaByOriginalNo(int originalNo) {
-		QnaVO res = qnaMapper.getQnaByOriginalNo(originalNo);
-		if (res == null) {
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		int res = qnaMapper.getQnaByOriginalNo(originalNo);
+		if (res == 0) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		} else {
 			return new ResponseEntity<>(res, HttpStatus.OK);
 		}

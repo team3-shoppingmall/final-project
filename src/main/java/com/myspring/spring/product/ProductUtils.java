@@ -219,7 +219,7 @@ public class ProductUtils {
 					}
 				}
 				GROUP_BY("o.productno");
-				ORDER_BY("sum(o.amount) desc");
+				ORDER_BY("sum(o.orderAmount) desc");
 				LIMIT(8);
 				OFFSET(0);
 			}

@@ -79,7 +79,7 @@ public class NoticeController {
 	
 	// 공지사항 수정 + 파일
 	@PatchMapping("/updateNotice")
-	public ResponseEntity<?> updataNotice(@RequestPart(value = "data") NoticeVO requestData,
+	public ResponseEntity<?> updateNotice(@RequestPart(value = "data") NoticeVO requestData,
 					@RequestParam(value = "fileList", required = false) List<MultipartFile> fileList) throws NotFoundException {
 		return noticeService.updateNotice(requestData, fileList);
 	}

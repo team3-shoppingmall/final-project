@@ -44,7 +44,7 @@ export default {
             this.loading = true;
             axios({
                 method: 'get',
-                url: `/api/point/getAll`
+                url: `/api/point/get/tester2`
 
             })
             .then(res => {

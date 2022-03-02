@@ -38,7 +38,7 @@ public interface ReviewMapper {
 	public int deleteReview(@Param("reviewNo") int reviewNo);
 
 	// 리뷰 수정
-	@Update("update reviewtable set content=#{in.content}, image=#{in.image}, star=#{in.star}, where reviewNo = #{in.reviewNo}")
+	@Update("update reviewtable set content=#{in.content}, image=#{in.image}, star=#{in.star} where reviewNo = #{in.reviewNo}")
 	public int updateReview(@Param("in") ReviewVO in);
 
 //	public void insertReview(ReviewVO requestData, ReviewVO result);

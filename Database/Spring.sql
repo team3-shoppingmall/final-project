@@ -175,11 +175,11 @@ DELIMITER ;
 
 DELIMITER $$
 USE `springdb`$$
-CREATE PROCEDURE `autoReply` (qna_type VARCHAR(200), qna_originalNo BIGINT, qna_content VARCHAR(2000), qna_id VARCHAR(50), qna_secret BOOLEAN, qna_image VARCHAR(400))
+CREATE PROCEDURE `autoReply` (qna_productNo INT, qna_type VARCHAR(200), qna_originalNo BIGINT, qna_content VARCHAR(2000), qna_id VARCHAR(50), qna_secret BOOLEAN, qna_image VARCHAR(400))
 BEGIN
 DECLARE getMaxQnaNo BIGINT;
 SET getMaxQnaNo = (SELECT max(qnaNo) FROM qnatable) + 1;
-insert into qnatable(QNANO, type, originalNo, content, id, secret, image) values(getMaxQnaNo, qna_type, qna_originalNo, qna_content, qna_id, qna_secret, qna_image);
+insert into qnatable(QNANO, PRODUCTNO, type, originalNo, content, id, secret, image) values(getMaxQnaNo, qna_productNo, qna_type, qna_originalNo, qna_content, qna_id, qna_secret, qna_image);
 END$$
 DELIMITER ;
 
@@ -354,12 +354,12 @@ insert into reviewtable(productno, content, id, image, star) values(1,'딱 봄 �
 -- 문의
 insert into qnatable(qnaNo, productno, type, originalNo, reply, content, id, secret, image) values(1, 1,'product', 1, true, '질문 내용', 'tester', true, 'image1.jpg');
 call autoQuestion(2,'product', false, '질문 내용', 'tester',true, 'image1.jpg');
-call autoReply('productReply', 1, '답변 내용', 'admin',true, 'image1.jpg');
+call autoReply(1,'productReply', 1, '답변 내용', 'admin',true, 'image1.jpg');
 call autoQuestion(null, 'general', false, '질문 내용', 'tester',true, 'image1.jpg');
 call autoQuestion(1,'product', true, '질문 내용', 'tester',true, 'image1.jpg');
 call autoQuestion(2,'product', true, '질문 내용', 'tester2',true, 'image1.jpg');
-call autoReply('productReply', 5, '답변 내용', 'admin',true, 'image1.jpg');
-call autoReply('productReply', 6, '답변 내용', 'admin',true, 'image1.jpg');
+call autoReply(1,'productReply', 5, '답변 내용', 'admin',true, 'image1.jpg');
+call autoReply(2,'productReply', 6, '답변 내용', 'admin',true, 'image1.jpg');
 call autoQuestion(null, 'general', false, '질문 내용', 'tester',true, 'image1.jpg');
 call autoQuestion(2,'product', false, '질문 내용', 'tester2',true, 'image1.jpg');
 call autoQuestion(null, 'delivery', false, '질문 내용', 'tester2',true, 'image1.jpg');
@@ -392,5 +392,3 @@ select * from bannertable;
 -- 많이 팔린 순으로 정렬
 -- select productno, sum(amount) from ordertable group by productno order by sum(amount) desc;
 -- select * from producttable left join ordertable on producttable.productno = ordertable.productno where type1 = 'skirt' group by ordertable.productno order by sum(ordertable.amount) desc limit 0,8;
-insert into qnatable(QNANO, PRODUCTNO, type, originalNo, reply, content, id, secret, image)
- values( (SELECT MAX(qnaNo)+1 as num FROM qnatable), null, 'exchange', (SELECT MAX(qnaNo)+1 as num FROM qnatable), false, '질문 내용', 'tester2', true, 'image1.jpg');

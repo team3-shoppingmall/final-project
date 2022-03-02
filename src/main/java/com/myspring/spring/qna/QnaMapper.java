@@ -55,7 +55,7 @@ public interface QnaMapper {
 	int insertQna(@Param("in") QnaVO in, @Param("result") QnaVO result);
 
 	// 댓글 등록
-	@Insert("call autoReply(#{in.type}, #{in.originalNo}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
+	@Insert("call autoReply(#{in.productNo}, #{in.type}, #{in.originalNo}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
 	int insertReply(@Param("in") QnaVO qnaVO);
 
 	// 댓글 등록시 reply 업데이트
@@ -93,6 +93,8 @@ public interface QnaMapper {
 	// 전체 개수 가져오기
 	@SelectProvider(type = QnaUtils.class, method = "getQnaCountByProductNo")
 	int getQnaCountByProductNo(String search, String searchWord, int productNo);
+	
+	
 
 //	//기간으로 문의 검색(최근 일주일)
 //	@Select("select * from qnatable where regDate between DATE_ADD(NOW(), INTERVAL -1 WEEK) and NOW()")

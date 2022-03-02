@@ -107,48 +107,15 @@ export default {
                     search: this.search,
                     searchWord: this.searchWord,
                     type: link,
-                    productNo: this.productNo
+                    productNo: this.productNo,
                 }
-            }).then((res) => {
-                console.log(res.data);
+            }).then((res) => {               
                 this.contents = res.data.productQnaList;
                 this.totalContents = res.data.count;
             }).finally(()=>{
                 this.loading = false;
             })
         },
-        // getQnA() {
-        //     console.log(this.productNo);
-        //     this.loading = true
-        //     const {
-        //         page,
-        //         itemsPerPage
-        //     } = this.options
-        //     axios.get(`/api/qna/getQnaListByType`, {
-        //         params: {
-        //             page: page,
-        //             perPage: itemsPerPage,
-        //             search: this.search,
-        //             searchWord: this.searchWord,
-        //             productNo: this.productNo,
-        //         }
-        //     }).then(res => {
-        //         this.contents = res.data;
-        //         this.totalContents = res.data;
-        //         this.loading = false
-        //         // axios.get('/api/qna/getCount', {
-        //         //     params: {
-        //         //         search: this.search,
-        //         //         searchWord: this.searchWord,
-        //         //         // type은 어짜피 상품이니 필요없고 상품번호 추가해서 새로 만드시면 됩니다
-        //         //         productNo : this.productNo,
-        //         //     }
-        //         // }).then(res => {
-        //         //     this.totalContents = res.data;
-        //         //     this.loading = false
-        //         // })
-        //     })
-        // },
         moveto(item) {
             this.$router.push(`/qna/${item.qnaNo}`)
         },

@@ -1,5 +1,7 @@
 package com.myspring.spring.notice;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Service
@@ -63,24 +66,24 @@ public class NoticeService {
 	}
 
 	// 공지사항 게시물 작성
-	public ResponseEntity<?> insertNotice(NoticeVO noticeVO) {
-		int res = noticeMapper.insertNotice(noticeVO);
-		
-		if (res == 0)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
+//	public ResponseEntity<?> insertNotice(NoticeVO noticeVO) {
+//		int res = noticeMapper.insertNotice(noticeVO);
+//		
+//		if (res == 0)
+//			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+//		else
+//			return new ResponseEntity<>(res, HttpStatus.OK);
+//	}
 	
 	// 공지사항 수정
-	public ResponseEntity<?> updateNotice(int noticeNo, String title, String content, String image) {
-		int res = noticeMapper.updateNotice( noticeNo, title, content, image);
-
-		if (res == 0)
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(res, HttpStatus.OK);
-	}
+//	public ResponseEntity<?> updateNotice(int noticeNo, String title, String content, String image) {
+//		int res = noticeMapper.updateNotice( noticeNo, title, content, image);
+//
+//		if (res == 0)
+//			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+//		else
+//			return new ResponseEntity<>(res, HttpStatus.OK);
+//	}
 		
 	// 공지사항 삭제
 	public ResponseEntity<?> deleteNotice(int noticeNo) {
@@ -93,6 +96,81 @@ public class NoticeService {
 			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
+	// 공지사항 등록 + 파일
+	public ResponseEntity<?> insertNotice(NoticeVO requestData, List<MultipartFile> fileList) {
+		NoticeVO result = new NoticeVO();
+		ResponseEntity<?> entity = null;
+		
+		try {
+			noticeMapper.insertNotice(requestData, result);
+			int noticeNo = result.getNoticeNo();
+			String[] image = requestData.getImage().split(";");
+			File file = new File("./images/notice/" + noticeNo + "/");
+			file.mkdir();
+			file = new File("./images/notice/" + noticeNo + "/");
+			file.mkdir();
+			
+			if (fileList != null) {
+				for (int i = 0; i<fileList.size(); i++) {
+					MultipartFile multipartFile = fileList.get(i);
+					FileOutputStream writer = new FileOutputStream(
+							"./images/notice/" + noticeNo + "/" + multipartFile.getOriginalFilename());
+					writer.write(multipartFile.getBytes());
+					writer.close();
+							
+				}
+			}
+			entity = new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return entity;
+	}
+
+	// 공지사항 수정 + 파일
+	public ResponseEntity<?> updateNotice(NoticeVO requestData, List<MultipartFile> fileList) {
+		ResponseEntity<?> entity = null;
+
+		try {
+			int res = noticeMapper.updateNotice(requestData);
+			if (res == 0) {
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			File file;
+			File[] underDir;
+
+//			폴더 내 모든 파일 삭제
+			file = new File("./images/notice/" + requestData.getNoticeNo() + "/");
+			underDir = file.listFiles();
+			for (int i = 0; i < underDir.length; i++) {
+				underDir[i].delete();
+			}
+
+			String[] image = requestData.getImage().split(";");
+
+			if (fileList != null) {
+				for (int i = 0; i<fileList.size(); i++) {
+					MultipartFile multipartFile = fileList.get(i);
+					FileOutputStream writer = new FileOutputStream("./images/notice/" + requestData.getNoticeNo()
+							+ "/" + multipartFile.getOriginalFilename());
+	//				System.out.println(multipartFile.getOriginalFilename());
+					writer.write(multipartFile.getBytes());
+					writer.close();
+				}
+			}
+
+			entity = new ResponseEntity<>(HttpStatus.OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return entity;
+	}
+
+	
 	
 	
 //	//공지사항 수정

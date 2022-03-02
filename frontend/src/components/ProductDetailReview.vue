@@ -239,8 +239,6 @@ export default {
                 alert('후기를 입력해주세요');
                 return;
             }
-
-            // 밑에거 주석 처리 후 이거 사용하시면 됩니다
             let data = {
                 productNo: this.productNo,
                 star: this.star,

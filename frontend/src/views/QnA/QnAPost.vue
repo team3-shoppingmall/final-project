@@ -98,9 +98,8 @@ export default {
             axios.get(`/api/qna/getQna/${this.pageID}`)
                 .then((res) => {
                     this.qna = res.data;
-                    //답글일 경우 image로딩을 실행시키지 않음
-                    const reply = res.data.type.slice(-5);
-                    if (reply != "Reply") {
+                    //답글일 경우 image 없음
+                    if(res.data.image != null){
                         this.images = this.qna.image.split(';');
                     }
                     this.dataLoaded = true;
@@ -120,6 +119,7 @@ export default {
                 const link = res.data;
                 console.log(link);
                 this.$router.push(`/qna/${link}`)
+                
             }).catch((err) => {
                 console.log(err);
             })

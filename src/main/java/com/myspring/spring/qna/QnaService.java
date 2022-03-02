@@ -80,10 +80,17 @@ public class QnaService {
 
 	// 댓글 등록 - originalNo 받아서 reply = true로 바꿔주기
 	public ResponseEntity<?> insertReply(QnaVO qnaVO) {
-		int res = qnaMapper.insertReply(qnaVO);
+		System.out.println(qnaVO.getType());
+		int res, resReply;
 		int originalNo = qnaVO.getOriginalNo();
-		int resReply = qnaMapper.updateReplyTrue(originalNo);
-
+		//productReply일때 원글의 productNo와 동일하게 셋팅 -> productDetail 페이지에 답글도 같이 불러오기 위함 
+		if(qnaVO.getType().equals("productReply")) {
+			QnaVO productReply = qnaMapper.getQnaByQnaNo(originalNo);
+//			System.out.println(productReply.getProductNo());
+			qnaVO.setProductNo(productReply.getProductNo());
+		}
+		res = qnaMapper.insertReply(qnaVO);
+		resReply = qnaMapper.updateReplyTrue(originalNo);
 		if (res == 0) {
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		} else {
@@ -92,8 +99,7 @@ public class QnaService {
 			} else {
 				return new ResponseEntity<>(res, HttpStatus.OK);
 			}
-		}
-
+		}	
 	}
 
 	// 문의 수정 & 댓글 수정
@@ -178,7 +184,7 @@ public class QnaService {
 
 	// 문의 1개 찾기
 	public ResponseEntity<?> getQnaByQnaNo(int qnaNo) {
-		System.out.println(qnaNo);
+		//System.out.println(qnaNo);
 		QnaVO res = qnaMapper.getQnaByQnaNo(qnaNo);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -214,7 +220,7 @@ public class QnaService {
 		int start = (page - 1) * perPage;
 		List<QnaVO> productQnaList = qnaMapper.getQnaListByProductNo(start, perPage, search, searchWord, productNo);
 		int count = qnaMapper.getQnaCountByProductNo(search, searchWord, productNo);
-
+	
 		Map<String, Object> resMap = new HashMap<>();
 		resMap.put("productQnaList", productQnaList);
 		resMap.put("count", count);

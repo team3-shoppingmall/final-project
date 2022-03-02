@@ -116,7 +116,6 @@ export default {
             }).then(res => {
                 this.contents = res.data.qnaList;
                 this.totalContents = res.count;
-                this.loading = false;
             }).finally(()=>{
                 this.loading = false;
             })

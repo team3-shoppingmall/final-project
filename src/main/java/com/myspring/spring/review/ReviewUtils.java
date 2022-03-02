@@ -7,7 +7,7 @@ public class ReviewUtils {
 
 //	@Select("select count(*) from reviewtable where ${search} like CONCAT('%',#{searchWord},'%')")
 //	리뷰 개수 가져오기
-	public String getReviewCount(String search, String searchWord) {
+	public String getReviewCount(String search, String searchWord, int productNo) {
 		SQL sql = new SQL() {
 			{
 				SELECT("count(*)");
@@ -27,6 +27,10 @@ public class ReviewUtils {
 						}
 					}
 				}
+				if(productNo != 0) {
+					AND();
+					WHERE("producttable.productNo = " + productNo);
+				}
 			}
 		};
 		return sql.toString();
@@ -39,7 +43,7 @@ public class ReviewUtils {
 	// desc limit #{start}, #{perPage}")
 
 //	리뷰 목록보기
-	public String getReviewList(int start, int perPage, String search, String searchWord) {
+	public String getReviewList(int start, int perPage, String search, String searchWord, int productNo) {
 		SQL sql = new SQL() {
 			{
 				SELECT("*");
@@ -60,11 +64,16 @@ public class ReviewUtils {
 						}
 					}
 				}
-				ORDER_BY("originalNo desc, reviewNo asc");
+				if(productNo != 0) {
+					AND();
+					WHERE("producttable.productNo = " + productNo);
+				}
+				ORDER_BY("reviewNo desc");
 				LIMIT(perPage);
 				OFFSET(start);
 			}
 		};
+//		System.out.println(sql.toString());
 		return sql.toString();
 	}
 }

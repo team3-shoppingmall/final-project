@@ -63,7 +63,6 @@ public class NoticeService {
 		try {
 			noticeMapper.insertNotice(requestData, result);
 			int noticeNo = result.getNoticeNo();
-			String[] image = requestData.getImage().split(";");
 			File file = new File("./images/notice/" + noticeNo + "/");
 			file.mkdir();
 			file = new File("./images/notice/" + noticeNo + "/");

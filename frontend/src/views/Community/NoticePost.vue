@@ -81,7 +81,9 @@ export default {
             axios.get(`/api/notice/list/${this.pageID}`)
                 .then((res) => {
                     this.notice = res.data;
-                    this.images = this.notice.image.split(';');
+                    if(this.notice.image != null){
+                        this.images = this.notice.image.split(';');
+                    }
                 }).catch((err) => {
                     alert("정보를 불러오는데 실패했습니다.");
                     console.log(err);

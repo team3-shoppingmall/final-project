@@ -8,7 +8,7 @@
                         <v-carousel-item>
                             <v-dialog max-width="700">
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.reviewNo}/${item.image}`" contain></v-img>
+                                    <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.reviewNo}/${item.image}`" contain v-if="item.image != null"></v-img>
                                 </template>
                                 <v-card>
                                     <v-img :src="`/api/review/reviewImage/${item.reviewNo}/${item.image}`"></v-img>

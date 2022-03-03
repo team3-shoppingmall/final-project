@@ -26,7 +26,7 @@
                 </template>
                 <template v-slot:footer="{ }">
                     <v-divider></v-divider>
-                    <v-row justify="end">
+                    <v-row justify="end" class="ma-1">
                         <v-col cols="auto">
                             상품구매금액 {{AddComma(totalPrice)}} 원
                             + 배송비 <span v-if="totalPrice<50000">{{AddComma(2500)}}</span><span v-if="totalPrice>=50000">0</span> 원

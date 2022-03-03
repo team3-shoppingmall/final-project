@@ -1,7 +1,5 @@
 <template>
 <v-container>
-    {{selected}}
-    {{memberInfo}}
     <v-row justify="center">
         <v-col cols="9">
             <div class="text-h3">ORDER</div>
@@ -27,7 +25,7 @@
                 </template>
                 <template v-slot:footer="{ }">
                     <v-divider></v-divider>
-                    <v-row justify="end">
+                    <v-row justify="end" class="ma-1">
                         <v-col cols="auto">
                             상품구매금액 {{AddComma(totalPrice)}} 원
                             + 배송비 <span v-if="totalPrice<50000">{{AddComma(2500)}}</span><span v-if="totalPrice>=50000">0</span> 원
@@ -408,7 +406,6 @@ export default {
                 alert('구매 진행에 동의해주세요');
                 return;
             }
-
             let orderList = [];
             let basketIdxList = [];
             for (let i = 0; i < this.selected.length; i++) {
@@ -440,7 +437,8 @@ export default {
             }))
             let pointData = {
                 id: this.id,
-                point: -this.point
+                point: -this.point,
+                content: '상품 결제',
             }
             formData.append('pointData', new Blob([JSON.stringify(pointData)], {
                 type: "application/json"

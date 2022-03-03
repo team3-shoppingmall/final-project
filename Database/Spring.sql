@@ -41,6 +41,7 @@ USE `springdb`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`membertable_BEFORE_INSERT` BEFORE INSERT ON `membertable` FOR EACH ROW
 BEGIN
 set new.point = 2000;
+insert into pointtable(id, point, content) values (new.id, 2000, '회원 가입 축하 포인트');
 END$$
 DELIMITER ;
 
@@ -109,7 +110,8 @@ CREATE TABLE pointtable (
 	NUM BIGINT PRIMARY KEY AUTO_INCREMENT,
 	ID VARCHAR(50) NOT NULL,
 	POINT INT NOT NULL,
-	POINTDATE TIMESTAMP DEFAULT (current_timestamp)
+	POINTDATE TIMESTAMP DEFAULT (current_timestamp),
+    CONTENT VARCHAR(50)
 --     CONSTRAINT point_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
 );
 
@@ -117,9 +119,12 @@ DELIMITER $$
 USE `springdb`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`pointtable_BEFORE_INSERT` BEFORE INSERT ON `pointtable` FOR EACH ROW
 BEGIN
+if(new.content != '회원 가입 축하 포인트')
+Then
 update membertable
 set point = point + New.point
 where id = New.id;
+End if;
 END$$
 DELIMITER ;
 
@@ -222,8 +227,8 @@ values('tester2',1,2,'소프트민트','M',1,38000,'credit','유저2','010456145
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
 values('tester2',2,2,'피치베이지',null,4,119600,'credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 -- 포인트 내역
-insert into pointtable(id, point) values ('tester',-2000);
-insert into pointtable(id, point) values ('tester',500);
+insert into pointtable(id, point, content) values ('tester',-2000, '상품 구매');
+insert into pointtable(id, point, content) values ('tester',500, '구매 확정');
 -- 공지사항
 insert into noticetable(title, content, id, image) values("test1", "content1", "admin1", "test1.png");
 insert into noticetable(title, content, id, image) values("test2", "content2", "admin2", "test2.png");
@@ -392,3 +397,6 @@ select * from bannertable;
 -- 많이 팔린 순으로 정렬
 -- select productno, sum(amount) from ordertable group by productno order by sum(amount) desc;
 -- select * from producttable left join ordertable on producttable.productno = ordertable.productno where type1 = 'skirt' group by ordertable.productno order by sum(ordertable.amount) desc limit 0,8;
+
+select sum(point) from pointtable where id = 'tester' and pointdate BETWEEN DATE_ADD(NOW(), INTERVAL -6 MONTH) AND DATE_ADD(NOW(), INTERVAL -5 MONTH);
+select sum(point) from pointtable where id = 'tester' and pointdate BETWEEN DATE_ADD(NOW(), INTERVAL -6 MONTH) AND NOW();

@@ -8,7 +8,6 @@ import ProductSearch from '../views/ProductSearch.vue'
 import ProductDetail from '../views/ProductDetail.vue'
 import Basket from '../views/Basket.vue'
 import Payment from '../views/Payment.vue'
-import Question from '../views/Question.vue'
 
 import MyPage from '../views/MyPage.vue'
 import MyPageHome from '../views/MyPage/MyPageHome.vue'
@@ -190,11 +189,6 @@ const routes = [
                 path: '/qna/:id',
                 name: 'QnAPost',
                 component: QnAPost,
-            },
-            {
-                path: '/question',
-                name: 'Question',
-                component: Question
             },
         ]
     }, {

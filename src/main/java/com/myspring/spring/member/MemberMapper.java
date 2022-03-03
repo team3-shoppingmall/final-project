@@ -32,6 +32,7 @@ public interface MemberMapper {
 
 	// 멤버 정보 조회
 	// select ~ from membertable where id ='id'
+//	pointService에서 멤버의 포인트 얻기 위해 호출도 함
 	@Select("select name, tel, email, zipcode, addr1, addr2, point from membertable where id = #{id}")
 	MemberVO getMemberInfo(@Param("id") String id);
 

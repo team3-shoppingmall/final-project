@@ -56,7 +56,7 @@ CREATE TABLE producttable(
 	COLOR VARCHAR(1000),
 	SIZE VARCHAR(1000),
 	AMOUNT INT NOT NULL,
-	REGDATE TIMESTAMP DEFAULT (current_timestamp),
+	REGDATE TIMESTAMP DEFAULT current_timestamp,
 	DETAILIMAGENAME VARCHAR(2000) NOT NULL,
 	ONSALE BOOLEAN DEFAULT FALSE
 );
@@ -398,5 +398,4 @@ select * from bannertable;
 -- select productno, sum(amount) from ordertable group by productno order by sum(amount) desc;
 -- select * from producttable left join ordertable on producttable.productno = ordertable.productno where type1 = 'skirt' group by ordertable.productno order by sum(ordertable.amount) desc limit 0,8;
 
-select sum(point) from pointtable where id = 'tester' and pointdate BETWEEN DATE_ADD(NOW(), INTERVAL -6 MONTH) AND DATE_ADD(NOW(), INTERVAL -5 MONTH);
-select sum(point) from pointtable where id = 'tester' and pointdate BETWEEN DATE_ADD(NOW(), INTERVAL -6 MONTH) AND NOW();
+-- select * from producttable p left join ordertable o on p.productNo = o.productNo where p.onSale = true and p.amount > 0 and (orderDate BETWEEN DATE_ADD(NOW(), INTERVAL -1 week) AND NOW()) group by o.productNo order by sum(o.orderAmount) desc limit 8

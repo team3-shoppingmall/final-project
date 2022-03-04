@@ -59,6 +59,24 @@ public class ProductService {
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
+//	메인 화면 조회
+	public ResponseEntity<?> getMainPages() {
+		// TODO Auto-generated method stub
+		
+		List<ProductVO> eventList = productMapper.getProductEvent();
+		List<ProductAndOrderVO> weeklyBestList = productMapper.getProductWeeklyBest();
+		List<ProductVO> newList = productMapper.getProductNew();
+		List<ProductAndOrderVO> bestList = productMapper.getProductBest();
+
+		Map<String, Object> resMap = new HashMap<>();
+		resMap.put("eventList", eventList);
+		resMap.put("weeklyBestList", weeklyBestList);
+		resMap.put("newList", newList);
+		resMap.put("bestList", bestList);
+		return new ResponseEntity<>(resMap, HttpStatus.OK);
+	}
+	
+//	상품 추가
 	public ResponseEntity<?> insertProduct(ProductVO requestData, List<MultipartFile> fileList) {
 		ProductVO result = new ProductVO();
 		ResponseEntity<?> entity = null;
@@ -160,7 +178,7 @@ public class ProductService {
 			return new ResponseEntity<>(HttpStatus.OK);
 
 	}
-	
+
 	public ResponseEntity<?> deleteProduct(int productNo) {
 		int res = productMapper.deleteProduct(productNo);
 		if (res == 0)
@@ -169,4 +187,5 @@ public class ProductService {
 			return new ResponseEntity<>(HttpStatus.OK);
 
 	}
+
 }

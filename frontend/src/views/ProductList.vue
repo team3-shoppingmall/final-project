@@ -17,9 +17,9 @@
                                         - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
                                         <span v-if="product.size == null">{{product.color.split(';').length-1}} color</span>
                                     </div>
-                                    <div v-if="product.discount != 0" class="text-decoration-line-through">{{product.price}}원</div>
-                                    <div v-if="product.discount == 0">{{product.price}}원</div>
-                                    <div v-if="product.discount != 0">{{product.price-product.discount}}원</div>
+                                    <div v-if="product.discount != 0" class="text-decoration-line-through">{{AddComma(product.price)}}원</div>
+                                    <div v-if="product.discount == 0">{{AddComma(product.price)}}원</div>
+                                    <div v-if="product.discount != 0">{{AddComma(product.price-product.discount)}}원</div>
                                 </v-card-text>
                             </v-card>
                         </v-col>
@@ -50,9 +50,9 @@
                                             - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
                                             <span v-if="product.size == null">{{product.color.split(';').length-1}} color</span>
                                         </div>
-                                        <div v-if="product.discount != 0" class="text-decoration-line-through">{{product.price}}원</div>
-                                        <div v-if="product.discount == 0">{{product.price}}원</div>
-                                        <div v-if="product.discount != 0">{{product.price-product.discount}}원</div>
+                                        <div v-if="product.discount != 0" class="text-decoration-line-through">{{AddComma(product.price)}}원</div>
+                                        <div v-if="product.discount == 0">{{AddComma(product.price)}}원</div>
+                                        <div v-if="product.discount != 0">{{AddComma(product.price-product.discount)}}원</div>
                                     </v-card-text>
                                 </v-card>
                             </v-lazy>

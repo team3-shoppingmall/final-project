@@ -4,22 +4,11 @@
         <v-col cols="1" align-self="center">
             <v-select :items="searches" v-model="search" hide-details="hide-details"></v-select>
         </v-col>
-        <v-col cols="4" align-self="center" v-if="search == 'productNo' || search == 'productName'">
+        <v-col cols="4" align-self="center" v-if="search == 'orderIdx' || search == 'productNo' || search == 'productName'">
             <v-text-field hide-details="hide-details" v-model="searchWord1" @keyup.enter="searchProduct"></v-text-field>
         </v-col>
 
-        <v-col cols="4" align-self="center" v-if="search == 'type'">
-            <v-select v-model="typeSelected" :items="types" hide-details></v-select>
-        </v-col>
-
-        <v-col cols="2" align-self="center" v-if="search == 'price' || search == 'amount'" @keyup="searchPolicy">
-            <v-text-field hide-details="hide-details" v-model="searchWord1" @keyup.enter="searchProduct"></v-text-field>
-        </v-col>
-        <v-col cols="2" align-self="center" v-if="search == 'price' || search == 'amount'" @keyup="searchPolicy">
-            <v-text-field hide-details="hide-details" v-model="searchWord2" @keyup.enter="searchProduct"></v-text-field>
-        </v-col>
-
-        <v-col cols="2" align-self="center" v-if="search == 'regDate'">
+        <v-col cols="2" align-self="center" v-if="search == 'orderDate'">
             <v-menu v-model="menu1" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto" hide-details>
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field v-model="searchWord1" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" hide-details></v-text-field>
@@ -27,7 +16,7 @@
                 <v-date-picker v-model="searchWord1" @input="menu1 = false" no-title="no-title" scrollable="scrollable"></v-date-picker>
             </v-menu>
         </v-col>
-        <v-col cols="2" align-self="center" v-if="search == 'regDate'">
+        <v-col cols="2" align-self="center" v-if="search == 'orderDate'">
             <v-menu v-model="menu2" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto" hide-details>
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field v-model="searchWord2" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" hide-details></v-text-field>
@@ -36,11 +25,15 @@
             </v-menu>
         </v-col>
 
+        <v-col cols="4" align-self="center" v-if="search == 'state'">
+            <v-select v-model="stateSelected" :items="states" hide-details></v-select>
+        </v-col>
+
         <v-col cols="auto" align-self="center">
-            <v-btn class="primary " large="large" @click="searchProduct">검색</v-btn>
+            <v-btn class="primary" large="large" @click="searchProduct">검색</v-btn>
         </v-col>
         <v-col cols="auto" align-self="center">
-            <v-btn class="primary " large="large" @click="reset">초기화</v-btn>
+            <v-btn class="primary" large="large" @click="reset">초기화</v-btn>
         </v-col>
     </v-row>
     <v-row>
@@ -124,6 +117,13 @@
                         수정
                     </v-btn>
                 </template>
+                <template #footer="{}">
+                    <v-row class="ma-0" justify="end">
+                        <v-col cols="auto">
+                            <v-btn class="primary">변경</v-btn>
+                        </v-col>
+                    </v-row>
+                </template>
             </v-data-table>
         </v-col>
     </v-row>
@@ -144,6 +144,12 @@ export default {
             loading: false,
             options: {},
             headers: [{
+                text: '주문번호',
+                value: 'orderIdx',
+                divider: true,
+                align: 'center',
+                width: '6%',
+            }, {
                 text: '상품번호',
                 value: 'productNo',
                 divider: true,
@@ -156,156 +162,100 @@ export default {
                 align: 'center',
                 width: '15%',
             }, {
-                text: '대분류',
-                value: 'type1',
+                text: '가격',
+                value: 'totalPrice',
                 divider: true,
                 align: 'center',
                 width: '5%',
             }, {
-                text: '소분류',
-                value: 'type2',
+                text: '개수',
+                value: 'orderAmount',
                 divider: true,
                 align: 'center',
                 width: '5%',
             }, {
-                text: '이미지',
-                value: 'imageName',
+                text: '주문 날짜',
+                value: 'orderDate',
                 divider: true,
                 align: 'center',
                 width: '10%',
             }, {
-                text: '가격',
-                value: 'price',
+                text: '구매자',
+                value: 'id',
                 divider: true,
                 align: 'center',
                 width: '5%',
             }, {
-                text: '할인',
-                value: 'discount',
+                text: '주문 상태',
+                value: 'state',
                 divider: true,
                 align: 'center',
                 width: '5%',
             }, {
-                text: '색상',
-                value: 'color',
+                text: '상태 변경',
+                value: 'stateChange',
                 divider: true,
                 align: 'center',
                 width: '9%',
-            }, {
-                text: '사이즈',
-                value: 'size',
-                divider: true,
-                align: 'center',
-                width: '6%',
-            }, {
-                text: '수량',
-                value: 'amount',
-                divider: true,
-                align: 'center',
-                width: '5%',
-            }, {
-                text: '등록 날짜',
-                value: 'regDate',
-                divider: true,
-                align: 'center',
-                width: '7%',
-            }, {
-                text: '상세 이미지',
-                value: 'detailImageName',
-                divider: true,
-                align: 'center',
-                width: '10%',
-            }, {
-                text: '판매 여부',
-                value: 'onSale',
-                divider: true,
-                align: 'center',
-                width: '7%',
-            }, {
-                text: '수정',
-                value: 'btn',
-                align: 'center',
-                width: '5%',
-            }],
+            }, ],
 
             searches: [{
+                text: '주문번호',
+                value: 'orderIdx',
+            }, {
                 text: '상품번호',
                 value: 'productNo',
             }, {
                 text: '상품명',
                 value: 'productName',
             }, {
-                text: '상품 분류',
-                value: 'type',
+                text: '주문 날짜',
+                value: 'orderDate',
             }, {
-                text: '가격',
-                value: 'price',
-            }, {
-                text: '재고',
-                value: 'amount',
-            }, {
-                text: '등록일',
-                value: 'regDate',
+                text: '주문 상태',
+                value: 'state',
             }, ],
-            search: 'productNo',
+            search: 'orderIdx',
             searchWord1: '',
             searchWord2: '',
 
-            products: [],
-            colorList: [],
-            sizeList: [],
+            states: [{
+                text: '기준 선택',
+                value: null,
+            }, {
+                text: '결제완료',
+                value: '결제완료',
+            }, {
+                text: '배송준비중',
+                value: '배송준비중',
+            }, {
+                text: '배송중',
+                value: '배송중',
+            }, {
+                text: '배송완료',
+                value: '배송완료',
+            }, {
+                text: '취소완료',
+                value: '취소완료',
+            }, {
+                text: '교환완료',
+                value: '교환완료',
+            }, {
+                text: '환불완료',
+                value: '환불완료',
+            }, ],
+            stateSelected: null,
 
-            types: [{
-                    text: '기준 선택',
-                    value: null,
-                },
-                {
-                    text: 'OUTER',
-                    value: 'outer',
-                },
-                {
-                    text: 'OUTER>자켓',
-                    value: 'outer;jacket',
-                },
-                {
-                    text: 'OUTER>코트',
-                    value: 'outer;coat',
-                },
-                {
-                    text: 'OUTER>가디건',
-                    value: 'outer;cardigan',
-                },
-                {
-                    text: 'OUTER>점퍼',
-                    value: 'outer;jumper',
-                },
-                {
-                    text: 'SKIRT',
-                    value: 'skirt',
-                },
-                {
-                    text: 'SKIRT>미니',
-                    value: 'skirt;mini',
-                },
-                {
-                    text: 'SKIRT>미디/롱',
-                    value: 'skirt;midi-long',
-                },
-            ],
-            typeSelected: null,
+            orders: [],
 
             menu1: false,
             menu2: false,
         }
     },
     methods: {
-        searchProduct() {
+        searchOrder() {
             let type1 = null;
             let type2 = null;
-            if (this.typeSelected != null) {
-                type1 = this.typeSelected.split(';')[0];
-                type2 = this.typeSelected.split(';')[1];
-            }
             const {
                 page,
                 itemsPerPage
@@ -333,41 +283,12 @@ export default {
             })
         },
         reset() {
-            this.typeSelected = null;
+            this.stateSelected = null;
             this.searchWord1 = null;
             this.searchWord2 = null;
             this.options.page = 1;
             this.options.itemsPerPage = 10;
-            this.searchProduct();
-        },
-        changeOnSale(item) {
-            axios.patch(`/api/product/updateOnSale/${item.productNo}`)
-                .then(() => {
-                    alert('판매 여부가 변경되었습니다');
-                    this.searchProduct();
-                }).catch(err => {
-                    alert('변경 실패했습니다.')
-                    console.log(err);
-                })
-        },
-        searchPolicy() {
-            if (this.search == 'price') {
-                if (this.searchWord1 < 0 || this.searchWord1 > 9999999 || this.searchWord1 != Math.round(this.searchWord1)) {
-                    alert('가격 제한 : 0원 ~ 9,999,999원');
-                    this.searchWord1 = 0;
-                } else if (this.searchWord2 < 0 || this.searchWord2 > 9999999 || this.searchWord2 != Math.round(this.searchWord2)) {
-                    alert('가격 제한 : 0원 ~ 9,999,999원');
-                    this.searchWord2 = 9999999;
-                }
-            } else {
-                if (this.searchWord1 < 0 || this.searchWord1 > 9999 || this.searchWord1 != Math.round(this.searchWord1)) {
-                    alert('개수 제한 : 0개 ~ 9,999개');
-                    this.searchWord1 = 0;
-                } else if (this.searchWord2 < 0 || this.searchWord2 > 9999 || this.searchWord2 != Math.round(this.searchWord2)) {
-                    alert('개수 제한 : 0개 ~ 9,999개');
-                    this.searchWord2 = 9999;
-                }
-            }
+            this.searchOrder();
         },
         AddComma(num) {
             var regexp = /\B(?=(\d{3})+(?!\d))/g;
@@ -377,7 +298,7 @@ export default {
     watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
         options: {
             handler() {
-                this.searchProduct();
+                this.searchOrder();
             },
             deep: true,
         },
@@ -385,14 +306,8 @@ export default {
             handler() {
                 this.searchWord1 = '';
                 this.searchWord2 = '';
-                this.typeSelected = null;
-                if (this.search == 'price') {
-                    this.searchWord1 = 0;
-                    this.searchWord2 = 9999999;
-                } else if (this.search == 'amount') {
-                    this.searchWord1 = 0;
-                    this.searchWord2 = 9999;
-                } else if (this.search == 'regDate') {
+                this.stateSelected = null;
+                if (this.search == 'orderDate') {
                     let date = new Date();
                     this.searchWord1 = `${date.getFullYear()-10}-${date.getMonth()+1}-${date.getDate()}`;
                     this.searchWord2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;

@@ -1,71 +1,62 @@
 <template>
 <v-container fluid>
-
     <v-row justify="center">
         <v-col cols="9">
             <v-row>
                 <v-col cols="auto">
-                    <v-btn :class="selectedColor == true ? 'primary' : 'secondary'" @click="selectOrder(1)" width="240px">주문 내역조회</v-btn>
+                    <v-btn :color="colorPicker('주문 내역조회')" @click="selectOrder('주문 내역조회')" width="240px">주문 내역조회</v-btn>
                 </v-col>
                 <v-col cols="auto">
-                    <v-btn :class="selectedColor != true ? 'primary' : 'secondary'" @click="selectOrder(2)" width="240px">취소/반품/교환 내역조회</v-btn>
+                    <v-btn :color="colorPicker('취소/반품/교환 내역조회')" @click="selectOrder('취소/반품/교환 내역조회')" width="240px">취소/반품/교환 내역조회</v-btn>
                 </v-col>
             </v-row>
-            <v-row>
+            <v-row justify="center">
                 <v-col align-self="center" cols="auto">
-                    <v-select></v-select>
-                </v-col>
-                <v-col align-self="center" cols="auto">
-                    <v-btn>오늘</v-btn>
-                    <v-btn>1주일</v-btn>
-                    <v-btn>1개월</v-btn>
-                    <v-btn>3개월</v-btn>
-                    <v-btn>6개월</v-btn>
-                </v-col>
-                <v-col align-self="center" cols="auto">
-                    <v-menu ref="menu1" v-model="menu1" :close-on-content-click="false" :return-value.sync="date1" transition="scale-transition" offset-y="offset-y" min-width="auto">
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-text-field v-model="date1" label="처음" prepend-icon="mdi-calendar" readonly="readonly" v-bind="attrs" v-on="on" hide-details="hide-details"></v-text-field>
-                        </template>
-                        <v-date-picker v-model="date1" no-title="no-title" scrollable="scrollable">
-                            <v-spacer></v-spacer>
-                            <v-btn text="text" color="primary" @click="menu1 = false">
-                                Cancel
-                            </v-btn>
-                            <v-btn text="text" color="primary" @click="$refs.menu1.save(date1)">
-                                OK
-                            </v-btn>
-                        </v-date-picker>
-                    </v-menu>
-                </v-col>
-                <v-col align-self="center" cols="auto">
-                    <v-menu ref="menu2" v-model="menu2" :close-on-content-click="false" :return-value.sync="date2" transition="scale-transition" offset-y="offset-y" min-width="auto">
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-text-field v-model="date2" label="끝" prepend-icon="mdi-calendar" readonly="readonly" v-bind="attrs" v-on="on" hide-details="hide-details"></v-text-field>
-                        </template>
-                        <v-date-picker v-model="date2" no-title="no-title" scrollable="scrollable">
-                            <v-spacer></v-spacer>
-                            <v-btn text="text" color="primary" @click="menu2 = false">
-                                Cancel
-                            </v-btn>
-                            <v-btn text="text" color="primary" @click="$refs.menu2.save(date2)">
-                                OK
-                            </v-btn>
-                        </v-date-picker>
-                    </v-menu>
-                </v-col>
-                <v-col align-self="center">
-                    <v-text-field label="" solo="solo" hide-details="hide-details"></v-text-field>
+                    <v-btn class="primary mr-2">오늘</v-btn>
+                    <v-btn class="primary mr-2">1주일</v-btn>
+                    <v-btn class="primary mr-2">1개월</v-btn>
+                    <v-btn class="primary mr-2">3개월</v-btn>
+                    <v-btn class="primary">6개월</v-btn>
                 </v-col>
                 <v-col cols="auto" align-self="center">
-                    <v-btn>조회</v-btn>
+                    <v-menu v-model="menu1" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto" hide-details>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-text-field v-model="searchDate1" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" hide-details></v-text-field>
+                        </template>
+                        <v-date-picker v-model="searchDate1" @input="menu1 = false" no-title="no-title" scrollable="scrollable"></v-date-picker>
+                    </v-menu>
+                </v-col>
+                <v-col cols="auto" align-self="center">
+                    <v-menu v-model="menu2" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto" hide-details>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-text-field v-model="searchDate2" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" hide-details></v-text-field>
+                        </template>
+                        <v-date-picker v-model="searchDate2" @input="menu2 = false" no-title="no-title" scrollable="scrollable"></v-date-picker>
+                    </v-menu>
+                </v-col>
+            </v-row>
+            <v-row justify="center">
+                <v-col cols="3" align-self="center">
+                    <v-select v-model="stateSelected" :items="states" hide-details></v-select>
+                </v-col>
+                <v-col cols="7" align-self="center">
+                    <v-text-field hide-details="hide-details" v-model="searchWord1" @keyup.enter="searchProduct"></v-text-field>
+                </v-col>
+                <v-col cols="2" align-self="center">
+                    <v-btn class="primary mr-2">조회</v-btn>
+                    <v-btn class="primary" @click="reset">초기화</v-btn>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <v-data-table :headers="headers" :items="desserts" :options.sync="options" :server-items-length="totalDesserts" :loading="loading" class="elevation-1 my-3" dense="dense">
+                    <v-data-table :headers="headers" :items="orders" :options.sync="options" :server-items-length="totalContents" :loading="loading" class="elevation-1 my-3" dense="dense">
                         <template #top="{ }">
                             <div class="text-h5 pa-3">{{selectedOrder}}</div>
+                        </template>
+                        <template #[`item.regDate`]="{item}">
+                            <div>
+                                <DateDisplay :regDate="item.regDate" />
+                            </div>
                         </template>
                     </v-data-table>
                 </v-col>
@@ -76,20 +67,18 @@
 </template>
 
 <script>
+import axios from 'axios'
+import DateDisplay from '@/components/DateDisplay.vue'
 export default {
+    components: {
+        DateDisplay,
+    },
     data() {
         return {
-            menu1: false,
-            date1: '',
-            menu2: false,
-            date2: '',
-
-            selectedOrder: '주문 내역조회',
-            selectedColor: true,
-
-            totalDesserts: 0,
-            desserts: [],
-            loading: true,
+            searchTypeNo: 0,
+            totalContents: 0,
+            loading: false,
+            editItem: {},
             options: {},
             headers: [{
                 text: '주문일자',
@@ -111,169 +100,178 @@ export default {
             }, {
                 text: '주문 상태',
                 value: 'iron'
-            }]
+            }],
+
+            searches: [{
+                text: '주문번호',
+                value: 'orderIdx',
+            }, {
+                text: '상품번호',
+                value: 'productNo',
+            }, {
+                text: '상품명',
+                value: 'productName',
+            }, {
+                text: '주문 날짜',
+                value: 'orderDate',
+            }, {
+                text: '주문 상태',
+                value: 'state',
+            }, ],
+            search: 'orderIdx',
+            searchWord1: '',
+            searchDate1: '',
+            searchDate2: '',
+
+            states: [{
+                text: '기준 선택',
+                value: null,
+            }, {
+                text: '결제완료',
+                value: '결제완료',
+            }, {
+                text: '배송준비중',
+                value: '배송준비중',
+            }, {
+                text: '배송중',
+                value: '배송중',
+            }, {
+                text: '배송완료',
+                value: '배송완료',
+            }, {
+                text: '취소완료',
+                value: '취소완료',
+            }, {
+                text: '교환완료',
+                value: '교환완료',
+            }, {
+                text: '환불완료',
+                value: '환불완료',
+            }, ],
+            stateSelected: null,
+
+            orders: [],
+
+            menu1: false,
+            menu2: false,
+
+            selectedOrder: '주문 내역조회',
+            selectedColor: true,
+
         }
-    },
-    // watch: {
-    //     options: {
-    //         handler() {
-    //             this.getDataFromApi()
-    //         },
-    //         deep: true
-    //     }
-    // },
-    mounted() {
-        this.getDataFromApi();
     },
     methods: {
-        selectOrder(selected) {
-            switch (selected) {
-                case 1:
-                    this.selectedColor = true;
-                    this.selectedOrder = '주문 내역조회';
-                    this.getDataFromApi();
-                    break;
-                case 2:
-                    this.selectedColor = false;
-                    this.selectedOrder = '취소/반품/교환 내역조회';
-                    this.desserts = [];
-                    break;
+        colorPicker(put) {
+            if (this.selectedOrder == put) {
+                return 'secondary'
             }
         },
-        getDataFromApi() {
-            this.loading = true
-            this
-                .fakeApiCall()
-                .then(data => {
-                    this.desserts = data.items
-                    this.totalDesserts = data.total
-                    this.loading = false
-                })
+        selectOrder(put) {
+            this.selectedOrder = put;
+            this.getDataFromApi(put);
         },
-        /**
-         * In a real application this would be a call to fetch() or axios.get()
-         */
-        fakeApiCall() {
-            return new Promise((resolve, reject) => {
-                console.log(reject)
-                const {
-                    sortBy,
-                    sortDesc,
-                    page,
-                    itemsPerPage
-                } = this.options
-
-                let items = this.getDesserts()
-                const total = items.length
-
-                if (sortBy.length === 1 && sortDesc.length === 1) {
-                    items = items.sort((a, b) => {
-                        const sortA = a[sortBy[0]]
-                        const sortB = b[sortBy[0]]
-
-                        if (sortDesc[0]) {
-                            if (sortA < sortB)
-                                return 1
-                            if (sortA > sortB)
-                                return -1
-                            return 0
-                        } else {
-                            if (sortA < sortB)
-                                return -1
-                            if (sortA > sortB)
-                                return 1
-                            return 0
-                        }
-                    })
+        searchProduct() {
+            let type1 = null;
+            let type2 = null;
+            if (this.typeSelected != null) {
+                type1 = this.typeSelected.split(';')[0];
+                type2 = this.typeSelected.split(';')[1];
+            }
+            const {
+                page,
+                itemsPerPage
+            } = this.options
+            axios({
+                method: 'get',
+                url: `/api/product/getProductAll`,
+                params: {
+                    page: page,
+                    perPage: itemsPerPage,
+                    type1: type1,
+                    type2: type2,
+                    search: this.search,
+                    searchWord1: this.searchWord1,
+                    searchWord2: this.searchWord2,
                 }
-
-                if (itemsPerPage > 0) {
-                    items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage)
-                }
-
-                setTimeout(() => {
-                    resolve({
-                        items,
-                        total
-                    })
-                }, 1000)
+            }).then(res => {
+                this.products = res.data.productList;
+                this.totalContents = res.data.count;
+            }).catch((err) => {
+                this.products = [];
+                this.totalContents = 0;
+                this.noSearch = true;
+                console.log(err);
             })
         },
-        getDesserts() {
-            return [{
-                name: 'Frozen Yogurt',
-                calories: 159,
-                fat: 6.0,
-                carbs: 24,
-                protein: 4.0,
-                iron: '1%'
-            }, {
-                name: 'Ice cream sandwich',
-                calories: 237,
-                fat: 9.0,
-                carbs: 37,
-                protein: 4.3,
-                iron: '1%'
-            }, {
-                name: 'Eclair',
-                calories: 262,
-                fat: 16.0,
-                carbs: 23,
-                protein: 6.0,
-                iron: '7%'
-            }, {
-                name: 'Cupcake',
-                calories: 305,
-                fat: 3.7,
-                carbs: 67,
-                protein: 4.3,
-                iron: '8%'
-            }, {
-                name: 'Gingerbread',
-                calories: 356,
-                fat: 16.0,
-                carbs: 49,
-                protein: 3.9,
-                iron: '16%'
-            }, {
-                name: 'Jelly bean',
-                calories: 375,
-                fat: 0.0,
-                carbs: 94,
-                protein: 0.0,
-                iron: '0%'
-            }, {
-                name: 'Lollipop',
-                calories: 392,
-                fat: 0.2,
-                carbs: 98,
-                protein: 0,
-                iron: '2%'
-            }, {
-                name: 'Honeycomb',
-                calories: 408,
-                fat: 3.2,
-                carbs: 87,
-                protein: 6.5,
-                iron: '45%'
-            }, {
-                name: 'Donut',
-                calories: 452,
-                fat: 25.0,
-                carbs: 51,
-                protein: 4.9,
-                iron: '22%'
-            }, {
-                name: 'KitKat',
-                calories: 518,
-                fat: 26.0,
-                carbs: 65,
-                protein: 7,
-                iron: '6%'
-            }]
-        }
+        reset() {
+            this.typeSelected = null;
+            this.searchWord1 = null;
+            this.searchWord2 = null;
+            this.options.page = 1;
+            this.options.itemsPerPage = 10;
+            this.searchProduct();
+        },
+        changeOnSale(item) {
+            axios.patch(`/api/product/updateOnSale/${item.productNo}`)
+                .then(() => {
+                    alert('판매 여부가 변경되었습니다');
+                    this.searchProduct();
+                }).catch(err => {
+                    alert('변경 실패했습니다.')
+                    console.log(err);
+                })
+        },
+        searchPolicy() {
+            if (this.search == 'price') {
+                if (this.searchWord1 < 0 || this.searchWord1 > 9999999 || this.searchWord1 != Math.round(this.searchWord1)) {
+                    alert('가격 제한 : 0원 ~ 9,999,999원');
+                    this.searchWord1 = 0;
+                } else if (this.searchWord2 < 0 || this.searchWord2 > 9999999 || this.searchWord2 != Math.round(this.searchWord2)) {
+                    alert('가격 제한 : 0원 ~ 9,999,999원');
+                    this.searchWord2 = 9999999;
+                }
+            } else {
+                if (this.searchWord1 < 0 || this.searchWord1 > 9999 || this.searchWord1 != Math.round(this.searchWord1)) {
+                    alert('개수 제한 : 0개 ~ 9,999개');
+                    this.searchWord1 = 0;
+                } else if (this.searchWord2 < 0 || this.searchWord2 > 9999 || this.searchWord2 != Math.round(this.searchWord2)) {
+                    alert('개수 제한 : 0개 ~ 9,999개');
+                    this.searchWord2 = 9999;
+                }
+            }
+        },
+        AddComma(num) {
+            var regexp = /\B(?=(\d{3})+(?!\d))/g;
+            return `${num}`.toString().replace(regexp, ",");
+        },
     },
-    components: {}
+    watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
+        options: {
+            handler() {
+                this.searchProduct();
+            },
+            deep: true,
+        },
+        search: {
+            handler() {
+                this.searchWord1 = '';
+                this.searchWord2 = '';
+                this.typeSelected = null;
+                if (this.search == 'price') {
+                    this.searchWord1 = 0;
+                    this.searchWord2 = 9999999;
+                } else if (this.search == 'amount') {
+                    this.searchWord1 = 0;
+                    this.searchWord2 = 9999;
+                } else if (this.search == 'regDate') {
+                    let date = new Date();
+                    this.searchWord1 = `${date.getFullYear()-10}-${date.getMonth()+1}-${date.getDate()}`;
+                    this.searchWord2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+                }
+            }
+        },
+
+    },
 }
 </script>
 

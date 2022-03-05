@@ -8,32 +8,11 @@
             <v-text-field hide-details="hide-details" v-model="searchWord1" @keyup.enter="searchProduct"></v-text-field>
         </v-col>
 
-        <v-col cols="4" align-self="center" v-if="search == 'type'">
-            <v-select v-model="typeSelected" :items="types" hide-details></v-select>
-        </v-col>
-
-        <v-col cols="2" align-self="center" v-if="search == 'price' || search == 'amount'" @keyup="searchPolicy">
+        <v-col cols="2" align-self="center" v-if="search == 'sellSum'" @keyup="searchPolicy">
             <v-text-field hide-details="hide-details" v-model="searchWord1" @keyup.enter="searchProduct"></v-text-field>
         </v-col>
-        <v-col cols="2" align-self="center" v-if="search == 'price' || search == 'amount'" @keyup="searchPolicy">
+        <v-col cols="2" align-self="center" v-if="search == 'sellSum'" @keyup="searchPolicy">
             <v-text-field hide-details="hide-details" v-model="searchWord2" @keyup.enter="searchProduct"></v-text-field>
-        </v-col>
-
-        <v-col cols="2" align-self="center" v-if="search == 'regDate'">
-            <v-menu v-model="menu1" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto" hide-details>
-                <template v-slot:activator="{ on, attrs }">
-                    <v-text-field v-model="searchWord1" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" hide-details></v-text-field>
-                </template>
-                <v-date-picker v-model="searchWord1" @input="menu1 = false" no-title="no-title" scrollable="scrollable"></v-date-picker>
-            </v-menu>
-        </v-col>
-        <v-col cols="2" align-self="center" v-if="search == 'regDate'">
-            <v-menu v-model="menu2" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto" hide-details>
-                <template v-slot:activator="{ on, attrs }">
-                    <v-text-field v-model="searchWord2" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" hide-details></v-text-field>
-                </template>
-                <v-date-picker v-model="searchWord2" @input="menu2 = false" no-title="no-title" scrollable="scrollable"></v-date-picker>
-            </v-menu>
         </v-col>
 
         <v-col cols="auto" align-self="center">
@@ -148,85 +127,20 @@ export default {
                 value: 'productNo',
                 divider: true,
                 align: 'center',
-                width: '6%',
+                width: '10%',
             }, {
                 text: '상품명',
                 value: 'productName',
                 divider: true,
                 align: 'center',
-                width: '15%',
-            }, {
-                text: '대분류',
-                value: 'type1',
-                divider: true,
-                align: 'center',
-                width: '5%',
-            }, {
-                text: '소분류',
-                value: 'type2',
-                divider: true,
-                align: 'center',
-                width: '5%',
-            }, {
-                text: '이미지',
-                value: 'imageName',
-                divider: true,
-                align: 'center',
-                width: '10%',
+                width: '30%',
             }, {
                 text: '가격',
-                value: 'price',
+                value: 'sellSum',
                 divider: true,
                 align: 'center',
-                width: '5%',
-            }, {
-                text: '할인',
-                value: 'discount',
-                divider: true,
-                align: 'center',
-                width: '5%',
-            }, {
-                text: '색상',
-                value: 'color',
-                divider: true,
-                align: 'center',
-                width: '9%',
-            }, {
-                text: '사이즈',
-                value: 'size',
-                divider: true,
-                align: 'center',
-                width: '6%',
-            }, {
-                text: '수량',
-                value: 'amount',
-                divider: true,
-                align: 'center',
-                width: '5%',
-            }, {
-                text: '등록 날짜',
-                value: 'regDate',
-                divider: true,
-                align: 'center',
-                width: '7%',
-            }, {
-                text: '상세 이미지',
-                value: 'detailImageName',
-                divider: true,
-                align: 'center',
-                width: '10%',
-            }, {
-                text: '판매 여부',
-                value: 'onSale',
-                divider: true,
-                align: 'center',
-                width: '7%',
-            }, {
-                text: '수정',
-                value: 'btn',
-                align: 'center',
-                width: '5%',
-            }],
+                width: '60%',
+            }, ],
 
             searches: [{
                 text: '상품번호',
@@ -235,64 +149,14 @@ export default {
                 text: '상품명',
                 value: 'productName',
             }, {
-                text: '상품 분류',
-                value: 'type',
-            }, {
-                text: '가격',
-                value: 'price',
-            }, {
-                text: '재고',
-                value: 'amount',
-            }, {
-                text: '등록일',
-                value: 'regDate',
+                text: '판매금액',
+                value: 'sellSum',
             }, ],
             search: 'productNo',
             searchWord1: '',
             searchWord2: '',
 
-            products: [],
-            colorList: [],
-            sizeList: [],
-
-            types: [{
-                    text: '기준 선택',
-                    value: null,
-                },
-                {
-                    text: 'OUTER',
-                    value: 'outer',
-                },
-                {
-                    text: 'OUTER>자켓',
-                    value: 'outer;jacket',
-                },
-                {
-                    text: 'OUTER>코트',
-                    value: 'outer;coat',
-                },
-                {
-                    text: 'OUTER>가디건',
-                    value: 'outer;cardigan',
-                },
-                {
-                    text: 'OUTER>점퍼',
-                    value: 'outer;jumper',
-                },
-                {
-                    text: 'SKIRT',
-                    value: 'skirt',
-                },
-                {
-                    text: 'SKIRT>미니',
-                    value: 'skirt;mini',
-                },
-                {
-                    text: 'SKIRT>미디/롱',
-                    value: 'skirt;midi-long',
-                },
-            ],
-            typeSelected: null,
+            sales: [],
 
             menu1: false,
             menu2: false,
@@ -333,40 +197,19 @@ export default {
             })
         },
         reset() {
-            this.typeSelected = null;
             this.searchWord1 = null;
             this.searchWord2 = null;
             this.options.page = 1;
             this.options.itemsPerPage = 10;
-            this.searchProduct();
-        },
-        changeOnSale(item) {
-            axios.patch(`/api/product/updateOnSale/${item.productNo}`)
-                .then(() => {
-                    alert('판매 여부가 변경되었습니다');
-                    this.searchProduct();
-                }).catch(err => {
-                    alert('변경 실패했습니다.')
-                    console.log(err);
-                })
+            this.searchSales();
         },
         searchPolicy() {
-            if (this.search == 'price') {
-                if (this.searchWord1 < 0 || this.searchWord1 > 9999999 || this.searchWord1 != Math.round(this.searchWord1)) {
-                    alert('가격 제한 : 0원 ~ 9,999,999원');
-                    this.searchWord1 = 0;
-                } else if (this.searchWord2 < 0 || this.searchWord2 > 9999999 || this.searchWord2 != Math.round(this.searchWord2)) {
-                    alert('가격 제한 : 0원 ~ 9,999,999원');
-                    this.searchWord2 = 9999999;
-                }
-            } else {
-                if (this.searchWord1 < 0 || this.searchWord1 > 9999 || this.searchWord1 != Math.round(this.searchWord1)) {
-                    alert('개수 제한 : 0개 ~ 9,999개');
-                    this.searchWord1 = 0;
-                } else if (this.searchWord2 < 0 || this.searchWord2 > 9999 || this.searchWord2 != Math.round(this.searchWord2)) {
-                    alert('개수 제한 : 0개 ~ 9,999개');
-                    this.searchWord2 = 9999;
-                }
+            if (this.searchWord1 < 0 || this.searchWord1 > 999999999 || this.searchWord1 != Math.round(this.searchWord1)) {
+                alert('가격 제한 : 0원 ~ 999,999,999원');
+                this.searchWord1 = 0;
+            } else if (this.searchWord2 < 0 || this.searchWord2 > 999999999 || this.searchWord2 != Math.round(this.searchWord2)) {
+                alert('가격 제한 : 0원 ~ 999,999,999원');
+                this.searchWord2 = 999999999;
             }
         },
         AddComma(num) {
@@ -377,7 +220,7 @@ export default {
     watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
         options: {
             handler() {
-                this.searchProduct();
+                this.searchSales();
             },
             deep: true,
         },
@@ -385,17 +228,9 @@ export default {
             handler() {
                 this.searchWord1 = '';
                 this.searchWord2 = '';
-                this.typeSelected = null;
-                if (this.search == 'price') {
+                if (this.search == 'sellSum') {
                     this.searchWord1 = 0;
-                    this.searchWord2 = 9999999;
-                } else if (this.search == 'amount') {
-                    this.searchWord1 = 0;
-                    this.searchWord2 = 9999;
-                } else if (this.search == 'regDate') {
-                    let date = new Date();
-                    this.searchWord1 = `${date.getFullYear()-10}-${date.getMonth()+1}-${date.getDate()}`;
-                    this.searchWord2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+                    this.searchWord2 = 999999999;
                 }
             }
         },

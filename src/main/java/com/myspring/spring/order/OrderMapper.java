@@ -19,4 +19,7 @@ public interface OrderMapper {
 	@Insert("insert into ordertable(id, productNo, orderNo, selectedColor, selectedSize, orderAmount, totalPrice, orderMethod, name, tel, zipCode, address, detailAddr) "
 			+ "values(#{in.id}, #{in.productNo}, #{orderNo}, #{in.selectedColor}, #{in.selectedSize}, #{in.orderAmount}, #{in.totalPrice}, #{in.orderMethod}, #{in.name}, #{in.tel}, #{in.zipCode}, #{in.address}, #{in.detailAddr})")
 	public int insertOrder(@Param("in") OrderVO in, @Param("orderNo") long orderNo);
+	
+//	주문 조회(주문 관리)
+	
 }

@@ -60,12 +60,12 @@ export default {
                 {
                     title: '주문 관리',
                     icon: 'mdi-help-box',
-                    to: '/admin/admin3'
+                    to: '/admin/orderManage'
                 },
                 {
                     title: '판매 정산',
                     icon: 'mdi-help-box',
-                    to: '/admin/admin4'
+                    to: '/admin/salesSettlement'
                 },
                 {
                     title: '배너 관리',

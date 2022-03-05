@@ -24,7 +24,7 @@
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field v-model="searchWord1" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" hide-details></v-text-field>
                 </template>
-                <v-date-picker v-model="searchWord1" @input="menu1 = false"></v-date-picker>
+                <v-date-picker v-model="searchWord1" @input="menu1 = false" no-title="no-title" scrollable="scrollable"></v-date-picker>
             </v-menu>
         </v-col>
         <v-col cols="2" align-self="center" v-if="search == 'regDate'">
@@ -32,7 +32,7 @@
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field v-model="searchWord2" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" hide-details></v-text-field>
                 </template>
-                <v-date-picker v-model="searchWord2" @input="menu2 = false"></v-date-picker>
+                <v-date-picker v-model="searchWord2" @input="menu2 = false" no-title="no-title" scrollable="scrollable"></v-date-picker>
             </v-menu>
         </v-col>
 
@@ -142,7 +142,6 @@ export default {
             searchTypeNo: 0,
             totalContents: 0,
             loading: false,
-            editItem: {},
             options: {},
             headers: [{
                 text: '상품번호',

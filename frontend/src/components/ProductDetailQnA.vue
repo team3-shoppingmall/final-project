@@ -29,12 +29,12 @@
                     <v-text-field v-model="searchWord"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon @click="getQnA">검색</v-btn>
+                    <v-btn @click="getQnA" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
         <v-col cols="auto">
-            <v-btn :to="`/writePost/product/${productNo}`" outlined>글쓰기</v-btn>
+            <v-btn :to="`/writePost/product/${productNo}`" color="primary">글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -109,10 +109,10 @@ export default {
                     type: link,
                     productNo: this.productNo,
                 }
-            }).then((res) => {               
+            }).then((res) => {
                 this.contents = res.data.productQnaList;
                 this.totalContents = res.data.count;
-            }).finally(()=>{
+            }).finally(() => {
                 this.loading = false;
             })
         },

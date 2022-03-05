@@ -4,67 +4,52 @@
         <v-col cols="9">
             <v-row>
                 <v-col cols="auto">
-                    <v-btn :class="selectedColor == true ? 'primary' : 'secondary'" @click="selectOrder(1)" width="240px">주문 내역조회</v-btn>
+                    <v-btn :color="colorPicker('주문 내역조회')" @click="selectOrder('주문 내역조회')" width="240px">주문 내역조회</v-btn>
                 </v-col>
                 <v-col cols="auto">
-                    <v-btn :class="selectedColor != true ? 'primary' : 'secondary'" @click="selectOrder(2)" width="240px">취소/반품/교환 내역조회</v-btn>
+                    <v-btn :color="colorPicker('취소/반품/교환 내역조회')" @click="selectOrder('취소/반품/교환 내역조회')" width="240px">취소/반품/교환 내역조회</v-btn>
                 </v-col>
             </v-row>
             <v-row justify="center">
                 <v-col align-self="center" cols="auto">
-                    <v-btn class="primary">오늘</v-btn>
-                    <v-btn class="primary">1주일</v-btn>
-                    <v-btn class="primary">1개월</v-btn>
-                    <v-btn class="primary">3개월</v-btn>
+                    <v-btn class="primary mr-2">오늘</v-btn>
+                    <v-btn class="primary mr-2">1주일</v-btn>
+                    <v-btn class="primary mr-2">1개월</v-btn>
+                    <v-btn class="primary mr-2">3개월</v-btn>
                     <v-btn class="primary">6개월</v-btn>
                 </v-col>
-                <v-col align-self="center" cols="auto">
-                    <v-menu ref="menu1" v-model="menu1" :close-on-content-click="false" :return-value.sync="date1" transition="scale-transition" offset-y="offset-y" min-width="auto">
+                <v-col cols="auto" align-self="center">
+                    <v-menu v-model="menu1" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto" hide-details>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-text-field v-model="date1" label="처음" prepend-icon="mdi-calendar" readonly="readonly" v-bind="attrs" v-on="on" hide-details="hide-details"></v-text-field>
+                            <v-text-field v-model="searchDate1" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" hide-details></v-text-field>
                         </template>
-                        <v-date-picker v-model="date1" no-title="no-title" scrollable="scrollable">
-                            <v-spacer></v-spacer>
-                            <v-btn text="text" color="primary" @click="menu1 = false">
-                                Cancel
-                            </v-btn>
-                            <v-btn text="text" color="primary" @click="$refs.menu1.save(date1)">
-                                OK
-                            </v-btn>
-                        </v-date-picker>
+                        <v-date-picker v-model="searchDate1" @input="menu1 = false" no-title="no-title" scrollable="scrollable"></v-date-picker>
                     </v-menu>
                 </v-col>
-                <v-col align-self="center" cols="auto">
-                    <v-menu ref="menu2" v-model="menu2" :close-on-content-click="false" :return-value.sync="date2" transition="scale-transition" offset-y="offset-y" min-width="auto">
+                <v-col cols="auto" align-self="center">
+                    <v-menu v-model="menu2" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto" hide-details>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-text-field v-model="date2" label="끝" prepend-icon="mdi-calendar" readonly="readonly" v-bind="attrs" v-on="on" hide-details="hide-details"></v-text-field>
+                            <v-text-field v-model="searchDate2" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" hide-details></v-text-field>
                         </template>
-                        <v-date-picker v-model="date2" no-title="no-title" scrollable="scrollable">
-                            <v-spacer></v-spacer>
-                            <v-btn text="text" color="primary" @click="menu2 = false">
-                                Cancel
-                            </v-btn>
-                            <v-btn text="text" color="primary" @click="$refs.menu2.save(date2)">
-                                OK
-                            </v-btn>
-                        </v-date-picker>
+                        <v-date-picker v-model="searchDate2" @input="menu2 = false" no-title="no-title" scrollable="scrollable"></v-date-picker>
                     </v-menu>
                 </v-col>
             </v-row>
             <v-row justify="center">
-                <v-col align-self="center" cols="auto">
-                    <v-select></v-select>
+                <v-col cols="3" align-self="center">
+                    <v-select v-model="stateSelected" :items="states" hide-details></v-select>
                 </v-col>
-                <v-col align-self="center">
-                    <v-text-field label="" solo="solo" hide-details="hide-details"></v-text-field>
+                <v-col cols="7" align-self="center">
+                    <v-text-field hide-details="hide-details" v-model="searchWord1" @keyup.enter="searchProduct"></v-text-field>
                 </v-col>
-                <v-col cols="auto" align-self="center">
-                    <v-btn class="primary">조회</v-btn>
+                <v-col cols="2" align-self="center">
+                    <v-btn class="primary mr-2">조회</v-btn>
+                    <v-btn class="primary" @click="reset">초기화</v-btn>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <v-data-table :headers="headers" :items="desserts" :options.sync="options" :server-items-length="totalDesserts" :loading="loading" class="elevation-1 my-3" dense="dense">
+                    <v-data-table :headers="headers" :items="orders" :options.sync="options" :server-items-length="totalContents" :loading="loading" class="elevation-1 my-3" dense="dense">
                         <template #top="{ }">
                             <div class="text-h5 pa-3">{{selectedOrder}}</div>
                         </template>
@@ -135,7 +120,8 @@ export default {
             }, ],
             search: 'orderIdx',
             searchWord1: '',
-            searchWord2: '',
+            searchDate1: '',
+            searchDate2: '',
 
             states: [{
                 text: '기준 선택',
@@ -164,9 +150,7 @@ export default {
             }, ],
             stateSelected: null,
 
-            products: [],
-            colorList: [],
-            sizeList: [],
+            orders: [],
 
             menu1: false,
             menu2: false,
@@ -177,19 +161,14 @@ export default {
         }
     },
     methods: {
-        selectOrder(selected) {
-            switch (selected) {
-                case 1:
-                    this.selectedColor = true;
-                    this.selectedOrder = '주문 내역조회';
-                    this.getDataFromApi();
-                    break;
-                case 2:
-                    this.selectedColor = false;
-                    this.selectedOrder = '취소/반품/교환 내역조회';
-                    this.getDataFromApi();
-                    break;
+        colorPicker(put) {
+            if (this.selectedOrder == put) {
+                return 'secondary'
             }
+        },
+        selectOrder(put) {
+            this.selectedOrder = put;
+            this.getDataFromApi(put);
         },
         searchProduct() {
             let type1 = null;

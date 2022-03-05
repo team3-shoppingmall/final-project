@@ -121,7 +121,6 @@ export default {
             searchTypeNo: 0,
             totalContents: 0,
             loading: false,
-            editItem: {},
             options: {},
             headers: [{
                 text: '상품번호',
@@ -157,9 +156,7 @@ export default {
             searchWord1: '',
             searchWord2: '',
 
-            products: [],
-            colorList: [],
-            sizeList: [],
+            sales: [],
 
             menu1: false,
             menu2: false,
@@ -200,30 +197,19 @@ export default {
             })
         },
         reset() {
-            this.typeSelected = null;
             this.searchWord1 = null;
             this.searchWord2 = null;
             this.options.page = 1;
             this.options.itemsPerPage = 10;
-            this.searchProduct();
-        },
-        changeOnSale(item) {
-            axios.patch(`/api/product/updateOnSale/${item.productNo}`)
-                .then(() => {
-                    alert('판매 여부가 변경되었습니다');
-                    this.searchProduct();
-                }).catch(err => {
-                    alert('변경 실패했습니다.')
-                    console.log(err);
-                })
+            this.searchSales();
         },
         searchPolicy() {
-            if (this.searchWord1 < 0 || this.searchWord1 > 9999999 || this.searchWord1 != Math.round(this.searchWord1)) {
-                alert('가격 제한 : 0원 ~ 9,999,999원');
+            if (this.searchWord1 < 0 || this.searchWord1 > 999999999 || this.searchWord1 != Math.round(this.searchWord1)) {
+                alert('가격 제한 : 0원 ~ 999,999,999원');
                 this.searchWord1 = 0;
-            } else if (this.searchWord2 < 0 || this.searchWord2 > 9999999 || this.searchWord2 != Math.round(this.searchWord2)) {
-                alert('가격 제한 : 0원 ~ 9,999,999원');
-                this.searchWord2 = 9999999;
+            } else if (this.searchWord2 < 0 || this.searchWord2 > 999999999 || this.searchWord2 != Math.round(this.searchWord2)) {
+                alert('가격 제한 : 0원 ~ 999,999,999원');
+                this.searchWord2 = 999999999;
             }
         },
         AddComma(num) {
@@ -234,7 +220,7 @@ export default {
     watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
         options: {
             handler() {
-                this.searchProduct();
+                this.searchSales();
             },
             deep: true,
         },
@@ -242,14 +228,9 @@ export default {
             handler() {
                 this.searchWord1 = '';
                 this.searchWord2 = '';
-                this.typeSelected = null;
                 if (this.search == 'sellSum') {
                     this.searchWord1 = 0;
                     this.searchWord2 = 999999999;
-                } else if (this.search == 'regDate') {
-                    let date = new Date();
-                    this.searchWord1 = `${date.getFullYear()-10}-${date.getMonth()+1}-${date.getDate()}`;
-                    this.searchWord2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
                 }
             }
         },

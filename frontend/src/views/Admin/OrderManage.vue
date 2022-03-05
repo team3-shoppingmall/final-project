@@ -13,7 +13,7 @@
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field v-model="searchWord1" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" hide-details></v-text-field>
                 </template>
-                <v-date-picker v-model="searchWord1" @input="menu1 = false"></v-date-picker>
+                <v-date-picker v-model="searchWord1" @input="menu1 = false" no-title="no-title" scrollable="scrollable"></v-date-picker>
             </v-menu>
         </v-col>
         <v-col cols="2" align-self="center" v-if="search == 'orderDate'">
@@ -21,7 +21,7 @@
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field v-model="searchWord2" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" hide-details></v-text-field>
                 </template>
-                <v-date-picker v-model="searchWord2" @input="menu2 = false"></v-date-picker>
+                <v-date-picker v-model="searchWord2" @input="menu2 = false" no-title="no-title" scrollable="scrollable"></v-date-picker>
             </v-menu>
         </v-col>
 
@@ -142,7 +142,6 @@ export default {
             searchTypeNo: 0,
             totalContents: 0,
             loading: false,
-            editItem: {},
             options: {},
             headers: [{
                 text: '주문번호',
@@ -247,22 +246,16 @@ export default {
             }, ],
             stateSelected: null,
 
-            products: [],
-            colorList: [],
-            sizeList: [],
+            orders: [],
 
             menu1: false,
             menu2: false,
         }
     },
     methods: {
-        searchProduct() {
+        searchOrder() {
             let type1 = null;
             let type2 = null;
-            if (this.typeSelected != null) {
-                type1 = this.typeSelected.split(';')[0];
-                type2 = this.typeSelected.split(';')[1];
-            }
             const {
                 page,
                 itemsPerPage
@@ -290,41 +283,12 @@ export default {
             })
         },
         reset() {
-            this.typeSelected = null;
+            this.stateSelected = null;
             this.searchWord1 = null;
             this.searchWord2 = null;
             this.options.page = 1;
             this.options.itemsPerPage = 10;
-            this.searchProduct();
-        },
-        changeOnSale(item) {
-            axios.patch(`/api/product/updateOnSale/${item.productNo}`)
-                .then(() => {
-                    alert('판매 여부가 변경되었습니다');
-                    this.searchProduct();
-                }).catch(err => {
-                    alert('변경 실패했습니다.')
-                    console.log(err);
-                })
-        },
-        searchPolicy() {
-            if (this.search == 'price') {
-                if (this.searchWord1 < 0 || this.searchWord1 > 9999999 || this.searchWord1 != Math.round(this.searchWord1)) {
-                    alert('가격 제한 : 0원 ~ 9,999,999원');
-                    this.searchWord1 = 0;
-                } else if (this.searchWord2 < 0 || this.searchWord2 > 9999999 || this.searchWord2 != Math.round(this.searchWord2)) {
-                    alert('가격 제한 : 0원 ~ 9,999,999원');
-                    this.searchWord2 = 9999999;
-                }
-            } else {
-                if (this.searchWord1 < 0 || this.searchWord1 > 9999 || this.searchWord1 != Math.round(this.searchWord1)) {
-                    alert('개수 제한 : 0개 ~ 9,999개');
-                    this.searchWord1 = 0;
-                } else if (this.searchWord2 < 0 || this.searchWord2 > 9999 || this.searchWord2 != Math.round(this.searchWord2)) {
-                    alert('개수 제한 : 0개 ~ 9,999개');
-                    this.searchWord2 = 9999;
-                }
-            }
+            this.searchOrder();
         },
         AddComma(num) {
             var regexp = /\B(?=(\d{3})+(?!\d))/g;
@@ -334,7 +298,7 @@ export default {
     watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
         options: {
             handler() {
-                this.searchProduct();
+                this.searchOrder();
             },
             deep: true,
         },
@@ -342,14 +306,8 @@ export default {
             handler() {
                 this.searchWord1 = '';
                 this.searchWord2 = '';
-                this.typeSelected = null;
-                if (this.search == 'price') {
-                    this.searchWord1 = 0;
-                    this.searchWord2 = 9999999;
-                } else if (this.search == 'amount') {
-                    this.searchWord1 = 0;
-                    this.searchWord2 = 9999;
-                } else if (this.search == 'regDate') {
+                this.stateSelected = null;
+                if (this.search == 'orderDate') {
                     let date = new Date();
                     this.searchWord1 = `${date.getFullYear()-10}-${date.getMonth()+1}-${date.getDate()}`;
                     this.searchWord2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;

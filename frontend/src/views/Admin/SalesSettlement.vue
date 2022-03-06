@@ -62,6 +62,11 @@
             </v-data-table>
         </v-col>
     </v-row>
+    <v-row>
+        <v-col>
+            <div class="text-h4">총 판매 금액 : {{AddComma(totalPrice)}}원</div>
+        </v-col>
+    </v-row>
 </v-container>
 </template>
 
@@ -112,9 +117,10 @@ export default {
                 text: '주문 날짜',
                 value: 'orderDate',
             }, ],
-            search: 'productNo',
+            search: 'orderDate',
             searchWord1: '',
             searchWord2: '',
+            totalPrice: 0,
 
             menu1: false,
             menu2: false,
@@ -122,6 +128,9 @@ export default {
     },
     methods: {
         searchSales() {
+            this.sales = [];
+            this.totalContents = 0;
+            this.totalPrice = 0;
             this.loading = true;
             const {
                 page,
@@ -139,10 +148,11 @@ export default {
                 }
             }).then(res => {
                 this.sales = res.data.salesList;
-                this.totalContents = res.data.count;
+                this.totalContents = res.data.countList.length;
+                for (let i = 0; i < res.data.countList.length; i++) {
+                    this.totalPrice += res.data.countList[i];
+                }
             }).catch((err) => {
-                this.sales = [];
-                this.totalContents = 0;
                 console.log(err);
             }).finally(
                 this.loading = false
@@ -198,8 +208,12 @@ export default {
                 }
             }
         },
-
     },
+    mounted() {
+        let date = new Date();
+        this.searchWord1 = `${date.getFullYear()-5}-${date.getMonth()+1}-${date.getDate()}`;
+        this.searchWord2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+    }
 }
 </script>
 

@@ -41,7 +41,7 @@ public interface OrderMapper {
 
 //	판매 정산 개수 조회
 	@SelectProvider(type = OrderUtils.class, method = "getSalesSettlementCount")
-	public List<OrderAndProductVO> getSalesSettlementCount(String search, String searchWord1, String searchWord2);
+	public List<Long> getSalesSettlementCount(String search, String searchWord1, String searchWord2);
 
 //	주문 조회
 	@SelectProvider(type = OrderUtils.class, method = "getOrderById")

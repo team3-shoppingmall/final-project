@@ -80,10 +80,10 @@ public class OrderService {
 		int start = (page - 1) * perPage;
 		List<OrderAndProductVO> salesList = orderMapper.getSalesSettlement(start, perPage, search, searchWord1,
 				searchWord2);
-		int count = orderMapper.getSalesSettlementCount(search, searchWord1, searchWord2).size();
+		List<Long> countList = orderMapper.getSalesSettlementCount(search, searchWord1, searchWord2);
 		Map<String, Object> resMap = new HashMap<>();
 		resMap.put("salesList", salesList);
-		resMap.put("count", count);
+		resMap.put("countList", countList);
 		return new ResponseEntity<>(resMap, HttpStatus.OK);
 	}
 

@@ -166,7 +166,7 @@ public class OrderUtils {
 
 		SQL sql = new SQL() {
 			{
-				SELECT("sum(o.totalPrice) as priceSum");
+				SELECT("sum(o.totalPrice)");
 				FROM("ordertable o");
 				LEFT_OUTER_JOIN("producttable p on o.productNo = p.productNo");
 				WHERE("o.state in ('배송완료', '교환완료')");
@@ -246,7 +246,7 @@ public class OrderUtils {
 				OFFSET(start);
 			}
 		};
-		System.out.println(sql.toString());
+//		System.out.println(sql.toString());
 		return sql.toString();
 	}
 

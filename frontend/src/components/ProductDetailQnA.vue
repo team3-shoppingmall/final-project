@@ -26,7 +26,7 @@
                     <v-select :items="searches" v-model="search"></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord"></v-text-field>
+                    <v-text-field v-model="searchWord" @keyup.enter="getQnA"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
                     <v-btn @click="getQnA" color="primary">검색</v-btn>
@@ -98,15 +98,12 @@ export default {
                 page,
                 itemsPerPage
             } = this.options
-            let link = document.location.href;
-            link = link.slice(26, link.length - 3);
-            axios.get(`/api/qna/getQnaListByProductNo`, {
+            axios.get(`/api/qna/getQnaList`, {
                 params: {
                     page: page,
                     perPage: itemsPerPage,
                     search: this.search,
                     searchWord: this.searchWord,
-                    type: link,
                     productNo: this.productNo,
                 }
             }).then((res) => {

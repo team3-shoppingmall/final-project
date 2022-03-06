@@ -50,7 +50,7 @@
                     <v-select :items="searches" v-model="search"></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord"></v-text-field>
+                    <v-text-field v-model="searchWord" @keyup.enter="getReview"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
                     <v-btn @click="getReview" color="primary">검색</v-btn>

@@ -52,10 +52,10 @@
                     <v-select :items="searches" v-model="search"></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord"></v-text-field>
+                    <v-text-field v-model="searchWord" @keyup.enter="getReview"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon="icon" @click="getReview">검색</v-btn>
+                    <v-btn @click="getReview" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -70,7 +70,7 @@ export default {
     components: {
         DateDisplay,
     },
-    // props: ['id'],
+    props: ['id'],
     data() {
         return {
             admin: true,
@@ -116,23 +116,14 @@ export default {
                 align: 'center'
             }],
             searches: [{
-                text: '작성자',
-                value: 'id'
+                text: '상품명',
+                value: 'productName'
             }],
-            search: 'id',
+            search: 'productName',
             searchWord: '',
-            star: 5,
-            content: '',
-            contentColor: 'black--text',
-            imageFile: '',
-            imageUrl: '',
-
-            id: 'tester',
         }
     },
     methods: {
-        // productNo 대신 id로
-        // 여기서 id: this.id 로 넣어서 해주세요
         getReview() {
             this.loading = true;
             const {
@@ -147,7 +138,8 @@ export default {
                     perPage: itemsPerPage,
                     search: this.search,
                     searchWord: this.searchWord,
-                    productNo: this.productNo
+                    productNo: 0,
+                    id: this.id
                 }
             }).then(res => {
                 this.contents = res.data.reviewList;
@@ -157,68 +149,6 @@ export default {
             })
         },
 
-        // 이미지
-        fileInputClick() {
-            document.getElementById(`fileInput`).click();
-        },
-        onImageChange() {
-            const file = this.imageFile;
-            if (file) {
-                this.imageUrl = URL.createObjectURL(file);
-                URL.revokeObjectURL(file);
-            } else {
-                this.imageUrl = null;
-            }
-        },
-
-        addReview() {
-            if (this.content == '') {
-                alert('후기를 입력해주세요');
-                return;
-            }
-            let data = {
-                productNo: this.productNo,
-                star: this.star,
-                content: this.content,
-                image: this.imageFile.name,
-                id: this.id,
-            };
-            let formData = new FormData();
-            formData.append('data', new Blob([JSON.stringify(data)], {
-                type: "application/json"
-            }));
-            formData.append(`fileList`, this.imageFile);
-            axios.post(`/api/review/insert`, formData)
-                .then(() => {
-                    this.dialog = false;
-                    this.content = '';
-                    alert("리뷰 등록 완료");
-                    this.$router.go();
-                }).catch((err) => {
-                    alert('리뷰 작성에 실패했습니다.')
-                    console.log(err);
-                })
-
-            // axios({
-            //     method: 'post',
-            //     url: `/api/review/insert`,
-            //     data: {
-            //         productNo: this.productNo,
-            //         star: this.star,
-            //         content: this.content,
-            //         image: this.image,
-            //         id: this.id,
-            //     }
-            // }).then(() => {
-            //     this.dialog = false;
-            //     this.content = '';
-            //     alert("리뷰 등록 완료");
-            //     this.$router.go();
-            // }).catch((err) => {
-            //     alert('리뷰 작성에 실패했습니다.')
-            //     console.log(err);
-            // })
-        },
         deleteReview(num) {
             axios.delete(`/api/review/delete/${num}`)
                 .then(() => {
@@ -237,21 +167,9 @@ export default {
             },
             deep: true
         },
-        content: {
-            handler() {
-                if (this.content.length > 600) {
-                    this.contentColor = 'red--text';
-                } else {
-                    this.contentColor = 'black--text';
-                }
-            }
-        }
     }
 }
 </script>
 
 <style>
-.ck-editor__editable {
-    min-height: 200px;
-}
 </style>

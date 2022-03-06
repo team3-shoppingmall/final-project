@@ -39,8 +39,9 @@ public class ReviewController {
 	@GetMapping("/getAllReviews")
 	public ResponseEntity<?> getAllReviews(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
 			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord,
-			@RequestParam("productNo") int productNo) {
-		return reviewService.getAllReviews(page, perPage, search, searchWord, productNo);
+			@RequestParam(value = "productNo", required = false) int productNo,
+			@RequestParam(value = "id", required = false) String id) {
+		return reviewService.getAllReviews(page, perPage, search, searchWord, productNo, id);
 	}
 
 	// 리뷰 상세보기

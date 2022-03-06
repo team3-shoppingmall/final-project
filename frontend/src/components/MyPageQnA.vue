@@ -28,15 +28,12 @@
                     <v-select :items="searches" v-model="search"></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord"></v-text-field>
+                    <v-text-field v-model="searchWord" @keyup.enter="getQnA"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon @click="getQnA">검색</v-btn>
+                    <v-btn @click="getQnA" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
-        </v-col>
-        <v-col cols="auto">
-            <v-btn :to="`/writePost/product/${productNo}`" outlined>글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -52,7 +49,7 @@ export default {
         DateDisplay,
         QnATitleDisplay,
     },
-    // props: ['id'],
+    props: ['id'],
     data() {
         return {
             totalContents: 0,
@@ -84,34 +81,28 @@ export default {
                 align: 'center',
             }, ],
             searches: [{
-                text: '작성자',
-                value: 'id'
+                text: '상품명',
+                value: 'productName'
             }],
-            search: 'id',
+            search: 'productName',
             searchWord: '',
-
-            id: 'tester',
         }
     },
     methods: {
-        // productNo 대신 id로
-        // 여기서 id: this.id 로 넣어서 해주세요
         getQnA() {
             this.loading = true
             const {
                 page,
                 itemsPerPage
             } = this.options
-            let link = document.location.href;
-            link = link.slice(26, link.length - 3);
-            axios.get(`/api/qna/getQnaListByProductNo`, {
+            axios.get(`/api/qna/getQnaList`, {
                 params: {
                     page: page,
                     perPage: itemsPerPage,
                     search: this.search,
                     searchWord: this.searchWord,
-                    type: link,
-                    productNo: this.productNo,
+                    productNo: 0,
+                    id: this.id,
                 }
             }).then((res) => {
                 this.contents = res.data.productQnaList;

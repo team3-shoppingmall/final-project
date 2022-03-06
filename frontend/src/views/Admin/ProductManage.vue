@@ -139,7 +139,6 @@ export default {
     },
     data() {
         return {
-            searchTypeNo: 0,
             totalContents: 0,
             loading: false,
             options: {},
@@ -333,9 +332,20 @@ export default {
             })
         },
         reset() {
-            this.typeSelected = null;
             this.searchWord1 = null;
             this.searchWord2 = null;
+            this.typeSelected = null;
+            if (this.search == 'price') {
+                this.searchWord1 = 0;
+                this.searchWord2 = 9999999;
+            } else if (this.search == 'amount') {
+                this.searchWord1 = 0;
+                this.searchWord2 = 9999;
+            } else if (this.search == 'regDate') {
+                let date = new Date();
+                this.searchWord1 = `${date.getFullYear()-5}-${date.getMonth()+1}-${date.getDate()}`;
+                this.searchWord2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+            }
             this.options.page = 1;
             this.options.itemsPerPage = 10;
             this.searchProduct();
@@ -394,7 +404,7 @@ export default {
                     this.searchWord2 = 9999;
                 } else if (this.search == 'regDate') {
                     let date = new Date();
-                    this.searchWord1 = `${date.getFullYear()-10}-${date.getMonth()+1}-${date.getDate()}`;
+                    this.searchWord1 = `${date.getFullYear()-5}-${date.getMonth()+1}-${date.getDate()}`;
                     this.searchWord2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
                 }
             }

@@ -16,7 +16,7 @@ public class MemberUtils {
 			}
 		};
 
-		System.out.println(sql.toString());
+//		System.out.println(sql.toString());
 		return sql.toString();
 	}
 
@@ -43,7 +43,7 @@ public class MemberUtils {
 				WHERE("id = '" + member.getId() + "'");
 			}
 		};
-		System.out.println(sql.toString());
+//		System.out.println(sql.toString());
 		return sql.toString();
 	}
 }

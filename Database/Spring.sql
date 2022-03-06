@@ -2,6 +2,9 @@ drop database if exists springdb;
 create database springdb;
 use springdb;
 
+-- key컬럼이 아닌 컬럼으로 update하기 윈함
+set sql_safe_updates=0;
+
 -- table drop
 drop table if exists bannertable;
 drop table if exists qnatable;
@@ -15,11 +18,13 @@ drop table if exists baskettable;
 drop table if exists producttable;
 drop table if exists membertable;
 
--- drop trigger and procedure
+-- drop trigger, procedure, event
 DROP TRIGGER IF EXISTS `springdb`.`membertable_BEFORE_INSERT`;
 DROP TRIGGER IF EXISTS `springdb`.`pointtable_BEFORE_INSERT`;
 DROP procedure IF EXISTS `autoQuestion`;
 DROP procedure IF EXISTS `autoReply`;
+DROP procedure IF EXISTS `orderChangeSchedule`;
+DROP EVENT IF EXISTS `event_AutoScheduler`;
 
 -- create table and trigger
 CREATE TABLE membertable (
@@ -94,7 +99,7 @@ CREATE TABLE ordertable (
 	ORDERAMOUNT INT NOT NULL,
 	TOTALPRICE INT NOT NULL,
 	ORDERDATE TIMESTAMP DEFAULT (current_timestamp),
-	STATE VARCHAR(20) DEFAULT '결제 완료',
+	STATE VARCHAR(20) DEFAULT '결제완료',
 	ORDERMETHOD VARCHAR(100) NOT NULL,
 	NAME VARCHAR(50) NOT NULL,
 	TEL VARCHAR(11) NOT NULL,
@@ -105,6 +110,23 @@ CREATE TABLE ordertable (
 --     CONSTRAINT order_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID),
 --     CONSTRAINT order_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
 );
+
+DELIMITER $$
+USE `springdb`$$
+CREATE PROCEDURE `orderChangeSchedule` ()
+BEGIN
+IF( DAYOFWEEK(curdate()) between 2 and 6)
+THEN
+UPDATE ordertable set state = '배송준비중' where state = '결제완료';
+END IF;
+END$$
+DELIMITER ;
+
+create EVENT event_AutoScheduler
+ON schedule 
+EVERY 1 day starts '2022-03-06 15:00:00'
+COMMENT '매일 15:00 결제완료 -> 배송준비중으로 변경'
+DO Call orderChangeSchedule();
 
 CREATE TABLE pointtable (
 	NUM BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -388,6 +410,7 @@ select * from faqtable;
 select * from reviewtable;
 select * from qnatable;
 select * from bannertable;
+select * from information_schema.events;
 
 -- select문 실험 및 용도
 
@@ -399,3 +422,4 @@ select * from bannertable;
 -- select * from producttable left join ordertable on producttable.productno = ordertable.productno where type1 = 'skirt' group by ordertable.productno order by sum(ordertable.amount) desc limit 0,8;
 
 -- select * from producttable p left join ordertable o on p.productNo = o.productNo where p.onSale = true and p.amount > 0 and (orderDate BETWEEN DATE_ADD(NOW(), INTERVAL -1 week) AND NOW()) group by o.productNo order by sum(o.orderAmount) desc limit 8
+-- select sum(o.totalPrice) as priceSum, o.productNo, p.productName from ordertable o left join producttable p on p.productNo = o.productNo group by o.productNo having sum(o.totalPrice) >= 76000;

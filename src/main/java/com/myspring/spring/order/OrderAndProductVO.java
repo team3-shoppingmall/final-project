@@ -21,6 +21,7 @@ public class OrderAndProductVO {
 	private String detailAddr;
 	private String productName;
 	private String imageName;
+	private long priceSum;
 
 	public OrderAndProductVO() {
 	}
@@ -28,7 +29,7 @@ public class OrderAndProductVO {
 	public OrderAndProductVO(long orderIdx, String id, int productNo, long orderNo, String selectedColor,
 			String selectedSize, int orderAmount, int totalPrice, Date orderDate, String state, String orderMethod,
 			String name, String tel, String zipCode, String address, String detailAddr, String productName,
-			String imageName) {
+			String imageName, long priceSum) {
 		this.orderIdx = orderIdx;
 		this.id = id;
 		this.productNo = productNo;
@@ -47,6 +48,7 @@ public class OrderAndProductVO {
 		this.detailAddr = detailAddr;
 		this.productName = productName;
 		this.imageName = imageName;
+		this.priceSum = priceSum;
 	}
 
 	public long getOrderIdx() {
@@ -191,6 +193,14 @@ public class OrderAndProductVO {
 
 	public void setImageName(String imageName) {
 		this.imageName = imageName;
+	}
+
+	public long getPriceSum() {
+		return priceSum;
+	}
+
+	public void setPriceSum(long priceSum) {
+		this.priceSum = priceSum;
 	}
 
 }

@@ -12,11 +12,11 @@
             </v-row>
             <v-row justify="center">
                 <v-col align-self="center" cols="auto">
-                    <v-btn class="primary mr-2">오늘</v-btn>
-                    <v-btn class="primary mr-2">1주일</v-btn>
-                    <v-btn class="primary mr-2">1개월</v-btn>
-                    <v-btn class="primary mr-2">3개월</v-btn>
-                    <v-btn class="primary">6개월</v-btn>
+                    <v-btn class="primary mr-2" @click="changeDate('today')">오늘</v-btn>
+                    <v-btn class="primary mr-2" @click="changeDate('1week')">1주일</v-btn>
+                    <v-btn class="primary mr-2" @click="changeDate('1month')">1개월</v-btn>
+                    <v-btn class="primary mr-2" @click="changeDate('3month')">3개월</v-btn>
+                    <v-btn class="primary" @click="changeDate('6month')">6개월</v-btn>
                 </v-col>
                 <v-col cols="auto" align-self="center">
                     <v-menu v-model="menu1" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y min-width="auto" hide-details>
@@ -40,23 +40,48 @@
                     <v-select v-model="stateSelected" :items="states" hide-details></v-select>
                 </v-col>
                 <v-col cols="7" align-self="center">
-                    <v-text-field hide-details="hide-details" v-model="searchWord1" @keyup.enter="searchProduct"></v-text-field>
+                    <v-text-field hide-details="hide-details" v-model="searchWord" @keyup.enter="searchOrder(selectedOrder)"></v-text-field>
                 </v-col>
                 <v-col cols="2" align-self="center">
-                    <v-btn class="primary mr-2">조회</v-btn>
+                    <v-btn class="primary mr-2" @click="searchOrder(selectedOrder)">조회</v-btn>
                     <v-btn class="primary" @click="reset">초기화</v-btn>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <v-data-table :headers="headers" :items="orders" :options.sync="options" :server-items-length="totalContents" :loading="loading" class="elevation-1 my-3" dense="dense">
+                    <v-data-table :headers="selectedOrder=='주문 내역조회' ? headers : returnHeaders" :items="orders" :options.sync="options" item-key="orderIdx" :server-items-length="totalContents" :loading="loading" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
                         <template #top="{ }">
                             <div class="text-h5 pa-3">{{selectedOrder}}</div>
                         </template>
-                        <template #[`item.regDate`]="{item}">
+                        <template #[`item.productName`]="{item}">
+                            <v-btn text :to="`/productDetail/${item.productNo}`">
+                                <div class="text-left text-truncate" style="max-width: 90px;" v-if="selectedOrder =='주문 내역조회'">
+                                    {{ item.productName }}
+                                </div>
+                                <div class="text-left text-truncate" style="max-width: 220px;" v-if="selectedOrder !='주문 내역조회'">
+                                    {{ item.productName }}
+                                </div>
+                            </v-btn>
+                        </template>
+                        <template #[`item.imageName`]="{item}">
+                            <v-row justify="center">
+                                <v-col cols="auto">
+                                    <v-img min-height="100" max-height="100" max-width="100" :src="`/api/product/productImage/${item.productNo}/${item.imageName.split(';')[0]}`"></v-img>
+                                </v-col>
+                            </v-row>
+                        </template>
+                        <template #[`item.totalPrice`]="{item}">
+                            {{ AddComma(item.totalPrice) }}원
+                        </template>
+                        <template #[`item.orderDate`]="{item}">
                             <div>
-                                <DateDisplay :regDate="item.regDate" />
+                                <DateDisplay :regDate="item.orderDate" />
                             </div>
+                        </template>
+                        <template v-slot:[`item.btn`]="{item}">
+                            <v-btn color="primary" @click="cancelOrder(item)">
+                                취소
+                            </v-btn>
                         </template>
                     </v-data-table>
                 </v-col>
@@ -75,82 +100,107 @@ export default {
     },
     data() {
         return {
-            searchTypeNo: 0,
+            orders: [],
             totalContents: 0,
             loading: false,
-            editItem: {},
             options: {},
             headers: [{
-                text: '주문일자',
-                align: 'start',
-                sortable: false,
-                value: 'name'
-            }, {
-                text: '상품이미지',
-                value: 'calories'
-            }, {
-                text: '상품정보',
-                value: 'fat'
-            }, {
-                text: '수량',
-                value: 'carbs'
-            }, {
-                text: '상품 구매 금액',
-                value: 'protein'
-            }, {
-                text: '주문 상태',
-                value: 'iron'
-            }],
-
-            searches: [{
                 text: '주문번호',
                 value: 'orderIdx',
+                divider: true,
+                align: 'center',
+                width: '10%',
             }, {
-                text: '상품번호',
-                value: 'productNo',
+                text: '이미지',
+                value: 'imageName',
+                divider: true,
+                align: 'center',
+                width: '15%',
             }, {
                 text: '상품명',
                 value: 'productName',
+                divider: true,
+                align: 'center',
+                width: '15%',
+            }, {
+                text: '개수',
+                value: 'orderAmount',
+                divider: true,
+                align: 'center',
+                width: '10%',
+            }, {
+                text: '가격',
+                value: 'totalPrice',
+                divider: true,
+                align: 'center',
+                width: '10%',
             }, {
                 text: '주문 날짜',
                 value: 'orderDate',
+                divider: true,
+                align: 'center',
+                width: '15%',
             }, {
                 text: '주문 상태',
                 value: 'state',
+                divider: true,
+                align: 'center',
+                width: '15%',
+            }, {
+                text: '결제 취소',
+                value: 'btn',
+                align: 'center',
+                width: '10%',
             }, ],
-            search: 'orderIdx',
-            searchWord1: '',
+
+            returnHeaders: [{
+                text: '주문번호',
+                value: 'orderIdx',
+                divider: true,
+                align: 'center',
+                width: '10%',
+            }, {
+                text: '이미지',
+                value: 'imageName',
+                divider: true,
+                align: 'center',
+                width: '15%',
+            }, {
+                text: '상품명',
+                value: 'productName',
+                divider: true,
+                align: 'center',
+                width: '25%',
+            }, {
+                text: '개수',
+                value: 'orderAmount',
+                divider: true,
+                align: 'center',
+                width: '10%',
+            }, {
+                text: '가격',
+                value: 'totalPrice',
+                divider: true,
+                align: 'center',
+                width: '10%',
+            }, {
+                text: '주문 날짜',
+                value: 'orderDate',
+                divider: true,
+                align: 'center',
+                width: '15%',
+            }, {
+                text: '주문 상태',
+                value: 'state',
+                align: 'center',
+                width: '15%',
+            }, ],
+            searchWord: '',
             searchDate1: '',
             searchDate2: '',
 
-            states: [{
-                text: '기준 선택',
-                value: null,
-            }, {
-                text: '결제완료',
-                value: '결제완료',
-            }, {
-                text: '배송준비중',
-                value: '배송준비중',
-            }, {
-                text: '배송중',
-                value: '배송중',
-            }, {
-                text: '배송완료',
-                value: '배송완료',
-            }, {
-                text: '취소완료',
-                value: '취소완료',
-            }, {
-                text: '교환완료',
-                value: '교환완료',
-            }, {
-                text: '환불완료',
-                value: '환불완료',
-            }, ],
+            states: [],
             stateSelected: null,
-
-            orders: [],
 
             menu1: false,
             menu2: false,
@@ -158,24 +208,60 @@ export default {
             selectedOrder: '주문 내역조회',
             selectedColor: true,
 
+            id: 'tester',
         }
     },
     methods: {
+        AddComma(num) {
+            var regexp = /\B(?=(\d{3})+(?!\d))/g;
+            return `${num}`.toString().replace(regexp, ",");
+        },
         colorPicker(put) {
             if (this.selectedOrder == put) {
                 return 'secondary'
             }
         },
         selectOrder(put) {
+            this.orders = [];
             this.selectedOrder = put;
-            this.getDataFromApi(put);
+            this.reset();
         },
-        searchProduct() {
-            let type1 = null;
-            let type2 = null;
-            if (this.typeSelected != null) {
-                type1 = this.typeSelected.split(';')[0];
-                type2 = this.typeSelected.split(';')[1];
+        searchOrder(put) {
+            this.loading = true;
+            let pageInfo = '';
+            if (put == '주문 내역조회') {
+                pageInfo = 'orders';
+                this.states = [{
+                    text: '기준 선택',
+                    value: null,
+                }, {
+                    text: '결제완료',
+                    value: '결제완료',
+                }, {
+                    text: '배송준비중',
+                    value: '배송준비중',
+                }, {
+                    text: '배송중',
+                    value: '배송중',
+                }, {
+                    text: '배송완료',
+                    value: '배송완료',
+                }, ];
+            } else {
+                pageInfo = 'returns';
+                this.states = [{
+                    text: '기준 선택',
+                    value: null,
+                }, {
+                    text: '취소완료',
+                    value: '취소완료',
+                }, {
+                    text: '교환완료',
+                    value: '교환완료',
+                }, {
+                    text: '환불완료',
+                    value: '환불완료',
+                }, ];
             }
             const {
                 page,
@@ -183,95 +269,130 @@ export default {
             } = this.options
             axios({
                 method: 'get',
-                url: `/api/product/getProductAll`,
+                url: `/api/order/getOrderById`,
                 params: {
                     page: page,
                     perPage: itemsPerPage,
-                    type1: type1,
-                    type2: type2,
-                    search: this.search,
-                    searchWord1: this.searchWord1,
-                    searchWord2: this.searchWord2,
+                    pageInfo: pageInfo,
+                    state: this.stateSelected,
+                    searchWord: this.searchWord,
+                    searchDate1: this.searchDate1,
+                    searchDate2: this.searchDate2,
+                    id: this.id,
                 }
             }).then(res => {
-                this.products = res.data.productList;
+                this.orders = res.data.orderList;
                 this.totalContents = res.data.count;
             }).catch((err) => {
-                this.products = [];
+                this.orders = [];
                 this.totalContents = 0;
-                this.noSearch = true;
                 console.log(err);
-            })
+            }).finally(
+                this.loading = false
+            )
         },
-        reset() {
-            this.typeSelected = null;
-            this.searchWord1 = null;
-            this.searchWord2 = null;
-            this.options.page = 1;
-            this.options.itemsPerPage = 10;
-            this.searchProduct();
-        },
-        changeOnSale(item) {
-            axios.patch(`/api/product/updateOnSale/${item.productNo}`)
-                .then(() => {
-                    alert('판매 여부가 변경되었습니다');
-                    this.searchProduct();
-                }).catch(err => {
-                    alert('변경 실패했습니다.')
-                    console.log(err);
-                })
-        },
-        searchPolicy() {
-            if (this.search == 'price') {
-                if (this.searchWord1 < 0 || this.searchWord1 > 9999999 || this.searchWord1 != Math.round(this.searchWord1)) {
-                    alert('가격 제한 : 0원 ~ 9,999,999원');
-                    this.searchWord1 = 0;
-                } else if (this.searchWord2 < 0 || this.searchWord2 > 9999999 || this.searchWord2 != Math.round(this.searchWord2)) {
-                    alert('가격 제한 : 0원 ~ 9,999,999원');
-                    this.searchWord2 = 9999999;
+        cancelOrder(item) {
+            if (item.state == '결제완료') {
+                let states = [];
+                let data = {
+                    orderIdx: item.orderIdx,
+                    state: '취소완료',
                 }
+                states.push(data);
+                axios.patch(`/api/order/update`, states)
+                    .then(res => {
+                        if (res.data.length == 0) {
+                            alert('주문을 취소하셨습니다');
+                            this.searchOrder(this.selectedOrder);
+                        } else {
+                            alert(`미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`)
+                        }
+                    }).catch(err => {
+                        console.log(err)
+                    })
+            } else if (item.state == '배송준비중') {
+                alert('배송 준비중인 주문입니다. 배송 전 변경/취소 게시판에서 요청해주시기 바랍니다.');
+                this.$router.push(`/qna/beforeDeliveryQnA`);
             } else {
-                if (this.searchWord1 < 0 || this.searchWord1 > 9999 || this.searchWord1 != Math.round(this.searchWord1)) {
-                    alert('개수 제한 : 0개 ~ 9,999개');
-                    this.searchWord1 = 0;
-                } else if (this.searchWord2 < 0 || this.searchWord2 > 9999 || this.searchWord2 != Math.round(this.searchWord2)) {
-                    alert('개수 제한 : 0개 ~ 9,999개');
-                    this.searchWord2 = 9999;
-                }
+                alert('배송 후 교환/반품 게시판에서 요청해주시기 바랍니다.');
+                this.$router.push(`/qna/afterDeliveryQnA`);
             }
         },
-        AddComma(num) {
-            var regexp = /\B(?=(\d{3})+(?!\d))/g;
-            return `${num}`.toString().replace(regexp, ",");
+        reset() {
+            this.stateSelected = null;
+            this.searchWord = null;
+            this.searchDate1 = null;
+            this.searchDate2 = null;
+            let date = new Date();
+            this.searchDate1 = `${date.getFullYear()-5}-${date.getMonth()+1}-${date.getDate()}`;
+            this.searchDate2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+            this.options.page = 1;
+            this.options.itemsPerPage = 10;
+            this.searchOrder(this.selectedOrder);
+        },
+        changeDate(period) {
+            let date = new Date();
+            let year = date.getFullYear();
+            let month = date.getMonth() + 1;
+            let day = date.getDate()
+
+            if (period == '1week') {
+                if (day > 6) {
+                    day = day - 6;
+                } else {
+                    if (month > 1) {
+                        month = month - 1;
+                    } else {
+                        year = year - 1;
+                        month = month + 11;
+                    }
+                    day = day + 6;
+                }
+            } else if (period == '1month') {
+                if (month > 1) {
+                    month = month - 1;
+                } else {
+                    year = year - 1;
+                    month = month + 11;
+                }
+            } else if (period == '3month') {
+                if (month > 3) {
+                    month = month - 3;
+                } else {
+                    year = year - 1;
+                    month = month + 9;
+                }
+            } else if (period == '6month') {
+                if (month > 6) {
+                    month = month - 6;
+                } else {
+                    year = year - 1;
+                    month = month + 6;
+                }
+            }
+            this.searchDate1 = `${year}-${month}-${day}`;
+            this.searchDate2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+            
+            this.stateSelected = null;
+            this.searchWord = null;
+            this.options.page = 1;
+            this.options.itemsPerPage = 10;
+            this.searchOrder(this.selectedOrder);
         },
     },
-    watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
+    watch: {
         options: {
             handler() {
-                this.searchProduct();
+                this.searchOrder(this.selectedOrder);
             },
             deep: true,
         },
-        search: {
-            handler() {
-                this.searchWord1 = '';
-                this.searchWord2 = '';
-                this.typeSelected = null;
-                if (this.search == 'price') {
-                    this.searchWord1 = 0;
-                    this.searchWord2 = 9999999;
-                } else if (this.search == 'amount') {
-                    this.searchWord1 = 0;
-                    this.searchWord2 = 9999;
-                } else if (this.search == 'regDate') {
-                    let date = new Date();
-                    this.searchWord1 = `${date.getFullYear()-10}-${date.getMonth()+1}-${date.getDate()}`;
-                    this.searchWord2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
-                }
-            }
-        },
-
     },
+    mounted() {
+        let date = new Date();
+        this.searchDate1 = `${date.getFullYear()-5}-${date.getMonth()+1}-${date.getDate()}`;
+        this.searchDate2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+    }
 }
 </script>
 

@@ -3,12 +3,14 @@ package com.myspring.spring.order;
 import org.apache.ibatis.jdbc.SQL;
 
 public class OrderUtils {
-	public String getOrderAll(int start, int perPage, String state, String search, String searchWord1,
+//	select * from ordertable where ~ limit perPage offset start
+	public String getOrder(int start, int perPage, String state, String search, String searchWord1,
 			String searchWord2) {
 		SQL sql = new SQL() {
 			{
 				SELECT("*");
-				FROM("ordertable");
+				FROM("ordertable o");
+				LEFT_OUTER_JOIN("producttable p on o.productNo = p.productNo");
 				if (!((searchWord1 == null || searchWord1.equals(""))
 						&& (searchWord2 == null || searchWord2.equals("")))) {
 					AND();
@@ -20,7 +22,7 @@ public class OrderUtils {
 							if (i > 0) {
 								OR();
 							}
-							WHERE("orderIdx = " + Integer.parseInt(words[i]));
+							WHERE("o.orderIdx = " + Integer.parseInt(words[i]));
 						}
 						break;
 					case "productNo":
@@ -28,7 +30,7 @@ public class OrderUtils {
 							if (i > 0) {
 								OR();
 							}
-							WHERE("productNo = " + Integer.parseInt(words[i]));
+							WHERE("o.productNo = " + Integer.parseInt(words[i]));
 						}
 						break;
 					case "productName":
@@ -36,34 +38,35 @@ public class OrderUtils {
 							if (i > 0) {
 								OR();
 							}
-							WHERE("productName like '%" + words[i] + "%'");
+							WHERE("p.productName like '%" + words[i] + "%'");
 						}
 						break;
 					case "orderDate":
-						WHERE("orderDate >= '" + searchWord1 + "' and orderDate <= '" + searchWord2 + " 23:59:59'");
+						WHERE("o.orderDate >= '" + searchWord1 + "' and o.orderDate <= '" + searchWord2 + " 23:59:59'");
 						break;
 					}
 				}
 				if (state != null) {
 					AND();
-					WHERE("state = '" + state + "'");
+					WHERE("o.state = '" + state + "'");
 				}
 
 				LIMIT(perPage);
 				OFFSET(start);
 			}
 		};
-		System.out.println(sql.toString());
+//		System.out.println(sql.toString());
 		return sql.toString();
 	}
 
-//	select * from producttable where price>=최소값 and mrice<=최대값 and productName like %검색어% and UPPER(type1) = 대분류 and UPPER(type2) = 소분류
-	public String getOrderAllCount(String state, String search, String searchWord1, String searchWord2) {
+//	select count(*) from ordertable where ~
+	public String getOrderCount(String state, String search, String searchWord1, String searchWord2) {
 
 		SQL sql = new SQL() {
 			{
 				SELECT("count(*)");
-				FROM("producttable");
+				FROM("ordertable o");
+				LEFT_OUTER_JOIN("producttable p on o.productNo = p.productNo");
 				if (!((searchWord1 == null || searchWord1.equals(""))
 						&& (searchWord2 == null || searchWord2.equals("")))) {
 					AND();
@@ -75,7 +78,7 @@ public class OrderUtils {
 							if (i > 0) {
 								OR();
 							}
-							WHERE("orderIdx = " + Integer.parseInt(words[i]));
+							WHERE("o.orderIdx = " + Integer.parseInt(words[i]));
 						}
 						break;
 					case "productNo":
@@ -83,7 +86,7 @@ public class OrderUtils {
 							if (i > 0) {
 								OR();
 							}
-							WHERE("productNo = " + Integer.parseInt(words[i]));
+							WHERE("o.productNo = " + Integer.parseInt(words[i]));
 						}
 						break;
 					case "productName":
@@ -91,21 +94,200 @@ public class OrderUtils {
 							if (i > 0) {
 								OR();
 							}
-							WHERE("productName like '%" + words[i] + "%'");
+							WHERE("p.productName like '%" + words[i] + "%'");
 						}
 						break;
 					case "orderDate":
-						WHERE("orderDate >= '" + searchWord1 + "' and orderDate <= '" + searchWord2 + " 23:59:59'");
+						WHERE("o.orderDate >= '" + searchWord1 + "' and o.orderDate <= '" + searchWord2 + " 23:59:59'");
 						break;
 					}
 				}
 				if (state != null) {
 					AND();
-					WHERE("state = '" + state + "'");
+					WHERE("o.state = '" + state + "'");
 				}
 			}
 		};
-		System.out.println(sql.toString());
+//		System.out.println(sql.toString());
+		return sql.toString();
+	}
+
+//	select sum(o.totalPrice) as priceSum, o.productNo, p.productName from ordertable o left join producttable p on p.productNo = o.productNo where ~ group by o.productNo limit perPage offset start
+	public String getSalesSettlement(int start, int perPage, String search, String searchWord1, String searchWord2) {
+		SQL sql = new SQL() {
+			{
+				SELECT("o.productNo, p.productName, p.imageName, sum(o.totalPrice) as priceSum");
+				FROM("ordertable o");
+				LEFT_OUTER_JOIN("producttable p on o.productNo = p.productNo");
+				WHERE("o.state in ('배송완료', '교환완료')");
+				if (!((searchWord1 == null || searchWord1.equals(""))
+						&& (searchWord2 == null || searchWord2.equals("")))) {
+					AND();
+					String[] words = searchWord1.split(" ");
+
+					switch (search) {
+					case "productNo":
+						for (int i = 0; i < words.length; i++) {
+							if (i > 0) {
+								OR();
+							}
+							WHERE("o.productNo = " + Integer.parseInt(words[i]));
+						}
+						break;
+					case "productName":
+						for (int i = 0; i < words.length; i++) {
+							if (i > 0) {
+								OR();
+							}
+							WHERE("p.productName like '%" + words[i] + "%'");
+						}
+						break;
+					case "orderDate":
+						WHERE("o.orderDate >= '" + searchWord1 + "' and o.orderDate <= '" + searchWord2 + " 23:59:59'");
+						break;
+					}
+				}
+				GROUP_BY("o.productNo");
+				if (search.equals("priceSum")) {
+					HAVING("sum(o.totalPrice) >= " + Integer.parseInt(searchWord1) + " and sum(o.totalPrice) <= "
+							+ Integer.parseInt(searchWord2));
+				}
+				LIMIT(perPage);
+				OFFSET(start);
+			}
+		};
+//		System.out.println(sql.toString());
+		return sql.toString();
+	}
+
+//	select count(*) from ordertable o left join producttable p on p.productNo = o.productNo where ~ group by o.productNo
+//	select count(*) from (SELECT sum(o.totalPrice) FROM ordertable o LEFT OUTER JOIN producttable p on o.productNo = p.productNo GROUP BY o.productNo) as c;
+	public String getSalesSettlementCount(String search, String searchWord1, String searchWord2) {
+
+		SQL sql = new SQL() {
+			{
+				SELECT("sum(o.totalPrice)");
+				FROM("ordertable o");
+				LEFT_OUTER_JOIN("producttable p on o.productNo = p.productNo");
+				WHERE("o.state in ('배송완료', '교환완료')");
+				if (!((searchWord1 == null || searchWord1.equals(""))
+						&& (searchWord2 == null || searchWord2.equals("")))) {
+					AND();
+					String[] words = searchWord1.split(" ");
+
+					switch (search) {
+					case "productNo":
+						for (int i = 0; i < words.length; i++) {
+							if (i > 0) {
+								OR();
+							}
+							WHERE("o.productNo = " + Integer.parseInt(words[i]));
+						}
+						break;
+					case "productName":
+						for (int i = 0; i < words.length; i++) {
+							if (i > 0) {
+								OR();
+							}
+							WHERE("p.productName like '%" + words[i] + "%'");
+						}
+						break;
+					case "orderDate":
+						WHERE("o.orderDate >= '" + searchWord1 + "' and o.orderDate <= '" + searchWord2 + " 23:59:59'");
+						break;
+					}
+				}
+				GROUP_BY("o.productNo");
+				if (search.equals("priceSum")) {
+					HAVING("sum(o.totalPrice) >= " + Integer.parseInt(searchWord1) + " and sum(o.totalPrice) <= "
+							+ Integer.parseInt(searchWord2));
+				}
+			}
+		};
+//		System.out.println(sql.toString());
+		return sql.toString();
+	}
+
+//	select * from ordertable where id= and orderdate and state in and ~ limit perPage offset start
+	public String getOrderById(int start, int perPage, String pageInfo, String state, String searchWord,
+			String searchDate1, String searchDate2, String id) {
+		SQL sql = new SQL() {
+			{
+				SELECT("*");
+				FROM("ordertable o");
+				LEFT_OUTER_JOIN("producttable p on o.productNo = p.productNo");
+				WHERE("id = '" + id + "'");
+				AND();
+				WHERE("o.orderDate >= '" + searchDate1 + "' and o.orderDate <= '" + searchDate2 + " 23:59:59'");
+				AND();
+				switch (pageInfo) {
+				case "orders":
+					WHERE("o.state in ('입금전', '결제완료', '배송준비중', '배송중', '배송완료')");
+					break;
+				case "returns":
+					WHERE("o.state in ('취소완료', '교환완료', '환불완료')");
+					break;
+				}
+				if (!((searchWord == null || searchWord.equals("")))) {
+					AND();
+					String[] words = searchWord.split(" ");
+					for (int i = 0; i < words.length; i++) {
+						if (i > 0) {
+							OR();
+						}
+						WHERE("p.productName like '%" + words[i] + "%'");
+					}
+				}
+				if (state != null) {
+					AND();
+					WHERE("o.state = '" + state + "'");
+				}
+				LIMIT(perPage);
+				OFFSET(start);
+			}
+		};
+//		System.out.println(sql.toString());
+		return sql.toString();
+	}
+
+//	select count(*) from ordertable where id= and orderdate and state in and ~
+	public String getOrderByIdCount(String pageInfo, String state, String searchWord, String searchDate1,
+			String searchDate2, String id) {
+
+		SQL sql = new SQL() {
+			{
+				SELECT("count(*)");
+				FROM("ordertable o");
+				LEFT_OUTER_JOIN("producttable p on o.productNo = p.productNo");
+				WHERE("id = '" + id + "'");
+				AND();
+				WHERE("o.orderDate >= '" + searchDate1 + "' and o.orderDate <= '" + searchDate2 + " 23:59:59'");
+				AND();
+				switch (pageInfo) {
+				case "orders":
+					WHERE("o.state in ('입금전', '결제완료', '배송준비중', '배송중', '배송완료')");
+					break;
+				case "returns":
+					WHERE("o.state in ('취소완료', '교환완료', '환불완료')");
+					break;
+				}
+				if (!((searchWord == null || searchWord.equals("")))) {
+					AND();
+					String[] words = searchWord.split(" ");
+					for (int i = 0; i < words.length; i++) {
+						if (i > 0) {
+							OR();
+						}
+						WHERE("p.productName like '%" + words[i] + "%'");
+					}
+				}
+				if (state != null) {
+					AND();
+					WHERE("o.state = '" + state + "'");
+				}
+			}
+		};
+//		System.out.println(sql.toString());
 		return sql.toString();
 	}
 }

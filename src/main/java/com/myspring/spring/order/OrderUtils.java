@@ -119,6 +119,7 @@ public class OrderUtils {
 				SELECT("o.productNo, p.productName, p.imageName, sum(o.totalPrice) as priceSum");
 				FROM("ordertable o");
 				LEFT_OUTER_JOIN("producttable p on o.productNo = p.productNo");
+				WHERE("o.state in ('배송완료', '교환완료')");
 				if (!((searchWord1 == null || searchWord1.equals(""))
 						&& (searchWord2 == null || searchWord2.equals("")))) {
 					AND();
@@ -168,6 +169,7 @@ public class OrderUtils {
 				SELECT("sum(o.totalPrice) as priceSum");
 				FROM("ordertable o");
 				LEFT_OUTER_JOIN("producttable p on o.productNo = p.productNo");
+				WHERE("o.state in ('배송완료', '교환완료')");
 				if (!((searchWord1 == null || searchWord1.equals(""))
 						&& (searchWord2 == null || searchWord2.equals("")))) {
 					AND();
@@ -220,7 +222,7 @@ public class OrderUtils {
 				AND();
 				switch (pageInfo) {
 				case "orders":
-					WHERE("o.state in ('결제완료', '배송준비중', '배송중', '배송완료')");
+					WHERE("o.state in ('입금전', '결제완료', '배송준비중', '배송중', '배송완료')");
 					break;
 				case "returns":
 					WHERE("o.state in ('취소완료', '교환완료', '환불완료')");
@@ -263,7 +265,7 @@ public class OrderUtils {
 				AND();
 				switch (pageInfo) {
 				case "orders":
-					WHERE("o.state in ('결제완료', '배송준비중', '배송중', '배송완료')");
+					WHERE("o.state in ('입금전', '결제완료', '배송준비중', '배송중', '배송완료')");
 					break;
 				case "returns":
 					WHERE("o.state in ('취소완료', '교환완료', '환불완료')");

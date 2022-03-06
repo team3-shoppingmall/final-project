@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
 
@@ -44,13 +45,17 @@ public interface OrderMapper {
 
 //	주문 조회
 	@SelectProvider(type = OrderUtils.class, method = "getOrderById")
-	public List<OrderAndProductVO> getOrderById(int start, int perPage, String pageInfo, String state, String searchWord,
-			String searchDate1, String searchDate2, String id);
+	public List<OrderAndProductVO> getOrderById(int start, int perPage, String pageInfo, String state,
+			String searchWord, String searchDate1, String searchDate2, String id);
 
 //	주문 개수 조회
 	@SelectProvider(type = OrderUtils.class, method = "getOrderByIdCount")
 	int getOrderByIdCount(String pageInfo, String state, String searchWord, String searchDate1, String searchDate2,
 			String id);
+
+//	마이 페이지 메인 각각 주문 개수 조회
+	@Select("select state, count(*) as orderNo from ordertable where id = #{id} group by state")
+	List<OrderVO> getOrdersByIdGroupByState(@Param("id") String id);
 
 //  주문 상태 변경
 	@Update("update ordertable set state = #{state} where orderIdx = #{orderIdx}")

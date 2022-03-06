@@ -240,6 +240,9 @@ export default {
                 text: '기준 선택',
                 value: null,
             }, {
+                text: '입금전',
+                value: '입금전',
+            }, {
                 text: '결제완료',
                 value: '결제완료',
             }, {

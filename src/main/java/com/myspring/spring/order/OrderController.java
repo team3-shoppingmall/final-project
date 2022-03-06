@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,6 +62,12 @@ public class OrderController {
 			@RequestParam(value = "searchDate2", required = false) String searchDate2,
 			@RequestParam(value = "id", required = false) String id) {
 		return orderService.getOrderById(page, perPage, pageInfo, state, searchWord, searchDate1, searchDate2, id);
+	}
+
+//	마이 페이지 주문 조회
+	@GetMapping(value = "/getOrderGroupByState/{id}")
+	public ResponseEntity<?> getOrdersByIdGroupByState(@PathVariable("id") String id) {
+		return orderService.getOrdersByIdGroupByState(id);
 	}
 
 //	주문 상태 변경

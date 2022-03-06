@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.myspring.spring.basket.BasketMapper;
+import com.myspring.spring.member.MemberMapper;
 import com.myspring.spring.point.PointMapper;
 import com.myspring.spring.point.PointVO;
 import com.myspring.spring.product.ProductVO;
@@ -20,12 +21,15 @@ public class OrderService {
 	private OrderMapper orderMapper;
 	private BasketMapper basketMapper;
 	private PointMapper pointMapper;
+	private MemberMapper memberMapper;
 
 	@Autowired
-	public OrderService(OrderMapper orderMapper, BasketMapper basketMapper, PointMapper productMapper) {
+	public OrderService(OrderMapper orderMapper, BasketMapper basketMapper, PointMapper productMapper,
+			MemberMapper memberMapper) {
 		this.orderMapper = orderMapper;
 		this.basketMapper = basketMapper;
 		this.pointMapper = productMapper;
+		this.memberMapper = memberMapper;
 	}
 
 //	주문 추가(주문 정보, 주문에 추가한 장바구니 번호들, 포인트 사용량 받아서 한번에 추가)
@@ -93,6 +97,16 @@ public class OrderService {
 		Map<String, Object> resMap = new HashMap<>();
 		resMap.put("orderList", orderList);
 		resMap.put("count", count);
+		return new ResponseEntity<>(resMap, HttpStatus.OK);
+	}
+
+//	마이 페이지 메인 각각 주문 개수 조회
+	public ResponseEntity<?> getOrdersByIdGroupByState(String id) {
+		List<OrderVO> orderCounts = orderMapper.getOrdersByIdGroupByState(id);
+		int point = memberMapper.getMemberInfo(id).getPoint();
+		Map<String, Object> resMap = new HashMap<>();
+		resMap.put("orderCounts", orderCounts);
+		resMap.put("point", point);
 		return new ResponseEntity<>(resMap, HttpStatus.OK);
 	}
 

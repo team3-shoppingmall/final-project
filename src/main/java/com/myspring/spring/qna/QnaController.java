@@ -67,11 +67,11 @@ public class QnaController {
 	}
 
 	// 카테고리별 목록 조회
-	@GetMapping("/getQnaListByProductNo")
-	public ResponseEntity<?> getQnaListByProductNo(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+	@GetMapping("/getQnaList")
+	public ResponseEntity<?> getQnaList(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
 			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord,
-			@RequestParam("type") String type, @RequestParam("productNo") int productNo) {
-		return qnaService.getQnaListByProductNo(page, perPage, search, searchWord, type, productNo);
+			@RequestParam("productNo") int productNo, @RequestParam(value = "id", required = false) String id) {
+		return qnaService.getQnaList(page, perPage, search, searchWord, productNo, id);
 	}
 
 	// originalNo로 조회

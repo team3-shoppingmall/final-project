@@ -83,8 +83,8 @@ public class QnaService {
 		System.out.println(qnaVO.getType());
 		int res, resReply;
 		int originalNo = qnaVO.getOriginalNo();
-		//productReply일때 원글의 productNo와 동일하게 셋팅 -> productDetail 페이지에 답글도 같이 불러오기 위함 
-		if(qnaVO.getType().equals("productReply")) {
+		// productReply일때 원글의 productNo와 동일하게 셋팅 -> productDetail 페이지에 답글도 같이 불러오기 위함
+		if (qnaVO.getType().equals("productReply")) {
 			QnaVO productReply = qnaMapper.getQnaByQnaNo(originalNo);
 //			System.out.println(productReply.getProductNo());
 			qnaVO.setProductNo(productReply.getProductNo());
@@ -99,7 +99,7 @@ public class QnaService {
 			} else {
 				return new ResponseEntity<>(res, HttpStatus.OK);
 			}
-		}	
+		}
 	}
 
 	// 문의 수정 & 댓글 수정
@@ -184,7 +184,7 @@ public class QnaService {
 
 	// 문의 1개 찾기
 	public ResponseEntity<?> getQnaByQnaNo(int qnaNo) {
-		//System.out.println(qnaNo);
+		// System.out.println(qnaNo);
 		QnaVO res = qnaMapper.getQnaByQnaNo(qnaNo);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -215,12 +215,12 @@ public class QnaService {
 	}
 
 	// productDetail qna 불러오기
-	public ResponseEntity<?> getQnaListByProductNo(int page, int perPage, String search, String searchWord, String type,
-			int productNo) {
+	public ResponseEntity<?> getQnaList(int page, int perPage, String search, String searchWord, int productNo,
+			String id) {
 		int start = (page - 1) * perPage;
-		List<QnaVO> productQnaList = qnaMapper.getQnaListByProductNo(start, perPage, search, searchWord, productNo);
-		int count = qnaMapper.getQnaCountByProductNo(search, searchWord, productNo);
-	
+		List<QnaAndProductVO> productQnaList = qnaMapper.getQnaList(start, perPage, search, searchWord, productNo, id);
+		int count = qnaMapper.getQnaCount(search, searchWord, productNo, id);
+
 		Map<String, Object> resMap = new HashMap<>();
 		resMap.put("productQnaList", productQnaList);
 		resMap.put("count", count);

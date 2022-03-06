@@ -87,12 +87,12 @@ public interface QnaMapper {
 	int deleteReply(@Param("qnaNo") int qnaNo);
 
 	// 상품관련 qna리스트 가져오기
-	@SelectProvider(type = QnaUtils.class, method = "getQnaListByProductNo")
-	List<QnaVO> getQnaListByProductNo(int start, int perPage, String search, String searchWord, int productNo);
+	@SelectProvider(type = QnaUtils.class, method = "getQnaList")
+	List<QnaAndProductVO> getQnaList(int start, int perPage, String search, String searchWord, int productNo, String id);
 
 	// 전체 개수 가져오기
-	@SelectProvider(type = QnaUtils.class, method = "getQnaCountByProductNo")
-	int getQnaCountByProductNo(String search, String searchWord, int productNo);
+	@SelectProvider(type = QnaUtils.class, method = "getQnaCount")
+	int getQnaCount(String search, String searchWord, int productNo, String id);
 	
 	
 

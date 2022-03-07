@@ -29,9 +29,9 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                <v-row v-if="images != []">
-                                    <v-col cols="3" v-for="(image, idx) in images" :key="idx">
-                                        <v-img contain :src="`/api/qna/qnaImage/${pageID}/${image}`"></v-img>
+                                <v-row v-if="images != []" justify="center">
+                                    <v-col cols="auto" v-for="(image, idx) in images" :key="idx">
+                                        <v-img max-width="900px" contain :src="`/api/qna/qnaImage/${pageID}/${image}`"></v-img>
                                     </v-col>
                                 </v-row>
                                 <v-row>

@@ -375,7 +375,7 @@ export default {
             let data = {
                 title: this.titleDetail,
                 content: this.content,
-                id: "admin123",
+                id: "spring",
                 image: image,
             };
             let formData = new FormData();

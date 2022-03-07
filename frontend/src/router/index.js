@@ -198,15 +198,14 @@ const routes = [
         beforeEnter: (to, from, next) => {
             console.log(`${from.path} ---> ${to.path}`)
             const isLogin = store.getters['LoginStore/getLogin']
-            console.log(isLogin)
+            console.log(isLogin.user.authority)
             if (isLogin) {
-                if (isLogin.authority == 'ROLE_ADMIN') 
+                if (isLogin.user.authority == 'ROLE_ADMIN') {
                     next();
-                else 
-                    alert("접근 권한이 없습니다");
-                    next('/')
-                }
-            else {
+                } else 
+              {      alert("접근 권한이 없습니다");
+                next('/')}
+            } else {
                 next({
                     name: 'SignIn',
                     params: {

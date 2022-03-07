@@ -207,6 +207,8 @@ export default {
             imageFiles: [null, null, null, null],
             imageUrl: [null, null, null, null],
             secret: true,
+            admin_id : "spring",
+            id: "tester",
         }
     },
     methods: {
@@ -350,7 +352,7 @@ export default {
                     type: this.pageID + 'Reply',
                     originalNo: this.originalNo,
                     content: this.content,
-                    id: "admin",
+                    id: this.admin_id,
                 }
             }).then(() => {
                 alert("답변 등록 완료");
@@ -444,7 +446,7 @@ export default {
                 type: this.titleSelected,
                 reply: false,
                 content: this.content,
-                id: "tester",
+                id: this.id,
                 secret: this.secret,
                 image: image,
             };

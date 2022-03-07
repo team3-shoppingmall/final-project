@@ -40,12 +40,20 @@ public class MemberService {
 	// 멤버 정보 조회
 	public ResponseEntity<?> getMemberInfo(String id) {
 		MemberVO res = memberMapper.getMemberInfo(id);
+		res.setPassword(null);
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 	// 맴버 정보 수정
 	public ResponseEntity<?> updateMember(MemberVO member) {
+		if(member.getPassword() == null || member.getPassword().equals("")) {
+			MemberVO temp = memberMapper.getMemberInfo(member.getId());
+			String tempPwd = temp.getPassword();
+			member.setPassword(tempPwd);
+		}
 		int res = memberMapper.updateMember(member);
+		
+		
 		if (res == 0)
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		else
@@ -54,9 +62,30 @@ public class MemberService {
 
 	// 전체 조회
 	public ResponseEntity<?> getMemberPoint() {
-       List<MemberVO> res = memberMapper.getMemberPoint();
-      
-    	   return new ResponseEntity<>(res, HttpStatus.OK);
+		List<MemberVO> res = memberMapper.getMemberPoint();
+
+		return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
+	public ResponseEntity<?> login(String id, String pwd) {
+		MemberVO res = memberMapper.login(id);
+		String resPwd;
+
+		// pwd 암호화 넣기
+
+		if (res == null) {
+			return new ResponseEntity<>("ID NOT FOUND", HttpStatus.INTERNAL_SERVER_ERROR);
+		} else {
+			resPwd = res.getPassword();
+		}
+		System.out.println("1 " + pwd + "2 "+resPwd);
+		if (pwd.equals(resPwd)) {
+			res.setPassword(null);
+			return new ResponseEntity<>(res, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("PASSWORD NOT MATCHED", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
 	}
 
 }

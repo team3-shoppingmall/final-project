@@ -94,6 +94,10 @@
 <script>
 import axios from 'axios'
 import DateDisplay from '@/components/DateDisplay.vue'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         DateDisplay,
@@ -207,8 +211,6 @@ export default {
 
             selectedOrder: '주문 내역조회',
             selectedColor: true,
-
-            id: 'tester',
         }
     },
     methods: {
@@ -278,7 +280,7 @@ export default {
                     searchWord: this.searchWord,
                     searchDate1: this.searchDate1,
                     searchDate2: this.searchDate2,
-                    id: this.id,
+                    id: this.getLogin.user.id,
                 }
             }).then(res => {
                 this.orders = res.data.orderList;
@@ -372,13 +374,16 @@ export default {
             }
             this.searchDate1 = `${year}-${month}-${day}`;
             this.searchDate2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
-            
+
             this.stateSelected = null;
             this.searchWord = null;
             this.options.page = 1;
             this.options.itemsPerPage = 10;
             this.searchOrder(this.selectedOrder);
         },
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     watch: {
         options: {

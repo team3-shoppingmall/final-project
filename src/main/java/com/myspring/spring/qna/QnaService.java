@@ -139,35 +139,79 @@ public class QnaService {
 	// 댓글 삭제 시 원글 reply = false로 바꿔주기
 	// 댓글을 삭제 시 원글의 originalNo를 qnaNo와 같도록 세팅
 	public ResponseEntity<?> deleteQna(int qnaNo) {
-		QnaVO res = qnaMapper.getQna(qnaNo);
-		// 문의 삭제
-		int resQna = qnaMapper.deleteQna(qnaNo);
+		ResponseEntity<?> entity = null;
+		try {
+			QnaVO res = qnaMapper.getQna(qnaNo);
+			// 문의 삭제
+			int resQna = qnaMapper.deleteQna(qnaNo);
 
-		// 댓글 삭제
-		if (res.isReply() == true) {
-			int resDelReply = qnaMapper.deleteReply(qnaNo);
-			if (resDelReply == 0)
-				return new ResponseEntity<>(resDelReply, HttpStatus.INTERNAL_SERVER_ERROR);
-			else
-				return new ResponseEntity<>(resDelReply, HttpStatus.OK);
-		} else {
-			// 답글이 삭제될때 원글의 reply가 false로 바꾸기
-			// reply글의 originalNo를 받아와서 그 originalNo의 reply를 false로 바꿔주기
-			// qnaNo != originalNo 일 때는 답글없다는 의미 -> updateReplyFalse()
-			if (res.getQnaNo() != res.getOriginalNo()) {
-				// qna가 삭제될때 reply도 같이 삭제하기
-				int resReply = qnaMapper.updateReplyFalse(res.getOriginalNo());
-				res.setOriginalNo(res.getQnaNo());
-				if (resReply == 0)
-					return new ResponseEntity<>(resReply, HttpStatus.INTERNAL_SERVER_ERROR);
+			// 댓글 삭제
+			if (res.isReply() == true) {
+				int resDelReply = qnaMapper.deleteReply(qnaNo);
+				if (resDelReply == 0)
+					return new ResponseEntity<>(resDelReply, HttpStatus.INTERNAL_SERVER_ERROR);
 				else
-					return new ResponseEntity<>(resReply, HttpStatus.OK);
+					return new ResponseEntity<>(resDelReply, HttpStatus.OK);
+			} else {
+				// 답글이 삭제될때 원글의 reply가 false로 바꾸기
+				// reply글의 originalNo를 받아와서 그 originalNo의 reply를 false로 바꿔주기
+				// qnaNo != originalNo 일 때는 답글없다는 의미 -> updateReplyFalse()
+				if (res.getQnaNo() != res.getOriginalNo()) {
+					// qna가 삭제될때 reply도 같이 삭제하기
+					int resReply = qnaMapper.updateReplyFalse(res.getOriginalNo());
+					res.setOriginalNo(res.getQnaNo());
+					if (resReply == 0)
+						return new ResponseEntity<>(resReply, HttpStatus.INTERNAL_SERVER_ERROR);
+					else
+						return new ResponseEntity<>(resReply, HttpStatus.OK);
+				}
 			}
+		
+			File file;
+			File[] underDir;
+
+			file = new File("./images/qna/" + qnaNo + "/");
+			underDir = file.listFiles();
+			for (int i = 0; i < underDir.length; i++) {
+				underDir[i].delete();
+			}	
+			entity = new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		if (resQna == 0)
-			return new ResponseEntity<>(resQna, HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(resQna, HttpStatus.OK);
+		return entity;
+		
+//		
+//		QnaVO res = qnaMapper.getQna(qnaNo);
+//		// 문의 삭제
+//		int resQna = qnaMapper.deleteQna(qnaNo);
+//
+//		// 댓글 삭제
+//		if (res.isReply() == true) {
+//			int resDelReply = qnaMapper.deleteReply(qnaNo);
+//			if (resDelReply == 0)
+//				return new ResponseEntity<>(resDelReply, HttpStatus.INTERNAL_SERVER_ERROR);
+//			else
+//				return new ResponseEntity<>(resDelReply, HttpStatus.OK);
+//		} else {
+//			// 답글이 삭제될때 원글의 reply가 false로 바꾸기
+//			// reply글의 originalNo를 받아와서 그 originalNo의 reply를 false로 바꿔주기
+//			// qnaNo != originalNo 일 때는 답글없다는 의미 -> updateReplyFalse()
+//			if (res.getQnaNo() != res.getOriginalNo()) {
+//				// qna가 삭제될때 reply도 같이 삭제하기
+//				int resReply = qnaMapper.updateReplyFalse(res.getOriginalNo());
+//				res.setOriginalNo(res.getQnaNo());
+//				if (resReply == 0)
+//					return new ResponseEntity<>(resReply, HttpStatus.INTERNAL_SERVER_ERROR);
+//				else
+//					return new ResponseEntity<>(resReply, HttpStatus.OK);
+//			}
+//		}
+//		if (resQna == 0)
+//			return new ResponseEntity<>(resQna, HttpStatus.INTERNAL_SERVER_ERROR);
+//		else
+//			return new ResponseEntity<>(resQna, HttpStatus.OK);
 	}
 
 	// 아이디로 문의 검색

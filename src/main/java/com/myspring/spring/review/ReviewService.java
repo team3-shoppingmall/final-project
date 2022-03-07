@@ -77,12 +77,26 @@ public class ReviewService {
 
 	// 리뷰 삭제
 	public ResponseEntity<?> deleteReview(int reviewNo) {
-		int res = reviewMapper.deleteReview(reviewNo);
-		if (res == 0) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		} else {
-			return new ResponseEntity<>(HttpStatus.OK);
-		}
+		ResponseEntity<?> entity = null;
+		
+		try {
+			int res = reviewMapper.deleteReview(reviewNo);
+			if(res == 0) 
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+				File file;
+				File[] underDir;
+				// 폴더 내 모든 파일 삭제
+				file = new File("./images/review/" + reviewNo + "/");
+				underDir = file.listFiles();
+				for (int i = 0; i < underDir.length; i++) {
+					underDir[i].delete();
+				}
+				entity = new ResponseEntity<>(HttpStatus.OK);
+			} catch (Exception e) {
+				e.printStackTrace();
+				entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			return entity;
 	}
 
 	// 리뷰 수정

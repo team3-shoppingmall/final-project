@@ -100,7 +100,7 @@
                                 </tr>
                                 <tr>
                                     <td colspan="3">
-                                        <v-row justify="center">
+                                        <v-row justify="center" v-if="getLogin.user.authority == 'ROLE_USER'">
                                             <v-col cols="auto" v-if="product.amount > 0 && product.onSale == true">
                                                 <v-btn color="primary" @click="buyItNow">
                                                     BUY IT NOW
@@ -119,6 +119,13 @@
                                             <v-col cols="auto">
                                                 <v-btn color="primary" @click="addToWishList">
                                                     WISH LIST
+                                                </v-btn>
+                                            </v-col>
+                                        </v-row>                                        
+                                        <v-row justify="center" v-if="getLogin.user.authority == 'ROLE_ADMIN'">
+                                            <v-col cols="auto">
+                                                <v-btn color="primary" :to="`/admin/productManage`">
+                                                    관리 페이지로 이동
                                                 </v-btn>
                                             </v-col>
                                         </v-row>

@@ -400,19 +400,41 @@ insert into reviewtable(productno, content, id, image, star) values(2,'색이 �
 insert into reviewtable(productno, content, id, image, star) values(1,'거울이 너무 더럽지만 리뷰 써봐용 ㅠㅠ 교복 같을까봐 걱정했는데 블랙이라 그런 느낌도 덜 해서 다행이고 길이도 너무 짧지 않고 적당해서 자주 입을 것 같아요','tester3', 'image1.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(2,'바스락바스락 얇은 옷이에요. 근데 무엇보다.. 색감이 미쳤어요ㅠㅠㅠㅠ 진짜 너무 예쁩니다. 유치하고 가벼운 느낌 아니고 차분해요. 핏은 오버핏인데 언발란스한 기장 덕분에 남의 옷 입은 느낌 1도 없고 여리여리해보여요. 빨리 따뜻해져서 단독으로 입고싶은 옷이에요.ㅠㅠㅠ','tester4', 'image2.jpg','4');
 -- 문의
-insert into qnatable(qnaNo, productno, type, originalNo, reply, content, id, secret, image) values(1, 1,'product', 1, true, '질문 내용', 'tester', true, 'image1.jpg');
-call autoQuestion(2,'product', false, '질문 내용', 'tester',true, 'image1.jpg');
-call autoReply(1,'productReply', 1, '답변 내용', 'spring',true, 'image1.jpg');
-call autoQuestion(null, 'general', false, '질문 내용', 'tester',true, 'image1.jpg');
-call autoQuestion(1,'product', true, '질문 내용', 'tester',true, 'image1.jpg');
-call autoQuestion(2,'product', true, '질문 내용', 'tester2',true, 'image1.jpg');
-call autoReply(1,'productReply', 5, '답변 내용', 'spring',true, 'image1.jpg');
-call autoReply(2,'productReply', 6, '답변 내용', 'spring',true, 'image1.jpg');
-call autoQuestion(null, 'general', false, '질문 내용', 'tester',true, 'image1.jpg');
-call autoQuestion(2,'product', false, '질문 내용', 'tester2',true, 'image1.jpg');
-call autoQuestion(null, 'delivery', false, '질문 내용', 'tester2',true, 'image1.jpg');
-call autoQuestion(null, 'cancel', false, '질문 내용', 'tester2',true, 'image1.jpg');
-call autoQuestion(null, 'exchange', false, '질문 내용', 'tester2',true, 'image1.jpg');
+-- insert into qnatable(qnaNo, productno, type, originalNo, reply, content, id, secret, image) values(1, 1,'product', 1, true, '질문 내용', 'tester', true, 'image1.jpg');
+-- call autoQuestion(2,'product', false, '질문 내용', 'tester',true, 'image1.jpg');
+-- call autoReply(1,'productReply', 1, '답변 내용', 'spring',true, 'image1.jpg');
+-- call autoQuestion(null, 'general', false, '질문 내용', 'tester',true, 'image1.jpg');
+-- call autoQuestion(1,'product', true, '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>160/55 인데 스노우 버튼 모직스커트 m사이즈 맞을까요?</p><p>160이 m입으면 길이는 어디까지 오나요?</p>', 'tester',true, null);
+-- call autoQuestion(2,'product', true, '질문 내용', 'tester2',true, 'image1.jpg');
+-- call autoReply(1,'productReply', 5, '답변 내용', 'spring',true, null);
+-- call autoReply(2,'productReply', 6, '답변 내용', 'spring',true, null);
+-- call autoQuestion(null, 'general', false, '질문 내용', 'tester',true, 'image1.jpg');
+-- call autoQuestion(2,'product', false, '질문 내용', 'tester2',true, 'image1.jpg');
+-- call autoQuestion(null, 'delivery', false, '질문 내용', 'tester2',true, 'image1.jpg');
+-- call autoQuestion(null, 'cancel', false, '질문 내용', 'tester2',true, 'image1.jpg');
+-- call autoQuestion(null, 'exchange', false, '질문 내용', 'tester2',true, 'image1.jpg');
+
+insert into qnatable(qnaNo, productno, type, originalNo, reply, content, id, secret, image) values(1, 1,'product', 1, true, '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------</p><p><br>이 셔츠랑 소프트 민트색이랑 잘어울릴까요?</p>', 'tester1', true, 'wardrobe-gf579a32fc_640.jpg');
+call autoQuestion(2,'product', false, '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>실키 블라우스 워터리블루 색상이랑 이 색상이랑 비슷할까요?</p><p>이 색이랑 비슷해보이는데 실제 색상이 이거랑 비슷한지 알고싶어요!!</p>', 'tester',true, 'blue-g19cc294a9_1280.jpg');
+call autoReply(1,'productReply', 1, '<p>안녕하세요 고객님!</p><p>네~ 화이트 셔츠라서 어떤 색상이든 잘 어울릴것으로 보입니다~^^</p><p>문의 감사드립니다~!&nbsp;</p><p>spring에서 즐거운 쇼핑되시길 바랍니다 ♥</p><p>&nbsp;</p>', 'spring',true, null);
+call autoQuestion(null, 'general', false, '<p>이곳은 일반문의를 위한 게시판입니다.<br>상품과 관련된 문의는 제목을 상품문의로 선택해주세요!<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>모델분 스펙이 어떻게 되나요 ?!&nbsp;</p><p>키랑 몸무게 알고싶어요~~</p>', 'tester2',true, null);
+call autoQuestion(1,'product', true, '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>160/55 인데 스노우 버튼 모직스커트 m사이즈 맞을까요?</p><p>160이 m입으면 길이는 어디까지 오나요?</p>', 'tester5',true, null);
+call autoQuestion(2,'product', true, '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>실키 블라우스랑 스노우 모직 스커트랑 잘어울릴까요?</p>', 'tester2',true, null);
+call autoReply(1,'productReply', 5, '<p>안녕하세요 고객님!</p><p>165/50정도면 m사이즈 무난하게 잘 맞으실것으로 예상됩니다~^^♥</p><p>길이는 체형에 따라 조금씩 다르기 때문에 정확한 답변은 어려울 것 같습니다ㅜㅜ</p><p>문의 감사드립니다~!&nbsp;</p><p>spring에서 즐거운 쇼핑되시길 바랍니다 ♥</p><p>&nbsp;</p>', 'spring',true, null);
+call autoReply(2,'productReply', 6, '<p>안녕하세요 고객님!</p><p> 네!! 실키 여리핏 히든블라우스랑 모직 스노우 스커트는 세트로 잘 팔리는 상품입니다!♥</p><p>문의 감사드립니다~!&nbsp;</p><p>spring에서 즐거운 쇼핑되시길 바랍니다 ♥</p><p>&nbsp;</p>', 'spring',true, null);
+call autoQuestion(null, 'general', false, '<p>이곳은 일반문의를 위한 게시판입니다.<br>상품과 관련된 문의는 제목을 상품문의로 선택해주세요!<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p> 혹시 spring 쇼룸 있나요? 직접 가서 입어보고 구매하고싶은데 ㅠㅠ</p>', 'tester3',true, null);
+call autoQuestion(null, 'delivery', false, '<p>★배송전 상품 변경/취소/환불/주소지변경 등 처리는<br>꼭!<strong> &#39;배송전 변경/취소&#39; </strong>게시판에 남겨주세요!★<br><br>---------------------------------------------<br>주문번호: 20292835</p><p>방금 주문했는데 제가 금요일에 꼭 입어야하는데 목요일까지 배송되나요??</p><p>꼭 목요일까지 배송 부탁드려요 ㅜㅜ</p>', 'tester4',true, null);
+call autoQuestion(null, 'delivery', false, '<p>★배송전 상품 변경/취소/환불/주소지변경 등 처리는<br>꼭!<strong> &#39;배송전 변경/취소&#39; </strong>게시판에 남겨주세요!★<br><br>---------------------------------------------<br>주문번호: 20254327</p><p>제가 3주 전에 주문했는데 아직까지 안와서요..;; 언제쯤 받아볼 수 있을까요??</p>', 'tester6',true, null);
+call autoQuestion(null, 'delivery', false, '<p>★배송전 상품 변경/취소/환불/주소지변경 등 처리는<br>꼭!<strong> &#39;배송전 변경/취소&#39; </strong>게시판에 남겨주세요!★<br><br>---------------------------------------------<br>주문번호: 20321124</p><p>배송 출발했다고 3일 전에 문자 받았는데 아직까지도 출고중이라고 되어있는데 누락된거 아닌가요? 확인부탁드립니다.</p>', 'tester7',true, null);
+call autoQuestion(null, 'cancel', false, '<p><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>-----------------------------------------------<br>*주문취소*(전체취소시 상품명에  &#39;전체취소&#39; 꼭! 기재해주세요!)<br><br><strong>주문번호 : 12121360</strong><br><strong>상품명(옵션포함기재): 스노우 버튼 모직 스커트 (그레이지, s)</strong><br><strong>※결제시 입금한 이름의 계좌번호※</strong><br><strong>환불계좌번호: 1002-010-0023459</strong><br><strong>은행사 : 우리은행</strong><br><strong>예금주명 : 박나나</strong><br><br>♥해당 양식에 정확한 상품명 남겨주셔야 처리가 가능합니다♥</p>', 'tester2',true, null);
+call autoReply(null, 'cancelReply', 14, '<p>안녕하세요 고객님!</p><p> 주문 취소 완료되었습니다~! </p><p>문의 감사드립니다~!&nbsp;</p><p>spring에서 즐거운 쇼핑되시길 바랍니다 ♥</p><p>&nbsp;</p>', 'spring',true, null);
+call autoQuestion(null, 'cancel', false, '<p><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>-----------------------------------------------<br>*주문취소*(전체취소시 상품명에  &#39;전체취소&#39; 꼭! 기재해주세요!)<br><br><strong>주문번호 : 23456323</strong><br><strong>상품명(옵션포함기재): 전체 취소</strong><br><strong>※결제시 입금한 이름의 계좌번호※</strong><br><strong>환불계좌번호: 235-021-087159</strong><br><strong>은행사 : 국민은행</strong><br><strong>예금주명 : 김주영</strong><br><br>♥해당 양식에 정확한 상품명 남겨주셔야 처리가 가능합니다♥</p>', 'tester7',true, null);
+call autoQuestion(null, 'change', false, '<p>♥해당 양식에 정확한 상품명을 기재해주셔야 처리가 가능합니다♥<br><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>-----------------------------------------------<br>*상품변경*<br><br>주문번호 :<br>변경전 상품명 (사이즈,컬러) : 스노우 버튼 모직 스커트(s, 그레이지)<br>변경후 상품명 (사이즈,컬러) : 스노우 버트 모직 스커트(m, 그레이지)</p>', 'tester10',true, null);
+call autoQuestion(null, 'changeaddress', false, '<p>♥해당 양식에 정확한 주문번호를 기재해주셔야 처리가 가능합니다♥<br><br><br>-----------------------------------------------<br>*주소지 변경*<br><br>주문번호 : 101284623<br>변경 주소지(번지수포함) : 서울 강남구 언주로 508 서울상록빌딩</p>', 'tester3', true, null);
+call autoQuestion(null, 'exchange', false, '<p>♥해당 양식에 정확한 정보를 기재해주셔야 처리가 가능합니다♥<br><br><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>--------------------------------------<br>*교환*<br><br><strong>주문번호 : 120984323</strong><br><strong>교환전 상품명(사이즈,컬러) : 비프리 자켓(아이보리)</strong><br><strong>교환후 상품명(사이즈,컬러) : 비프리 자켓(블랙)</strong><br><strong>왕복 배송비 입금자명/입금날짜 : 주현영/ 2022-03-07</strong><br><br>(수령주소지로 자동 회수접수)<br>※회수/교환상품수령지 변경 원하실 경우에만 새주소지 함께 기재해 주세요.<br><br>회수주소: 서울 강남구 대치동 889-41<br>교환상품 수령 주소: 서울 강남구 대치동 889-41<br>&nbsp;</p>', 'tester', true, null);
+call autoQuestion(null, 'return', false, '<p>♥해당 양식에 정확한 정보를 기재해주셔야 처리가 가능합니다♥<br><br><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>--------------------------------------<br>*반품*<br><br><strong>주문번호 : 546787654</strong><br><strong>상품명(사이즈,컬러): 스노우 버튼 모직 스커트(m, 소프트민트)</strong><br><strong>반품 사유 : 사이즈가 안맞고 색상도 화면이랑 많이 다르네요</strong><br><strong>※결제시 입금한 이름의 계좌번호※</strong><br><strong>환불계좌번호(은행사포함) : 123-36777-33-562</strong><br><strong>예금주명 : 이나라</strong><br><br>(수령주소지로 자동 회수접수)<br>※회수주소 변경 원하실 경우에만 새주소지와 함께 기재해 주세요.<br><br>회수주소: 서울 강남구 테헤란로 212<br><br>--------------------------------------<br>&nbsp;</p>', 'tester5', true,null);
+call autoQuestion(null, 'error', false, '<p>♥해당 양식에 정확한 정보를 기재해주셔야 처리가 가능합니다♥<br><br>--------------------------------------<br>*불량/오배송*<br><br><strong>▷바코드(검수완료)사진</strong><br><strong>▷불량사진</strong><br><strong>(필수첨부 부탁드립니다!)</strong><br><br>주문번호 : 102319532<br>교환/반품 (원하시는 처리 선택해주세요!) : 반품<br>상품 수령일자 : (3/2)<br>반품 접수일자 : (3/7)<br>상품명(사이즈,컬러) : 스노우 버튼 모직 스커트(m, 그레이지)<br>불량/오배송 사유 : 스커트 단추가 불량이네요<br>검수번호(숫자나 알파벳) : 123ew2<br><br>(상품바코드옆 검수자 숫자한자리/두자리를 기재합니다.)</p>','tester2', true, 'bar-code-g042121347_640.png;jeans-ga6ae8c0ef_640.jpg;');
+
 -- 배너
 -- insert into bannertable(image, link) values('test1.jpg','testlink1'); 
 -- insert into bannertable(image, link) values('test2.jpg','testlink2');

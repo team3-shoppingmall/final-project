@@ -32,7 +32,7 @@
                 </v-col>
             </v-row>
         </v-col>
-        <v-col cols="auto">
+        <v-col cols="auto" v-if="getLogin != null">
             <v-btn :to="'/writePost/deliveryQnA'" color="primary" v-if="getLogin.user.authority == 'ROLE_USER'">글쓰기</v-btn>
         </v-col>
     </v-row>
@@ -126,7 +126,7 @@ export default {
         },
         moveto(item) {
             if (item.secret == true) {
-                if (this.getLogin.user.id != item.id && this.getLogin.user.authority != 'ROLE_ADMIN') {
+                if (this.getLogin == null || this.getLogin.user.id != item.id && this.getLogin.user.authority != 'ROLE_ADMIN') {
                     alert('비밀글입니다');
                     return;
                 }

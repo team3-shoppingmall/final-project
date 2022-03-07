@@ -52,13 +52,13 @@
                 <v-col cols="auto" v-if="qna.reply">
                     <v-btn @click="moveToReply" color="primary">답변보기</v-btn>
                 </v-col>
-                <v-col cols="auto" v-if="getLogin.user.authority == 'ROLE_ADMIN' && (qna.qnaNo == qna.originalNo) && !qna.reply">
+                <v-col cols="auto" v-if="getLogin != null && getLogin.user.authority == 'ROLE_ADMIN' && (qna.qnaNo == qna.originalNo) && !qna.reply">
                     <v-btn @click="moveToWriteReply" color="primary">답변하기</v-btn>
                 </v-col>
-                <v-col cols="auto" v-if="getLogin.user.id == qna.id">
+                <v-col cols="auto" v-if="getLogin != null && getLogin.user.id == qna.id">
                     <v-btn @click="moveToUpdate" color="primary">수정</v-btn>
                 </v-col>
-                <v-col cols="auto" v-if="getLogin.user.authority == 'ROLE_ADMIN' || getLogin.user.id == qna.id">
+                <v-col cols="auto" v-if="getLogin != null && (getLogin.user.authority == 'ROLE_ADMIN' || getLogin.user.id == qna.id)">
                     <v-btn @click="deleteQnA" color="primary">삭제</v-btn>
                 </v-col>
             </v-row>

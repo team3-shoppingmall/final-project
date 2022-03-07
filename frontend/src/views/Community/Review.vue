@@ -34,8 +34,8 @@
                 <v-col>
                     <div v-html="item.content" class="text-left"></div>
                 </v-col>
-                <v-col cols="auto" v-if="getLogin.user.authority == 'ROLE_ADMIN' || getLogin.user.id == item.id">
-                    <v-icon @click="updateReview(item.reviewNo)" v-if="getLogin.user.authority != 'ROLE_ADMIN'">mdi-pencil</v-icon>
+                <v-col cols="auto" v-if="getLogin != null && (getLogin.user.authority == 'ROLE_ADMIN' || getLogin.user.id == item.id)">
+                    <v-icon @click="updateReview(item.reviewNo)" v-if="getLogin != null && getLogin.user.authority != 'ROLE_ADMIN'">mdi-pencil</v-icon>
                     <v-icon @click="deleteReview(item.reviewNo)">mdi-delete</v-icon>
                 </v-col>
             </v-row>

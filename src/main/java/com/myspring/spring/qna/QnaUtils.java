@@ -25,7 +25,7 @@ public class QnaUtils {
 					WHERE("q.type in('delivery', 'deliveryNotice', 'deliveryReply')");
 					break;
 				case "beforeDelivery":
-					WHERE("q.type in ('cancel', 'change', 'changeaddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply')");
+					WHERE("q.type in ('cancel', 'change', 'changeAddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply')");
 					break;
 				case "afterDelivery":
 					WHERE("q.type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply')");
@@ -74,7 +74,7 @@ public class QnaUtils {
 					WHERE("q.type in('delivery', 'deliveryNotice', 'deliveryReply')");
 					break;
 				case "beforeDelivery":
-					WHERE("q.type in ('cancel', 'change', 'changeaddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply')");
+					WHERE("q.type in ('cancel', 'change', 'changeAddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply')");
 					break;
 				case "afterDelivery":
 					WHERE("q.type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply')");

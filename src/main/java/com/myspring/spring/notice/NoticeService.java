@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-
 @Service
 public class NoticeService {
 	private NoticeMapper noticeMapper;
@@ -22,26 +21,26 @@ public class NoticeService {
 		this.noticeMapper = noticeMapper;
 	}
 
-	//게시물 목록과 개수 가져오기
+	// 게시물 목록과 개수 가져오기
 	public ResponseEntity<?> getNotice(int page, int perPage, String search, String searchWord) {
 		int start = (page - 1) * perPage;
 		int count = noticeMapper.getCount(search, searchWord);
 		List<NoticeVO> noticeList = noticeMapper.getNotice(start, perPage, search, searchWord);
-		
-			Map<String, Object> resMap = new HashMap<>();
-			resMap.put("noticeList", noticeList);
-			resMap.put("count", count);
-			return new ResponseEntity<>(resMap, HttpStatus.OK);		
+
+		Map<String, Object> resMap = new HashMap<>();
+		resMap.put("noticeList", noticeList);
+		resMap.put("count", count);
+		return new ResponseEntity<>(resMap, HttpStatus.OK);
 	}
-	
+
 	// 공지사항 게시물 보기
 	public ResponseEntity<?> getNoticeFindByID(int noticeNo) {
-		 NoticeVO res = noticeMapper.getNoticeFindByID(noticeNo);
-		 
-		 if (res == null)
-			 return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-		 else
-			 return new ResponseEntity<>(res, HttpStatus.OK);
+		NoticeVO res = noticeMapper.getNoticeFindByID(noticeNo);
+
+		if (res == null)
+			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		else
+			return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 	// 공지사항 삭제
@@ -59,7 +58,7 @@ public class NoticeService {
 	public ResponseEntity<?> insertNotice(NoticeVO requestData, List<MultipartFile> fileList) {
 		NoticeVO result = new NoticeVO();
 		ResponseEntity<?> entity = null;
-		
+
 		try {
 			noticeMapper.insertNotice(requestData, result);
 			int noticeNo = result.getNoticeNo();
@@ -67,14 +66,14 @@ public class NoticeService {
 			file.mkdir();
 			file = new File("./images/notice/" + noticeNo + "/");
 			file.mkdir();
-			
+
 			if (fileList != null) {
-				for (int i = 0; i<fileList.size(); i++) {
+				for (int i = 0; i < fileList.size(); i++) {
 					MultipartFile multipartFile = fileList.get(i);
 					FileOutputStream writer = new FileOutputStream(
 							"./images/notice/" + noticeNo + "/" + multipartFile.getOriginalFilename());
 					writer.write(multipartFile.getBytes());
-					writer.close();						
+					writer.close();
 				}
 			}
 			entity = new ResponseEntity<>(HttpStatus.OK);
@@ -104,14 +103,12 @@ public class NoticeService {
 				underDir[i].delete();
 			}
 
-			String[] image = requestData.getImage().split(";");
-
 			if (fileList != null) {
-				for (int i = 0; i<fileList.size(); i++) {
+				for (int i = 0; i < fileList.size(); i++) {
 					MultipartFile multipartFile = fileList.get(i);
-					FileOutputStream writer = new FileOutputStream("./images/notice/" + requestData.getNoticeNo()
-							+ "/" + multipartFile.getOriginalFilename());
-	//				System.out.println(multipartFile.getOriginalFilename());
+					FileOutputStream writer = new FileOutputStream(
+							"./images/notice/" + requestData.getNoticeNo() + "/" + multipartFile.getOriginalFilename());
+					// System.out.println(multipartFile.getOriginalFilename());
 					writer.write(multipartFile.getBytes());
 					writer.close();
 				}
@@ -122,7 +119,7 @@ public class NoticeService {
 			e.printStackTrace();
 			entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
+
 		return entity;
 	}
 

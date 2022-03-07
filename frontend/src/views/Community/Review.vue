@@ -34,9 +34,9 @@
                 <v-col>
                     <div v-html="item.content" class="text-left"></div>
                 </v-col>
-                <v-col cols="auto">
-                    <v-icon @click="updateReview(item.reviewNo)" v-if="admin">mdi-pencil</v-icon>
-                    <v-icon @click="deleteReview(item.reviewNo)" v-if="admin">mdi-delete</v-icon>
+                <v-col cols="auto" v-if="getLogin != null && (getLogin.user.authority == 'ROLE_ADMIN' || getLogin.user.id == item.id)">
+                    <v-icon @click="updateReview(item.reviewNo)" v-if="getLogin != null && getLogin.user.authority != 'ROLE_ADMIN'">mdi-pencil</v-icon>
+                    <v-icon @click="deleteReview(item.reviewNo)">mdi-delete</v-icon>
                 </v-col>
             </v-row>
         </template>
@@ -72,6 +72,10 @@
 import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         HideId,
@@ -79,7 +83,6 @@ export default {
     },
     data() {
         return {
-            admin: true,
             totalContents: 0,
             contents: [],
             nameList: [],
@@ -174,6 +177,9 @@ export default {
         updateReview(num) {
             this.$router.push(`/updatePost/review/${num}`);
         },
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     watch: {
         options: {

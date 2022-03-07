@@ -1,5 +1,5 @@
 <template>
-<v-list-item three-line v-if="dataLoaded" @click="moveToDetail">
+<v-list-item three-line v-if="dataLoaded && image != null" @click="moveToDetail">
     <v-list-item-avatar tile size="100" color="grey">
         <v-img :src="`/api/product/productImage/${productNo}/${image}`"></v-img>
     </v-list-item-avatar>
@@ -35,7 +35,7 @@ export default {
             product: '',
             sizeOption: '',
             colorOption: '',
-            image: '',
+            image: null,
             dataLoaded: false,
         }
     },

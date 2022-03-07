@@ -27,9 +27,9 @@
                 <v-col>
                     <div v-html="item.content" class="text-left"></div>
                 </v-col>
-                <v-col cols="auto">
-                    <v-icon @click="updateReview(item.reviewNo)" v-if="admin">mdi-pencil</v-icon>
-                    <v-icon @click="deleteReview(item.reviewNo)" v-if="admin">mdi-delete</v-icon>
+                <v-col cols="auto" v-if="getLogin.user.authority == 'ROLE_ADMIN' || getLogin.user.id == item.id">
+                    <v-icon @click="updateReview(item.reviewNo)" v-if="getLogin.user.authority != 'ROLE_ADMIN'">mdi-pencil</v-icon>
+                    <v-icon @click="deleteReview(item.reviewNo)">mdi-delete</v-icon>
                 </v-col>
             </v-row>
         </template>
@@ -121,6 +121,10 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 import ProductDetailDisplay from '@/components/ProductDetailDisplay.vue'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         HideId,
@@ -191,8 +195,6 @@ export default {
             imageFile: '',
             imageUrl: '',
 
-            id: 'tester',
-
         }
     },
     methods: {
@@ -244,7 +246,7 @@ export default {
                 star: this.star,
                 content: this.content,
                 image: this.imageFile.name,
-                id: this.id,
+                id: this.getLogin.user.id,
             };
             let formData = new FormData();
             formData.append('data', new Blob([JSON.stringify(data)], {
@@ -261,26 +263,6 @@ export default {
                     alert('리뷰 작성에 실패했습니다.')
                     console.log(err);
                 })
-
-            // axios({
-            //     method: 'post',
-            //     url: `/api/review/insert`,
-            //     data: {
-            //         productNo: this.productNo,
-            //         star: this.star,
-            //         content: this.content,
-            //         image: this.image,
-            //         id: this.id,
-            //     }
-            // }).then(() => {
-            //     this.dialog = false;
-            //     this.content = '';
-            //     alert("리뷰 등록 완료");
-            //     this.$router.go();
-            // }).catch((err) => {
-            //     alert('리뷰 작성에 실패했습니다.')
-            //     console.log(err);
-            // })
         },
         deleteReview(num) {
             axios.delete(`/api/review/delete/${num}`)
@@ -292,6 +274,9 @@ export default {
         updateReview(num) {
             this.$router.push(`/updatePost/review/${num}`);
         }
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     watch: {
         options: {

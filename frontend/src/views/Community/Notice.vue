@@ -1,19 +1,17 @@
 <template>
 <v-container>
-    <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="noticeNo" class="elevation-1" @click:row="moveto" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
-            <template #[`item.title`]="{item}">
-                <div class="text-left">
-                    {{ item.title }}
-                </div>
-            </template>
-            <template #[`item.id`]="{item}">
-                <div>
-                    <HideId :id="item.id" />
-                </div>
-            </template>
-        </v-data-table>
-    </div>
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" item-key="noticeNo" class="elevation-1" @click:row="moveto" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
+        <template #[`item.title`]="{item}">
+            <div class="text-left">
+                {{ item.title }}
+            </div>
+        </template>
+        <template #[`item.id`]="{item}">
+            <div>
+                <HideId :id="item.id" />
+            </div>
+        </template>
+    </v-data-table>
 
     <v-row align="center" justify="space-between">
         <v-col cols="8" sm="7" md="5" lg="4" xl="3">
@@ -29,7 +27,7 @@
                 </v-col>
             </v-row>
         </v-col>
-        <v-col cols="auto">
+        <v-col cols="auto" v-if="getLogin != null && getLogin.user.authority == 'ROLE_ADMIN'">
             <v-btn :to="'/writePost/notice'" color="primary">글쓰기</v-btn>
         </v-col>
     </v-row>
@@ -39,6 +37,10 @@
 <script>
 import axios from 'axios'
 import HideId from '@/components/HideId.vue'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         HideId,
@@ -106,6 +108,9 @@ export default {
             this.$router.push(`/community/noticePost/${item.noticeNo}`)
         },
 
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
         options: {

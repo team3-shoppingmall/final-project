@@ -28,14 +28,14 @@
                 <v-col cols="auto">
                     <div class="text-left">{{item.title}}</div>
                 </v-col>
-                <v-col cols="auto">
+                <v-col cols="auto" v-if="getLogin != null && getLogin.user.authority == 'ROLE_ADMIN'">
                     <v-icon @click="updateFAQ(item.faqNo)">mdi-pencil</v-icon>
                     <v-icon @click="deleteFAQ(item.faqNo)">mdi-delete</v-icon>
                 </v-col>
             </v-row>
         </template>
     </v-data-table>
-    <v-row justify="end" class="mt-2">
+    <v-row justify="end" class="mt-2" v-if="getLogin != null && getLogin.user.authority == 'ROLE_ADMIN'">
         <v-col cols="auto">
             <v-btn :to="'/writePost/faq'" color="primary">글쓰기</v-btn>
         </v-col>
@@ -46,6 +46,10 @@
 <script>
 import axios from 'axios'
 import FAQTypeDisplay from '@/components/FAQTypeDisplay.vue'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         FAQTypeDisplay,
@@ -114,6 +118,9 @@ export default {
             this.$router.push(`/updatePost/faq/${num}`);
 
         }
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     watch: {
         options: {

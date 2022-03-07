@@ -89,6 +89,7 @@ export default {
             admin: true,
             qna: '',
             images: [],
+            returnCount: -1,
         }
     },
     methods: {
@@ -96,16 +97,18 @@ export default {
             this.dataLoaded = false;
             axios.get(`/api/qna/getQna/${this.pageID}`)
                 .then((res) => {
-                    console.log(res.data.qnaNo);
                     this.qna = res.data;
-                    this.images = this.qna.image.split(';');
+                    //답글일 경우 image 없음
+                    if(res.data.image != null){
+                        this.images = this.qna.image.split(';');
+                    }
                     this.dataLoaded = true;
                 }).catch((err) => {
                     console.log(err);
                 })
         },
         moveToBefore() {
-            this.$router.go(-1);
+            this.$router.go(this.returnCount);
         },
         moveToReply() {
             axios.get(`/api/qna/getQnaByOriginalNo`, {
@@ -113,8 +116,10 @@ export default {
                     originalNo: this.pageID
                 }
             }).then((res) => {
-                const link = res.data.qnaNo;
+                const link = res.data;
+                console.log(link);
                 this.$router.push(`/qna/${link}`)
+                
             }).catch((err) => {
                 console.log(err);
             })
@@ -136,12 +141,21 @@ export default {
                 .then(res => {
                     console.log(res.data);
                     alert("삭제되었습니다.");
-                    this.$router.go(-1);
+                    this.$router.go(this.returnCount);
                 }).catch((err) => {
                     console.log(err);
                 })
         },
 
+    },
+    watch: {
+        '$route'(from) {
+            if (from.name == 'QnAPost') {
+                this.returnCount = -2;
+            }
+            this.pageID = this.$route.params.id;
+            this.getQnA();
+        },
     },
     mounted() {
         this.pageID = this.$route.params.id;

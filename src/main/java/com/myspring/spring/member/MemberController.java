@@ -49,4 +49,9 @@ public class MemberController {
 		return memberService.getMembers(page, perPage, condition, param);
 	}
 
+	//멤버 포인트 조회
+    @GetMapping("/getMemberPoint")
+    public ResponseEntity<?> getMemberPoint() {
+    	return memberService.getMemberPoint();
+	}
 }

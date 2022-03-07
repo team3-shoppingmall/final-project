@@ -57,17 +57,18 @@ public class QnaService {
 
 		try {
 			qnaMapper.insertQna(requestData, result);
-			int qnaNo = result.getQnaNo();		
-			System.out.println("qnaNo:"+qnaNo);
+			int qnaNo = result.getQnaNo();
+			System.out.println("qnaNo:" + qnaNo);
 			File file = new File("./images/qna/" + qnaNo + "/");
 			file.mkdir();
-			
-			for (int i = 0; i < fileList.size(); i++) {
-				MultipartFile multipartFile = fileList.get(i);
-				FileOutputStream writer = new FileOutputStream(
-						"./images/qna/" + qnaNo + "/" + multipartFile.getOriginalFilename());
-				writer.write(multipartFile.getBytes());
-				writer.close();
+			if (fileList != null) {
+				for (int i = 0; i < fileList.size(); i++) {
+					MultipartFile multipartFile = fileList.get(i);
+					FileOutputStream writer = new FileOutputStream(
+							"./images/qna/" + qnaNo + "/" + multipartFile.getOriginalFilename());
+					writer.write(multipartFile.getBytes());
+					writer.close();
+				}
 			}
 			entity = new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
@@ -79,10 +80,17 @@ public class QnaService {
 
 	// 댓글 등록 - originalNo 받아서 reply = true로 바꿔주기
 	public ResponseEntity<?> insertReply(QnaVO qnaVO) {
-		int res = qnaMapper.insertReply(qnaVO);
+		System.out.println(qnaVO.getType());
+		int res, resReply;
 		int originalNo = qnaVO.getOriginalNo();
-		int resReply = qnaMapper.updateReplyTrue(originalNo);
-
+		// productReply일때 원글의 productNo와 동일하게 셋팅 -> productDetail 페이지에 답글도 같이 불러오기 위함
+		if (qnaVO.getType().equals("productReply")) {
+			QnaVO productReply = qnaMapper.getQnaByQnaNo(originalNo);
+//			System.out.println(productReply.getProductNo());
+			qnaVO.setProductNo(productReply.getProductNo());
+		}
+		res = qnaMapper.insertReply(qnaVO);
+		resReply = qnaMapper.updateReplyTrue(originalNo);
 		if (res == 0) {
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
 		} else {
@@ -92,7 +100,6 @@ public class QnaService {
 				return new ResponseEntity<>(res, HttpStatus.OK);
 			}
 		}
-
 	}
 
 	// 문의 수정 & 댓글 수정
@@ -111,13 +118,14 @@ public class QnaService {
 			for (int i = 0; i < underDir.length; i++) {
 				underDir[i].delete();
 			}
-
-			for (int i = 0; i < fileList.size(); i++) {
-				MultipartFile multipartFile = fileList.get(i);
-				FileOutputStream writer = new FileOutputStream(
-						"./images/qna/+" + requestData.getQnaNo() + "/qna/" + multipartFile.getOriginalFilename());
-				writer.write(multipartFile.getBytes());
-				writer.close();
+			if (fileList != null) {
+				for (int i = 0; i < fileList.size(); i++) {
+					MultipartFile multipartFile = fileList.get(i);
+					FileOutputStream writer = new FileOutputStream(
+							"./images/qna/" + requestData.getQnaNo() + "/" + multipartFile.getOriginalFilename());
+					writer.write(multipartFile.getBytes());
+					writer.close();
+				}
 			}
 			entity = new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
@@ -135,6 +143,7 @@ public class QnaService {
 		// 문의 삭제
 		int resQna = qnaMapper.deleteQna(qnaNo);
 
+		// 댓글 삭제
 		if (res.isReply() == true) {
 			int resDelReply = qnaMapper.deleteReply(qnaNo);
 			if (resDelReply == 0)
@@ -175,7 +184,7 @@ public class QnaService {
 
 	// 문의 1개 찾기
 	public ResponseEntity<?> getQnaByQnaNo(int qnaNo) {
-		System.out.println(qnaNo);
+		// System.out.println(qnaNo);
 		QnaVO res = qnaMapper.getQnaByQnaNo(qnaNo);
 		if (res == null)
 			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -197,20 +206,20 @@ public class QnaService {
 
 	// originalNo로 조회
 	public ResponseEntity<?> getQnaByOriginalNo(int originalNo) {
-		QnaVO res = qnaMapper.getQnaByOriginalNo(originalNo);
-		if (res == null) {
-			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		int res = qnaMapper.getQnaByOriginalNo(originalNo);
+		if (res == 0) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		} else {
 			return new ResponseEntity<>(res, HttpStatus.OK);
 		}
 	}
 
 	// productDetail qna 불러오기
-	public ResponseEntity<?> getQnaListByProductNo(int page, int perPage, String search, String searchWord, String type,
-			int productNo) {
+	public ResponseEntity<?> getQnaList(int page, int perPage, String search, String searchWord, int productNo,
+			String id) {
 		int start = (page - 1) * perPage;
-		List<QnaVO> productQnaList = qnaMapper.getQnaListByProductNo(start, perPage, search, searchWord, productNo);
-		int count = qnaMapper.getQnaCountByProductNo(search, searchWord, productNo);
+		List<QnaAndProductVO> productQnaList = qnaMapper.getQnaList(start, perPage, search, searchWord, productNo, id);
+		int count = qnaMapper.getQnaCount(search, searchWord, productNo, id);
 
 		Map<String, Object> resMap = new HashMap<>();
 		resMap.put("productQnaList", productQnaList);

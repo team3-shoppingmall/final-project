@@ -1,24 +1,22 @@
 <template>
 <v-container>
-    <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
-            <template #[`item.type`]="{item}">
-                <div class="text-left">
-                    <QnATitleDisplay :type="item.type" />
-                </div>
-            </template>
-            <template #[`item.id`]="{item}">
-                <div>
-                    <HideId :id="item.id" />
-                </div>
-            </template>
-            <template #[`item.regDate`]="{item}">
-                <div>
-                    <DateDisplay :regDate="item.regDate" />
-                </div>
-            </template>
-        </v-data-table>
-    </div>
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
+        <template #[`item.type`]="{item}">
+            <div class="text-left">
+                <QnATitleDisplay :type="item.type" />
+            </div>
+        </template>
+        <template #[`item.id`]="{item}">
+            <div>
+                <HideId :id="item.id" />
+            </div>
+        </template>
+        <template #[`item.regDate`]="{item}">
+            <div>
+                <DateDisplay :regDate="item.regDate" />
+            </div>
+        </template>
+    </v-data-table>
 
     <v-row align="center" justify="space-between">
         <v-col cols="8" sm="7" md="6" lg="5" xl="4">
@@ -115,10 +113,10 @@ export default {
                         searchWord: this.searchWord,
                         type: link
                     }
-                })
-                .then(res => {
+                }).then(res => {
                     this.contents = res.data.qnaList;
                     this.totalContents = res.data.count;
+                }).finally(()=>{
                     this.loading = false;
                 })
         },

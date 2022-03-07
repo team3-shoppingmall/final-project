@@ -8,7 +8,7 @@
                         <v-carousel-item>
                             <v-dialog max-width="700">
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.reviewNo}/${item.image}`" contain></v-img>
+                                    <v-img v-bind="attrs" v-on="on" min-height="100" max-height="100" :src="`/api/review/reviewImage/${item.reviewNo}/${item.image}`" contain v-if="item.image != null"></v-img>
                                 </template>
                                 <v-card>
                                     <v-img :src="`/api/review/reviewImage/${item.reviewNo}/${item.image}`"></v-img>
@@ -50,10 +50,10 @@
                     <v-select :items="searches" v-model="search"></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord"></v-text-field>
+                    <v-text-field v-model="searchWord" @keyup.enter="getReview"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn icon="icon" @click="getReview">검색</v-btn>
+                    <v-btn @click="getReview" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -61,7 +61,7 @@
             <v-row>
                 <v-dialog v-model="dialog" persistent max-width="750px">
                     <template v-slot:activator="{ on, attrs }">
-                        <v-btn outlined v-bind="attrs" v-on="on">
+                        <v-btn color="primary" v-bind="attrs" v-on="on">
                             리뷰 작성하기
                         </v-btn>
                     </template>
@@ -239,8 +239,6 @@ export default {
                 alert('후기를 입력해주세요');
                 return;
             }
-
-            // 밑에거 주석 처리 후 이거 사용하시면 됩니다
             let data = {
                 productNo: this.productNo,
                 star: this.star,

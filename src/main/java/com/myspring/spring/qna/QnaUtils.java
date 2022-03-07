@@ -15,34 +15,40 @@ public class QnaUtils {
 		SQL sql = new SQL() {
 			{
 				SELECT("*");
-				FROM("qnatable");
-				LEFT_OUTER_JOIN("producttable on producttable.productNo = qnatable.productNo");
+				FROM("qnatable q");
+				LEFT_OUTER_JOIN("producttable p on p.productNo = q.productNo");
 				switch (type) {
 				case "product":
-					WHERE("type in ('general', 'product', 'productNotice', 'productReply', 'generalReply')");
+					WHERE("q.type in ('general', 'product', 'productNotice', 'productReply', 'generalReply')");
 					break;
 				case "delivery":
-					WHERE("type in('delivery', 'deliveryNotice', 'deliveryReply')");
+					WHERE("q.type in('delivery', 'deliveryNotice', 'deliveryReply')");
 					break;
 				case "beforeDelivery":
-					WHERE("type in ('cancel', 'change', 'changeaddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply')");
+					WHERE("q.type in ('cancel', 'change', 'changeaddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply')");
 					break;
 				case "afterDelivery":
-					WHERE("type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply')");
+					WHERE("q.type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply')");
 					break;
 				}
 				if (searchWord != null && !searchWord.equals("")) {
 					AND();
 					String[] words = searchWord.split(" ");
+					String temp = null;
 					for (int i = 0; i < words.length; i++) {
-						if (i > 0) {
-							OR();
-						}
-						if (search.equals("productName")) {
-							WHERE("producttable.productName like " + "'%" + words[i] + "%'");
+						if (i == 0) {
+							temp = words[i];
 						} else {
-							WHERE(search + " like " + "'%" + words[i] + "%'");
+							temp = temp + "|" + words[i];
 						}
+					}
+					switch (search) {
+					case "id":
+						WHERE("REGEXP_LIKE(q.id, '" + temp + "')");
+						break;
+					case "productName":
+						WHERE("REGEXP_LIKE(p.productName, '" + temp + "')");
+						break;
 					}
 				}
 				ORDER_BY("originalNo desc, qnaNo asc");
@@ -58,34 +64,40 @@ public class QnaUtils {
 		SQL sql = new SQL() {
 			{
 				SELECT("count(*)");
-				FROM("qnatable");
-				LEFT_OUTER_JOIN("producttable on producttable.productNo = qnatable.productNo");
+				FROM("qnatable q");
+				LEFT_OUTER_JOIN("producttable p on p.productNo = q.productNo");
 				switch (type) {
 				case "product":
-					WHERE("type in ('general', 'product', 'productNotice', 'productReply', 'generalReply')");
+					WHERE("q.type in ('general', 'product', 'productNotice', 'productReply', 'generalReply')");
 					break;
 				case "delivery":
-					WHERE("type in('delivery', 'deliveryNotice', 'deliveryReply')");
+					WHERE("q.type in('delivery', 'deliveryNotice', 'deliveryReply')");
 					break;
 				case "beforeDelivery":
-					WHERE("type in ('cancel', 'change', 'changeaddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply')");
+					WHERE("q.type in ('cancel', 'change', 'changeaddress', 'cancelNotice', 'cancelReply', 'changeReply', 'changeaddressReply')");
 					break;
 				case "afterDelivery":
-					WHERE("type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply')");
+					WHERE("q.type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply')");
 					break;
 				}
 				if (searchWord != null && !searchWord.equals("")) {
 					AND();
 					String[] words = searchWord.split(" ");
+					String temp = null;
 					for (int i = 0; i < words.length; i++) {
-						if (i > 0) {
-							OR();
-						}
-						if (search.equals("productName")) {
-							WHERE("producttable.productName like " + "'%" + words[i] + "%'");
+						if (i == 0) {
+							temp = words[i];
 						} else {
-							WHERE(search + " like " + "'%" + words[i] + "%'");
+							temp = temp + "|" + words[i];
 						}
+					}
+					switch (search) {
+					case "id":
+						WHERE("REGEXP_LIKE(q.id, '" + temp + "')");
+						break;
+					case "productName":
+						WHERE("REGEXP_LIKE(p.productName, '" + temp + "')");
+						break;
 					}
 				}
 			}
@@ -94,21 +106,39 @@ public class QnaUtils {
 		return sql.toString();
 	}
 
-	public String getQnaListByProductNo(int start, int perPage, String search, String searchWord, int productNo) {
+	public String getQnaList(int start, int perPage, String search, String searchWord, int productNo, String id) {
 		SQL sql = new SQL() {
 			{
 				SELECT("*");
-				FROM("qnatable");
-				WHERE("productNo=" + productNo);
+				FROM("qnatable q");
+				LEFT_OUTER_JOIN("producttable p on p.productNo = q.productNo");
 				if (searchWord != null && !searchWord.equals("")) {
 					AND();
 					String[] words = searchWord.split(" ");
+					String temp = null;
 					for (int i = 0; i < words.length; i++) {
-						if (i > 0) {
-							OR();
+						if (i == 0) {
+							temp = words[i];
+						} else {
+							temp = temp + "|" + words[i];
 						}
-						WHERE(search + " like " + "'%" + words[i] + "%'");
 					}
+					switch (search) {
+					case "id":
+						WHERE("REGEXP_LIKE(q.id, '" + temp + "')");
+						break;
+					case "productName":
+						WHERE("REGEXP_LIKE(p.productName, '" + temp + "')");
+						break;
+					}
+				}
+				if (productNo != 0) {
+					AND();
+					WHERE("q.productNo = " + productNo);
+				}
+				if (id != null) {
+					AND();
+					WHERE("q.id = '" + id + "'");
 				}
 				ORDER_BY("originalNo desc, qnaNo asc");
 				LIMIT(perPage);
@@ -119,21 +149,39 @@ public class QnaUtils {
 		return sql.toString();
 	}
 
-	public String getQnaCountByProductNo(String search, String searchWord, int productNo) {
+	public String getQnaCount(String search, String searchWord, int productNo, String id) {
 		SQL sql = new SQL() {
 			{
 				SELECT("count(*)");
-				FROM("qnatable");
-				WHERE("productNo=" + productNo);
+				FROM("qnatable q");
+				LEFT_OUTER_JOIN("producttable p on p.productNo = q.productNo");
 				if (searchWord != null && !searchWord.equals("")) {
 					AND();
 					String[] words = searchWord.split(" ");
+					String temp = null;
 					for (int i = 0; i < words.length; i++) {
-						if (i > 0) {
-							OR();
+						if (i == 0) {
+							temp = words[i];
+						} else {
+							temp = temp + "|" + words[i];
 						}
-						WHERE(search + " like " + "'%" + words[i] + "%'");
 					}
+					switch (search) {
+					case "id":
+						WHERE("REGEXP_LIKE(q.id, '" + temp + "')");
+						break;
+					case "productName":
+						WHERE("REGEXP_LIKE(p.productName, '" + temp + "')");
+						break;
+					}
+				}
+				if (productNo != 0) {
+					AND();
+					WHERE("q.productNo = " + productNo);
+				}
+				if (id != null) {
+					AND();
+					WHERE("q.id = '" + id + "'");
 				}
 			}
 		};

@@ -27,17 +27,14 @@
                                 </tr>
                                 <tr>
                                     <td style="width:20%"> 가격 </td>
-                                    <td colspan="2" v-if="product.discount != 0 && product.amount > 0 && product.onSale == true" class="text-decoration-line-through">
+                                    <td colspan="2" v-if="product.discount != 0" class="text-decoration-line-through">
                                         {{product.price}}원
                                     </td>
-                                    <td colspan="2" v-if="product.discount == 0 && product.amount > 0 && product.onSale == true">
+                                    <td colspan="2" v-if="product.discount == 0">
                                         {{product.price}}원
-                                    </td>
-                                    <td colspan="2" v-if="product.amount == 0 || product.onSale == false" class="red--text">
-                                        품절 상품입니다
                                     </td>
                                 </tr>
-                                <tr v-if="product.discount != 0 && product.amount > 0 && product.onSale == true">
+                                <tr v-if="product.discount != 0">
                                     <td style="width:10%"> 할인가 </td>
                                     <td colspan="2">
                                         {{product.price-product.discount}}원
@@ -104,18 +101,23 @@
                                 <tr>
                                     <td colspan="3">
                                         <v-row justify="center">
-                                            <v-col cols="auto">
-                                                <v-btn @click="buyItNow" :disabled="product.amount == 0 || product.onSale == false">
+                                            <v-col cols="auto" v-if="product.amount > 0 && product.onSale == true">
+                                                <v-btn color="primary" @click="buyItNow">
                                                     BUY IT NOW
                                                 </v-btn>
                                             </v-col>
-                                            <v-col cols="auto">
-                                                <v-btn @click="addToBasket" :disabled="product.amount == 0 || product.onSale == false">
+                                            <v-col cols="auto" v-if="product.amount > 0 && product.onSale == true">
+                                                <v-btn color="primary" @click="addToBasket">
                                                     ADD TO Basket
                                                 </v-btn>
                                             </v-col>
+                                            <v-col cols="auto" v-if="product.amount == 0 || product.onSale == false">
+                                                <v-btn color="primary">
+                                                    Sold Out
+                                                </v-btn>
+                                            </v-col>
                                             <v-col cols="auto">
-                                                <v-btn @click="addToWishList">
+                                                <v-btn color="primary" @click="addToWishList">
                                                     WISH LIST
                                                 </v-btn>
                                             </v-col>
@@ -130,7 +132,7 @@
             <v-divider class="mt-10 md-10 pt-10 pd-10"></v-divider>
             <v-row justify="center" class="pa-5" id="detailSelected">
                 <v-col cols="auto">
-                    <v-btn @click="scrollTo('detail')" color="primary">DETAIL</v-btn>
+                    <v-btn @click="scrollTo('detail')" color="secondary">DETAIL</v-btn>
                 </v-col>
                 <v-col cols="auto">
                     <v-btn @click="scrollTo('guide')">GUIDE</v-btn>
@@ -156,7 +158,7 @@
                     <v-btn @click="scrollTo('detail')">DETAIL</v-btn>
                 </v-col>
                 <v-col cols="auto">
-                    <v-btn @click="scrollTo('guide')" color="primary">GUIDE</v-btn>
+                    <v-btn @click="scrollTo('guide')" color="secondary">GUIDE</v-btn>
                 </v-col>
                 <v-col cols="auto">
                     <v-btn @click="scrollTo('review')">REVIEW</v-btn>
@@ -182,7 +184,7 @@
                     <v-btn @click="scrollTo('guide')">GUIDE</v-btn>
                 </v-col>
                 <v-col cols="auto">
-                    <v-btn @click="scrollTo('review')" color="primary">REVIEW</v-btn>
+                    <v-btn @click="scrollTo('review')" color="secondary">REVIEW</v-btn>
                 </v-col>
                 <v-col cols="auto">
                     <v-btn @click="scrollTo('qna')">QNA</v-btn>
@@ -208,7 +210,7 @@
                     <v-btn @click="scrollTo('review')">REVIEW</v-btn>
                 </v-col>
                 <v-col cols="auto">
-                    <v-btn @click="scrollTo('qna')" color="primary">QNA</v-btn>
+                    <v-btn @click="scrollTo('qna')" color="secondary">QNA</v-btn>
                 </v-col>
             </v-row>
 
@@ -374,7 +376,6 @@ export default {
             }
             window.scrollTo({
                 top: scroll,
-                behavior: 'smooth'
             });
         },
     },

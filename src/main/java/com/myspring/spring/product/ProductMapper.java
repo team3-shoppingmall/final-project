@@ -41,8 +41,21 @@ public interface ProductMapper {
 	public ProductVO getProductByNo(@Param("productNo") int productNo);
 
 //	메인 화면 이벤트 상품 조회
-	@Select("select * from producttable where discount > 0 order by rand() limit 8")
+	@Select("select * from producttable where onSale = true and amount > 0 and discount > 0 order by rand() limit 4")
 	public List<ProductVO> getProductEvent();
+
+//	메인 화면 주간 베스트 상품 조회
+	@Select("select * from producttable p left join ordertable o on p.productNo = o.productNo where p.onSale = true and p.amount > 0 and "
+			+ "(orderDate BETWEEN DATE_ADD(NOW(), INTERVAL -1 week) AND NOW()) group by o.productNo order by sum(o.orderAmount) desc limit 8")
+	public List<ProductAndOrderVO> getProductWeeklyBest();
+
+//	메인 화면 신상품 조회(상품 수정된 경우도 신상품 취급)
+	@Select("select * from producttable where onSale = true and amount > 0 order by regDate desc limit 8")
+	public List<ProductVO> getProductNew();
+
+//	메인 화면 베스트 상품 조회
+	@Select("select * from producttable p left join ordertable o on p.productNo = o.productNo where p.onSale = true and p.amount > 0 group by o.productNo order by sum(o.orderAmount) desc limit 8")
+	public List<ProductAndOrderVO> getProductBest();
 
 //	상품 추가
 	@Insert("insert into producttable(productName, type1, type2, imageName, price, color, size, amount, detailImageName) "
@@ -53,7 +66,7 @@ public interface ProductMapper {
 //	상품 수정
 	@Update("update producttable set productName = #{in.productName}, type1 = #{in.type1}, type2 = #{in.type2}, price = #{in.price}, "
 			+ "discount = #{in.discount}, color = #{in.color}, size = #{in.size}, amount= #{in.amount} , "
-			+ "imageName = #{in.imageName}, detailImageName = #{in.detailImageName} where productNo = #{in.productNo}")
+			+ "imageName = #{in.imageName}, regDate = current_timestamp, detailImageName = #{in.detailImageName} where productNo = #{in.productNo}")
 	int updateProduct(@Param("in") ProductVO in);
 
 //	상품 판매 여부 변경

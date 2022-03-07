@@ -16,17 +16,19 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2">
-                        <v-row v-if="images != []">
-                            <v-col cols="3" v-for="(image, idx) in images" :key="idx">
-                                <v-img contain :src="`/api/notice/noticeImage/${pageID}/${image}`"></v-img>
-                            </v-col>
-                        </v-row>
+                    <td colspan="4">
                         <v-row>
-                            <v-col>
+                            <v-col cols="10">
                                 <div v-html="notice.content"></div>
                             </v-col>
                         </v-row>
+                        <v-row v-if="images != []">
+                            <v-col cols="10" v-for="(image, idx) in images" :key="idx">
+                                <!-- <v-img contain :src="`/api/notice/noticeImage/${pageID}/${image}`"></v-img> -->
+                                <v-img contain :src="`/api/notice/noticeImage/${pageID}/${image}`" max-height="auto" max-width="auto"></v-img>
+                            </v-col>
+                        </v-row>
+                        
                     </td>
                 </tr>
             </tbody>
@@ -79,7 +81,9 @@ export default {
             axios.get(`/api/notice/list/${this.pageID}`)
                 .then((res) => {
                     this.notice = res.data;
-                    this.images = this.notice.image.split(';');
+                    if(this.notice.image != null){
+                        this.images = this.notice.image.split(';');
+                    }
                 }).catch((err) => {
                     alert("정보를 불러오는데 실패했습니다.");
                     console.log(err);

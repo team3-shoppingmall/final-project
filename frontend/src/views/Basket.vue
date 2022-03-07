@@ -1,5 +1,5 @@
 <template>
-<v-container style="min-height: 910px;">
+<v-container>
     <v-row justify="center">
         <v-col cols="9">
             <div class="text-h3">장바구니</div>
@@ -26,7 +26,7 @@
                 </template>
                 <template v-slot:footer="{ }">
                     <v-divider></v-divider>
-                    <v-row justify="end">
+                    <v-row justify="end" class="ma-1">
                         <v-col cols="auto">
                             상품구매금액 {{AddComma(totalPrice)}} 원
                             + 배송비 <span v-if="totalPrice<50000">{{AddComma(2500)}}</span><span v-if="totalPrice>=50000">0</span> 원
@@ -208,7 +208,6 @@ export default {
                         this.totalPrice += (this.selected[i].price - this.selected[i].discount) * this.selected[i].basketAmount;
                     }
                 }
-                console.log(this.selected);
             }
         }
     },

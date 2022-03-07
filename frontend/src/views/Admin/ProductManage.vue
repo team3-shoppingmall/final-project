@@ -24,7 +24,7 @@
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field v-model="searchWord1" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" hide-details></v-text-field>
                 </template>
-                <v-date-picker v-model="searchWord1" @input="menu1 = false"></v-date-picker>
+                <v-date-picker v-model="searchWord1" @input="menu1 = false" no-title="no-title" scrollable="scrollable"></v-date-picker>
             </v-menu>
         </v-col>
         <v-col cols="2" align-self="center" v-if="search == 'regDate'">
@@ -32,7 +32,7 @@
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field v-model="searchWord2" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" hide-details></v-text-field>
                 </template>
-                <v-date-picker v-model="searchWord2" @input="menu2 = false"></v-date-picker>
+                <v-date-picker v-model="searchWord2" @input="menu2 = false" no-title="no-title" scrollable="scrollable"></v-date-picker>
             </v-menu>
         </v-col>
 
@@ -139,10 +139,8 @@ export default {
     },
     data() {
         return {
-            searchTypeNo: 0,
             totalContents: 0,
             loading: false,
-            editItem: {},
             options: {},
             headers: [{
                 text: '상품번호',
@@ -334,9 +332,20 @@ export default {
             })
         },
         reset() {
-            this.typeSelected = null;
             this.searchWord1 = null;
             this.searchWord2 = null;
+            this.typeSelected = null;
+            if (this.search == 'price') {
+                this.searchWord1 = 0;
+                this.searchWord2 = 9999999;
+            } else if (this.search == 'amount') {
+                this.searchWord1 = 0;
+                this.searchWord2 = 9999;
+            } else if (this.search == 'regDate') {
+                let date = new Date();
+                this.searchWord1 = `${date.getFullYear()-5}-${date.getMonth()+1}-${date.getDate()}`;
+                this.searchWord2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+            }
             this.options.page = 1;
             this.options.itemsPerPage = 10;
             this.searchProduct();
@@ -395,7 +404,7 @@ export default {
                     this.searchWord2 = 9999;
                 } else if (this.search == 'regDate') {
                     let date = new Date();
-                    this.searchWord1 = `${date.getFullYear()-10}-${date.getMonth()+1}-${date.getDate()}`;
+                    this.searchWord1 = `${date.getFullYear()-5}-${date.getMonth()+1}-${date.getDate()}`;
                     this.searchWord2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
                 }
             }

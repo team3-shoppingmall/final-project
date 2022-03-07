@@ -6,17 +6,19 @@ public class PointVO {
 	private int num;
 	private String id;
 	private int point;
-	private String content;
 	private Date pointDate;
+	private String content;
 
-	public PointVO(int num, String id, int point, Date potinDate) {
+	public PointVO() {
+	}
+
+	public PointVO(int num, String id, int point, Date pointDate, String content) {
 		this.num = num;
 		this.id = id;
 		this.point = point;
+		this.pointDate = pointDate;
 		this.content = content;
-		this.pointDate = potinDate;
 	}
-
 
 	public int getNum() {
 		return num;
@@ -41,14 +43,6 @@ public class PointVO {
 	public void setPoint(int point) {
 		this.point = point;
 	}
-    
-	public String getContent() {
-		return content;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
 
 	public Date getPointDate() {
 		return pointDate;
@@ -58,9 +52,12 @@ public class PointVO {
 		this.pointDate = pointDate;
 	}
 
-	public PointVO() {
+	public String getContent() {
+		return content;
 	}
 
-	
+	public void setContent(String content) {
+		this.content = content;
+	}
 
 }

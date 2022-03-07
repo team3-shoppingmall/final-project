@@ -8,17 +8,26 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
 
-import com.myspring.spring.product.ProductVO;
+import com.myspring.spring.qna.QnaUtils;
 
 @Mapper
 public interface ReviewMapper {
 
+	// 전체 개수 가져오기(Utils)
+	@SelectProvider(type = ReviewUtils.class, method = "getReviewCount")
+	int getReviewCount(String search, String searchWord, int productNo, String id);
+	
 	// 전체 개수 가져오기
 	@Select("select count(*) from reviewtable where ${search} like CONCAT('%',#{searchWord},'%')")
 	public int getCount(@Param("search") String search, @Param("searchWord") String searchWord);
-
+	
+	//리뷰 목록 조회(Utils)
+	@SelectProvider(type = ReviewUtils.class, method = "getReviewList")
+	List<ReviewAndProductVO> getReivewList(int start, int perPage, String search, String searchWord, int productNo, String id);
+	
 	// 리뷰 전체보기
 	@Select("select * from reviewtable left join producttable on producttable.productNo = reviewtable.productNo where ${search} like CONCAT('%', #{searchWord}, '%') order by reviewno desc limit #{start}, #{perPage}")
 	public List<ReviewAndProductVO> getAllReviews(@Param("start") int start, @Param("perPage") int perPage,
@@ -38,9 +47,6 @@ public interface ReviewMapper {
 	public int deleteReview(@Param("reviewNo") int reviewNo);
 
 	// 리뷰 수정
-	@Update("update reviewtable set content=#{in.content}, image=#{in.image}, star=#{in.star}, where reviewNo = #{in.reviewNo}")
+	@Update("update reviewtable set content=#{in.content}, image=#{in.image}, star=#{in.star} where reviewNo = #{in.reviewNo}")
 	public int updateReview(@Param("in") ReviewVO in);
-
-//	public void insertReview(ReviewVO requestData, ReviewVO result);
-
 }

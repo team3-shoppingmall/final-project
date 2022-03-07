@@ -21,10 +21,19 @@
     <v-row class="my-3" justify="center">
         <v-col cols="10">
             <v-row>
-                <v-col v-for="count in 4" :key="count" cols="3">
-                    <v-card align="center">
-                        <v-img  max-height="300" max-width="auto" :src="`https://picsum.photos/seed/${randomNumber(count)}/300/250`"></v-img>
-                        <v-card-title>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis error dolore, natus rerum facilis vel perspiciatis incidunt, expedita officiis libero corrupti consequuntur impedit aperiam, cupiditate magni cum ut sapiente omnis?</v-card-title>
+                <v-col v-for="(product, idx) in eventProducts" :key="idx" cols="3">
+                    <v-card @click="moveToDetail(product.productNo)">
+                        <v-img min-height="300" max-height="300" :src="`/api/product/productImage/${product.productNo}/${product.imageName.split(';')[0]}`"></v-img>
+                        <v-card-text style="height:120px">
+                            <div style="height:50px">
+                                {{product.productName}}
+                                - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
+                                <span v-if="product.size == null">{{product.color.split(';').length-1}} color</span>
+                            </div>
+                            <div v-if="product.discount != 0" class="text-decoration-line-through">{{AddComma(product.price)}}원</div>
+                            <div v-if="product.discount == 0">{{AddComma(product.price)}}원</div>
+                            <div v-if="product.discount != 0">{{AddComma(product.price-product.discount)}}원</div>
+                        </v-card-text>
                     </v-card>
                 </v-col>
             </v-row>
@@ -33,13 +42,22 @@
     <v-row class="text-h2 font-weight-medium" justify="center">
         WEEKLY BEST
     </v-row>
-    <v-row class="my-10" justify="center">
+    <v-row class="my-3" justify="center">
         <v-col cols="9">
             <v-row>
-                <v-col v-for="count in 8" :key="count" cols="3">
-                    <v-card align="center">
-                        <v-img  max-height="300" max-width="auto" :src="`https://picsum.photos/seed/${randomNumber(count)}/300/250`"></v-img>
-                        <v-card-title>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis error dolore, natus rerum facilis vel perspiciatis incidunt, expedita officiis libero corrupti consequuntur impedit aperiam, cupiditate magni cum ut sapiente omnis?</v-card-title>
+                <v-col v-for="(product, idx) in weeklyBestProducts" :key="idx" cols="3">
+                    <v-card @click="moveToDetail(product.productNo)">
+                        <v-img min-height="300" max-height="300" :src="`/api/product/productImage/${product.productNo}/${product.imageName.split(';')[0]}`"></v-img>
+                        <v-card-text style="height:120px">
+                            <div style="height:50px">
+                                {{product.productName}}
+                                - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
+                                <span v-if="product.size == null">{{product.color.split(';').length-1}} color</span>
+                            </div>
+                            <div v-if="product.discount != 0" class="text-decoration-line-through">{{AddComma(product.price)}}원</div>
+                            <div v-if="product.discount == 0">{{AddComma(product.price)}}원</div>
+                            <div v-if="product.discount != 0">{{AddComma(product.price-product.discount)}}원</div>
+                        </v-card-text>
                     </v-card>
                 </v-col>
             </v-row>
@@ -48,13 +66,22 @@
     <v-row class="text-h2 font-weight-medium" justify="center">
         NEW
     </v-row>
-    <v-row class="my-10" justify="center">
+    <v-row class="my-3" justify="center">
         <v-col cols="9">
             <v-row>
-                <v-col v-for="count in 8" :key="count" cols="3">
-                    <v-card align="center">
-                        <v-img max-height="300" max-width="auto" :src="`https://picsum.photos/seed/${randomNumber(count)}/300/250`"></v-img>
-                        <v-card-title>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis error dolore, natus rerum facilis vel perspiciatis incidunt, expedita officiis libero corrupti consequuntur impedit aperiam, cupiditate magni cum ut sapiente omnis?</v-card-title>
+                <v-col v-for="(product, idx) in newProducts" :key="idx" cols="3">
+                    <v-card @click="moveToDetail(product.productNo)">
+                        <v-img min-height="300" max-height="300" :src="`/api/product/productImage/${product.productNo}/${product.imageName.split(';')[0]}`"></v-img>
+                        <v-card-text style="height:120px">
+                            <div style="height:50px">
+                                {{product.productName}}
+                                - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
+                                <span v-if="product.size == null">{{product.color.split(';').length-1}} color</span>
+                            </div>
+                            <div v-if="product.discount != 0" class="text-decoration-line-through">{{AddComma(product.price)}}원</div>
+                            <div v-if="product.discount == 0">{{AddComma(product.price)}}원</div>
+                            <div v-if="product.discount != 0">{{AddComma(product.price-product.discount)}}원</div>
+                        </v-card-text>
                     </v-card>
                 </v-col>
             </v-row>
@@ -63,13 +90,22 @@
     <v-row class="text-h2 font-weight-medium" justify="center">
         BEST
     </v-row>
-    <v-row class="my-10" justify="center">
+    <v-row class="my-3" justify="center">
         <v-col cols="9">
             <v-row>
-                <v-col v-for="count in 8" :key="count" cols="3">
-                    <v-card align="center">
-                        <v-img lazy-src="https://picsum.photos/id/11/10/6" max-height="300" max-width="auto" :src="`https://picsum.photos/seed/${randomNumber(count)}/300/250`"></v-img>
-                        <v-card-title>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis error dolore, natus rerum facilis vel perspiciatis incidunt, expedita officiis libero corrupti consequuntur impedit aperiam, cupiditate magni cum ut sapiente omnis?</v-card-title>
+                <v-col v-for="(product, idx) in bestProducts" :key="idx" cols="3">
+                    <v-card @click="moveToDetail(product.productNo)">
+                        <v-img min-height="300" max-height="300" :src="`/api/product/productImage/${product.productNo}/${product.imageName.split(';')[0]}`"></v-img>
+                        <v-card-text style="height:120px">
+                            <div style="height:50px">
+                                {{product.productName}}
+                                - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
+                                <span v-if="product.size == null">{{product.color.split(';').length-1}} color</span>
+                            </div>
+                            <div v-if="product.discount != 0" class="text-decoration-line-through">{{AddComma(product.price)}}원</div>
+                            <div v-if="product.discount == 0">{{AddComma(product.price)}}원</div>
+                            <div v-if="product.discount != 0">{{AddComma(product.price-product.discount)}}원</div>
+                        </v-card-text>
                     </v-card>
                 </v-col>
             </v-row>
@@ -79,6 +115,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     data() {
         return {
@@ -96,12 +133,36 @@ export default {
                 'Fourth',
                 'Fifth',
             ],
+            dataLoaded: false,
+            eventProducts: [],
+            weeklyBestProducts: [],
+            newProducts: [],
+            bestProducts: [],
         }
     },
     methods: {
-        randomNumber(count) {
-           return  Math.floor(Math.random() * 100)+count;
-        }
+        getProduct() {
+            this.dataLoaded = false;
+            axios.get(`/api/product/getMainPages`)
+                .then(res => {
+                    this.eventProducts = res.data.eventList;
+                    this.weeklyBestProducts = res.data.weeklyBestList;
+                    this.newProducts = res.data.newList;
+                    this.bestProducts = res.data.bestList;
+                }).finally(
+                    this.dataLoaded = true
+                )
+        },
+        AddComma(num) {
+            var regexp = /\B(?=(\d{3})+(?!\d))/g;
+            return `${num}`.toString().replace(regexp, ",");
+        },
+        moveToDetail(num) {
+            this.$router.push(`/productDetail/${num}`)
+        },
+    },
+    mounted() {
+        this.getProduct();
     }
 }
 </script>

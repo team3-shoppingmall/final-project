@@ -2,6 +2,9 @@ drop database if exists springdb;
 create database springdb;
 use springdb;
 
+-- key컬럼이 아닌 컬럼으로 update하기 위함
+set sql_safe_updates=0;
+
 -- table drop
 drop table if exists bannertable;
 drop table if exists qnatable;
@@ -15,11 +18,14 @@ drop table if exists baskettable;
 drop table if exists producttable;
 drop table if exists membertable;
 
--- drop trigger and procedure
+-- drop trigger, procedure, event
 DROP TRIGGER IF EXISTS `springdb`.`membertable_BEFORE_INSERT`;
+DROP TRIGGER IF EXISTS `springdb`.`ordertable_BEFORE_INSERT`;
 DROP TRIGGER IF EXISTS `springdb`.`pointtable_BEFORE_INSERT`;
 DROP procedure IF EXISTS `autoQuestion`;
 DROP procedure IF EXISTS `autoReply`;
+DROP procedure IF EXISTS `orderChangeSchedule`;
+DROP EVENT IF EXISTS `event_AutoScheduler`;
 
 -- create table and trigger
 CREATE TABLE membertable (
@@ -41,6 +47,7 @@ USE `springdb`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`membertable_BEFORE_INSERT` BEFORE INSERT ON `membertable` FOR EACH ROW
 BEGIN
 set new.point = 2000;
+insert into pointtable(id, point, content) values (new.id, 2000, '회원 가입 축하 포인트');
 END$$
 DELIMITER ;
 
@@ -55,7 +62,7 @@ CREATE TABLE producttable(
 	COLOR VARCHAR(1000),
 	SIZE VARCHAR(1000),
 	AMOUNT INT NOT NULL,
-	REGDATE TIMESTAMP DEFAULT (current_timestamp),
+	REGDATE TIMESTAMP DEFAULT current_timestamp,
 	DETAILIMAGENAME VARCHAR(2000) NOT NULL,
 	ONSALE BOOLEAN DEFAULT FALSE
 );
@@ -66,21 +73,29 @@ CREATE TABLE baskettable (
 	PRODUCTNO INT NOT NULL,
 	SELECTEDCOLOR VARCHAR(50),
 	SELECTEDSIZE VARCHAR(50),
-	BASKETAMOUNT INT NOT NULL
---     CONSTRAINT basket_fk_id FOREIGN KEY (ID)
---         REFERENCES membertable (ID),
---     CONSTRAINT basket_fk_productno FOREIGN KEY (PRODUCTNO)
---         REFERENCES producttable (PRODUCTNO)
+	BASKETAMOUNT INT NOT NULL,
+    CONSTRAINT basket_fk_id FOREIGN KEY (ID)
+        REFERENCES membertable (ID)
+        on delete cascade
+        on update cascade,
+    CONSTRAINT basket_fk_productno FOREIGN KEY (PRODUCTNO)
+        REFERENCES producttable (PRODUCTNO)
+        on delete cascade
+        on update cascade
 );
 
 CREATE TABLE wishlisttable (
 	ID VARCHAR(50) NOT NULL,
 	PRODUCTNO INT NOT NULL,
-    CONSTRAINT primary_wishlist PRIMARY KEY (ID, PRODUCTNO)
---     CONSTRAINT wishList_fk_id FOREIGN KEY (ID)
---         REFERENCES membertable (ID),
---     CONSTRAINT wishList_fk_productno FOREIGN KEY (PRODUCTNO)
---         REFERENCES producttable (PRODUCTNO)
+    CONSTRAINT primary_wishlist PRIMARY KEY (ID, PRODUCTNO),
+    CONSTRAINT wishList_fk_id FOREIGN KEY (ID)
+        REFERENCES membertable (ID)
+        on delete cascade
+        on update cascade,
+    CONSTRAINT wishList_fk_productno FOREIGN KEY (PRODUCTNO)
+        REFERENCES producttable (PRODUCTNO)
+        on delete cascade
+        on update cascade
 );
 
 CREATE TABLE ordertable (
@@ -90,36 +105,68 @@ CREATE TABLE ordertable (
 	ORDERNO BIGINT,
 	SELECTEDCOLOR VARCHAR(100),
 	SELECTEDSIZE VARCHAR(100),
-	AMOUNT INT NOT NULL,
+	ORDERAMOUNT INT NOT NULL,
 	TOTALPRICE INT NOT NULL,
 	ORDERDATE TIMESTAMP DEFAULT (current_timestamp),
-	STATE VARCHAR(20) DEFAULT '결제 완료',
-	ORDERMETHOD VARCHAR(40) NOT NULL,
+	STATE VARCHAR(20),
+	ORDERMETHOD VARCHAR(100) NOT NULL,
 	NAME VARCHAR(50) NOT NULL,
 	TEL VARCHAR(11) NOT NULL,
 	ZIPCODE VARCHAR(5) NOT NULL,
 	ADDRESS VARCHAR(200) NOT NULL,
 	DETAILADDR VARCHAR(50) NOT NULL,
-    MESSAGE VARCHAR(50)
---     CONSTRAINT order_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID),
---     CONSTRAINT order_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
+    MESSAGE VARCHAR(50),
+    CONSTRAINT order_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
 );
+
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`ordertable_BEFORE_INSERT` BEFORE INSERT ON `ordertable` FOR EACH ROW
+BEGIN
+if(new.ORDERMETHOD = 'cash')
+then
+	set new.state = '입금전';
+else
+	set new.state = '결제완료';
+END if;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+USE `springdb`$$
+CREATE PROCEDURE `orderChangeSchedule` ()
+BEGIN
+IF( DAYOFWEEK(curdate()) between 2 and 6)
+THEN
+UPDATE ordertable set state = '배송준비중' where state = '결제완료';
+END IF;
+END$$
+DELIMITER ;
+
+create EVENT event_AutoScheduler
+ON schedule 
+EVERY 1 day starts '2022-03-06 15:00:00'
+COMMENT '매일 15:00 결제완료 -> 배송준비중으로 변경'
+DO Call orderChangeSchedule();
 
 CREATE TABLE pointtable (
 	NUM BIGINT PRIMARY KEY AUTO_INCREMENT,
 	ID VARCHAR(50) NOT NULL,
 	POINT INT NOT NULL,
-	POINTDATE TIMESTAMP DEFAULT (current_timestamp)
---     CONSTRAINT point_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
+	POINTDATE TIMESTAMP DEFAULT (current_timestamp),
+    CONTENT VARCHAR(50)
 );
 
 DELIMITER $$
 USE `springdb`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`pointtable_BEFORE_INSERT` BEFORE INSERT ON `pointtable` FOR EACH ROW
 BEGIN
+if(new.content != '회원 가입 축하 포인트')
+Then
 update membertable
 set point = point + New.point
 where id = New.id;
+End if;
 END$$
 DELIMITER ;
 
@@ -128,7 +175,10 @@ CREATE TABLE noticetable (
 	TITLE VARCHAR(100) NOT NULL,
 	CONTENT VARCHAR(10000) NOT NULL,
 	ID VARCHAR(50) NOT NULL,
-	IMAGE VARCHAR(400)
+	IMAGE VARCHAR(400),
+    CONSTRAINT notice_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
+        on delete cascade
+        on update cascade
 );
 
 CREATE TABLE faqtable (
@@ -145,12 +195,17 @@ CREATE TABLE reviewTable(
 	id VARCHAR(50) NOT NULL,
 	REGDATE TIMESTAMP DEFAULT (current_timestamp),
 	IMAGE VARCHAR(400),
-	STAR INT NOT NULL
---     CONSTRAINT review_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
+	STAR INT NOT NULL,
+    CONSTRAINT review_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
+        on delete cascade
+        on update cascade,
+	CONSTRAINT review_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
+        on delete cascade
+        on update cascade
 );
 
 CREATE TABLE qnatable(
-	QNANO BIGINT DEFAULT 0,
+	QNANO BIGINT PRIMARY KEY auto_increment,
 	PRODUCTNO INT,
 	TYPE VARCHAR(200) NOT NULL,
 	ORIGINALNO BIGINT,
@@ -160,7 +215,9 @@ CREATE TABLE qnatable(
 	REGDATE TIMESTAMP DEFAULT (current_timestamp),
 	SECRET BOOLEAN NOT NULL,
 	IMAGE VARCHAR(400),
-    CONSTRAINT primary_qna PRIMARY KEY (QNANO, ORIGINALNO)
+    CONSTRAINT qna_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
+        on delete cascade
+        on update cascade
 );
 
 DELIMITER $$
@@ -175,11 +232,11 @@ DELIMITER ;
 
 DELIMITER $$
 USE `springdb`$$
-CREATE PROCEDURE `autoReply` (qna_type VARCHAR(200), qna_originalNo BIGINT, qna_content VARCHAR(2000), qna_id VARCHAR(50), qna_secret BOOLEAN, qna_image VARCHAR(400))
+CREATE PROCEDURE `autoReply` (qna_productNo INT, qna_type VARCHAR(200), qna_originalNo BIGINT, qna_content VARCHAR(2000), qna_id VARCHAR(50), qna_secret BOOLEAN, qna_image VARCHAR(400))
 BEGIN
 DECLARE getMaxQnaNo BIGINT;
 SET getMaxQnaNo = (SELECT max(qnaNo) FROM qnatable) + 1;
-insert into qnatable(QNANO, type, originalNo, content, id, secret, image) values(getMaxQnaNo, qna_type, qna_originalNo, qna_content, qna_id, qna_secret, qna_image);
+insert into qnatable(QNANO, PRODUCTNO, type, originalNo, content, id, secret, image) values(getMaxQnaNo, qna_productNo, qna_type, qna_originalNo, qna_content, qna_id, qna_secret, qna_image);
 END$$
 DELIMITER ;
 
@@ -190,19 +247,19 @@ CREATE TABLE bannertable (
 );
 -- insert data
 -- 회원
-insert into membertable values('admin','admin','관리자','0212345678','spring@gmail.com','12345','서울 강남구 테헤란로 212 (멀티캠퍼스)','2층 201호',false,null,'ROLE_ADMIN');
+insert into membertable values('spring','Asdqwe123','Spring','0212345678','spring@gmail.com','12345','서울 강남구 테헤란로 212 (멀티캠퍼스)','2층 201호',false,null,'ROLE_ADMIN');
 insert into membertable values('tester','Asdqwe123','유저','01098765432','user@gmail.com','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호',false,null,'ROLE_USER');
-insert into membertable values('tester21','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('tester22','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('tester23','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('tester24','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('tester25','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('tester26','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('tester27','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('tester28','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('tester29','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('tester212','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('tester222','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester1','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester2','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester3','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester4','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester5','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester6','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester7','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester8','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester9','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester10','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('tester11','Asdqwe123','유저2','01045614561','user2@gmail.com','24241','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 -- 상품
 insert into producttable(productname, type1, type2, imagename, price, color, size, amount, detailimagename, onSale) 
 values('스노우 버튼 모직스커트', 'skirt','mini','nature-3082832__480.jpg;photo-1433086966358-54859d0ed716.jfif',38000,'그레이지;소프트민트','S;M;L', 100,'photo-1447752875215-b2761acb3c5d.jfif;photo-1469474968028-56623f02e42e.jfif', true);
@@ -215,48 +272,40 @@ insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount
 insert into wishlisttable(id, productno) values('tester', 1);
 insert into wishlisttable(id, productno) values('tester', 2);
 -- 주문
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, amount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
 values('tester',1,1,'그레이지','S',1,38000,'cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, amount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
 values('tester2',1,2,'소프트민트','M',1,38000,'credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, amount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
 values('tester2',2,2,'피치베이지',null,4,119600,'credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 -- 포인트 내역
-insert into pointtable(id, point) values ('tester',-2000);
-insert into pointtable(id, point) values ('tester',500);
+insert into pointtable(id, point, content) values ('tester',-2000, '상품 구매');
+insert into pointtable(id, point, content) values ('tester',500, '구매 확정');
 -- 공지사항
-insert into noticetable(title, content, id, image) values("test1", "content1", "admin1", "test1.png");
-insert into noticetable(title, content, id, image) values("test2", "content2", "admin2", "test2.png");
-insert into noticetable(title, content, id, image) values("test3", "content3", "admin3", "test3.png");
-insert into noticetable(title, content, id, image) values("test1", "content1", "admin4", "test1.png");
-insert into noticetable(title, content, id, image) values("test2", "content2", "admin5", "test2.png");
-insert into noticetable(title, content, id, image) values("test3", "content3", "admin6", "test3.png");
-insert into noticetable(title, content, id, image) values("test1", "content1", "admin7", "test1.png");
-insert into noticetable(title, content, id, image) values("test2", "content2", "admin8", "test2.png");
-insert into noticetable(title, content, id, image) values("test3", "content3", "admin9", "test3.png");
-insert into noticetable(title, content, id, image) values("test1", "content1", "admin10", "test1.png");
-insert into noticetable(title, content, id, image) values("test2", "content2", "admin11", "test2.png");
-insert into noticetable(title, content, id, image) values("test3", "content3", "admin12", "test3.png");
-insert into noticetable(title, content, id, image) values("test1", "content1", "admin13", "test1.png");
-insert into noticetable(title, content, id, image) values("test2", "content2", "admin14", "test2.png");
-insert into noticetable(title, content, id, image) values("test3", "content3", "admin15", "test3.png");
-insert into noticetable(title, content, id, image) values("test1", "content1", "admin16", "test1.png");
-insert into noticetable(title, content, id, image) values("test2", "content2", "admin17", "test2.png");
-insert into noticetable(title, content, id, image) values("test3", "content3", "admin18", "test3.png");
-insert into noticetable(title, content, id, image) values("test1", "content1", "admin19", "test1.png");
-insert into noticetable(title, content, id, image) values("test2", "content2", "admin20", "test2.png");
-insert into noticetable(title, content, id, image) values("test3", "content3", "admin21", "test3.png");
-insert into noticetable(title, content, id, image) values("test1", "content1", "admin22", "test1.png");
-insert into noticetable(title, content, id, image) values("test2", "content2", "admin23", "test2.png");
-insert into noticetable(title, content, id, image) values("test3", "content3", "admin24", "test3.png");
-insert into noticetable(title, content, id, image) values("test1", "content1", "admin25", "test1.png");
-insert into noticetable(title, content, id, image) values("test2", "content2", "admin26", "test2.png");
-insert into noticetable(title, content, id, image) values("test3", "content3", "admin27", "test3.png");
-insert into noticetable(title, content, id, image) values("test1", "content1", "admin28", "test1.png");
-insert into noticetable(title, content, id, image) values("test2", "content2", "admin29", "test2.png");
-insert into noticetable(title, content, id, image) values("test3", "content3", "admin30", "test3.png");
-insert into noticetable(title, content, id, image) values("test3", "content3", "admin31", "test3.png");
-insert into noticetable(title, content, id, image) values("test3", "content3", "admin31", "test3.png");
+insert into noticetable(title, content, id, image) values("test1", "content1", "spring", "test1.png");
+insert into noticetable(title, content, id, image) values("test2", "content2", "spring", "test2.png");
+insert into noticetable(title, content, id, image) values("test3", "content3", "spring", "test3.png");
+insert into noticetable(title, content, id, image) values("test1", "content1", "spring", "test1.png");
+insert into noticetable(title, content, id, image) values("test2", "content2", "spring", "test2.png");
+insert into noticetable(title, content, id, image) values("test3", "content3", "spring", "test3.png");
+insert into noticetable(title, content, id, image) values("test1", "content1", "spring", "test1.png");
+insert into noticetable(title, content, id, image) values("test2", "content2", "spring", "test2.png");
+insert into noticetable(title, content, id, image) values("test3", "content3", "spring", "test3.png");
+insert into noticetable(title, content, id, image) values("test1", "content1", "spring", "test1.png");
+insert into noticetable(title, content, id, image) values("test2", "content2", "spring", "test2.png");
+insert into noticetable(title, content, id, image) values("test3", "content3", "spring", "test3.png");
+insert into noticetable(title, content, id, image) values("test1", "content1", "spring", "test1.png");
+insert into noticetable(title, content, id, image) values("test2", "content2", "spring", "test2.png");
+insert into noticetable(title, content, id, image) values("test3", "content3", "spring", "test3.png");
+insert into noticetable(title, content, id, image) values("test1", "content1", "spring", "test1.png");
+insert into noticetable(title, content, id, image) values("test2", "content2", "spring", "test2.png");
+insert into noticetable(title, content, id, image) values("test3", "content3", "spring", "test3.png");
+insert into noticetable(title, content, id, image) values("test1", "content1", "spring", "test1.png");
+insert into noticetable(title, content, id, image) values("test2", "content2", "spring", "test2.png");
+insert into noticetable(title, content, id, image) values("test3", "content3", "spring", "test3.png");
+insert into noticetable(title, content, id, image) values("test1", "content1", "spring", "test1.png");
+insert into noticetable(title, content, id, image) values("test2", "content2", "spring", "test2.png");
+
 -- 자주 묻는 질문
 insert into faqtable(type, title, content) values('product', '품절된 상품은 재입고 안되나요?', '<p>제작처 사정으로 인해 품절된 상품은 바로 재입고 여부 판단이 어려우며 재입고 가능할 시 해당 상품페이지에 안내해 드리고 있습니다.</p>
                                                                                          <p>정확한 일정은 제작처 상황에 따라 변경될 수 있는 점 양해 부탁드립니다.</p>');
@@ -347,19 +396,19 @@ insert into reviewtable(productno, content, id, image, star) values(1,'인기가
 insert into reviewtable(productno, content, id, image, star) values(2,'색이 정말 이뻐요! 색상은 화면과 같아요! 다만 구김 옴청 잘 가는 소재 ㅠ 알고 샀지만 생각보다 더 바스락 거리는 구김 가는 소재에요 ㅎㅎ입을때마다 열심히 다리미해야겠어요!','tester2', 'image2.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(1,'거울이 너무 더럽지만 리뷰 써봐용 ㅠㅠ 교복 같을까봐 걱정했는데 블랙이라 그런 느낌도 덜 해서 다행이고 길이도 너무 짧지 않고 적당해서 자주 입을 것 같아요','tester3', 'image3.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(2,'바스락바스락 얇은 옷이에요. 근데 무엇보다.. 색감이 미쳤어요ㅠㅠㅠㅠ 진짜 너무 예쁩니다. 유치하고 가벼운 느낌 아니고 차분해요. 핏은 오버핏인데 언발란스한 기장 덕분에 남의 옷 입은 느낌 1도 없고 여리여리해보여요. 빨리 따뜻해져서 단독으로 입고싶은 옷이에요.ㅠㅠㅠ','tester4', 'image4.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(1,'일시품절되기전에 구매했어요!너무너무 만족스럽스럽니다 ㅎㅎ클리어블루 컬러 실제로 보면 더 예뻐요 ㅠㅠ 꼭 사세요!','tester5', 'image5.jpg','5');
+insert into reviewtable(productno, content, id, image, star) values(1,'일시품절되기전에 구매했어요!너무너무 만족스럽스럽니다 ㅎㅎ클리어블루 컬러 실제로 보면 더 예뻐요 ㅠㅠ 꼭 사세요!','tester5', 'cat.jpg','5');
 insert into reviewtable(productno, content, id, image, star) values(1,'이번에 산 옷들끼리 코디해봤는데 이 스커트 인스타로 봤을 때 부터 이건 사야한다 싶었는데 진짜 너무 이쁘네요ㅜㅜ이번 할인구매 물품 중에 1등입니다ㅜㅜ저는 사실 쬐끔만 더 짧았으면 햇는데 딱 안정적으로 이쁜 길이긴 해요ㅎㅎ','tester5', 'image5.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(1,'요즘 옷들이 작아서 안 맞을까 걱정했는데(ㅠㅠ) 불편하지 않게 딱 맞아요! 핏도 맘에 들고 만족스러워용^.^','tester5', 'image5.jpg','5');
-insert into reviewtable(productno, content, id, image, star) values(1,'딱 봄 가을에 입기 좋을 얇은 두께입니다 겨울에는 너무 추울 것 같아요 에스 사이즈로 샀는데 조금 크게 나온 것 같아요 그래서인지 핏하게 예쁘게 떨어지지는 않아 조금 아쉽습니다 ㅠㅠ','tester5', 'image5.jpg','4');
+insert into reviewtable(productno, content, id, image, star) values(1,'딱 봄 가을에 입기 좋을 얇은 두께입니다 겨울에는 너무 추울 것 같아요 에스 사이즈로 샀는데 조금 크게 나온 것 같아요 그래서인지 핏하게 예쁘게 떨어지지는 않아 조금 아쉽습니다 ㅠㅠ','tester5', 'cat.jpg','4');
 -- 문의
 insert into qnatable(qnaNo, productno, type, originalNo, reply, content, id, secret, image) values(1, 1,'product', 1, true, '질문 내용', 'tester', true, 'image1.jpg');
 call autoQuestion(2,'product', false, '질문 내용', 'tester',true, 'image1.jpg');
-call autoReply('productReply', 1, '답변 내용', 'admin',true, 'image1.jpg');
+call autoReply(1,'productReply', 1, '답변 내용', 'spring',true, 'image1.jpg');
 call autoQuestion(null, 'general', false, '질문 내용', 'tester',true, 'image1.jpg');
 call autoQuestion(1,'product', true, '질문 내용', 'tester',true, 'image1.jpg');
 call autoQuestion(2,'product', true, '질문 내용', 'tester2',true, 'image1.jpg');
-call autoReply('productReply', 5, '답변 내용', 'admin',true, 'image1.jpg');
-call autoReply('productReply', 6, '답변 내용', 'admin',true, 'image1.jpg');
+call autoReply(1,'productReply', 5, '답변 내용', 'spring',true, 'image1.jpg');
+call autoReply(2,'productReply', 6, '답변 내용', 'spring',true, 'image1.jpg');
 call autoQuestion(null, 'general', false, '질문 내용', 'tester',true, 'image1.jpg');
 call autoQuestion(2,'product', false, '질문 내용', 'tester2',true, 'image1.jpg');
 call autoQuestion(null, 'delivery', false, '질문 내용', 'tester2',true, 'image1.jpg');
@@ -383,6 +432,7 @@ select * from faqtable;
 select * from reviewtable;
 select * from qnatable;
 select * from bannertable;
+select * from information_schema.events;
 
 -- select문 실험 및 용도
 
@@ -392,3 +442,6 @@ select * from bannertable;
 -- 많이 팔린 순으로 정렬
 -- select productno, sum(amount) from ordertable group by productno order by sum(amount) desc;
 -- select * from producttable left join ordertable on producttable.productno = ordertable.productno where type1 = 'skirt' group by ordertable.productno order by sum(ordertable.amount) desc limit 0,8;
+
+-- select * from producttable p left join ordertable o on p.productNo = o.productNo where p.onSale = true and p.amount > 0 and (orderDate BETWEEN DATE_ADD(NOW(), INTERVAL -1 week) AND NOW()) group by o.productNo order by sum(o.orderAmount) desc limit 8
+-- select sum(o.totalPrice) as priceSum, o.productNo, p.productName from ordertable o left join producttable p on p.productNo = o.productNo group by o.productNo having sum(o.totalPrice) >= 76000;

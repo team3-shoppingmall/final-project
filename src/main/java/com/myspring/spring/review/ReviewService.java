@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.myspring.spring.product.ProductMapper;
@@ -28,10 +26,10 @@ public class ReviewService {
 	}
 
 	// 리뷰 전체보기
-	public ResponseEntity<?> getAllReviews(int page, int perPage, String search, String searchWord) {
+	public ResponseEntity<?> getAllReviews(int page, int perPage, String search, String searchWord, int productNo, String id) {
 		int start = (page - 1) * perPage;
-		List<ReviewAndProductVO> reviewList = reviewMapper.getAllReviews(start, perPage, search, searchWord);
-		int count = reviewMapper.getCount(search, searchWord);
+		List<ReviewAndProductVO> reviewList = reviewMapper.getReivewList(start, perPage, search, searchWord, productNo, id);
+		int count = reviewMapper.getReviewCount(search, searchWord, productNo, id);
 		Map<String, Object> resMap = new HashMap<>();
 		resMap.put("reviewList", reviewList);
 		resMap.put("count", count);
@@ -58,12 +56,14 @@ public class ReviewService {
 			int reviewNo = result.getReviewNo();
 			File file = new File("./images/review/" + reviewNo + "/");
 			file.mkdir();
-
+			
+			if (fileList != null) {
 			MultipartFile multipartFile = fileList.get(0);
 			FileOutputStream writer = new FileOutputStream(
 					"./images/review/" + reviewNo + "/" + multipartFile.getOriginalFilename());
 			writer.write(multipartFile.getBytes());
 			writer.close();
+			}
 			entity = new ResponseEntity<>(HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -72,14 +72,6 @@ public class ReviewService {
 		}
 		return entity;
 	}
-//	public ResponseEntity<?> insertReview(ReviewVO reviewVO) {
-//		int res = reviewMapper.insertReview(reviewVO);
-//		if(res == 0) {
-//			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//		}else {
-//			return new ResponseEntity<>(HttpStatus.OK);
-//		}
-//	}
 
 	// 리뷰 삭제
 	public ResponseEntity<?> deleteReview(int reviewNo) {
@@ -103,7 +95,7 @@ public class ReviewService {
 	         File file;
 	         File[] underDir;
 
-//	         폴더 내 모든 파일 삭제
+	         // 폴더 내 모든 파일 삭제
 	         file = new File("./images/review/" + requestData.getReviewNo() + "/");
 	         underDir = file.listFiles();
 	         for (int i = 0; i < underDir.length; i++) {
@@ -123,20 +115,4 @@ public class ReviewService {
 	      }
 	      return entity;
 	   }
-
-//	public ResponseEntity<?> updateReview(int reviewNo, String content, int star) {
-//		int res = reviewMapper.updateReview(reviewNo, content, star);
-//
-//		if (res == 0)
-//			return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-//		else
-//			return new ResponseEntity<>(res, HttpStatus.OK);
-//	}
-
-	/*
-	 * //리뷰 상세보기 public ResponseEntity<?> getFindByReviewNo(int reviewNo) {
-	 * List<ReviewVO> res = reviewMapper.getFindByReviewNo(reviewNo); if(res ==
-	 * null) { return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); }else
-	 * { return new ResponseEntity<>(HttpStatus.OK); } }
-	 */
 }

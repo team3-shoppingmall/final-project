@@ -67,6 +67,12 @@ public class ProductController {
 		return productService.getProductByNo(productNo);
 	}
 
+//	 메인 화면 조회
+	@GetMapping(value = "/getMainPages")
+	public ResponseEntity<?> getMainPages() {
+		return productService.getMainPages();
+	}
+
 //	상품 추가
 	@PostMapping("/insertProduct")
 	public ResponseEntity<?> insertProduct(@RequestPart(value = "data") ProductVO requestData,
@@ -86,7 +92,7 @@ public class ProductController {
 	public ResponseEntity<?> updateOnSale(@PathVariable("productNo") int proudctNo) {
 		return productService.updateOnSale(proudctNo);
 	}
-	
+
 //	판매 여부 변경
 	@DeleteMapping("/deleteProduct/{productNo}")
 	public ResponseEntity<?> deleteProduct(@PathVariable("productNo") int proudctNo) {

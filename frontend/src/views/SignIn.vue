@@ -22,6 +22,10 @@
                         <v-icon class="pr-1">mdi-account</v-icon>
                         sign Up
                     </v-btn>
+                    <v-btn class="mr-5 primary pl-2 pr-3" @click="loginKakao">
+                        <v-icon class="pr-1">mdi-login-variant</v-icon>
+                        kakao
+                    </v-btn>
                 </v-row>
             </v-form>
         </v-col>
@@ -56,6 +60,12 @@ export default {
         signUp() {
             this.$router.push('/authentication/signUp');
         },
+        // loginKakao() {
+        //     window.location.replace(
+        //     "https://kauth.kakao.com/oauth/authorize?client_id=AppKey
+        //     &redirect_uri=http://localhost:9000/kakaologin&response_type=code"
+        // );
+        // },
     },
     mounted() {
          this.$vuetify.goTo(0)

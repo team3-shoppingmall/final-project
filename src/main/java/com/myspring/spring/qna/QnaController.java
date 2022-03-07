@@ -67,11 +67,11 @@ public class QnaController {
 	}
 
 	// 카테고리별 목록 조회
-	@GetMapping("/getQnaListByProductNo")
-	public ResponseEntity<?> getQnaListByProductNo(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
+	@GetMapping("/getQnaList")
+	public ResponseEntity<?> getQnaList(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
 			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord,
-			@RequestParam("type") String type, @RequestParam("productNo") int productNo) {
-		return qnaService.getQnaListByProductNo(page, perPage, search, searchWord, type, productNo);
+			@RequestParam("productNo") int productNo, @RequestParam(value = "id", required = false) String id) {
+		return qnaService.getQnaList(page, perPage, search, searchWord, productNo, id);
 	}
 
 	// originalNo로 조회
@@ -79,10 +79,11 @@ public class QnaController {
 	public ResponseEntity<?> getQnaByOrignalNo(@RequestParam("originalNo") int originalNo) {
 		return qnaService.getQnaByOriginalNo(originalNo);
 	}
-	
+
 	// 문의 등록
 	@PostMapping("/insertqna")
-	public ResponseEntity<?> insertQna(@RequestPart(value = "data") QnaVO requestData, @RequestParam("fileList") List<MultipartFile> fileList) throws NotFoundException {
+	public ResponseEntity<?> insertQna(@RequestPart(value = "data") QnaVO requestData,
+			@RequestParam(value = "fileList", required = false) List<MultipartFile> fileList) throws NotFoundException {
 		return qnaService.insertQna(requestData, fileList);
 	}
 
@@ -96,7 +97,7 @@ public class QnaController {
 	// 문의 수정 & 댓글 수정
 	@PatchMapping("/updateqna")
 	public ResponseEntity<?> updateQna(@RequestPart(value = "data") QnaVO requestData,
-			@RequestParam("fileList") List<MultipartFile> fileList) throws NotFoundException {
+			@RequestParam(value = "fileList", required = false) List<MultipartFile> fileList) throws NotFoundException {
 		return qnaService.updateQna(requestData, fileList);
 	}
 
@@ -119,7 +120,7 @@ public class QnaController {
 	public ResponseEntity<?> searchQnaByContent(@RequestParam("content") String content) {
 		return qnaService.searchQnaByContent(content);
 	}
-	
+
 	// 서버에서 이미지 가져오기
 	@GetMapping("/qnaImage/{qnaNo}/{image}")
 	public ResponseEntity<?> productimage(@PathVariable("qnaNo") int qnaNo, @PathVariable("image") String image)

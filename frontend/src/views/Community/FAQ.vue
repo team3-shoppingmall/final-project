@@ -89,7 +89,7 @@ export default {
     methods: {
         colorPicker(put) {
             if (this.search == put) {
-                return 'primary'
+                return 'secondary'
             }
         },
         getFAQ(selectedType) {

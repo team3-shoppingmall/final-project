@@ -13,23 +13,27 @@ public class ProductUtils {
 						&& (searchWord2 == null || searchWord2.equals("")))) {
 					AND();
 					String[] words = searchWord1.split(" ");
-
+					String temp = null;
 					switch (search) {
 					case "productNo":
 						for (int i = 0; i < words.length; i++) {
-							if (i > 0) {
-								OR();
+							if (i == 0) {
+								temp = words[i];
+							} else {
+								temp = temp + ", " + words[i];
 							}
-							WHERE("productNo = " + Integer.parseInt(words[i]));
 						}
+						WHERE("productNo in (" + temp + ")");
 						break;
 					case "productName":
 						for (int i = 0; i < words.length; i++) {
-							if (i > 0) {
-								OR();
+							if (i == 0) {
+								temp = words[i];
+							} else {
+								temp = temp + "|" + words[i];
 							}
-							WHERE("productName like '%" + words[i] + "%'");
 						}
+						WHERE("REGEXP_LIKE(productName, '" + temp + "')");
 						break;
 					case "price":
 						WHERE("price >= " + Integer.parseInt(searchWord1) + " and price <= "
@@ -44,7 +48,6 @@ public class ProductUtils {
 						break;
 					}
 				}
-
 				if (type1 != null) {
 					AND();
 					WHERE("UPPER(type1) = UPPER('" + type1 + "')");
@@ -75,23 +78,27 @@ public class ProductUtils {
 						&& (searchWord2 == null || searchWord2.equals("")))) {
 					AND();
 					String[] words = searchWord1.split(" ");
-
+					String temp = null;
 					switch (search) {
 					case "productNo":
 						for (int i = 0; i < words.length; i++) {
-							if (i > 0) {
-								OR();
+							if (i == 0) {
+								temp = words[i];
+							} else {
+								temp = temp + ", " + words[i];
 							}
-							WHERE("productNo = " + Integer.parseInt(words[i]));
 						}
+						WHERE("productNo in (" + temp + ")");
 						break;
 					case "productName":
 						for (int i = 0; i < words.length; i++) {
-							if (i > 0) {
-								OR();
+							if (i == 0) {
+								temp = words[i];
+							} else {
+								temp = temp + "|" + words[i];
 							}
-							WHERE("productName like '%" + words[i] + "%'");
 						}
+						WHERE("REGEXP_LIKE(productName, '" + temp + "')");
 						break;
 					case "price":
 						WHERE("price >= " + Integer.parseInt(searchWord1) + " and price <= "
@@ -106,7 +113,6 @@ public class ProductUtils {
 						break;
 					}
 				}
-
 				if (type1 != null) {
 					AND();
 					WHERE("UPPER(type1) = UPPER('" + type1 + "')");
@@ -136,14 +142,16 @@ public class ProductUtils {
 				if (searchWord != null) {
 					AND();
 					String[] words = searchWord.split(" ");
+					String temp = null;
 					for (int i = 0; i < words.length; i++) {
-						if (i > 0) {
-							OR();
+						if (i == 0) {
+							temp = words[i];
+						} else {
+							temp = temp + "|" + words[i];
 						}
-						WHERE("productName like " + "'%" + words[i] + "%'");
 					}
+					WHERE("REGEXP_LIKE(productName, '" + temp + "')");
 				}
-
 				if (type1 != null) {
 					AND();
 					WHERE("UPPER(type1) = UPPER('" + type1 + "')");
@@ -179,14 +187,16 @@ public class ProductUtils {
 				if (searchWord != null) {
 					AND();
 					String[] words = searchWord.split(" ");
+					String temp = null;
 					for (int i = 0; i < words.length; i++) {
-						if (i > 0) {
-							OR();
+						if (i == 0) {
+							temp = words[i];
+						} else {
+							temp = temp + "|" + words[i];
 						}
-						WHERE("productName like " + "'%" + words[i] + "%'");
 					}
+					WHERE("REGEXP_LIKE(productName, '" + temp + "')");
 				}
-
 				if (type1 != null) {
 					AND();
 					WHERE("UPPER(type1) = UPPER('" + type1 + "')");
@@ -219,7 +229,7 @@ public class ProductUtils {
 					}
 				}
 				GROUP_BY("o.productno");
-				ORDER_BY("sum(o.amount) desc");
+				ORDER_BY("sum(o.orderAmount) desc");
 				LIMIT(8);
 				OFFSET(0);
 			}

@@ -43,16 +43,19 @@ public interface QnaMapper {
 	List<QnaVO> getQnaByType(@Param("type") String type);
 
 	// originalNo로 조회
-	@Select("select * from qnatable where originalNo = #{orignalNo} AND reply = false")
-	QnaVO getQnaByOriginalNo(@Param("originalNo") int originalNo);
+	@Select("select qnaNo from qnatable where originalNo = #{originalNo} AND reply = false")
+	int getQnaByOriginalNo(@Param("originalNo") int originalNo);
 
 	// 문의 등록
-	@Insert("call autoQuestion(#{in.productNo}, #{in.type}, #{in.reply}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
+//	@Insert("call autoQuestion(#{in.productNo}, #{in.type}, #{in.reply}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
+	@Insert("insert into qnatable(qnaNo, productNo, type, originalNo, reply, content, id, secret, image) "
+			+ "values((select A.num from (SELECT MAX(qnaNo)+1 as num FROM qnatable) A), #{in.productNo}, #{in.type}, "
+			+ "(select A.num from (SELECT MAX(qnaNo)+1 as num FROM qnatable) A), #{in.reply}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
 	@Options(useGeneratedKeys = true, keyProperty = "result.qnaNo", keyColumn = "qnaNo")
 	int insertQna(@Param("in") QnaVO in, @Param("result") QnaVO result);
 
 	// 댓글 등록
-	@Insert("call autoReply(#{in.type}, #{in.originalNo}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
+	@Insert("call autoReply(#{in.productNo}, #{in.type}, #{in.originalNo}, #{in.content}, #{in.id}, #{in.secret}, #{in.image})")
 	int insertReply(@Param("in") QnaVO qnaVO);
 
 	// 댓글 등록시 reply 업데이트
@@ -84,12 +87,14 @@ public interface QnaMapper {
 	int deleteReply(@Param("qnaNo") int qnaNo);
 
 	// 상품관련 qna리스트 가져오기
-	@SelectProvider(type = QnaUtils.class, method = "getQnaListByProductNo")
-	List<QnaVO> getQnaListByProductNo(int start, int perPage, String search, String searchWord, int productNo);
+	@SelectProvider(type = QnaUtils.class, method = "getQnaList")
+	List<QnaAndProductVO> getQnaList(int start, int perPage, String search, String searchWord, int productNo, String id);
 
 	// 전체 개수 가져오기
-	@SelectProvider(type = QnaUtils.class, method = "getQnaCountByProductNo")
-	int getQnaCountByProductNo(String search, String searchWord, int productNo);
+	@SelectProvider(type = QnaUtils.class, method = "getQnaCount")
+	int getQnaCount(String search, String searchWord, int productNo, String id);
+	
+	
 
 //	//기간으로 문의 검색(최근 일주일)
 //	@Select("select * from qnatable where regDate between DATE_ADD(NOW(), INTERVAL -1 WEEK) and NOW()")

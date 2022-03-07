@@ -113,6 +113,10 @@
 import axios from 'axios'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import ProductDetailDisplay from '@/components/ProductDetailDisplay.vue'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         ProductDetailDisplay,
@@ -207,8 +211,7 @@ export default {
             imageFiles: [null, null, null, null],
             imageUrl: [null, null, null, null],
             secret: true,
-            admin_id : "spring",
-            id: "tester",
+            id: '',
         }
     },
     methods: {
@@ -352,7 +355,7 @@ export default {
                     type: this.pageID + 'Reply',
                     originalNo: this.originalNo,
                     content: this.content,
-                    id: this.admin_id,
+                    id: this.id,
                 }
             }).then(() => {
                 alert("답변 등록 완료");
@@ -377,7 +380,7 @@ export default {
             let data = {
                 title: this.titleDetail,
                 content: this.content,
-                id: "spring",
+                id: this.id,
                 image: image,
             };
             let formData = new FormData();
@@ -706,7 +709,9 @@ export default {
                 })
         },
     },
-
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
+    },
     watch: {
         content: {
             handler() {
@@ -724,6 +729,7 @@ export default {
         },
     },
     mounted() {
+        this.id = this.getLogin.user.id;
         // notice, review, faq, qna
         this.pageID = this.$route.params.id;
         // 수정용 게시글 번호

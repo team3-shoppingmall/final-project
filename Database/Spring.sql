@@ -386,23 +386,19 @@ insert into faqtable(type, title, content) values('delivery', '도서산간지�
 																						
 -- 후기
 insert into reviewtable(productno, content, id, image, star) values(1,'처음 입고 됐을 땐 네이비, 색상 추가로 재입고 됐을 땐 다크네이비로 사서 잘 입고 다녔는데 민트브라운이 계속 아른거리더라구요...재입고 될 때마다 풀렸나 싶어 몇번을 기웃거렸던지요...그래서 이번에 추가로 재입고 해주셔서 너무 좋아요!!ㅎㅎ','tester', 'image1.jpg','5');
-insert into reviewtable(productno, content, id, image, star) values(1,'이전에 다른 색상으로 구매했었는데 재질도 좋고 착용감도 좋아서 새로 또 구매했어요! 그레이 색상이라 전체적으로 색감이 다운됐지만, 그 만의 매력이 있어서 마음에 들어요!','tester2', 'image2.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(2,'가을에 휘뚜루마뚜루 입으려고 샀어요 검정+보라 스트라이프 사고 싶었는데 라벤더네이비도 충분히 예쁘네요 너무 오버핏도 아니고 너무 베이직한 핏도 아니라서 딱 맘에 들어요 다른 색으로 더 살 것 같아요 쌩유','tester2', 'image3.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(1,'완전 딱 진짜 기본이에요!! 탄탄한 재질은 아니지만 봄에 가볍게 입기 좋을것 같아요!! 그리고 흰색배경이 아니라 색감 진짜 너무 예쁜것같아요 : )','tester', 'image4.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(2,'챠콜이랑 아이보리 고민했었는데 아이보리가 하의를 뭘입어도 다 잘어울릴것같아서 선택했어요! 핏도 낙낙하고 안에 목티입으니까 완전 제스타일이에요=) 다른색깔도 구매하고 싶네용','tester', 'image5.jpg','5');
+insert into reviewtable(productno, content, id, image, star) values(1,'이전에 다른 색상으로 구매했었는데 재질도 좋고 착용감도 좋아서 새로 또 구매했어요! 그레이 색상이라 전체적으로 색감이 다운됐지만, 그 만의 매력이 있어서 마음에 들어요!','tester2', 'image1.jpg','4');
+insert into reviewtable(productno, content, id, image, star) values(2,'가을에 휘뚜루마뚜루 입으려고 샀어요 검정+보라 스트라이프 사고 싶었는데 라벤더네이비도 충분히 예쁘네요 너무 오버핏도 아니고 너무 베이직한 핏도 아니라서 딱 맘에 들어요 다른 색으로 더 살 것 같아요 쌩유','tester2', 'image2.jpg','4');
+insert into reviewtable(productno, content, id, image, star) values(1,'완전 딱 진짜 기본이에요!! 탄탄한 재질은 아니지만 봄에 가볍게 입기 좋을것 같아요!! 그리고 흰색배경이 아니라 색감 진짜 너무 예쁜것같아요 : )','tester', 'image1.jpg','4');
+insert into reviewtable(productno, content, id, image, star) values(2,'챠콜이랑 아이보리 고민했었는데 아이보리가 하의를 뭘입어도 다 잘어울릴것같아서 선택했어요! 핏도 낙낙하고 안에 목티입으니까 완전 제스타일이에요=) 다른색깔도 구매하고 싶네용','tester', 'image2.jpg','5');
 insert into reviewtable(productno, content, id, image, star) values(1,'개인적으로 색깔은 솔직히 실망했어요. 예쁜 베이지가 아니라 그냥 황토색? 상세샷보다도 좀 어두워요.다른 분들 후기처럼 냄새는 많이 나고 꺼끌거려요. 그리고 무엇보다 털이 진짜.. 어마무시하게 빠집니다. 안에 검정색 히트텍 입었다가 깜짝 놀랐어요..','tester1', 'image1.jpg','1');
 insert into reviewtable(productno, content, id, image, star) values(2,'너무 이뻐요 사길 후회 안할정도로 ...팔뚝잇는66인데 이거 입고 55로 보인데요..(엄마 눈에만) 배송은 좀 느리게 왓더라고요! 제가 사진후기 잘 안올리는데 품절 풀리면 바로사세오...','tester2', 'image2.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(1,'바스락거리는 소재에요! 약간 단작셔츠같은 느낌..! 제가 좋아하는 느낌이에요 히히 근데 159인 제 키에는 뒷쪽 언발 부분이 엉덩이를 다 가리고도 살짝 더 내려와서 안그래도 작은 키가 더 작아보이긴 하네요,, 그래도 색감이나 핏 다 너무 예쁘고 소매쪽 핀턱때문에 포인트도 되고! 마음에 들어요 ´ㅅ`','tester3', 'image3.jpg','3');
-insert into reviewtable(productno, content, id, image, star) values(2,'편하게 입으려고 샀는데, 후기를 미처 꼼꼼히 못 읽은 것 같아요. 피부 좀 예민하신 분들은 엄청 따갑습니다. 특히 가운데 지퍼 부분이 까끌해서 피부 엄청 빨갛게 돼요ㅠ 그리고 털이 너무 많이 빠져서 코트에 다 묻습니다. 예쁘지만 산 것 중에 유일하게 좀 실망한 니트예요ㅠㅠ','tester4', 'image4.jpg','2');
-insert into reviewtable(productno, content, id, image, star) values(1,'이옷은 제가 산것중 제일 실망입니다,,물론 디자인은 나쁘진 않은데 원단이 좀,,싼티나요 보풀도 많이나고,,진짜 믿고 구매하는데 오래기다려서 받았는데 반품이 귀찮아입어요;;','tester5', 'image5.jpg','1');
+insert into reviewtable(productno, content, id, image, star) values(1,'바스락거리는 소재에요! 약간 단작셔츠같은 느낌..! 제가 좋아하는 느낌이에요 히히 근데 159인 제 키에는 뒷쪽 언발 부분이 엉덩이를 다 가리고도 살짝 더 내려와서 안그래도 작은 키가 더 작아보이긴 하네요,, 그래도 색감이나 핏 다 너무 예쁘고 소매쪽 핀턱때문에 포인트도 되고! 마음에 들어요 ´ㅅ`','tester3', 'image1.jpg','3');
+insert into reviewtable(productno, content, id, image, star) values(2,'편하게 입으려고 샀는데, 후기를 미처 꼼꼼히 못 읽은 것 같아요. 피부 좀 예민하신 분들은 엄청 따갑습니다. 특히 가운데 지퍼 부분이 까끌해서 피부 엄청 빨갛게 돼요ㅠ 그리고 털이 너무 많이 빠져서 코트에 다 묻습니다. 예쁘지만 산 것 중에 유일하게 좀 실망한 니트예요ㅠㅠ','tester4', 'image2.jpg','2');
+insert into reviewtable(productno, content, id, image, star) values(1,'이옷은 제가 산것중 제일 실망입니다,,물론 디자인은 나쁘진 않은데 원단이 좀,,싼티나요 보풀도 많이나고,,진짜 믿고 구매하는데 오래기다려서 받았는데 반품이 귀찮아입어요;;','tester5', 'image1.jpg','1');
 insert into reviewtable(productno, content, id, image, star) values(1,'인기가 워낙 많았던 ㅔ품이라서 오래 기다려서 받았어요!엄마도 이때까지 산 셔츠중에 이게 가장 예쁘다고 하시네요 ㅎㅎ 언발 기장으로 떨어지는 게 너무 예쁩니당 얼른 날 풀려서 단독으로 입고 다니고 싶어요ㅠㅠ','tester1', 'image1.jpg','5');
 insert into reviewtable(productno, content, id, image, star) values(2,'색이 정말 이뻐요! 색상은 화면과 같아요! 다만 구김 옴청 잘 가는 소재 ㅠ 알고 샀지만 생각보다 더 바스락 거리는 구김 가는 소재에요 ㅎㅎ입을때마다 열심히 다리미해야겠어요!','tester2', 'image2.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(1,'거울이 너무 더럽지만 리뷰 써봐용 ㅠㅠ 교복 같을까봐 걱정했는데 블랙이라 그런 느낌도 덜 해서 다행이고 길이도 너무 짧지 않고 적당해서 자주 입을 것 같아요','tester3', 'image3.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(2,'바스락바스락 얇은 옷이에요. 근데 무엇보다.. 색감이 미쳤어요ㅠㅠㅠㅠ 진짜 너무 예쁩니다. 유치하고 가벼운 느낌 아니고 차분해요. 핏은 오버핏인데 언발란스한 기장 덕분에 남의 옷 입은 느낌 1도 없고 여리여리해보여요. 빨리 따뜻해져서 단독으로 입고싶은 옷이에요.ㅠㅠㅠ','tester4', 'image4.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(1,'일시품절되기전에 구매했어요!너무너무 만족스럽스럽니다 ㅎㅎ클리어블루 컬러 실제로 보면 더 예뻐요 ㅠㅠ 꼭 사세요!','tester5', 'cat.jpg','5');
-insert into reviewtable(productno, content, id, image, star) values(1,'이번에 산 옷들끼리 코디해봤는데 이 스커트 인스타로 봤을 때 부터 이건 사야한다 싶었는데 진짜 너무 이쁘네요ㅜㅜ이번 할인구매 물품 중에 1등입니다ㅜㅜ저는 사실 쬐끔만 더 짧았으면 햇는데 딱 안정적으로 이쁜 길이긴 해요ㅎㅎ','tester5', 'image5.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(1,'요즘 옷들이 작아서 안 맞을까 걱정했는데(ㅠㅠ) 불편하지 않게 딱 맞아요! 핏도 맘에 들고 만족스러워용^.^','tester5', 'image5.jpg','5');
-insert into reviewtable(productno, content, id, image, star) values(1,'딱 봄 가을에 입기 좋을 얇은 두께입니다 겨울에는 너무 추울 것 같아요 에스 사이즈로 샀는데 조금 크게 나온 것 같아요 그래서인지 핏하게 예쁘게 떨어지지는 않아 조금 아쉽습니다 ㅠㅠ','tester5', 'cat.jpg','4');
+insert into reviewtable(productno, content, id, image, star) values(1,'거울이 너무 더럽지만 리뷰 써봐용 ㅠㅠ 교복 같을까봐 걱정했는데 블랙이라 그런 느낌도 덜 해서 다행이고 길이도 너무 짧지 않고 적당해서 자주 입을 것 같아요','tester3', 'image1.jpg','4');
+insert into reviewtable(productno, content, id, image, star) values(2,'바스락바스락 얇은 옷이에요. 근데 무엇보다.. 색감이 미쳤어요ㅠㅠㅠㅠ 진짜 너무 예쁩니다. 유치하고 가벼운 느낌 아니고 차분해요. 핏은 오버핏인데 언발란스한 기장 덕분에 남의 옷 입은 느낌 1도 없고 여리여리해보여요. 빨리 따뜻해져서 단독으로 입고싶은 옷이에요.ㅠㅠㅠ','tester4', 'image2.jpg','4');
 -- 문의
 insert into qnatable(qnaNo, productno, type, originalNo, reply, content, id, secret, image) values(1, 1,'product', 1, true, '질문 내용', 'tester', true, 'image1.jpg');
 call autoQuestion(2,'product', false, '질문 내용', 'tester',true, 'image1.jpg');

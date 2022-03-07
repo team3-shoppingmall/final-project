@@ -1,15 +1,20 @@
 <template>
 <span>
-    <!-- <span>{{ returnId }}</span> -->
-    <span>{{id}}</span>
+    <span v-if="getLogin.user.authority == 'ROLE_USER'">{{ returnId }}</span>
+    <span v-if="getLogin.user.authority == 'ROLE_ADMIN'">{{id}}</span>
 </span>
 </template>
 
 <script>
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     computed: {
+        ...LoginStore.mapGetters(['getLogin']),
         returnId() {
-            if (this.id == 'Spring') {
+            if (this.id == 'spring' || this.id == this.getLogin.user.id) {
                 return this.id;
             } else {
                 return this.id.slice(0, 4) + '****';

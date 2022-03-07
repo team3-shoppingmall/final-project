@@ -52,13 +52,13 @@
                 <v-col cols="auto" v-if="qna.reply">
                     <v-btn @click="moveToReply" color="primary">답변보기</v-btn>
                 </v-col>
-                <v-col cols="auto" v-if="admin && (qna.qnaNo == qna.originalNo) && !qna.reply">
+                <v-col cols="auto" v-if="getLogin.user.authority == 'ROLE_ADMIN' && (qna.qnaNo == qna.originalNo) && !qna.reply">
                     <v-btn @click="moveToWriteReply" color="primary">답변하기</v-btn>
                 </v-col>
-                <v-col cols="auto">
+                <v-col cols="auto" v-if="getLogin.user.id == qna.id">
                     <v-btn @click="moveToUpdate" color="primary">수정</v-btn>
                 </v-col>
-                <v-col cols="auto">
+                <v-col cols="auto" v-if="getLogin.user.authority == 'ROLE_ADMIN' || getLogin.user.id == qna.id">
                     <v-btn @click="deleteQnA" color="primary">삭제</v-btn>
                 </v-col>
             </v-row>
@@ -74,6 +74,10 @@ import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 import QnATitleDisplay from '@/components/QnATitleDisplay.vue'
 import ProductDetailDisplay from '@/components/ProductDetailDisplay.vue'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         HideId,
@@ -155,6 +159,9 @@ export default {
             this.pageID = this.$route.params.id;
             this.getQnA();
         },
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     mounted() {
         this.pageID = this.$route.params.id;

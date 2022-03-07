@@ -33,7 +33,7 @@
             </v-row>
         </v-col>
         <v-col cols="auto">
-            <v-btn :to="'/writePost/deliveryQnA'" color="primary">글쓰기</v-btn>
+            <v-btn :to="'/writePost/deliveryQnA'" color="primary" v-if="getLogin.user.authority == 'ROLE_USER'">글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -44,6 +44,10 @@ import axios from 'axios'
 import HideId from '@/components/HideId.vue'
 import DateDisplay from '@/components/DateDisplay.vue'
 import QnATitleDisplay from '@/components/QnATitleDisplay.vue'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         HideId,
@@ -116,13 +120,22 @@ export default {
             }).then(res => {
                 this.contents = res.data.qnaList;
                 this.totalContents = res.data.count;
-            }).finally(()=>{
+            }).finally(() => {
                 this.loading = false;
             })
         },
         moveto(item) {
+            if (item.secret == true) {
+                if (this.getLogin.user.id != item.id && this.getLogin.user.authority != 'ROLE_ADMIN') {
+                    alert('비밀글입니다');
+                    return;
+                }
+            }
             this.$router.push(`/qna/${item.qnaNo}`)
         },
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     watch: {
         options: {

@@ -51,10 +51,12 @@
     </v-app-bar>
     <v-main style="min-height: 970px;">
         <router-view />
-        <!-- <v-btn v-show="fab" fab dark fixed bottom right color="#FF8EA0">
-            ChatBot
-        </v-btn> -->
-        <v-col cols="auto" style="position:fixed; top:63%; right:10px">
+        <v-col cols="auto" style="position:fixed; top:78%; right:10px; z-index: 1;">
+            <v-row justify="end" class="mb-0">
+                <v-btn fab dark elevation="2" right color="#FF8EA0" :to="'/'">
+                    <v-icon>mdi-chat</v-icon>
+                </v-btn>
+            </v-row>
             <v-row justify="end" class="mb-0">
                 <v-btn fab dark elevation="2" right color="#FF8EA0" :to="'/'">
                     <v-icon>mdi-home</v-icon>
@@ -123,9 +125,6 @@ export default {
             }, {
                 name: 'MyPage',
                 to: '/myPage/home',
-            }, {
-                name: 'Payment',
-                to: '/payment',
             }, {
                 name: 'ProductDetail',
                 to: '/productDetail/1',

@@ -543,13 +543,17 @@ export default {
     },
     mounted() {
         this.selected = this.$route.params.Payment;
-        this.getMember();
-        for (let i = 0; i < this.selected.length; i++) {
-            this.totalPrice += (this.selected[i].price - this.selected[i].discount) * this.selected[i].basketAmount;
-            this.totalDiscount += this.selected[i].discount;
-        }
-        if (Number(this.totalPrice) < 50000) {
-            this.totalPrice += 2500;
+        if (this.selected == undefined) {
+            this.$router.push('/')
+        } else {
+            this.getMember();
+            for (let i = 0; i < this.selected.length; i++) {
+                this.totalPrice += (this.selected[i].price - this.selected[i].discount) * this.selected[i].basketAmount;
+                this.totalDiscount += this.selected[i].discount;
+            }
+            if (Number(this.totalPrice) < 50000) {
+                this.totalPrice += 2500;
+            }
         }
     }
 }

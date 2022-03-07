@@ -22,13 +22,11 @@
                                 <div v-html="notice.content"></div>
                             </v-col>
                         </v-row>
-                        <v-row v-if="images != []">
+                        <v-row v-if="images != []" justify="center">
                             <v-col cols="10" v-for="(image, idx) in images" :key="idx">
-                                <!-- <v-img contain :src="`/api/notice/noticeImage/${pageID}/${image}`"></v-img> -->
                                 <v-img contain :src="`/api/notice/noticeImage/${pageID}/${image}`" max-height="auto" max-width="auto"></v-img>
                             </v-col>
                         </v-row>
-                        
                     </td>
                 </tr>
             </tbody>
@@ -39,10 +37,10 @@
         <v-col cols="auto">
             <v-btn @click="moveToBefore" color="primary">목록</v-btn>
         </v-col>
-        <v-col cols="auto">
+        <v-col cols="auto" v-if="getLogin.user.authority == 'ROLE_ADMIN'">
             <v-btn @click="moveToUpdate" color="primary">수정</v-btn>
         </v-col>
-        <v-col cols="auto">
+        <v-col cols="auto" v-if="getLogin.user.authority == 'ROLE_ADMIN'">
             <v-btn @click="deleteNotice" color="primary">삭제</v-btn>
         </v-col>
     </v-row>
@@ -52,6 +50,10 @@
 <script>
 import axios from 'axios'
 import HideId from '@/components/HideId.vue'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         HideId,
@@ -61,7 +63,6 @@ export default {
         return {
             dataLoaded: false,
             pageID: '',
-            admin: true,
             notice: '',
             images: [],
         }
@@ -81,7 +82,7 @@ export default {
             axios.get(`/api/notice/list/${this.pageID}`)
                 .then((res) => {
                     this.notice = res.data;
-                    if(this.notice.image != null){
+                    if (this.notice.image != null) {
                         this.images = this.notice.image.split(';');
                     }
                 }).catch((err) => {
@@ -91,7 +92,6 @@ export default {
                     this.dataLoaded = true
                 )
         },
-
         deleteNotice() {
             axios.delete(`/api/notice/deleteNotice/${this.pageID}`)
                 .then(() => {
@@ -101,7 +101,9 @@ export default {
                     console.log(err);
                 })
         },
-
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     mounted() { //method를 호출하거나 DOM으로 <template>안에 있는 태그를 처리할 때 사용
         this.pageID = this.$route.params.id;

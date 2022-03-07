@@ -276,6 +276,39 @@ export default {
                 text: 'TOP',
                 value: 'top;all',
             }, {
+                text: 'TOP>슬리브리스',
+                value: 'top;sleeveless',
+            }, {
+                text: 'TOP>티셔츠',
+                value: 'top;tshirts',
+            }, {
+                text: 'TOP>니트',
+                value: 'top;knit',
+            }, {
+                text: 'TOP>셔츠',
+                value: 'top;shirt',
+            }, {
+                text: 'TOP>블라우스',
+                value: 'top;blouse',
+            }, {
+                text: 'TOP>맨투맨',
+                value: 'top;mtm',
+            }, {
+                text: 'PANTS',
+                value: 'pants;all',
+            }, {
+                text: 'PANTS>슬랙스',
+                value: 'pants;slacks',
+            }, {
+                text: 'PANTS>데님',
+                value: 'pants;denim',
+            }, {
+                text: 'PANTS>면',
+                value: 'pants;cotton',
+            }, {
+                text: 'PANTS>SHORT',
+                value: 'pants;shorts',
+            }, {
                 text: 'SKIRT',
                 value: 'skirt;all',
             }, {
@@ -284,6 +317,15 @@ export default {
             }, {
                 text: 'SKIRT>미디/롱',
                 value: 'skirt;midi-long',
+            }, {
+                text: 'DRESS',
+                value: 'dress;all',
+            }, {
+                text: 'DRESS>원피스',
+                value: 'dress;ops',
+            }, {
+                text: 'DRESS>점프수트',
+                value: 'dress;jumpSuit',
             }, ],
             typeSelected: null,
 

@@ -22,7 +22,7 @@
                     <v-select :items="searches" v-model="search" hide-details></v-select>
                 </v-col>
                 <v-col cols="7">
-                    <v-text-field v-model="searchWord" hide-details></v-text-field>
+                    <v-text-field v-model="searchWord" hide-details @keyup.enter="getNotice"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
                     <v-btn @click="getNotice" color="primary">검색</v-btn>

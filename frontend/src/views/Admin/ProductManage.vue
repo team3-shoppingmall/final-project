@@ -255,42 +255,36 @@ export default {
             sizeList: [],
 
             types: [{
-                    text: '기준 선택',
-                    value: null,
-                },
-                {
-                    text: 'OUTER',
-                    value: 'outer',
-                },
-                {
-                    text: 'OUTER>자켓',
-                    value: 'outer;jacket',
-                },
-                {
-                    text: 'OUTER>코트',
-                    value: 'outer;coat',
-                },
-                {
-                    text: 'OUTER>가디건',
-                    value: 'outer;cardigan',
-                },
-                {
-                    text: 'OUTER>점퍼',
-                    value: 'outer;jumper',
-                },
-                {
-                    text: 'SKIRT',
-                    value: 'skirt',
-                },
-                {
-                    text: 'SKIRT>미니',
-                    value: 'skirt;mini',
-                },
-                {
-                    text: 'SKIRT>미디/롱',
-                    value: 'skirt;midi-long',
-                },
-            ],
+                text: '기준 선택',
+                value: null,
+            }, {
+                text: 'OUTER',
+                value: 'outer',
+            }, {
+                text: 'OUTER>자켓',
+                value: 'outer;jacket',
+            }, {
+                text: 'OUTER>가디건',
+                value: 'outer;cardigan',
+            }, {
+                text: 'OUTER>점퍼',
+                value: 'outer;jumper',
+            }, {
+                text: 'OUTER>코트',
+                value: 'outer;coat',
+            }, {
+                text: 'TOP',
+                value: 'top;all',
+            }, {
+                text: 'SKIRT',
+                value: 'skirt;all',
+            }, {
+                text: 'SKIRT>미니',
+                value: 'skirt;mini',
+            }, {
+                text: 'SKIRT>미디/롱',
+                value: 'skirt;midi-long',
+            }, ],
             typeSelected: null,
 
             menu1: false,

@@ -529,7 +529,7 @@ export default {
                     this.titleSelected = res.data.type;
                     this.content = res.data.content;
                     this.secret = res.data.secret;
-                    if(res.data.image != null){
+                    if (res.data.image != null) {
                         let imageList = res.data.image.split(';');
                         for (let i = 0; i < imageList.length; i++) {
                             axios.get(`/api/qna/qnaImage/${this.num}/${imageList[i]}`, {
@@ -605,17 +605,21 @@ export default {
             // })
         },
         reviewFormUpdate() {
+            let image = null;
+            if (this.imageFiles[0] != null) {
+                image = this.imageFiles[0].name;
+            }
             let data = {
                 reviewNo: this.num,
                 content: this.content,
                 star: this.star,
-                image: this.imageFiles[0].name,
+                image: image,
             };
             let formData = new FormData();
             formData.append('data', new Blob([JSON.stringify(data)], {
                 type: "application/json"
             }));
-            
+
             formData.append(`fileList`, this.imageFiles[0]);
             axios.patch(`/api/review/update`, formData)
                 .then(() => {

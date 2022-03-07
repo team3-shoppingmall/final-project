@@ -63,7 +63,6 @@ export default {
         },
     },
     mounted() {
-        this.dataLoaded = false;
         this.getProduct();
     }
 }

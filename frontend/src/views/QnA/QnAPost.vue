@@ -1,6 +1,5 @@
 <template>
 <v-container>
-    {{qna}}
     <v-row justify="center">
         <v-col align-self="center" cols="7">
             <div class="text-h3">문의</div>

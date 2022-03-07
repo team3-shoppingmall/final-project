@@ -473,19 +473,22 @@ export default {
                 .then((res) => {
                     this.titleDetail = res.data.title;
                     this.content = res.data.content;
-                    let imageList = res.data.image.split(';');
-                    for (let i = 0; i < imageList.length; i++) {
-                        axios.get(`/api/notice/noticeImage/${this.num}/${imageList[i]}`, {
-                                responseType: "blob",
-                            })
-                            .then(res => {
-                                let file = new File([res.data], imageList[i], {
-                                    type: "image/*",
-                                    lastModified: Date.now()
-                                });
-                                this.imageFiles[i] = file;
-                                this.onImageChange(i);
-                            })
+                    let imageList = null;
+                    if (res.data.image != null) {
+                        imageList = res.data.image.split(';');
+                        for (let i = 0; i < imageList.length; i++) {
+                            axios.get(`/api/notice/noticeImage/${this.num}/${imageList[i]}`, {
+                                    responseType: "blob",
+                                })
+                                .then(res => {
+                                    var file = new File([res.data], imageList[i], {
+                                        type: "image/*",
+                                        lastModified: Date.now()
+                                    });
+                                    this.imageFiles[i] = file;
+                                    this.onImageChange(i);
+                                })
+                        }
                     }
                 }).catch((err) => {
                     alert("정보를 불러오는데 실패했습니다.");

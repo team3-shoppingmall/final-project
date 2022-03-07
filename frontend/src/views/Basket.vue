@@ -72,7 +72,7 @@ export default {
             baskets: [],
             selected: [],
             totalPrice: 0,
-            loading: false,
+            loading: true,
             options: {
                 itemsPerPage: 50,
             },

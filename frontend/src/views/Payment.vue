@@ -332,6 +332,7 @@ export default {
             bankSelected: '',
             cashReceipts: false,
             cashReceiptsNum: '',
+            
             id: 'tester'
         }
     },

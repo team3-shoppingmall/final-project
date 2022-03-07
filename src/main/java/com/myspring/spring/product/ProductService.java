@@ -62,7 +62,7 @@ public class ProductService {
 //	메인 화면 조회
 	public ResponseEntity<?> getMainPages() {
 		// TODO Auto-generated method stub
-		
+
 		List<ProductVO> eventList = productMapper.getProductEvent();
 		List<ProductAndOrderVO> weeklyBestList = productMapper.getProductWeeklyBest();
 		List<ProductVO> newList = productMapper.getProductNew();
@@ -75,7 +75,7 @@ public class ProductService {
 		resMap.put("bestList", bestList);
 		return new ResponseEntity<>(resMap, HttpStatus.OK);
 	}
-	
+
 //	상품 추가
 	public ResponseEntity<?> insertProduct(ProductVO requestData, List<MultipartFile> fileList) {
 		ProductVO result = new ProductVO();
@@ -180,11 +180,33 @@ public class ProductService {
 	}
 
 	public ResponseEntity<?> deleteProduct(int productNo) {
-		int res = productMapper.deleteProduct(productNo);
-		if (res == 0)
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return new ResponseEntity<>(HttpStatus.OK);
+		ResponseEntity<?> entity = null;
+		try {
+			File file;
+			File[] underDir;
+
+			int res = productMapper.deleteProduct(productNo);
+			if (res == 0)
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+
+//			폴더 내 모든 파일 삭제
+			file = new File("./images/product/" + productNo + "/product/");
+			underDir = file.listFiles();
+			for (int i = 0; i < underDir.length; i++) {
+				underDir[i].delete();
+			}
+			file = new File("./images/product/" + productNo + "/detail/");
+			underDir = file.listFiles();
+			for (int i = 0; i < underDir.length; i++) {
+				underDir[i].delete();
+			}
+			
+			entity = new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return entity;
 
 	}
 

@@ -93,10 +93,10 @@ public class ProductController {
 		return productService.updateOnSale(proudctNo);
 	}
 
-//	판매 여부 변경
+//	상품 삭제
 	@DeleteMapping("/deleteProduct/{productNo}")
 	public ResponseEntity<?> deleteProduct(@PathVariable("productNo") int proudctNo) {
-		return productService.updateOnSale(proudctNo);
+		return productService.deleteProduct(proudctNo);
 	}
 
 //	서버에서 이미지 가져오기

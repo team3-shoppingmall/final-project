@@ -1,6 +1,5 @@
 <template>
 <v-container>
-    {{qna}}
     <v-row justify="center">
         <v-col align-self="center" cols="7">
             <div class="text-h3">문의</div>
@@ -99,7 +98,7 @@ export default {
                 .then((res) => {
                     this.qna = res.data;
                     //답글일 경우 image 없음
-                    if(res.data.image != null){
+                    if (res.data.image != null) {
                         this.images = this.qna.image.split(';');
                     }
                     this.dataLoaded = true;
@@ -119,7 +118,7 @@ export default {
                 const link = res.data;
                 console.log(link);
                 this.$router.push(`/qna/${link}`)
-                
+
             }).catch((err) => {
                 console.log(err);
             })

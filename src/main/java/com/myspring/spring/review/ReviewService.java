@@ -26,9 +26,11 @@ public class ReviewService {
 	}
 
 	// 리뷰 전체보기
-	public ResponseEntity<?> getAllReviews(int page, int perPage, String search, String searchWord, int productNo, String id) {
+	public ResponseEntity<?> getAllReviews(int page, int perPage, String search, String searchWord, int productNo,
+			String id) {
 		int start = (page - 1) * perPage;
-		List<ReviewAndProductVO> reviewList = reviewMapper.getReivewList(start, perPage, search, searchWord, productNo, id);
+		List<ReviewAndProductVO> reviewList = reviewMapper.getReivewList(start, perPage, search, searchWord, productNo,
+				id);
 		int count = reviewMapper.getReviewCount(search, searchWord, productNo, id);
 		Map<String, Object> resMap = new HashMap<>();
 		resMap.put("reviewList", reviewList);
@@ -52,17 +54,17 @@ public class ReviewService {
 
 		try {
 			reviewMapper.insertReview(requestData, result);
-			
+
 			int reviewNo = result.getReviewNo();
 			File file = new File("./images/review/" + reviewNo + "/");
 			file.mkdir();
-			
+
 			if (fileList != null) {
-			MultipartFile multipartFile = fileList.get(0);
-			FileOutputStream writer = new FileOutputStream(
-					"./images/review/" + reviewNo + "/" + multipartFile.getOriginalFilename());
-			writer.write(multipartFile.getBytes());
-			writer.close();
+				MultipartFile multipartFile = fileList.get(0);
+				FileOutputStream writer = new FileOutputStream(
+						"./images/review/" + reviewNo + "/" + multipartFile.getOriginalFilename());
+				writer.write(multipartFile.getBytes());
+				writer.close();
 			}
 			entity = new ResponseEntity<>(HttpStatus.OK);
 
@@ -84,35 +86,36 @@ public class ReviewService {
 	}
 
 	// 리뷰 수정
-	 public ResponseEntity<?> updateReview(ReviewVO requestData, List<MultipartFile> fileList) {
-	      ResponseEntity<?> entity = null;
+	public ResponseEntity<?> updateReview(ReviewVO requestData, List<MultipartFile> fileList) {
+		ResponseEntity<?> entity = null;
 
-	      try {
-	         int res = reviewMapper.updateReview(requestData);
-	         if (res == 0) {
-	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	         }
-	         File file;
-	         File[] underDir;
+		try {
+			int res = reviewMapper.updateReview(requestData);
+			if (res == 0) {
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			File file;
+			File[] underDir;
 
-	         // 폴더 내 모든 파일 삭제
-	         file = new File("./images/review/" + requestData.getReviewNo() + "/");
-	         underDir = file.listFiles();
-	         for (int i = 0; i < underDir.length; i++) {
-	            underDir[i].delete();
-	         }
-	         
-            MultipartFile multipartFile = fileList.get(0);
-	            FileOutputStream writer = new FileOutputStream(
-	            		"./images/review/" + requestData.getReviewNo() + "/" + multipartFile.getOriginalFilename());
-	            writer.write(multipartFile.getBytes());
-	            writer.close();
-	            entity = new ResponseEntity<>(HttpStatus.OK);
+			// 폴더 내 모든 파일 삭제
+			file = new File("./images/review/" + requestData.getReviewNo() + "/");
+			underDir = file.listFiles();
+			for (int i = 0; i < underDir.length; i++) {
+				underDir[i].delete();
+			}
+			if (fileList != null) {
+				MultipartFile multipartFile = fileList.get(0);
+				FileOutputStream writer = new FileOutputStream(
+						"./images/review/" + requestData.getReviewNo() + "/" + multipartFile.getOriginalFilename());
+				writer.write(multipartFile.getBytes());
+				writer.close();
+			}
+			entity = new ResponseEntity<>(HttpStatus.OK);
 
-	      } catch (Exception e) {
-	         e.printStackTrace();
-	         entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	      }
-	      return entity;
-	   }
+		} catch (Exception e) {
+			e.printStackTrace();
+			entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return entity;
+	}
 }

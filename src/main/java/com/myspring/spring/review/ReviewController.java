@@ -66,7 +66,7 @@ public class ReviewController {
 	// 리뷰 수정
 	@PatchMapping("/update")
 	public ResponseEntity<?> updateReview(@RequestPart(value = "data") ReviewVO requestData,
-			@RequestParam("fileList") List<MultipartFile> fileList) throws NotFoundException {
+			@RequestParam(value = "fileList", required = false) List<MultipartFile> fileList) throws NotFoundException {
 		return reviewService.updateReview(requestData, fileList);
 	}
 

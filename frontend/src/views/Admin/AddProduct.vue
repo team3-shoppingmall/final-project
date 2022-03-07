@@ -100,8 +100,9 @@
             </v-simple-table>
             <v-row justify="center">
                 <v-col align="center">
-                    <v-btn @click="addFile" color="primary" class="mr-5" v-if="this.pageID == undefined">등록</v-btn>
-                    <v-btn @click="updateFile" color="primary" class="mr-5" v-if="this.pageID != undefined">수정</v-btn>
+                    <v-btn @click="addFile" color="primary" v-if="this.pageID == undefined">등록</v-btn>
+                    <v-btn @click="updateFile" color="primary" class="ml-5" v-if="this.pageID != undefined">수정</v-btn>
+                    <v-btn @click="deleteProduct" color="primary" class="ml-5" v-if="this.pageID != undefined">삭제</v-btn>
                     <v-btn color="primary" class="ml-5">초기화</v-btn>
                 </v-col>
             </v-row>
@@ -509,6 +510,20 @@ export default {
             theBlob.lastModifiedDate = new Date();
             theBlob.name = fileName;
             return theBlob;
+        },
+        deleteProduct() {
+            axios.delete(`/api/product/deleteProduct/${this.pageID}`)
+                .then(() => {
+                    alert('상품이 삭제되었습니다');
+                    this.$router.push('/admin/productManage');
+                }).catch(err => {
+                    if (err.response.status == 500) {
+                        alert('상품 판매 이력이 있습니다');
+                        this.$router.push('/admin/productManage');
+                    } else {
+                        console.log(err);
+                    }
+                })
         },
         AddComma(num) {
             var regexp = /\B(?=(\d{3})+(?!\d))/g;

@@ -100,7 +100,7 @@
                                 </tr>
                                 <tr>
                                     <td colspan="3">
-                                        <v-row justify="center" v-if="getLogin.user.authority == 'ROLE_USER'">
+                                        <v-row justify="center" v-if="getLogin == null || getLogin.user.authority == 'ROLE_USER'">
                                             <v-col cols="auto" v-if="product.amount > 0 && product.onSale == true">
                                                 <v-btn color="primary" @click="buyItNow">
                                                     BUY IT NOW
@@ -121,8 +121,8 @@
                                                     WISH LIST
                                                 </v-btn>
                                             </v-col>
-                                        </v-row>                                        
-                                        <v-row justify="center" v-if="getLogin.user.authority == 'ROLE_ADMIN'">
+                                        </v-row>
+                                        <v-row justify="center" v-if="getLogin!= null && getLogin.user.authority == 'ROLE_ADMIN'">
                                             <v-col cols="auto">
                                                 <v-btn color="primary" :to="`/admin/productManage`">
                                                     관리 페이지로 이동
@@ -291,6 +291,15 @@ export default {
             })
         },
         addSelected(color, size) {
+            if (this.getLogin == null) {
+                alert('로그인을 해주세요');
+                this.$router.push({
+                    name: 'SignIn',
+                    params: {
+                        nextPage: this.$route.path
+                    }
+                });
+            }
             let data = {
                 id: this.getLogin.user.id,
                 productNo: this.product.productNo,
@@ -339,6 +348,10 @@ export default {
             });
         },
         addToBasket() {
+            if (this.selected.length == 0) {
+                alert('장바구니에 추가할 상품이 없습니다');
+                return;
+            }
             axios.get(`/api/basket/getBasketCount/${this.getLogin.user.id}`)
                 .then(res => {
                     if (res.data + this.selected.length > 50) {
@@ -361,6 +374,15 @@ export default {
                 })
         },
         addToWishList() {
+            if (this.getLogin == null) {
+                alert('로그인을 해주세요');
+                this.$router.push({
+                    name: 'SignIn',
+                    params: {
+                        nextPage: this.$route.path
+                    }
+                });
+            }
             axios.post(`/api/wishList/insert`, {
                     id: this.getLogin.user.id,
                     productNo: this.pageID

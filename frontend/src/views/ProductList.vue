@@ -93,22 +93,78 @@ export default {
                 value: 'all',
                 type: 'all'
             }, {
+                text: '자켓',
+                value: 'jacket',
+                type: 'outer',
+            }, {
+                text: '가디건',
+                value: 'cardigan',
+                type: 'outer',
+            }, {
+                text: '점퍼',
+                value: 'jumper',
+                type: 'outer',
+            }, {
+                text: '코트',
+                value: 'coat',
+                type: 'outer',
+            }, {
+                text: '슬리브리스',
+                value: 'sleeveless',
+                type: 'top',
+            }, {
+                text: '티셔츠',
+                value: 'tshirts',
+                type: 'top',
+            }, {
+                text: '니트',
+                value: 'knit',
+                type: 'top',
+            }, {
                 text: '셔츠',
                 value: 'shirt',
-                type: 'shirt'
+                type: 'top',
             }, {
                 text: '블라우스',
                 value: 'blouse',
-                type: 'shirt'
+                type: 'top',
+            }, {
+                text: '맨투맨',
+                value: 'mtm',
+                type: 'top',
+            }, {
+                text: '슬랙스',
+                value: 'slacks',
+                type: 'pants',
+            }, {
+                text: '데님',
+                value: 'denim',
+                type: 'pants',
+            }, {
+                text: '면',
+                value: 'cotton',
+                type: 'pants',
+            }, {
+                text: 'SHORT',
+                value: 'shorts',
+                type: 'pants',
             }, {
                 text: '미니',
                 value: 'mini',
-                type: 'skirt'
+                type: 'skirt',
             }, {
                 text: '미디/롱',
                 value: 'midi-long',
-                type: 'skirt'
-            }];
+                type: 'skirt',
+            }, {
+                text: '원피스',
+                value: 'ops',
+                type: 'dress'
+            }, {
+                text: '점프수트',
+                value: 'jumpSuit',
+                type: 'dress'
+            }, ];
             for (let i = this.subCategory.length - 1; i > 0; i--) {
                 if (this.mainCategory != this.subCategory[i].type) {
                     this.subCategory.splice(i, 1);

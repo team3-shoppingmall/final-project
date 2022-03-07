@@ -529,21 +529,6 @@ export default {
                     this.titleSelected = res.data.type;
                     this.content = res.data.content;
                     this.secret = res.data.secret;
-<<<<<<< HEAD
-                    let imageList = res.data.image.split(';');
-                    for (let i = 0; i < imageList.length; i++) {
-                        axios.get(`/api/qna/qnaImage/${this.num}/${imageList[i]}`, {
-                                responseType: "blob",
-                            })
-                            .then(res => {
-                                let file = new File([res.data], imageList[i], {
-                                    type: "image/*",
-                                    lastModified: Date.now()
-                                });
-                                this.imageFiles[i] = file;
-                                this.onImageChange(i);
-                            })
-=======
                     if(res.data.image != null){
                         let imageList = res.data.image.split(';');
                         for (let i = 0; i < imageList.length; i++) {
@@ -559,7 +544,6 @@ export default {
                                     this.onImageChange(i);
                                 })
                         }
->>>>>>> 777a816078512d27d22c3921a6ad2cf3a2ed4c97
                     }
                 }).catch((err) => {
                     alert("정보를 불러오는데 실패했습니다.");

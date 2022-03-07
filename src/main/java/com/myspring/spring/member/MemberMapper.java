@@ -33,16 +33,22 @@ public interface MemberMapper {
 	// 멤버 정보 조회
 	// select ~ from membertable where id ='id'
 //	pointService에서 멤버의 포인트 얻기 위해 호출도 함
-	@Select("select name, tel, email, zipcode, addr1, addr2, point from membertable where id = #{id}")
+	@Select("select * from membertable where id = #{id}")
 	MemberVO getMemberInfo(@Param("id") String id);
 
 	// 멤버 정보 수정
 	// update membertable set ? = ?, ... where id = ?
 	@UpdateProvider(type = MemberUtils.class, method = "updateMember")
 	int updateMember(MemberVO member);
+	
+	// 로그인
+	@Select("select * from membertable where id = #{id}")
+	MemberVO login(String id);
 
 	// 멤버 포인트 조회
 	@Select("select point from membertable where id = 'tester';")
 	List<MemberVO> getMemberPoint();
+
+	
 
 }

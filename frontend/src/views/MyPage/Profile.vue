@@ -78,7 +78,7 @@
                 <v-divider class="mt-8"></v-divider>
                 <v-row class="my-5" justify="center">
                     <v-btn class="primary text-h5 pa-3 " height="100%" width="120px">취소</v-btn>
-                    <v-btn class="primary text-h5 pa-3 ml-5" height="100%" width="120px">수정</v-btn>
+                    <v-btn class="primary text-h5 pa-3 ml-5" height="100%" width="120px" @click="update">수정</v-btn>
                 </v-row>
             </v-form>
         </v-col>
@@ -87,8 +87,83 @@
 </template>
 
 <script>
+import axios from 'axios'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
-    components: {}
+    methods: {
+        getData() {
+            axios.get(`/api/member/getMemberInfo/${this.getLogin.user.id}`)
+                .then(res => {
+                    this.id = this.getLogin.user.id;
+                    this.name = res.data.name;
+                    this.zipcode = res.data.zipcode;
+                    this.addr1 = res.data.addr1;
+                    this.addr2 = res.data.addr2;
+                    this.tel = res.data.tel;
+                    this.email = res.data.email;
+                })
+        },
+        update() {
+            let member;
+            if (this.pwd1 != null)
+                if (this.pwd1 == this.pwd2) {
+                    member = {
+                        id: this.id,
+                        password: this.pwd1,
+                        name: this.name,
+                        zipcode: this.zipcode,
+                        addr1: this.addr1,
+                        addr2: this.addr2,
+                        tel: this.tel,
+                        email: this.email,
+                    }
+                }
+            else {
+                member = {
+                    id: this.id,
+                    name: this.name,
+                    zipcode: this.zipcode,
+                    addr1: this.addr1,
+                    addr2: this.addr2,
+                    tel: this.tel,
+                    email: this.email,
+                }
+            }
+            console.log(member)
+            axios.put('/api/member/updateMember', member)
+                .then(() => {
+                    alert("수정 성공")
+                    this.getData();
+                })
+                .catch(() => alert("수정 실패"))
+        }
+    },
+    components: {},
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
+    },
+    mounted() {
+        console.log(this.getLogin)
+        if (this.getLogin) {
+            this.getData();
+        }
+    },
+    data() {
+        return {
+            id: '',
+            pwd1: '',
+            pwd2: '',
+            name: '',
+            zipcode: '',
+            addr1: '',
+            addr2: '',
+            tel: '',
+            email: '',
+        }
+    }
 }
 </script>
 

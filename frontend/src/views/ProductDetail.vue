@@ -231,6 +231,10 @@ import axios from 'axios'
 import Guide from '@/components/Guide.vue'
 import ProductDetailQnA from '@/components/ProductDetailQnA.vue'
 import ProductDetailReview from '@/components/ProductDetailReview.vue'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         Guide,
@@ -255,8 +259,6 @@ export default {
                 if (val == '') return '개수를 입력해주세요'
                 return true
             },
-
-            id: 'tester',
         }
     },
     methods: {
@@ -283,7 +285,7 @@ export default {
         },
         addSelected(color, size) {
             let data = {
-                id: this.id,
+                id: this.getLogin.user.id,
                 productNo: this.product.productNo,
                 selectedColor: color,
                 selectedSize: size,
@@ -330,7 +332,7 @@ export default {
             });
         },
         addToBasket() {
-            axios.get(`/api/basket/getBasketCount/${this.id}`)
+            axios.get(`/api/basket/getBasketCount/${this.getLogin.user.id}`)
                 .then(res => {
                     if (res.data + this.selected.length > 50) {
                         alert('장바구니에는 50개까지만 저장이 가능합니다.')
@@ -353,7 +355,7 @@ export default {
         },
         addToWishList() {
             axios.post(`/api/wishList/insert`, {
-                    id: this.id,
+                    id: this.getLogin.user.id,
                     productNo: this.pageID
                 })
                 .then(() => {
@@ -378,6 +380,9 @@ export default {
                 top: scroll,
             });
         },
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     watch: {
         '$route'() {

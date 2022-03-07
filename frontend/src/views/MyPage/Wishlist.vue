@@ -107,6 +107,10 @@
 
 <script>
 import axios from 'axios';
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {},
     data() {
@@ -173,7 +177,7 @@ export default {
                     params: {
                         page: page,
                         perPage: itemsPerPage,
-                        id: this.id,
+                        id: this.getLogin.user.id,
                     }
                 })
                 .then(res => {
@@ -189,7 +193,7 @@ export default {
                 console.log(this.selected);
                 for (let i = 0; i < this.selected.length; i++) {
                     let data = {
-                        id: this.id,
+                        id: this.getLogin.user.id,
                         productNo: this.selected[i].productNo,
                     }
                     deletes.push(data);
@@ -198,7 +202,7 @@ export default {
                 console.log('test');
                 console.log(item);
                 let data = {
-                    id: this.id,
+                    id: this.getLogin.user.id,
                     productNo: item.productNo,
                 }
                 deletes.push(data);
@@ -232,7 +236,7 @@ export default {
         buyItNow() {
             let selection = [];
             let data = {
-                id: this.id,
+                id: this.getLogin.user.id,
                 productNo: this.selectedItem.productNo,
                 selectedColor: this.colorSelection,
                 selectedSize: this.sizeSelection,
@@ -250,7 +254,7 @@ export default {
         addToBasket() {
             let selection = [];
             let data = {
-                id: this.id,
+                id: this.getLogin.user.id,
                 productNo: this.selectedItem.productNo,
                 selectedColor: this.colorSelection,
                 selectedSize: this.sizeSelection,
@@ -258,7 +262,7 @@ export default {
                 price: this.selectedItem.price - this.selectedItem.discount
             }
             selection.push(data);
-            axios.get(`/api/basket/getBasketCount/${this.id}`)
+            axios.get(`/api/basket/getBasketCount/${this.getLogin.user.id}`)
                 .then(res => {
                     if (res.data == 50) {
                         alert('장바구니에는 50개까지만 저장이 가능합니다.')
@@ -278,6 +282,9 @@ export default {
                     }
                 })
         },
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     watch: {
         options: {

@@ -31,6 +31,10 @@
 <script>
 import axios from 'axios'
 import DateDisplay from '@/components/DateDisplay.vue'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         DateDisplay,
@@ -81,7 +85,7 @@ export default {
                     params: {
                         page: page,
                         perPage: itemsPerPage,
-                        id: this.id,
+                        id: this.getLogin.user.id,
                     }
                 })
                 .then(res => {
@@ -92,11 +96,14 @@ export default {
         },
         getMemberPoint() {
             this.loading = true;
-            axios.get(`/api/member/getMemberInfo/${this.id}`)
+            axios.get(`/api/member/getMemberInfo/${this.getLogin.user.id}`)
                 .then(res => {
                     this.memberPoint = res.data.point;
                 })
         }
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     watch: {
         options: {

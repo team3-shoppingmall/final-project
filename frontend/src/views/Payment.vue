@@ -251,6 +251,10 @@
 <script>
 import axios from 'axios'
 import ProductDetailDisplay from '@/components/ProductDetailDisplay.vue'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         ProductDetailDisplay,
@@ -332,8 +336,6 @@ export default {
             bankSelected: '',
             cashReceipts: false,
             cashReceiptsNum: '',
-            
-            id: 'tester'
         }
     },
     methods: {
@@ -342,7 +344,7 @@ export default {
             return `${num}`.toString().replace(regexp, ",");
         },
         getMember() {
-            axios.get(`/api/member/getMemberInfo/${this.id}`)
+            axios.get(`/api/member/getMemberInfo/${this.getLogin.user.id}`)
                 .then(res => {
                     this.memberInfo = res.data;
                 })
@@ -411,7 +413,7 @@ export default {
             let basketIdxList = [];
             for (let i = 0; i < this.selected.length; i++) {
                 let order = {
-                    id: this.id,
+                    id: this.getLogin.user.id,
                     productNo: this.selected[i].productNo,
                     selectedColor: this.selected[i].selectedColor,
                     selectedSize: this.selected[i].selectedSize,
@@ -437,7 +439,7 @@ export default {
                 type: "application/json"
             }))
             let pointData = {
-                id: this.id,
+                id: this.getLogin.user.id,
                 point: -this.point,
                 content: '상품 결제',
             }
@@ -517,6 +519,9 @@ export default {
                 return;
             }
         },
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     watch: {
         deliverySelect: {

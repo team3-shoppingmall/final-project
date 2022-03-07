@@ -48,6 +48,11 @@ public class MemberController {
 			@RequestParam(value = "param", required = false) Object param) {
 		return memberService.getMembers(page, perPage, condition, param);
 	}
+	
+	@GetMapping(value = "/login")
+	public ResponseEntity<?> login(@RequestParam("id") String id, @RequestParam("password") String pwd){
+		return memberService.login(id, pwd);
+	}
 
 	//멤버 포인트 조회
     @GetMapping("/getMemberPoint")

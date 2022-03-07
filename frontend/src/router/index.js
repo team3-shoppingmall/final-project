@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '@/store/index'
 
 import Default from '../layouts/Default/Index.vue'
 import Main from '../views/Main.vue'
@@ -75,42 +76,37 @@ const routes = [
             }, {
                 path: '/payment',
                 name: 'Payment',
-                component: Payment,
+                component: Payment
             }, {
                 path: '/myPage',
                 name: 'MyPage',
                 component: MyPage,
-                children:[
+                children: [
                     {
                         path: 'home',
                         name: 'MyPageHome',
                         component: MyPageHome
-                    },
-                    {
+                    }, {
                         path: 'order',
                         name: 'Order',
                         component: Order
-                    },
-                    {
+                    }, {
                         path: 'profile',
                         name: 'Profile',
                         component: Profile
-                    },
-                    {
+                    }, {
                         path: 'wishlist',
                         name: 'Wishlist',
                         component: Wishlist
-                    },
-                    {
+                    }, {
                         path: 'point',
                         name: 'Point',
                         component: Point
-                    },
-                    {
+                    }, {
                         path: 'board',
                         name: 'Board',
                         component: Board
-                    },
+                    }
                 ]
             }, {
                 path: '/community',
@@ -120,76 +116,65 @@ const routes = [
                     {
                         path: 'notice',
                         name: 'Notice',
-                        component: Notice,
-                    },
-                    {
+                        component: Notice
+                    }, {
                         path: 'noticePost/:id',
                         name: 'NoticePost',
-                        component: NoticePost,
-                    },
-                    {
+                        component: NoticePost
+                    }, {
                         path: 'review',
                         name: 'Review',
                         component: Review
                     }, {
                         path: 'faq',
                         name: 'FAQ',
-                        component: FAQ,
-                    },
+                        component: FAQ
+                    }
                 ]
-            },
-            {
+            }, {
                 path: '/writePost/:id',
                 name: 'WritePost',
-                component: WritePost,
-            },
-            {
+                component: WritePost
+            }, {
                 path: '/writePost/:id/:productNo',
                 name: 'writeProductPost',
-                component: WritePost,
-            },
-            {
+                component: WritePost
+            }, {
                 path: '/replyPost/:id/:original',
                 name: 'ReplyPost',
-                component: WritePost,
-            },
-            {
+                component: WritePost
+            }, {
                 path: '/updatePost/:id/:num',
                 name: 'UpdatePost',
-                component: WritePost,
-            },
-            {
+                component: WritePost
+            }, {
                 path: '/qna',
                 name: 'QnA',
                 component: QnA,
-                children:[
+                children: [
                     {
                         path: 'productQnA',
                         name: 'ProductQnA',
-                        component: ProductQnA,
-                    },
-                    {
+                        component: ProductQnA
+                    }, {
                         path: 'deliveryQnA',
                         name: 'DeliveryQnA',
-                        component: DeliveryQnA,
-                    },
-                    {
+                        component: DeliveryQnA
+                    }, {
                         path: 'beforeDeliveryQnA',
                         name: 'BeforeDeliveryQnA',
-                        component: BeforeDeliveryQnA,
-                    },
-                    {
+                        component: BeforeDeliveryQnA
+                    }, {
                         path: 'afterDeliveryQnA',
                         name: 'AfterDeliveryQnA',
-                        component: AfterDeliveryQnA,
+                        component: AfterDeliveryQnA
                     }
                 ]
-            },
-            {
+            }, {
                 path: '/qna/:id',
                 name: 'QnAPost',
-                component: QnAPost,
-            },
+                component: QnAPost
+            }
         ]
     }, {
         path: '/authentication',
@@ -206,55 +191,68 @@ const routes = [
                 component: SignUp
             }
         ]
-    },
-    {
+    }, {
         path: '/admin',
         name: 'Admin',
         component: Admin,
-        children:[
+        beforeEnter: (to, from, next) => {
+            console.log(`${from.path} ---> ${to.path}`)
+            const isLogin = store.getters['LoginStore/getLogin']
+            console.log(isLogin)
+            if (isLogin) {
+                if (isLogin.authority == 'ROLE_ADMIN') 
+                    next();
+                else 
+                    alert("접근 권한이 없습니다");
+                    next('/')
+                }
+            else {
+                next({
+                    name: 'SignIn',
+                    params: {
+                        nextPage: to.fullPath
+                    }
+                })
+            }
+        },
+        children: [
             {
                 path: 'productManage',
                 name: 'ProductManage',
-                component: ProductManage,
-            },
-            {
+                component: ProductManage
+            }, {
                 path: 'addProduct',
                 name: 'AddProduct',
-                component: AddProduct,
-            },
-            {
+                component: AddProduct
+            }, {
                 path: 'updateProduct/:id',
                 name: 'UpdateProduct',
-                component: AddProduct,
-            },
-            {
+                component: AddProduct
+            }, {
                 path: 'orderManage',
                 name: 'OrderManage',
-                component: OrderManage,
-            },
-            {
+                component: OrderManage
+            }, {
                 path: 'salesSettlement',
                 name: 'SalesSettlement',
-                component: SalesSettlement,
-            },
-            {
+                component: SalesSettlement
+            }, {
                 path: 'admin5',
                 name: 'Admin5',
-                component: Admin_Child5,
-            },
-            {
+                component: Admin_Child5
+            }, {
                 path: 'memberManage',
                 name: 'MemberManage',
-                component: MemberManage,
+                component: MemberManage
             }
         ]
-    },
+    }
 ]
 
 const router = new VueRouter({
     mode: 'history',
-    scrollBehavior () {
-        return { x: 0, y: 0 } 
+    scrollBehavior() {
+        return {x: 0, y: 0}
     },
     base: process.env.BASE_URL,
     routes

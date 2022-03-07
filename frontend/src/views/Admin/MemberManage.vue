@@ -26,7 +26,7 @@
         </v-col>
     </v-row>
     <v-dialog v-model="dialog" width="600px">
-        <v-card class="pa-2" >
+        <v-card class="pa-2">
             <v-simple-table>
                 <thead>
                     <tr>
@@ -337,6 +337,7 @@ export default {
     }
 }
 </script>
+
 <style scoped>
 .v-small-dialog__menu-content {
     background-color: black !important;

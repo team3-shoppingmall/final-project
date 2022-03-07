@@ -197,7 +197,7 @@ export default {
                 }
             }).then(res => {
                 this.products = res.data.productList;
-                this.pageLength = Math.ceil(res.data.count / this.page);
+                this.pageLength = Math.ceil(res.data.count / 12);
             }).catch((err) => {
                 console.log(err);
             })

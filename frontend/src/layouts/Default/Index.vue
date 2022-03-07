@@ -2,7 +2,7 @@
 <v-app>
     <v-app-bar color="primary" app dark height="60px">
         <v-app-bar-nav-icon></v-app-bar-nav-icon>
-        <v-row>
+        <v-row v-if="width">
             <v-col cols="10" align-self="center">
                 <v-row class="mx-10">
                     <v-col cols="auto">
@@ -136,8 +136,26 @@ export default {
         toTop() {
             this.$vuetify.goTo(0)
         }
-    }
+    },
+    computed: {
+        width() {
+            switch (this.$vuetify.breakpoint.name) {
+                case 'xs':
+                    return false;
+                case 'sm':
+                    return true;
+                case 'md':
+                    return true;
+                case 'lg':
+                    return true;
+                case 'xl':
+                    return true;
+                default:
+                    return true;
+            }
+        },
 
+    }
 }
 </script>
 

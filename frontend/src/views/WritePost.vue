@@ -497,7 +497,7 @@ export default {
                                 responseType: "blob",
                             })
                             .then(res => {
-                                var file = new File([res.data], imageList[i], {
+                                let file = new File([res.data], imageList[i], {
                                     type: "image/*",
                                     lastModified: Date.now()
                                 });
@@ -519,7 +519,7 @@ export default {
                             responseType: "blob",
                         })
                         .then(res => {
-                            var file = new File([res.data], res.data.image, {
+                            let file = new File([res.data], res.data.image, {
                                 type: "image/*",
                                 lastModified: Date.now()
                             });
@@ -555,7 +555,7 @@ export default {
                                 responseType: "blob",
                             })
                             .then(res => {
-                                var file = new File([res.data], imageList[i], {
+                                let file = new File([res.data], imageList[i], {
                                     type: "image/*",
                                     lastModified: Date.now()
                                 });

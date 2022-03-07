@@ -146,6 +146,8 @@ public class QnaService {
 			int resQna = qnaMapper.deleteQna(qnaNo);
 
 			// 댓글 삭제
+			// qna가 삭제될때 reply도 같이 삭제하기
+			//qna에 댓ㄱ
 			if (res.isReply() == true) {
 				int resDelReply = qnaMapper.deleteReply(qnaNo);
 				if (resDelReply == 0)
@@ -157,9 +159,8 @@ public class QnaService {
 				// reply글의 originalNo를 받아와서 그 originalNo의 reply를 false로 바꿔주기
 				// qnaNo != originalNo 일 때는 답글없다는 의미 -> updateReplyFalse()
 				if (res.getQnaNo() != res.getOriginalNo()) {
-					// qna가 삭제될때 reply도 같이 삭제하기
 					int resReply = qnaMapper.updateReplyFalse(res.getOriginalNo());
-					res.setOriginalNo(res.getQnaNo());
+					//res.setOriginalNo(res.getQnaNo());
 					if (resReply == 0)
 						return new ResponseEntity<>(resReply, HttpStatus.INTERNAL_SERVER_ERROR);
 					else

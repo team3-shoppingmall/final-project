@@ -14,8 +14,8 @@
                                 <v-card-text style="height:120px">
                                     <div style="height:50px">
                                         {{product.productName}}
-                                        - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
-                                        <span v-if="product.size == null">{{product.color.split(';').length-1}} color</span>
+                                        - <span v-if="product.size != null">{{product.size.split(';').length}} size</span>
+                                        <span v-if="product.size == null">{{product.color.split(';').length}} color</span>
                                     </div>
                                     <div v-if="product.discount != 0" class="text-decoration-line-through">{{AddComma(product.price)}}원</div>
                                     <div v-if="product.discount == 0">{{AddComma(product.price)}}원</div>
@@ -47,8 +47,8 @@
                                     <v-card-text style="height:120px">
                                         <div style="height:50px">
                                             {{product.productName}}
-                                            - <span v-if="product.size != null">{{product.size.split(';').length-1}} size</span>
-                                            <span v-if="product.size == null">{{product.color.split(';').length-1}} color</span>
+                                            - <span v-if="product.size != null">{{product.size.split(';').length}} size</span>
+                                            <span v-if="product.size == null">{{product.color.split(';').length}} color</span>
                                         </div>
                                         <div v-if="product.discount != 0" class="text-decoration-line-through">{{AddComma(product.price)}}원</div>
                                         <div v-if="product.discount == 0">{{AddComma(product.price)}}원</div>

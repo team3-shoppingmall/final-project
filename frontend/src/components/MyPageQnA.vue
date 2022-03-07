@@ -1,26 +1,24 @@
 <template>
 <v-container>
-    <div>
-        <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort no-data-text="검색된 자료가 없습니다">
-            <template #[`item.productName`]="{item}">
-                <v-btn text :to="`/productDetail/${item.productNo}`" v-if="item.productNo > 0">
-                    <div class="text-truncate" style="max-width: 250px;">
-                        {{ item.productName }}
-                    </div>
-                </v-btn>
-            </template>
-            <template #[`item.type`]="{item}">
-                <div class="text-left">
-                    <QnATitleDisplay :type="item.type" />
+    <v-data-table :headers="headers" :options.sync="options" :items="contents" :server-items-length="totalContents" :loading="loading" class="elevation-1" item-key="qnaNo" @click:row="moveto" disable-sort no-data-text="검색된 자료가 없습니다">
+        <template #[`item.productName`]="{item}">
+            <v-btn text :to="`/productDetail/${item.productNo}`" v-if="item.productNo > 0">
+                <div class="text-truncate" style="max-width: 250px;">
+                    {{ item.productName }}
                 </div>
-            </template>
-            <template #[`item.regDate`]="{item}">
-                <div>
-                    <DateDisplay :regDate="item.regDate" />
-                </div>
-            </template>
-        </v-data-table>
-    </div>
+            </v-btn>
+        </template>
+        <template #[`item.type`]="{item}">
+            <div class="text-left">
+                <QnATitleDisplay :type="item.type" />
+            </div>
+        </template>
+        <template #[`item.regDate`]="{item}">
+            <div>
+                <DateDisplay :regDate="item.regDate" />
+            </div>
+        </template>
+    </v-data-table>
     <v-row align="center" justify="space-between">
         <v-col cols="8" sm="7" md="6" lg="5" xl="4">
             <v-row>

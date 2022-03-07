@@ -54,6 +54,10 @@
 
 <script>
 import axios from 'axios'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     data() {
         return {
@@ -84,8 +88,6 @@ export default {
             }, ],
             sum: 0,
             point: '',
-
-            id: 'tester',
         }
     },
     methods: {
@@ -95,7 +97,7 @@ export default {
         },
         getData() {
             this.sum = 0;
-            axios.get(`/api/order/getOrderGroupByState/${this.id}`)
+            axios.get(`/api/order/getOrderGroupByState/${this.getLogin.user.id}`)
                 .then(res => {
                     let temp = res.data.orderCounts;
                     for (let i = 0; i < temp.length; i++) {
@@ -115,6 +117,9 @@ export default {
                     console.log(err);
                 })
         },
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     mounted() {
         this.getData();

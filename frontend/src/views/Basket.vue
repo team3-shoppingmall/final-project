@@ -62,6 +62,10 @@
 <script>
 import axios from 'axios'
 import ProductDetailDisplay from '@/components/ProductDetailDisplay.vue'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         ProductDetailDisplay,
@@ -107,7 +111,6 @@ export default {
                 align: 'center',
                 width: '15%',
             }, ],
-            id: 'tester',
             numberRule: val => {
                 if (val == '') return '개수를 입력해주세요'
                 return true
@@ -121,7 +124,7 @@ export default {
         },
         getBasket() {
             this.loading = true;
-            axios.get(`/api/basket/getBasket/${this.id}`)
+            axios.get(`/api/basket/getBasket/${this.getLogin.user.id}`)
                 .then(res => {
                     this.baskets = res.data;
                 }).finally(
@@ -192,6 +195,9 @@ export default {
                 }
             });
         }
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     watch: {
         selected: {

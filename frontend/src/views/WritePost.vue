@@ -53,10 +53,10 @@
                                 <td> 파일 첨부 </td>
                                 <td>
                                     <v-row v-if="pageID != 'review'">
-                                        <v-col cols="3" v-for="(idx) in 4" :key="idx" align="center">
-                                            <v-card :loading="false" class="mx-auto my-5">
+                                        <v-col cols="3" v-for="(idx) in imageFiles.length" :key="idx" align="center">
+                                            <v-card :loading="false" class="my-5">
                                                 <v-card-title>
-                                                    <v-img max-height="250" :src="imageUrl[idx-1]" min-height="250" contain @click="fileInputClick(idx-1)" />
+                                                    <v-img height="250px" width="150px" :src="imageUrl[idx-1]" contain @click="fileInputClick(idx-1)" />
                                                 </v-card-title>
                                                 <v-card-actions>
                                                     <v-file-input v-model="imageFiles[idx-1]" :id="`fileInput${idx-1}`" accept="image/*" truncate-length="14" class="pa-0" hide-details @change="onImageChange(idx-1)"></v-file-input>
@@ -205,11 +205,11 @@ export default {
             titleSelected: 'default',
             titleDetail: '',
             faqTypeSelected: '',
-            star: '',
+            star: 0,
             content: '',
             contentColor: 'black--text',
-            imageFiles: [null, null, null, null],
-            imageUrl: [null, null, null, null],
+            imageFiles: [null],
+            imageUrl: [null],
             secret: true,
             id: '',
         }
@@ -226,6 +226,9 @@ export default {
                         this.titles.splice(i, 1);
                     }
                 }
+            }
+            for (let j = this.imageFiles.length; j < 4; j++) {
+                this.imageFiles.push(null);
             }
         },
 
@@ -400,23 +403,6 @@ export default {
                     alert("등록 실패");
                     console.log(err);
                 })
-
-            // axios({
-            //     method: 'post',
-            //     url: `/api/notice/insertNotice`,
-            //     data: {
-            //         title: this.titleDetail,
-            //         content: this.content,
-            //         id: "admin123",
-            //         image: "test.jpg",
-            //     }
-            // }).then(() => {
-            //     alert("공지사항 등록 완료");
-            //     this.$router.go(-1);
-            // }).catch((err) => {
-            //     alert("등록 실패");
-            //     console.log(err);
-            // })
         },
         faqForm() {
             axios.post('/api/faq/insertfaq', {
@@ -484,12 +470,21 @@ export default {
                                     responseType: "blob",
                                 })
                                 .then(res => {
+                                    if (i == 0) {
+                                        this.imageFiles.pop();
+                                    }
                                     var file = new File([res.data], imageList[i], {
                                         type: "image/*",
                                         lastModified: Date.now()
                                     });
-                                    this.imageFiles[i] = file;
+                                    this.imageFiles.push(file);
                                     this.onImageChange(i);
+
+                                    if (i == imageList.length - 1) {
+                                        for (let j = i + 1; j < 4; j++) {
+                                            this.imageFiles.push(null);
+                                        }
+                                    }
                                 })
                         }
                     }
@@ -507,11 +502,12 @@ export default {
                             responseType: "blob",
                         })
                         .then(res => {
+                            this.imageFiles.pop();
                             let file = new File([res.data], res.data.image, {
                                 type: "image/*",
                                 lastModified: Date.now()
                             });
-                            this.imageFiles[0] = file;
+                            this.imageFiles.push(file);
                             this.onImageChange(0);
                         })
                 }).catch((err) => {
@@ -533,7 +529,6 @@ export default {
         getQnA() {
             axios.get(`/api/qna/getQna/${this.num}`)
                 .then((res) => {
-                    console.log(res.data);
                     this.titleSelected = res.data.type;
                     this.content = res.data.content;
                     this.secret = res.data.secret;
@@ -544,12 +539,21 @@ export default {
                                     responseType: "blob",
                                 })
                                 .then(res => {
+                                    if (i == 0) {
+                                        this.imageFiles.pop();
+                                    }
                                     var file = new File([res.data], imageList[i], {
                                         type: "image/*",
                                         lastModified: Date.now()
                                     });
-                                    this.imageFiles[i] = file;
+                                    this.imageFiles.push(file);
                                     this.onImageChange(i);
+
+                                    if (i == imageList.length - 1) {
+                                        for (let j = i + 1; j < 4; j++) {
+                                            this.imageFiles.push(null);
+                                        }
+                                    }
                                 })
                         }
                     }
@@ -594,23 +598,6 @@ export default {
                     alert("수정 실패");
                     console.log(err);
                 })
-
-            // axios({
-            //     method: 'patch',
-            //     url: `/api/notice/updateNotice`,
-            //     params: {
-            //         noticeNo: this.num,
-            //         title: this.titleDetail,
-            //         content: this.content,
-            //         image: "test.jpg",
-            //     }
-            // }).then(() => {
-            //     alert("공지사항 수정 완료");
-            //     this.$router.go(-1);
-            // }).catch((err) => {
-            //     alert("수정 실패");
-            //     console.log(err);
-            // })
         },
         reviewFormUpdate() {
             let image = null;
@@ -637,24 +624,6 @@ export default {
                     alert('수정에 실패하셨습니다.');
                     console.log(err);
                 })
-
-            // axios({
-            //         method: 'patch',
-            //         url: `/api/review/update`,
-            //         params: {
-            //             reviewNo: this.num,
-            //             content: this.content,
-            //             star: this.star,
-            //             image: "test.jpg"
-            //         }
-            //     })
-            //     .then(() => {
-            //         alert("수정이 완료되었습니다.")
-            //         this.$router.go(-1);
-            //     }).catch((err) => {
-            //         alert('수정에 실패하셨습니다.');
-            //         console.log(err);
-            //     })
         },
         faqFormUpdate() {
             axios({

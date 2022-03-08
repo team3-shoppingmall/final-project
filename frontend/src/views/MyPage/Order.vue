@@ -79,8 +79,11 @@
                             </div>
                         </template>
                         <template v-slot:[`item.btn`]="{item}">
-                            <v-btn color="primary" @click="cancelOrder(item)">
+                            <v-btn color="primary" @click="cancelOrder(item)" v-if="item.state != '배송완료'">
                                 취소
+                            </v-btn>
+                            <v-btn color="primary" @click="cancelOrder(item)" v-if="item.state == '배송완료'">
+                                환불 및 교환
                             </v-btn>
                         </template>
                     </v-data-table>
@@ -143,7 +146,7 @@ export default {
                 value: 'orderDate',
                 divider: true,
                 align: 'center',
-                width: '15%',
+                width: '10%',
             }, {
                 text: '주문 상태',
                 value: 'state',
@@ -151,10 +154,10 @@ export default {
                 align: 'center',
                 width: '15%',
             }, {
-                text: '결제 취소',
+                text: '',
                 value: 'btn',
                 align: 'center',
-                width: '10%',
+                width: '15%',
             }, ],
 
             returnHeaders: [{
@@ -237,6 +240,9 @@ export default {
                     text: '기준 선택',
                     value: null,
                 }, {
+                    text: '입금전',
+                    value: '입금전',
+                }, {
                     text: '결제완료',
                     value: '결제완료',
                 }, {
@@ -294,7 +300,7 @@ export default {
             )
         },
         cancelOrder(item) {
-            if (item.state == '결제완료') {
+            if (item.state == '입금전' || item.state == '결제완료') {
                 let states = [];
                 let data = {
                     orderIdx: item.orderIdx,

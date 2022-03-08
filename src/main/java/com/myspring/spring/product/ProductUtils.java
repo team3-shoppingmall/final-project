@@ -230,7 +230,7 @@ public class ProductUtils {
 				}
 				GROUP_BY("o.productno");
 				ORDER_BY("sum(o.orderAmount) desc");
-				LIMIT(8);
+				LIMIT(4);
 				OFFSET(0);
 			}
 		};

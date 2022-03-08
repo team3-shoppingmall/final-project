@@ -195,6 +195,7 @@ export default {
             searchOrder: null,
 
             page: 1,
+            itemsPerPage: 12,
             pageLength: 0,
             visibleLength: 5,
             totalLength: 0,
@@ -229,7 +230,7 @@ export default {
                 url: `/api/product/getProductList`,
                 params: {
                     page: this.page,
-                    perPage: 12,
+                    perPage: this.itemsPerPage,
                     type1: type1,
                     type2: type2,
                     searchWord: this.productName,
@@ -239,7 +240,7 @@ export default {
                 }
             }).then(res => {
                 this.products = res.data.productList;
-                this.pageLength = Math.ceil(res.data.count / 12);
+                this.pageLength = Math.ceil(res.data.count / this.itemsPerPage);
                 this.totalLength = res.data.count;
             }).catch((err) => {
                 this.products = [];

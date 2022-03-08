@@ -110,6 +110,12 @@ public class OrderService {
 		return new ResponseEntity<>(resMap, HttpStatus.OK);
 	}
 
+//  주문 번호로 조회
+	public ResponseEntity<?> getOrderByNo(int orderIdx) {
+		OrderVO res = orderMapper.getOrderByNo(orderIdx);
+		return new ResponseEntity<>(res.getState(), HttpStatus.OK);
+	}
+
 //	주문 변경
 	public ResponseEntity<?> updateOrder(List<OrderVO> states) {
 		List<Long> orderIdxList = new ArrayList<Long>();

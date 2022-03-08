@@ -57,6 +57,10 @@ public interface OrderMapper {
 	@Select("select state, count(*) as orderNo from ordertable where id = #{id} group by state")
 	List<OrderVO> getOrdersByIdGroupByState(@Param("id") String id);
 
+//	주문 정보 조회
+	@Select("select * from ordertable where orderIdx = #{orderIdx}")
+	OrderVO getOrderByNo(@Param("orderIdx") int orderIdx);
+
 //  주문 상태 변경
 	@Update("update ordertable set state = #{state} where orderIdx = #{orderIdx}")
 	int updateOrder(@Param("orderIdx") long orderIdx, @Param("state") String state);

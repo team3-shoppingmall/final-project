@@ -35,7 +35,6 @@ import QnAPost from '../views/QnA/QnAPost.vue'
 
 import Authentication from '../layouts/Authentication/Index.vue'
 import SignIn from '../views/SignIn.vue'
-import Naver from '../views/login/naverLogin.vue'
 import SignUp from '../views/SignUp.vue'
 
 import Admin from '@/layouts/Admin/Index.vue'
@@ -246,10 +245,14 @@ const routes = [
             },  {
                 path: 'signIn/naver',
                 name: 'Naver',
-                component: Naver
+                component: SignIn
             }, {
                 path: 'signUp',
                 name: 'SignUp',
+                component: SignUp
+            }, {
+                path: 'signUp/social',
+                name: 'Social',
                 component: SignUp
             }
         ]

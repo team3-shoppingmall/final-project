@@ -8,7 +8,7 @@
                 <v-simple-table>
                     <template slot="default">
                         <tbody>
-                            <tr>
+                            <tr v-if="naverInfo == undefined">
                                 <td> 아이디 </td>
                                 <td>
                                     <div class="d-flex ">
@@ -17,13 +17,13 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr v-if="naverInfo == undefined">
                                 <td> 비밀번호 </td>
                                 <td>
                                     <v-text-field v-model="pwd1" :rules="rules.pwd1" type="password" outlined hide-details="auto" dense required></v-text-field>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr v-if="naverInfo == undefined">
                                 <td> 비밀번호 확인 </td>
                                 <td>
                                     <v-text-field v-model="pwd2" :rules="rules.pwd2" type="password" outlined hide-details="auto" dense required></v-text-field>
@@ -80,7 +80,8 @@
                 <v-divider class="mt-8"></v-divider>
                 <v-row class="my-5" justify="center">
                     <v-btn class="primary text-h5 pa-3" height="100%" @click="goBack">돌아가기</v-btn>
-                    <v-btn class="primary text-h5 pa-3 ml-5" height="100%" @click="signUp">가입하기</v-btn>
+                    <v-btn class="primary text-h5 pa-3 ml-5" height="100%" @click="signUp" v-if="naverInfo == undefined">가입하기</v-btn>
+                    <v-btn class="primary text-h5 pa-3 ml-5" height="100%" @click="signUpBySocial" v-if="naverInfo != undefined">가입하기</v-btn>
                 </v-row>
             </v-form>
         </v-col>
@@ -103,6 +104,29 @@ export default {
                 let member = {
                     id: this.id,
                     password: this.pwd1,
+                    name: this.name,
+                    zipcode: this.zipcode,
+                    addr1: this.addr1,
+                    addr2: this.addr2,
+                    tel: this.tel,
+                    email: this.email,
+                    terms: this.agreement3,
+                }
+                axios.post('/api/member/insert', member)
+                    .then(() => {
+                        alert("가입 완료")
+                        this.$router.push('/')
+                    }).catch(() => {
+                        alert("가입 실패")
+                    })
+            }
+        },
+        signUpBySocial() {
+            let validate = this.$refs.form.validate();
+            if (validate) {
+                let member = {
+                    id: this.naverInfo.id,
+                    password: this.naverInfo.id + 'password',
                     name: this.name,
                     zipcode: this.zipcode,
                     addr1: this.addr1,
@@ -147,27 +171,27 @@ export default {
                         this.addr1 = data.jibunAddress;
                     }
 
-                    // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
-                    if (data.userSelectedType === "R") {
-                        // 법정동명이 있을 경우 추가한다. (법정리는 제외)
-                        // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
-                        if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
-                            // this.addr2 += data.bname;
-                        }
-                        // 건물명이 있고, 공동주택일 경우 추가한다.
-                        if (data.buildingName !== "" && data.apartment === "Y") {
-                            this.addr2 +=
-                                this.addr2 !== "" ?
-                                `, ${data.buildingName}` :
-                                data.buildingName;
-                        }
-                        // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
-                        if (this.addr2 !== "") {
-                            this.addr2 = `(${this.addr2})`;
-                        }
-                    } else {
-                        this.addr2 = "";
-                    }
+                    // // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                    // if (data.userSelectedType === "R") {
+                    //     // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                    //     // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                    //     if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
+                    //         // this.addr2 += data.bname;
+                    //     }
+                    //     // 건물명이 있고, 공동주택일 경우 추가한다.
+                    //     if (data.buildingName !== "" && data.apartment === "Y") {
+                    //         this.addr2 +=
+                    //             this.addr2 !== "" ?
+                    //             `, ${data.buildingName}` :
+                    //             data.buildingName;
+                    //     }
+                    //     // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                    //     if (this.addr2 !== "") {
+                    //         this.addr2 = `(${this.addr2})`;
+                    //     }
+                    // } else {
+                    //     this.addr2 = "";
+                    // }
                     // 우편번호를 입력한다.
                     this.zipcode = data.zonecode;
                 },
@@ -175,7 +199,14 @@ export default {
         }
     },
     mounted() {
-        this.$vuetify.goTo(0)
+        this.$vuetify.goTo(0);
+        this.naverInfo = this.$route.params.naver;
+        console.log(this.naverInfo);
+        if (this.naverInfo != undefined) {
+            this.name = this.naverInfo.name;
+            this.tel = this.naverInfo.mobile.replaceAll('-', '');
+            this.email = this.naverInfo.email;
+        }
     },
     data() {
         return {
@@ -191,6 +222,7 @@ export default {
             agreement1: '',
             agreement2: '',
             agreement3: '',
+            naverInfo: '',
             check: false,
             rules: {
                 id: [v => !!v || '아이디는 필수 입력사항입니다.',

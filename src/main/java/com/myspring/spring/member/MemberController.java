@@ -1,5 +1,15 @@
 package com.myspring.spring.member;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,15 +63,20 @@ public class MemberController {
 			@RequestParam(value = "param", required = false) Object param) {
 		return memberService.getMembers(page, perPage, condition, param);
 	}
-	
+
 	@GetMapping(value = "/login")
-	public ResponseEntity<?> login(@RequestParam("id") String id, @RequestParam("password") String pwd){
+	public ResponseEntity<?> login(@RequestParam("id") String id, @RequestParam("password") String pwd) {
 		return memberService.login(id, pwd);
 	}
 
-	//멤버 포인트 조회
-    @GetMapping("/getMemberPoint")
-    public ResponseEntity<?> getMemberPoint() {
-    	return memberService.getMemberPoint();
+	// 멤버 포인트 조회
+	@GetMapping("/getMemberPoint")
+	public ResponseEntity<?> getMemberPoint() {
+		return memberService.getMemberPoint();
+	}
+
+	@GetMapping("/getNaverLogin/{token}")
+	public ResponseEntity<?> getNaverLogin(@PathVariable("token") String token) {
+		return memberService.getNaverLogin(token);
 	}
 }

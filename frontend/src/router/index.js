@@ -242,9 +242,17 @@ const routes = [
                 path: 'signIn',
                 name: 'SignIn',
                 component: SignIn
+            },  {
+                path: 'signIn/naver',
+                name: 'Naver',
+                component: SignIn
             }, {
                 path: 'signUp',
                 name: 'SignUp',
+                component: SignUp
+            }, {
+                path: 'signUp/social',
+                name: 'Social',
                 component: SignUp
             }
         ]

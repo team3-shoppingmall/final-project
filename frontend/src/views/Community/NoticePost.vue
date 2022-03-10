@@ -18,7 +18,7 @@
                 <tr>
                     <td colspan="4">
                         <v-row>
-                            <v-col cols="10">
+                            <v-col cols="8">
                                 <div v-html="notice.content"></div>
                             </v-col>
                         </v-row>

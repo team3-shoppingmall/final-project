@@ -69,18 +69,45 @@
             </v-row>
         </v-col>
     </v-main>
-    <v-dialog v-model="dialog" width="600px" scrollable>
+    <v-dialog v-model="dialog" width="600px">
         <v-card>
             <v-card-title class="text-h5 grey lighten-2">
-                Spring Chatbot
-            </v-card-title>
-
-            <v-card-text>
-                <v-row>
-                    <v-col>
-
+                <v-row justify="space-between">
+                    <v-col>Spring Chatbot</v-col>
+                    <v-col cols="auto">
+                        <v-icon @click="messages = []; dialog = false">mdi-exit-to-app</v-icon>
                     </v-col>
                 </v-row>
+
+            </v-card-title>
+            <v-virtual-scroll :items="messages" :item-height="50" height="600" id="virtualScroll">
+                <template v-slot:default="{ item }">
+                    <v-list-item v-if="item.author == 'client'">
+                        <v-list-item-content>
+                            <v-list-item-title>
+                                <v-row justify="end">
+                                    <v-col cols="auto">
+                                        {{ item.text }}
+                                    </v-col>
+                                </v-row>
+                            </v-list-item-title>
+                        </v-list-item-content>
+                        <v-list-item-icon>
+                            <v-icon>mdi-alpha-q-box</v-icon>
+                        </v-list-item-icon>
+                    </v-list-item>
+                    <v-list-item v-if="item.author == 'server'">
+                        <v-list-item-icon>
+                            <v-icon>mdi-alpha-a-box</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-title>{{ item.text }}</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </template>
+            </v-virtual-scroll>
+            <v-divider></v-divider>
+            <v-card-text>
                 <v-row>
                     <v-col cols="10">
                         <v-text-field v-model="message" clearable hide-details @keyup.enter="sendMessage"></v-text-field>
@@ -89,17 +116,8 @@
                         <v-btn color="primary" @click="sendMessage">입력</v-btn>
                     </v-col>
                 </v-row>
-
             </v-card-text>
 
-            <v-divider></v-divider>
-
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="primary" text @click="dialog = false">
-                    종료
-                </v-btn>
-            </v-card-actions>
         </v-card>
     </v-dialog>
     <v-footer color="primary lighten-1" padless>
@@ -110,7 +128,11 @@
 
 <script>
 import Footer from '@/components/Footer.vue'
-// import axios from 'axios'
+import axios from 'axios'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     data() {
         return {
@@ -268,9 +290,33 @@ export default {
                 text: this.message,
                 author: 'client'
             });
-            this.message = '';
 
-            // axios.get(`/api/chatbot/chatbotform`)
+            let id = null;
+            if (this.getLogin == null) {
+                var timestamp = new Date().getUTCMilliseconds();
+                id = 'tempUser' + timestamp;
+            } else {
+                id = this.getLogin.user.id;
+            }
+
+            axios({
+                    method: 'get',
+                    url: `/api/chatbot/chatbotform`,
+                    params: {
+                        query: this.message,
+                        id: id,
+                    }
+                })
+                .then(res => {
+                    this.messages.push({
+                        text: res.data,
+                        author: 'server'
+                    });
+                    this.message = '';
+                }).finally(() => {
+                    var container = this.$el.querySelector("#virtualScroll");
+                    container.scrollTop = container.scrollHeight;
+                })
         },
     },
     computed: {
@@ -290,7 +336,7 @@ export default {
                     return true;
             }
         },
-
+        ...LoginStore.mapGetters(['getLogin']),
     }
 }
 </script>

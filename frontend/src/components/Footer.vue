@@ -36,7 +36,7 @@
                     <div class="caption my-1"> (선불결제) </div>
                     <div class="text-h6">BANK INFO</div>
                     <div class="caption my-1"> 마바은행 000-000000-00-000 (예금주:스프링) </div>
-                    <div class="caption my-1"> (무통장 입금시 실시간으로 확인되고 있습니다. </div>
+                    <div class="caption my-1"> (무통장 입금시 실시간으로 확인되고 있습니다.) </div>
                 </v-card>
             </v-col>
         </v-row>

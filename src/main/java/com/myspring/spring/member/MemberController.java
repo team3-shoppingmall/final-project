@@ -26,14 +26,19 @@ public class MemberController {
 	// 멤버 등록
 	@PostMapping(value = "/insert")
 	public ResponseEntity<?> insertMember(@RequestBody MemberVO member) {
-		memberService.insertMember(member);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return memberService.insertMember(member);
 	}
 
-	// 멤버 등록
+	// 멤버 검색
 	@GetMapping(value = "/getMemberInfo/{id}")
 	public ResponseEntity<?> getMemberInfo(@PathVariable("id") String id) {
 		return memberService.getMemberInfo(id);
+	}
+	
+	// 아이디 중복 체크
+	@GetMapping(value = "/check/{id}")
+	public ResponseEntity<?> checkId(@PathVariable("id") String id){
+		return memberService.checkId(id);
 	}
 
 	@PutMapping(value = "/updateMember")

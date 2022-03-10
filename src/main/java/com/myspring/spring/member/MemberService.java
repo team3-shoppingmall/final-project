@@ -118,17 +118,8 @@ public class MemberService {
 		Map<String, String> requestHeaders = new HashMap<>();
 		requestHeaders.put("Authorization", header);
 		String responseBody = get(apiURL, requestHeaders);
-
-		MemberVO res = memberMapper.getMemberInfo(responseBody);
 		
 		return new ResponseEntity<>(responseBody, HttpStatus.OK);
-//		if (res == null) {
-//			System.out.println("OK");
-//			return new ResponseEntity<>(HttpStatus.OK);
-//		} else {
-//			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-
 	}
 
 	private static String get(String apiUrl, Map<String, String> requestHeaders) {

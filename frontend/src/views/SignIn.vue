@@ -26,7 +26,14 @@
                         <v-icon class="pr-1">mdi-login-variant</v-icon>
                         kakao
                     </v-btn> -->
-                    <div id="naver_id_login"></div>
+                </v-row>
+                <v-row class="mt-10" justify="center">
+                    <v-col cols="auto">
+                        <div id="naver_id_login"></div>
+                    </v-col>
+                    <v-col cols="auto">
+                        <v-btn>aa</v-btn>
+                    </v-col>
                 </v-row>
             </v-form>
         </v-col>

@@ -203,6 +203,7 @@ export default {
         this.naverInfo = this.$route.params.naver;
         console.log(this.naverInfo);
         if (this.naverInfo != undefined) {
+            // 개인정보 때문에 전화번호는 제거함
             this.name = this.naverInfo.name;
             this.email = this.naverInfo.email;
         }

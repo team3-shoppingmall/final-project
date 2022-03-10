@@ -53,7 +53,7 @@
         <router-view />
         <v-col cols="auto" style="position:fixed; top:78%; right:10px; z-index: 1;">
             <v-row justify="end" class="mb-0">
-                <v-btn fab dark elevation="2" right color="#FF8EA0" :to="'/'">
+                <v-btn fab dark elevation="2" right color="#FF8EA0" @click.stop="dialog = true">
                     <v-icon>mdi-chat</v-icon>
                 </v-btn>
             </v-row>
@@ -69,6 +69,39 @@
             </v-row>
         </v-col>
     </v-main>
+    <v-dialog v-model="dialog" width="600px" scrollable>
+        <v-card>
+            <v-card-title class="text-h5 grey lighten-2">
+                Spring Chatbot
+            </v-card-title>
+
+            <v-card-text>
+                <v-row>
+                    <v-col>
+
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="10">
+                        <v-text-field v-model="message" clearable hide-details @keyup.enter="sendMessage"></v-text-field>
+                    </v-col>
+                    <v-col cols="2" class="mt-3">
+                        <v-btn color="primary" @click="sendMessage">입력</v-btn>
+                    </v-col>
+                </v-row>
+
+            </v-card-text>
+
+            <v-divider></v-divider>
+
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" text @click="dialog = false">
+                    종료
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
     <v-footer color="primary lighten-1" padless>
         <Footer />
     </v-footer>
@@ -77,10 +110,14 @@
 
 <script>
 import Footer from '@/components/Footer.vue'
+// import axios from 'axios'
 export default {
     data() {
         return {
             fab: false,
+            dialog: false,
+            message: '',
+            messages: [],
             pages: [{
                 name: 'MAIN',
                 to: '/',
@@ -225,7 +262,16 @@ export default {
         },
         toTop() {
             this.$vuetify.goTo(0)
-        }
+        },
+        sendMessage() {
+            this.messages.push({
+                text: this.message,
+                author: 'client'
+            });
+            this.message = '';
+
+            // axios.get(`/api/chatbot/chatbotform`)
+        },
     },
     computed: {
         width() {

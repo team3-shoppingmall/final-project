@@ -26,6 +26,7 @@
                         <v-icon class="pr-1">mdi-login-variant</v-icon>
                         kakao
                     </v-btn> -->
+                    <div id="naver_id_login"></div>
                 </v-row>
             </v-form>
         </v-col>
@@ -115,6 +116,13 @@ export default {
             this.setPath(`${this.$route.params.nextPage}`)
         else
             this.setPath('/')
+
+        const naver_id_login = new window.naver_id_login("INmTkpuK5mPhbhHfYG_Q", "http://localhost:9000/authentication/signIn/naver");
+        const state = naver_id_login.getUniqState();
+        naver_id_login.setButton("white", 2, 40); // 버튼 설정
+        naver_id_login.setState(state);
+        // naver_id_login.setPopup(); // popup 설정을 위한 코드
+        naver_id_login.init_naver_id_login();
     }
 }
 </script>

@@ -1,6 +1,5 @@
 <template>
 <v-container fluid>
-    {{getLogin.user.id}}
     <v-row justify="center">
         <v-col>
             <MyPageReview class="mt-0" :id="id" />

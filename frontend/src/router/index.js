@@ -72,15 +72,72 @@ const routes = [
             }, {
                 path: '/basket',
                 name: 'Basket',
-                component: Basket
+                component: Basket,
+                beforeEnter: (to, from, next) => {
+                    console.log(`${from.path} ---> ${to.path}`)
+                    const isLogin = store.getters['LoginStore/getLogin']
+                    if (isLogin) {
+                        if (isLogin.user.authority == 'ROLE_ADMIN') {
+                            next({
+                                name: 'Main',
+                            })
+                        }
+                        next();
+                    } else {
+                        next({
+                            name: 'SignIn',
+                            params: {
+                                nextPage: to.fullPath
+                            }
+                        })
+                    }
+                },
             }, {
                 path: '/payment',
                 name: 'Payment',
-                component: Payment
+                component: Payment,
+                beforeEnter: (to, from, next) => {
+                    console.log(`${from.path} ---> ${to.path}`)
+                    const isLogin = store.getters['LoginStore/getLogin']
+                    if (isLogin) {
+                        if (isLogin.user.authority == 'ROLE_ADMIN') {
+                            next({
+                                name: 'Main',
+                            })
+                        }
+                        next();
+                    } else {
+                        next({
+                            name: 'SignIn',
+                            params: {
+                                nextPage: '/'
+                            }
+                        })
+                    }
+                },
             }, {
                 path: '/myPage',
                 name: 'MyPage',
                 component: MyPage,
+                beforeEnter: (to, from, next) => {
+                    console.log(`${from.path} ---> ${to.path}`)
+                    const isLogin = store.getters['LoginStore/getLogin']
+                    if (isLogin) {
+                        if (isLogin.user.authority == 'ROLE_ADMIN') {
+                            next({
+                                name: 'Main',
+                            })
+                        }
+                        next();
+                    } else {
+                        next({
+                            name: 'SignIn',
+                            params: {
+                                nextPage: to.fullPath
+                            }
+                        })
+                    }
+                },
                 children: [
                     {
                         path: 'home',
@@ -198,13 +255,13 @@ const routes = [
         beforeEnter: (to, from, next) => {
             console.log(`${from.path} ---> ${to.path}`)
             const isLogin = store.getters['LoginStore/getLogin']
-            console.log(isLogin.user.authority)
             if (isLogin) {
                 if (isLogin.user.authority == 'ROLE_ADMIN') {
                     next();
-                } else 
-              {      alert("접근 권한이 없습니다");
-                next('/')}
+                } else {
+                    alert("접근 권한이 없습니다");
+                    next('/')
+                }
             } else {
                 next({
                     name: 'SignIn',

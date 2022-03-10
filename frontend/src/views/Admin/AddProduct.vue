@@ -514,14 +514,14 @@ export default {
                                 responseType: "blob",
                             })
                             .then(res => {
-                                if (i > 0) {
-                                    this.imageFiles.push(null);
+                                if (i == 0) {
+                                    this.imageFiles.pop();
                                 }
                                 var file = new File([res.data], imageList[i], {
                                     type: "image/*",
                                     lastModified: Date.now()
                                 });
-                                this.imageFiles[i] = file;
+                                this.imageFiles.push(file);
                                 this.onImageChange(i);
                             })
                     }
@@ -532,11 +532,11 @@ export default {
                                 responseType: "blob",
                             })
                             .then(res => {
-                                if (i > 0) {
-                                    this.detailImageFiles.push(null);
+                                if (i == 0) {
+                                    this.detailImageFiles.pop();
                                 }
                                 var file = new File([res.data], detailImageList[i]);
-                                this.detailImageFiles[i] = file;
+                                this.detailImageFiles.push(file);
                                 this.onDetailImageChange(i);
                             })
                     }

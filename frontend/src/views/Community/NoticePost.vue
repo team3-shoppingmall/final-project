@@ -1,7 +1,7 @@
 <template>
 <v-container>
-    <v-simple-table>
-        <template slot="default" v-if="dataLoaded">
+    <v-simple-table v-if="dataLoaded">
+        <template slot="default">
             <tbody>
                 <tr>
                     <td style="width:10%"> 제목 </td>
@@ -18,7 +18,7 @@
                 <tr>
                     <td colspan="4">
                         <v-row>
-                            <v-col cols="10">
+                            <v-col cols="8">
                                 <div v-html="notice.content"></div>
                             </v-col>
                         </v-row>
@@ -37,10 +37,10 @@
         <v-col cols="auto">
             <v-btn @click="moveToBefore" color="primary">목록</v-btn>
         </v-col>
-        <v-col cols="auto" v-if="getLogin.user.authority == 'ROLE_ADMIN'">
+        <v-col cols="auto" v-if="getLogin != null && getLogin.user.authority == 'ROLE_ADMIN'">
             <v-btn @click="moveToUpdate" color="primary">수정</v-btn>
         </v-col>
-        <v-col cols="auto" v-if="getLogin.user.authority == 'ROLE_ADMIN'">
+        <v-col cols="auto" v-if="getLogin != null && getLogin.user.authority == 'ROLE_ADMIN'">
             <v-btn @click="deleteNotice" color="primary">삭제</v-btn>
         </v-col>
     </v-row>

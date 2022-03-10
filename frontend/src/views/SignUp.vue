@@ -204,7 +204,6 @@ export default {
         console.log(this.naverInfo);
         if (this.naverInfo != undefined) {
             this.name = this.naverInfo.name;
-            this.tel = this.naverInfo.mobile.replaceAll('-', '');
             this.email = this.naverInfo.email;
         }
     },

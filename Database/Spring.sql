@@ -442,9 +442,6 @@ insert into pointtable(id, point, content) values ('tester',2000, '리뷰 이벤
 insert into pointtable(id, point, content) values ('tester',210, '구매 확정');
 insert into pointtable(id, point, content) values ('tester',500, '구매 확정');
 -- 공지사항
--- (이건 보시고 지워주세요) 내용은 좀 길어도 엔터 안하셔도 됨. 하지만 아이디랑 사진 이름은 빠르게 확인하기 위해 엔터 해주시면 됩니다.
-
-
 insert into noticetable(title, content, id, image) values('Grand Open!', '<p><br>2022년 1월 1일 Spring Mall Grand Open!', 'spring', '001.png');
 insert into noticetable(title, content, id, image) values('1월 리뷰 이벤트', '<p><br>스프링몰 오픈 기념 리뷰 2배 이벤트르 진행합니다.', 'spring', '001.png');
 insert into noticetable(title, content, id, image) values('해외배송 안내', '<p><br>많은 문의 주셨던 해외배송을 시작합니다!<br>이제 스프링의 옷을 해외에서도 받아봐요! ❤', 'spring', '002.png');

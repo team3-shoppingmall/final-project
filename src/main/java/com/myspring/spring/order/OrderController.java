@@ -70,6 +70,12 @@ public class OrderController {
 		return orderService.getOrdersByIdGroupByState(id);
 	}
 
+//	주문 조회
+	@GetMapping(value = "/getOrder/{orderIdx}")
+	public ResponseEntity<?> getOrder(@PathVariable("orderIdx") int orderIdx) {
+		return orderService.getOrderByNo(orderIdx);
+	}
+
 //	주문 상태 변경
 	@PatchMapping("/update")
 	public ResponseEntity<?> updateOrder(@RequestBody List<OrderVO> states) {

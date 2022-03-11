@@ -244,7 +244,8 @@ END$$
 DELIMITER ;
 
 CREATE TABLE bannertable (
-	NUM INT PRIMARY KEY AUTO_INCREMENT,
+	idx int  PRIMARY KEY,
+	NUM INT,
 	IMAGE VARCHAR(100) NOT NULL,
 	LINK VARCHAR(100) NOT NULL
 );
@@ -594,11 +595,13 @@ select * from noticetable;
 select * from faqtable;
 select * from reviewtable;
 select * from qnatable;
-select * from bannertable;
+select * from bannertable order by num limit 8 offset 0;
 select * from information_schema.events;
 
 -- select문 실험 및 용도
-
+ -- select count(*) from ordertable where id = 'portal' and STATE in ('입금전', '결제완료', '배송준비중', '배송중');
+ delete from membertable where id = 'portal' and 0 = (select count(*) from ordertable where id = 'portal' and STATE in ('입금전', '결제완료', '배송준비중', '배송중'));   
+ 
 -- 글 번호는 최신순이지만 답글이 원글 밑에 오도록 함
 -- select * from qnatable order by originalno desc, qnano asc;
 

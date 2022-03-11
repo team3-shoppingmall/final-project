@@ -53,7 +53,7 @@
         <router-view />
         <v-col cols="auto" style="position:fixed; top:78%; right:10px; z-index: 1;">
             <v-row justify="end" class="mb-0">
-                <v-btn fab dark elevation="2" right color="#FF8EA0" :to="'/'">
+                <v-btn fab dark elevation="2" right color="#FF8EA0" @click.stop="dialog = true">
                     <v-icon>mdi-chat</v-icon>
                 </v-btn>
             </v-row>
@@ -69,6 +69,57 @@
             </v-row>
         </v-col>
     </v-main>
+    <v-dialog v-model="dialog" width="600px">
+        <v-card>
+            <v-card-title class="text-h5 grey lighten-2">
+                <v-row justify="space-between">
+                    <v-col>Spring Chatbot</v-col>
+                    <v-col cols="auto">
+                        <v-icon @click="messages = []; dialog = false">mdi-exit-to-app</v-icon>
+                    </v-col>
+                </v-row>
+
+            </v-card-title>
+            <v-virtual-scroll :items="messages" :item-height="50" height="600" id="virtualScroll">
+                <template v-slot:default="{ item }">
+                    <v-list-item v-if="item.author == 'client'">
+                        <v-list-item-content>
+                            <v-list-item-title>
+                                <v-row justify="end">
+                                    <v-col cols="auto">
+                                        {{ item.text }}
+                                    </v-col>
+                                </v-row>
+                            </v-list-item-title>
+                        </v-list-item-content>
+                        <v-list-item-icon>
+                            <v-icon>mdi-alpha-q-box</v-icon>
+                        </v-list-item-icon>
+                    </v-list-item>
+                    <v-list-item v-if="item.author == 'server'">
+                        <v-list-item-icon>
+                            <v-icon>mdi-alpha-a-box</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-title>{{ item.text }}</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </template>
+            </v-virtual-scroll>
+            <v-divider></v-divider>
+            <v-card-text>
+                <v-row>
+                    <v-col cols="10">
+                        <v-text-field v-model="message" clearable hide-details @keyup.enter="sendMessage"></v-text-field>
+                    </v-col>
+                    <v-col cols="2" class="mt-3">
+                        <v-btn color="primary" @click="sendMessage">입력</v-btn>
+                    </v-col>
+                </v-row>
+            </v-card-text>
+
+        </v-card>
+    </v-dialog>
     <v-footer color="primary lighten-1" padless>
         <Footer />
     </v-footer>
@@ -77,10 +128,18 @@
 
 <script>
 import Footer from '@/components/Footer.vue'
+import axios from 'axios'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     data() {
         return {
             fab: false,
+            dialog: false,
+            message: '',
+            messages: [],
             pages: [{
                 name: 'MAIN',
                 to: '/',
@@ -225,7 +284,40 @@ export default {
         },
         toTop() {
             this.$vuetify.goTo(0)
-        }
+        },
+        sendMessage() {
+            this.messages.push({
+                text: this.message,
+                author: 'client'
+            });
+
+            let id = null;
+            if (this.getLogin == null) {
+                var timestamp = new Date().getUTCMilliseconds();
+                id = 'tempUser' + timestamp;
+            } else {
+                id = this.getLogin.user.id;
+            }
+
+            axios({
+                    method: 'get',
+                    url: `/api/chatbot/chatbotform`,
+                    params: {
+                        query: this.message,
+                        id: id,
+                    }
+                })
+                .then(res => {
+                    this.messages.push({
+                        text: res.data,
+                        author: 'server'
+                    });
+                    this.message = '';
+                }).finally(() => {
+                    var container = this.$el.querySelector("#virtualScroll");
+                    container.scrollTop = container.scrollHeight;
+                })
+        },
     },
     computed: {
         width() {
@@ -244,7 +336,7 @@ export default {
                     return true;
             }
         },
-
+        ...LoginStore.mapGetters(['getLogin']),
     }
 }
 </script>

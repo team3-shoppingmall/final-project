@@ -19,7 +19,8 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 	implementation 'org.springframework.boot:spring-boot-starter-security:2.6.3'
-	
+	implementation 'org.json:json:20211205'
+	implementation 'net.morimekta.utils:android-util:1.2.0'
 }
 
 tasks.named('test') {

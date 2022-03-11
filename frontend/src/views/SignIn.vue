@@ -27,6 +27,14 @@
                         kakao
                     </v-btn> -->
                 </v-row>
+                <v-row class="mt-10" justify="center">
+                    <v-col cols="auto">
+                        <div id="naver_id_login"></div>
+                    </v-col>
+                    <v-col cols="auto">
+                        <v-btn>aa</v-btn>
+                    </v-col>
+                </v-row>
             </v-form>
         </v-col>
     </v-row>
@@ -101,7 +109,43 @@ export default {
         //     "https://kauth.kakao.com/oauth/authorize?client_id=AppKey
         //     &redirect_uri=http://localhost:9000/kakaologin&response_type=code"
         // );
-        // },
+        // },        
+        naverLogin(token) {
+            axios.get(`/api/member/getNaverLogin/${token}`)
+                .then(res => {
+                    axios.get('/api/member/login', {
+                            params: {
+                                id: res.data.response.id,
+                                password: res.data.response.id + 'password',
+                            }
+                        })
+                        .then(res => {
+                            let temp = res.data;
+                            let user = {
+                                id: temp.id,
+                                authority: temp.authority,
+                            };
+                            this.Login({
+                                user
+                            })
+                        })
+                        .then(() => {
+                            // console.log(this.getPath)
+                            this.$router.push(this.getPath)
+                        })
+                        .catch(err => {
+                            if (err.response.data == 'ID NOT FOUND') {
+                                alert('회원가입되지 않은 아이디입니다. 회원가입 페이지로 이동합니다.')
+                                this.$router.push({
+                                    name: "Social",
+                                    params: {
+                                        naver: res.data.response
+                                    }
+                                });
+                            }
+                        })
+                })
+        },
         ...LoginStore.mapActions(['Login']),
         ...LoginStore.mapMutations(['setPath']),
     },
@@ -115,6 +159,18 @@ export default {
             this.setPath(`${this.$route.params.nextPage}`)
         else
             this.setPath('/')
+
+        const naver_id_login = new window.naver_id_login("INmTkpuK5mPhbhHfYG_Q", "http://localhost:9000/authentication/signIn/naver");
+        let link = document.location.href;
+        if (link.indexOf('access_token') != -1) {
+            this.naverLogin(naver_id_login.getAccessToken());
+        } else {
+            const state = naver_id_login.getUniqState();
+            naver_id_login.setButton("white", 2, 40); // 버튼 설정
+            naver_id_login.setState(state);
+            // naver_id_login.setPopup(); // popup 설정을 위한 코드
+            naver_id_login.init_naver_id_login();
+        }
     }
 }
 </script>

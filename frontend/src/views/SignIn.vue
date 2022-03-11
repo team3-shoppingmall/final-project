@@ -26,6 +26,10 @@
                         <v-icon class="pr-1">mdi-login-variant</v-icon>
                         kakao
                     </v-btn> -->
+                     <v-btn class="mr-5 primary pl-2 pr-3" @click="loginKakao">
+                        <v-icon class="pr-1">mdi-login-variant</v-icon>
+                        kakao
+                    </v-btn>
                 </v-row>
                 <v-row class="mt-10" justify="center">
                     <v-col cols="auto">
@@ -109,7 +113,14 @@ export default {
         //     "https://kauth.kakao.com/oauth/authorize?client_id=AppKey
         //     &redirect_uri=http://localhost:9000/kakaologin&response_type=code"
         // );
-        // },        
+        // }, 
+             loginKakao() {
+            window.location.replace(
+            "https://kauth.kakao.com/oauth/authorize?client_id=42b435f74388d237a488dc4489022bf7&redirect_uri=http://localhost:8085/api/member/getKakaoLogin&response_type=code"
+        );
+        },  
+       
+     
         naverLogin(token) {
             axios.get(`/api/member/getNaverLogin/${token}`)
                 .then(res => {
@@ -149,6 +160,7 @@ export default {
         ...LoginStore.mapActions(['Login']),
         ...LoginStore.mapMutations(['setPath']),
     },
+
     computed: {
         ...LoginStore.mapGetters(['getLogin']),
         ...LoginStore.mapGetters(['getPath'])

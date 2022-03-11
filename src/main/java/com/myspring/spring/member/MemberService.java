@@ -14,11 +14,13 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
 	private MemberMapper memberMapper;
+	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 	@Autowired
 	public MemberService(MemberMapper memberMapper) {
@@ -29,7 +31,11 @@ public class MemberService {
 	public ResponseEntity<?> insertMember(MemberVO member) {
 		if (member.getAuthority() == null)
 			member.setAuthority("ROLE_USER");
+		String secPwd = encoder.encode(member.getPassword());
+		member.setPassword(secPwd);
+
 		int res = memberMapper.insertMember(member);
+
 		if (res == 1) {
 			return new ResponseEntity<>(HttpStatus.OK);
 		} else {
@@ -61,6 +67,9 @@ public class MemberService {
 			MemberVO temp = memberMapper.getMemberInfo(member.getId());
 			String tempPwd = temp.getPassword();
 			member.setPassword(tempPwd);
+		} else {
+			String secPwd = encoder.encode(member.getPassword());
+			member.setPassword(secPwd);
 		}
 		int res = memberMapper.updateMember(member);
 
@@ -78,9 +87,12 @@ public class MemberService {
 	}
 
 	public ResponseEntity<?> login(String id, String pwd) {
+//		System.out.println(encoder.encode(pwd));
 		MemberVO res = memberMapper.login(id);
 		String resPwd;
-
+//		if(encoder.matches(pwd, "$2a$10$wX6Q2YP5zDbTUQwJeMExFO2aB8SkxCBDFfUgfKY57QAQlxiynYe5G")){
+//			System.out.println("true");
+//		}
 		// pwd 암호화 넣기
 
 		if (res == null) {
@@ -89,7 +101,7 @@ public class MemberService {
 			resPwd = res.getPassword();
 		}
 		System.out.println("1 " + pwd + "2 " + resPwd);
-		if (pwd.equals(resPwd)) {
+		if (encoder.matches(pwd, res.getPassword())) {
 			res.setPassword(null);
 			return new ResponseEntity<>(res, HttpStatus.OK);
 		} else {
@@ -118,7 +130,7 @@ public class MemberService {
 		Map<String, String> requestHeaders = new HashMap<>();
 		requestHeaders.put("Authorization", header);
 		String responseBody = get(apiURL, requestHeaders);
-		
+
 		return new ResponseEntity<>(responseBody, HttpStatus.OK);
 	}
 

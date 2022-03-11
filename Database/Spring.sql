@@ -250,19 +250,19 @@ CREATE TABLE bannertable (
 );
 -- insert data
 -- 회원
-insert into membertable values('spring','Asdqwe123','Spring','0212345678','spring@gmail.com','12345','서울 강남구 테헤란로 212 (멀티캠퍼스)','2층 201호',false,null,'ROLE_ADMIN');
-insert into membertable values('tester','Asdqwe123','유저','01098765432','tester@gmail.com','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호',false,null,'ROLE_USER');
-insert into membertable values('portal','Asdqwe123','강기룡','01077777777','portal@gmail.com','02000','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('aodremm','Asdqwe123','안동근','01011111111','aodremm@gmail.com','11111','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('grimhink','Asdqwe123','정호재','01022222222','grimhink@gmail.com','22222','부산 문현로 56-1 (네이버코리아)','4층 405호',true,null,'ROLE_USER');
-insert into membertable values('madana','Asdqwe123','서기준','01033333333','madana@gmail.com','33333','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('prose','Asdqwe123','남범석','01044444444','prose@gmail.com','44444','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('rhonia','Asdqwe123','조철준','01055555555','rhonia@gmail.com','55555','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('rhonnyn','Asdqwe123','박기하','01066666666','rhonnyn@gmail.com','66666','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('seaxwell','Asdqwe123','정진숙','01077777777','seaxwell@gmail.com','77777','부산 문현로 56-1 (네이버코리아)','4층 405호',true,null,'ROLE_USER');
-insert into membertable values('talwyn','Asdqwe123','박동현','01088888888','talwyn@gmail.com','88888','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('trice','Asdqwe123','성재용','01099999999','trice@gmail.com','99999','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
-insert into membertable values('wantin','Asdqwe123','한명옥','01000000000','wantin@gmail.com','00000','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('spring','$2a$10$wX6Q2YP5zDbTUQwJeMExFO2aB8SkxCBDFfUgfKY57QAQlxiynYe5G','Spring','0212345678','spring@gmail.com','12345','서울 강남구 테헤란로 212 (멀티캠퍼스)','2층 201호',false,null,'ROLE_ADMIN');
+insert into membertable values('tester','$2a$10$wX6Q2YP5zDbTUQwJeMExFO2aB8SkxCBDFfUgfKY57QAQlxiynYe5G','유저','01098765432','tester@gmail.com','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호',false,null,'ROLE_USER');
+insert into membertable values('portal','$2a$10$wX6Q2YP5zDbTUQwJeMExFO2aB8SkxCBDFfUgfKY57QAQlxiynYe5G','강기룡','01077777777','portal@gmail.com','02000','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('aodremm','$2a$10$wX6Q2YP5zDbTUQwJeMExFO2aB8SkxCBDFfUgfKY57QAQlxiynYe5G','안동근','01011111111','aodremm@gmail.com','11111','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('grimhink','$2a$10$wX6Q2YP5zDbTUQwJeMExFO2aB8SkxCBDFfUgfKY57QAQlxiynYe5G','정호재','01022222222','grimhink@gmail.com','22222','부산 문현로 56-1 (네이버코리아)','4층 405호',true,null,'ROLE_USER');
+insert into membertable values('madana','$2a$10$wX6Q2YP5zDbTUQwJeMExFO2aB8SkxCBDFfUgfKY57QAQlxiynYe5G','서기준','01033333333','madana@gmail.com','33333','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('prose','$2a$10$wX6Q2YP5zDbTUQwJeMExFO2aB8SkxCBDFfUgfKY57QAQlxiynYe5G','남범석','01044444444','prose@gmail.com','44444','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('rhonia','$2a$10$wX6Q2YP5zDbTUQwJeMExFO2aB8SkxCBDFfUgfKY57QAQlxiynYe5G','조철준','01055555555','rhonia@gmail.com','55555','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('rhonnyn','$2a$10$wX6Q2YP5zDbTUQwJeMExFO2aB8SkxCBDFfUgfKY57QAQlxiynYe5G','박기하','01066666666','rhonnyn@gmail.com','66666','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('seaxwell','$2a$10$wX6Q2YP5zDbTUQwJeMExFO2aB8SkxCBDFfUgfKY57QAQlxiynYe5G','정진숙','01077777777','seaxwell@gmail.com','77777','부산 문현로 56-1 (네이버코리아)','4층 405호',true,null,'ROLE_USER');
+insert into membertable values('talwyn','$2a$10$wX6Q2YP5zDbTUQwJeMExFO2aB8SkxCBDFfUgfKY57QAQlxiynYe5G','박동현','01088888888','talwyn@gmail.com','88888','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('trice','$2a$10$wX6Q2YP5zDbTUQwJeMExFO2aB8SkxCBDFfUgfKY57QAQlxiynYe5G','성재용','01099999999','trice@gmail.com','99999','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('wantin','$2a$10$wX6Q2YP5zDbTUQwJeMExFO2aB8SkxCBDFfUgfKY57QAQlxiynYe5G','한명옥','01000000000','wantin@gmail.com','00000','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 -- 상품
 insert into producttable(productname, type1, type2, imagename, price, color, size, amount, regDate, detailimagename, onSale) 
 values('스노우 버튼 모직스커트', 'skirt','mini','image3.jpg;lake-6641880__340.webp;lake-6701636__340.jpg;water-6706894__340.webp',38000,'그레이지;소프트민트','S;M;L', 100, '2022-01-01 09:00:00', 'photo-1433086966358-54859d0ed716.jfif;milky-way-2695569__340.jpg;photo-1447752875215-b2761acb3c5d.jfif;photo-1469474968028-56623f02e42e.jfif', true);

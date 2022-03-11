@@ -69,39 +69,73 @@
             </v-row>
         </v-col>
     </v-main>
-    <v-dialog v-model="dialog" width="600px">
+    <v-dialog v-model="dialog" width="600px" persistent>
         <v-card>
             <v-card-title class="text-h5 grey lighten-2">
                 <v-row justify="space-between">
                     <v-col>Spring Chatbot</v-col>
                     <v-col cols="auto">
-                        <v-icon @click="messages = []; dialog = false">mdi-exit-to-app</v-icon>
+                        <v-row>
+                            <v-col>
+
+                                <v-btn @click="dialog2 = true" text>
+                                    <v-icon color="#FF8EA0">mdi-magnify</v-icon>주문 확인
+                                </v-btn>
+                            </v-col>
+                            <v-col>
+                                <v-icon @click="dialog = false" color="#FF8EA0">mdi-exit-to-app</v-icon>
+                            </v-col>
+                        </v-row>
                     </v-col>
                 </v-row>
-
             </v-card-title>
-            <v-virtual-scroll :items="messages" :item-height="50" height="600" id="virtualScroll">
+            <v-virtual-scroll :items="messages" :item-height="120" height="600" id="virtualScroll">
                 <template v-slot:default="{ item }">
                     <v-list-item v-if="item.author == 'client'">
-                        <v-list-item-content>
+                        <v-list-item-content class="mb-5">
                             <v-list-item-title>
                                 <v-row justify="end">
-                                    <v-col cols="auto">
-                                        {{ item.text }}
+                                    <v-col cols="10">
+                                        <v-row justify="end">
+                                            <v-col cols="auto">
+                                                <v-card elevation="2" outlined color="blue lighten-1">
+                                                    <v-card-text>
+                                                        <div class="text--primary">{{item.text}}</div>
+                                                    </v-card-text>
+                                                </v-card>
+                                            </v-col>
+                                        </v-row>
                                     </v-col>
                                 </v-row>
                             </v-list-item-title>
                         </v-list-item-content>
                         <v-list-item-icon>
-                            <v-icon>mdi-alpha-q-box</v-icon>
+                            <v-icon color="blue">mdi-alpha-q-box</v-icon>
                         </v-list-item-icon>
                     </v-list-item>
                     <v-list-item v-if="item.author == 'server'">
                         <v-list-item-icon>
-                            <v-icon>mdi-alpha-a-box</v-icon>
+                            <v-icon color="#FF8EA0">mdi-alpha-a-box</v-icon>
                         </v-list-item-icon>
                         <v-list-item-content>
-                            <v-list-item-title>{{ item.text }}</v-list-item-title>
+                            <v-list-item-title>
+                                <v-row>
+                                    <v-col cols="10">
+                                        <v-row>
+                                            <v-col cols="auto">
+                                                <v-card elevation="2" outlined color="#FF8EA0b3">
+                                                    <v-card-text>
+                                                        <div class="text--primary">{{item.text}}</div>
+                                                    </v-card-text>
+                                                </v-card>
+                                            </v-col>
+                                        </v-row>
+                                    </v-col>
+                                </v-row>
+                            </v-list-item-title>
+                            <v-list-item-subtitle v-if="item.buttons != undefined">
+                                <v-btn tile v-for="button in item.buttons" :key="button" @click="selectMessage(item, button)" color="primary">{{button}}</v-btn>
+                            </v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
                 </template>
@@ -109,15 +143,42 @@
             <v-divider></v-divider>
             <v-card-text>
                 <v-row>
-                    <v-col cols="10">
+                    <v-col>
                         <v-text-field v-model="message" clearable hide-details @keyup.enter="sendMessage"></v-text-field>
                     </v-col>
-                    <v-col cols="2" class="mt-3">
+                    <v-col cols="auto" class="mt-3">
                         <v-btn color="primary" @click="sendMessage">입력</v-btn>
                     </v-col>
                 </v-row>
             </v-card-text>
-
+        </v-card>
+    </v-dialog>
+    <v-dialog v-model="dialog2" width="400px" persistent>
+        <v-card>
+            <v-card-title class="text-h5 grey lighten-2">
+                <v-row justify="space-between">
+                    <v-col>주문 확인</v-col>
+                    <v-col cols="auto">
+                        <v-icon @click="dialog2 = false; orderState = ''" color="#FF8EA0">mdi-exit-to-app</v-icon>
+                    </v-col>
+                </v-row>
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text>
+                <v-row>
+                    <v-col>
+                        <v-text-field prefix="주문번호 : " v-model="orderNo" clearable hide-details @keyup.enter="searchOrder"></v-text-field>
+                    </v-col>
+                    <v-col cols="auto" class="mt-3">
+                        <v-btn color="primary" @click="searchOrder">확인</v-btn>
+                    </v-col>
+                </v-row>
+                <v-row v-if="orderState != ''">
+                    <v-col>
+                        주문상태 : {{orderState}}
+                    </v-col>
+                </v-row>
+            </v-card-text>
         </v-card>
     </v-dialog>
     <v-footer color="primary lighten-1" padless>
@@ -138,8 +199,12 @@ export default {
         return {
             fab: false,
             dialog: false,
+            dialog2: false,
             message: '',
+            orderNo: '',
+            orderState: '',
             messages: [],
+            previousMessage: '',
             pages: [{
                 name: 'MAIN',
                 to: '/',
@@ -285,12 +350,43 @@ export default {
         toTop() {
             this.$vuetify.goTo(0)
         },
+        reset() {
+            this.messages = [];
+            this.message = '';
+            this.messages.push({
+                text: '안녕하세요 spring 입니다. 무엇을 도와드릴까요?',
+                author: 'server'
+            });
+            this.previousMessage = '안녕하세요 spring 입니다. 무엇을 도와드릴까요?';
+        },
+        searchOrder() {
+            axios.get(`/api/order/getOrder/${this.orderNo}`)
+                .then(res => {
+                    this.orderState = res.data;
+                }).finally(
+                    this.orderNo = ''
+                )
+        },
+        selectMessage(item, selected) {
+            this.message = selected;
+            if (item.text == '주소를 변경할 주문의 현재 배송 상태를 선택해주세요') {
+                this.message = '주소변경' + selected;
+            }
+            if (item.text == '배송 상태를 선택해주세요') {
+                this.message = '배송문의' + selected;
+            }
+            this.sendMessage();
+        },
         sendMessage() {
             this.messages.push({
                 text: this.message,
                 author: 'client'
             });
 
+            if (this.message == '종료') {
+                this.dialog = false;
+                return;
+            }
             let id = null;
             if (this.getLogin == null) {
                 var timestamp = new Date().getUTCMilliseconds();
@@ -298,22 +394,33 @@ export default {
             } else {
                 id = this.getLogin.user.id;
             }
-
             axios({
-                    method: 'get',
-                    url: `/api/chatbot/chatbotform`,
+                    method: 'post',
+                    url: `/api/chatbot/chatbot`,
                     params: {
                         query: this.message,
                         id: id,
                     }
                 })
                 .then(res => {
-                    this.messages.push({
-                        text: res.data,
-                        author: 'server'
-                    });
+                    this.previousMessage = res.data.description;
+                    if (res.data.buttonList != null) {
+                        this.messages.push({
+                            text: res.data.description,
+                            buttons: res.data.buttonList,
+                            author: 'server'
+                        });
+                    } else {
+                        this.messages.push({
+                            text: res.data.description,
+                            author: 'server'
+                        });
+                    }
                     this.message = '';
-                }).finally(() => {
+                }).catch(err => {
+                    console.log(err);
+                })
+                .finally(() => {
                     var container = this.$el.querySelector("#virtualScroll");
                     container.scrollTop = container.scrollHeight;
                 })
@@ -337,6 +444,9 @@ export default {
             }
         },
         ...LoginStore.mapGetters(['getLogin']),
+    },
+    mounted() {
+        this.reset();
     }
 }
 </script>

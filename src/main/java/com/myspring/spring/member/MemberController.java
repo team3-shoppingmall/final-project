@@ -7,6 +7,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,10 +75,17 @@ public class MemberController {
 		return memberService.getMemberPoint();
 	}
 
+	// 회원 탈퇴
+	@DeleteMapping(value = "/delete/{id}")
+	public ResponseEntity<?> deleteMember(@PathVariable("id") String id) {
+		return memberService.deleteMember(id);
+	}
+  
 	@GetMapping("/getNaverLogin/{token}")
 	public ResponseEntity<?> getNaverLogin(@PathVariable("token") String token) {
 		return memberService.getNaverLogin(token);
 	}
+  
 	@GetMapping("/getKakaoLogin")
 	public @ResponseBody String getKakaoLogin(String code) { //Data를 리턴해주는 컨트롤러 함수
 		
@@ -127,5 +135,6 @@ public class MemberController {
 		System.out.println("카카오 엑세스 토큰:" + memberOauthToken.getAccess_token());
 		
 		return response.getBody();
-	}
+  }
+
 }

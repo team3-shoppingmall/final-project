@@ -1,7 +1,6 @@
 package com.myspring.spring.banner;
 
 public class BannerVO {
-	private int idx;
 	private int num;
 	private String image;
 	private String link;
@@ -9,19 +8,10 @@ public class BannerVO {
 	public BannerVO() {
 	}
 
-	public BannerVO(int idx, int num, String image, String link) {
-		this.idx = idx;
+	public BannerVO(int num, String image, String link) {
 		this.num = num;
 		this.image = image;
 		this.link = link;
-	}
-
-	public int getIdx() {
-		return idx;
-	}
-
-	public void setIdx(int idx) {
-		this.idx = idx;
 	}
 
 	public int getNum() {
@@ -47,6 +37,5 @@ public class BannerVO {
 	public void setLink(String link) {
 		this.link = link;
 	}
-
 
 }

@@ -26,6 +26,9 @@ DROP TRIGGER IF EXISTS `springdb`.`membertable_AFTER_DELETE`;
 DROP procedure IF EXISTS `autoQuestion`;
 DROP procedure IF EXISTS `autoReply`;
 DROP procedure IF EXISTS `orderChangeSchedule`;
+DROP procedure IF EXISTS `bannerInsert`;
+DROP procedure IF EXISTS `bannerUpdate`;
+DROP procedure IF EXISTS `bannerDelete`;
 DROP EVENT IF EXISTS `event_AutoScheduler`;
 
 -- create table and trigger
@@ -250,11 +253,79 @@ END$$
 DELIMITER ;
 
 CREATE TABLE bannertable (
-	idx int  PRIMARY KEY,
-	NUM INT,
-	IMAGE VARCHAR(100) NOT NULL,
-	LINK VARCHAR(100) NOT NULL
+	IMAGE VARCHAR(100) PRIMARY KEY,
+	LINK VARCHAR(100) NOT NULL,
+	NUM INT
 );
+
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `bannerInsert`(imageTemp varchar(100), linkTemp varchar(100), numTemp int)
+BEGIN
+DECLARE getMaxNum INT;
+if(numTemp is null)
+then
+
+if((SELECT count(*) FROM bannertable) = 0)
+then
+SET getMaxNum = 1;
+else
+SET getMaxNum = (SELECT max(num) FROM bannertable) + 1;
+end if;
+
+insert into bannertable values(imageTemp, linkTemp, getMaxNum);
+
+else
+
+if((select image from bannertable where num = numTemp) is not null)
+then
+update bannertable set num = num+1 where num in (select * from (select num from bannertable where num >= numTemp) temp);
+end if;
+insert into bannertable values(imageTemp, linkTemp, numTemp);
+
+end if;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `bannerUpdate`(beforeImage varchar(100), imageTemp varchar(100), linkTemp varchar(100), numTemp int)
+BEGIN
+DECLARE endTemp INT;
+set endTemp = (select num from bannertable where image = beforeImage);
+if(endTemp = numTemp)
+then
+update bannertable set image = imageTemp, link = linkTemp where num = numTemp;
+else
+
+update bannertable set num = 0 where image = beforeImage;
+
+if((select image from bannertable where num = numTemp) is not null)
+then
+update bannertable set num = num+1 where num in (select * from (select num from bannertable where num >= numTemp and num <= endTemp) temp);
+end if;
+
+update bannertable set image = imageTemp, link = linkTemp, num = numTemp where num = 0;
+end if;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `bannerDelete`(imageTemp varchar(100))
+BEGIN
+DECLARE numTemp INT;
+set numTemp = (select num from bannertable where image = imageTemp);
+
+if((select image from bannertable where num = numTemp) is not null)
+then
+update bannertable set num = num-1 where num in (select * from (select num from bannertable where num >= numTemp) temp);
+end if;
+
+delete from bannertable where image = imageTemp;
+END$$
+DELIMITER ;
+
 -- insert data
 -- 회원
 insert into membertable values('spring','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','Spring','0212345678','spring@gmail.com','12345','서울 강남구 테헤란로 212 (멀티캠퍼스)','2층 201호',false,null,'ROLE_ADMIN');
@@ -601,12 +672,10 @@ select * from noticetable;
 select * from faqtable;
 select * from reviewtable;
 select * from qnatable;
-select * from bannertable order by num limit 8 offset 0;
+select * from bannertable;
 select * from information_schema.events;
 -- select문 실험 및 용도
- -- select count(*) from ordertable where id = 'portal' and STATE in ('입금전', '결제완료', '배송준비중', '배송중');
- delete from membertable where id = 'portal' and 0 = (select count(*) from ordertable where id = 'portal' and STATE in ('입금전', '결제완료', '배송준비중', '배송중'));   
- 
+
 -- 글 번호는 최신순이지만 답글이 원글 밑에 오도록 함
 -- select * from qnatable order by originalno desc, qnano asc;
 

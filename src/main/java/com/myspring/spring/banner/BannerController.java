@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,14 +39,18 @@ public class BannerController {
 		return bannerService.insertBanner(data, banner);
 	}
 	
-	@PutMapping(value = "/update")
-	public ResponseEntity<?> updateBanner(@RequestBody BannerVO data){
-		System.out.println("update" + data.getImage());
-		return bannerService.updateBanner(data);
+	@PutMapping(value = "/update/{oldimage}")
+	public ResponseEntity<?> updateBanner(@PathVariable("oldimage") String old, @RequestBody BannerVO data){
+		return bannerService.updateBanner(old, data);
 	}
 	
 	@GetMapping("/image/{image}")
 	public ResponseEntity<?> getImage(@PathVariable("image") String image) throws IOException {
 		return bannerService.getImage(image);
+	}
+	
+	@DeleteMapping(value = "/delete/{image}")
+	public ResponseEntity<?> deleteBanner(@PathVariable("image") String image)  {
+		return bannerService.deleteBanner(image);
 	}
 }

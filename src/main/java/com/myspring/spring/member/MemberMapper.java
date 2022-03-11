@@ -2,14 +2,13 @@ package com.myspring.spring.member;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.UpdateProvider;
-
-import com.myspring.spring.point.PointVO;
 
 @Mapper
 public interface MemberMapper {
@@ -50,6 +49,9 @@ public interface MemberMapper {
 	// 멤버 포인트 조회
 	@Select("select point from membertable where id = 'tester';")
 	List<MemberVO> getMemberPoint();
+
+	@Delete("delete from membertable where id = #{id} and 0 = (select count(*) from ordertable where id = #{id} and STATE in ('입금전', '결제완료', '배송준비중', '배송중'))")
+	int deleteMember(@Param("id") String id);
 
 
 }

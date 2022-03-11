@@ -2,6 +2,7 @@ package com.myspring.spring.member;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,5 +67,11 @@ public class MemberController {
 	@GetMapping("/getNaverLogin/{token}")
 	public ResponseEntity<?> getNaverLogin(@PathVariable("token") String token) {
 		return memberService.getNaverLogin(token);
+	}
+
+	// 회원 탈퇴
+	@DeleteMapping(value = "/delete/{id}")
+	public ResponseEntity<?> deleteMember(@PathVariable("id") String id) {
+		return memberService.deleteMember(id);
 	}
 }

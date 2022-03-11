@@ -1,8 +1,8 @@
 <template>
 <v-row justify="center" no-gutters>
     <!-- <v-divider vertical="true" class="white"></v-divider> -->
-    <v-btn v-for="link in links" :key="link" color="white" text rounded class="my-2">
-        {{ link }}
+    <v-btn v-for="(link, idx) in links" :key="idx" color="white" text rounded class="my-2" :to="link.to">
+        {{ link.text }}
     </v-btn>
     <v-col class="primary lighten-2 py-4 text-center white--text" cols="12">
         <v-row justify="center">
@@ -49,15 +49,25 @@
 export default {
     data() {
         return {
-            links: [
-                '홈으로',
-                '회사소개',
-                '이용약관',
-                '개인정보취급방침',
-                '이용안내',
-                '고객센터',
-                '자주묻는질문',
-            ],
+            links: [{
+                text: '홈으로',
+                to: '/'
+            }, {
+                text: '이용약관',
+                to: '/termsOfUse'
+            }, {
+                text: '개인정보취급방침',
+                to: '/privacyPolicy'
+            }, {
+                text: '이용안내',
+                to: '/shopGuide'
+            }, {
+                text: '고객센터',
+                to: '/qna/productQnA'
+            }, {
+                text: '자주 묻는 질문',
+                to: '/community/faq'
+            }, ],
         }
     }
 }

@@ -94,13 +94,12 @@ public class MemberService {
 //			System.out.println("true");
 //		}
 		// pwd 암호화 넣기
-
 		if (res == null) {
 			return new ResponseEntity<>("ID NOT FOUND", HttpStatus.INTERNAL_SERVER_ERROR);
 		} else {
 			resPwd = res.getPassword();
 		}
-		System.out.println("1 " + pwd + "2 " + resPwd);
+		System.out.println("1 " + pwd + " 2 " + resPwd);
 		if (encoder.matches(pwd, res.getPassword())) {
 			res.setPassword(null);
 			return new ResponseEntity<>(res, HttpStatus.OK);

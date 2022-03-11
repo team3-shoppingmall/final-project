@@ -88,7 +88,7 @@
                                     <v-col cols="10">
                                         <v-row justify="end">
                                             <v-col cols="auto">
-                                                <v-card elevation="2" outlined>
+                                                <v-card elevation="2" outlined color="blue lighten-1">
                                                     <v-card-text>
                                                         <div class="text--primary">{{item.text}}</div>
                                                     </v-card-text>
@@ -113,7 +113,7 @@
                                     <v-col cols="10">
                                         <v-row>
                                             <v-col cols="auto">
-                                                <v-card elevation="2" outlined>
+                                                <v-card elevation="2" outlined color="#FF8EA0b3">
                                                     <v-card-text>
                                                         <div class="text--primary">{{item.text}}</div>
                                                     </v-card-text>

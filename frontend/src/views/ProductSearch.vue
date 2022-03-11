@@ -209,11 +209,6 @@ export default {
         search(category) {
             this.selectedCategory = category;
         },
-        colorPicker(put) {
-            if (this.selectedCategory == put) {
-                return 'primary'
-            }
-        },
         moveToDetail(num) {
             this.$router.push(`/productDetail/${num}`)
         },

@@ -5,13 +5,19 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +38,7 @@ public class Clova_Chatbot {
 
 	@ResponseBody
 	@PostMapping("/chatbot")
-	public String chatbot(@RequestParam("query") String query, @RequestParam("id") String id) {
+	public ResponseEntity<?> chatbot(@RequestParam("query") String query, @RequestParam("id") String id) {
 		String chatbotMessage = "";
 
 		try {
@@ -41,7 +47,7 @@ public class Clova_Chatbot {
 			URL url = new URL(apiURL);
 
 			String message = getReqMessage(query, id);
-			System.out.println("##" + message);
+//			System.out.println("##" + message);
 
 			String encodeBase64String = makeSignature(message, secretKey);
 
@@ -59,9 +65,9 @@ public class Clova_Chatbot {
 			int responseCode = con.getResponseCode();
 
 			BufferedReader br;
-			System.out.println(responseCode);
+//			System.out.println(responseCode);
 			if (responseCode == 200) { // Normal call
-				System.out.println("getResponseMessage:" + con.getResponseMessage());
+//				System.out.println("getResponseMessage:" + con.getResponseMessage());
 
 				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 				String decodedString;
@@ -78,12 +84,42 @@ public class Clova_Chatbot {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-		System.out.println("chatbotMessage:" + chatbotMessage);
+//		System.out.println("chatbotMessage:" + chatbotMessage);
 		JSONObject jobj = new JSONObject(chatbotMessage);
+//		System.out.println("jobj:" + jobj);
 		JSONArray bubbles_array = jobj.getJSONArray("bubbles");
+//		System.out.println("bubbles_array:" + bubbles_array);
 		JSONObject bubble = (JSONObject) bubbles_array.get(0);
+//		System.out.println("bubble:" + bubble);
 		JSONObject data = (JSONObject) bubble.get("data");
-		return data.getString("description");
+//		System.out.println("data:" + data);
+		
+		Map<String, Object> resMap = new HashMap<>();
+		
+		try {
+			resMap.put("description", data.getString("description"));
+		} catch (Exception e) {
+			JSONObject cover = (JSONObject) data.get("cover");
+//			System.out.println("cover:" + cover);
+			JSONObject data2 = (JSONObject) cover.get("data");
+//			System.out.println("data2:" + data2);
+			resMap.put("description", data2.getString("description"));
+			
+			JSONArray contentTable = (JSONArray) data.get("contentTable");
+//			System.out.println("contentTable:" + contentTable);
+			
+			List<String> buttonList = new ArrayList<String>();
+			for(int i = 0; i < contentTable.length(); i++){
+				JSONArray temp = (JSONArray) contentTable.get(i);
+				JSONObject res = (JSONObject) temp.get(0);
+				JSONObject data3 = (JSONObject) res.get("data");
+				String title = (String) data3.get("title");
+				buttonList.add(title);
+			}
+
+			resMap.put("buttonList", buttonList);
+		}
+		return new ResponseEntity<>(resMap, HttpStatus.OK);
 	}
 
 	public static String makeSignature(String message, String secretKey) {
@@ -120,13 +156,11 @@ public class Clova_Chatbot {
 
 			long timestamp = new Date().getTime();
 
-			System.out.println("##" + timestamp);
+//			System.out.println("##" + timestamp);
 
 			obj.put("version", "v2");
 			obj.put("userId", id);
-			// => userId is a unique code for each chat user, not a fixed value, recommend
-			// use UUID. use different id for each user could help you to split chat history
-			// for users.
+//=> userId is a unique code for each chat user, not a fixed value, recommend use UUID. use different id for each user could help you to split chat history for users.
 
 			obj.put("timestamp", timestamp);
 

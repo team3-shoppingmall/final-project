@@ -22,6 +22,7 @@ drop table if exists membertable;
 DROP TRIGGER IF EXISTS `springdb`.`membertable_BEFORE_INSERT`;
 DROP TRIGGER IF EXISTS `springdb`.`ordertable_BEFORE_INSERT`;
 DROP TRIGGER IF EXISTS `springdb`.`pointtable_BEFORE_INSERT`;
+DROP TRIGGER IF EXISTS `springdb`.`membertable_AFTER_DELETE`;
 DROP procedure IF EXISTS `autoQuestion`;
 DROP procedure IF EXISTS `autoReply`;
 DROP procedure IF EXISTS `orderChangeSchedule`;
@@ -217,10 +218,7 @@ CREATE TABLE qnatable(
 	ID VARCHAR(50) NOT NULL,
 	REGDATE TIMESTAMP DEFAULT (current_timestamp),
 	SECRET BOOLEAN NOT NULL,
-	IMAGE VARCHAR(400),
-    CONSTRAINT qna_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
-        on delete cascade
-        on update cascade
+	IMAGE VARCHAR(400)
 );
 
 DELIMITER $$
@@ -240,6 +238,14 @@ BEGIN
 DECLARE getMaxQnaNo BIGINT;
 SET getMaxQnaNo = (SELECT max(qnaNo) FROM qnatable) + 1;
 insert into qnatable(QNANO, PRODUCTNO, type, originalNo, content, id, secret, image) values(getMaxQnaNo, qna_productNo, qna_type, qna_originalNo, qna_content, qna_id, qna_secret, qna_image);
+END$$
+DELIMITER ;
+
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`membertable_AFTER_DELETE` AFTER DELETE ON `membertable` FOR EACH ROW
+BEGIN
+delete from qnatable where originalNo in (select * from (select qnaNo from qnatable where id = old.id) temp);
 END$$
 DELIMITER ;
 
@@ -596,7 +602,6 @@ select * from reviewtable;
 select * from qnatable;
 select * from bannertable;
 select * from information_schema.events;
-
 -- select문 실험 및 용도
 
 -- 글 번호는 최신순이지만 답글이 원글 밑에 오도록 함

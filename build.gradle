@@ -18,6 +18,8 @@ dependencies {
 	runtimeOnly 'mysql:mysql-connector-java'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+	implementation 'org.springframework.boot:spring-boot-starter-security:2.6.3'
+	
 }
 
 tasks.named('test') {

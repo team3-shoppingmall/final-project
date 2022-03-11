@@ -7,11 +7,13 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
 	private MemberMapper memberMapper;
+	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();	
 
 	@Autowired
 	public MemberService(MemberMapper memberMapper) {
@@ -71,6 +73,7 @@ public class MemberService {
 	}
 
 	public ResponseEntity<?> login(String id, String pwd) {
+		System.out.println(encoder.encode(pwd));
 		MemberVO res = memberMapper.login(id);
 		String resPwd;
 

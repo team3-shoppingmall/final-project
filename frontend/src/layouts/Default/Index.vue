@@ -69,39 +69,63 @@
             </v-row>
         </v-col>
     </v-main>
-    <v-dialog v-model="dialog" width="600px">
+    <v-dialog v-model="dialog" width="600px" persistent>
         <v-card>
             <v-card-title class="text-h5 grey lighten-2">
                 <v-row justify="space-between">
                     <v-col>Spring Chatbot</v-col>
                     <v-col cols="auto">
-                        <v-icon @click="messages = []; dialog = false">mdi-exit-to-app</v-icon>
+                        <v-icon @click="dialog = false" color="#FF8EA0">mdi-exit-to-app</v-icon>
                     </v-col>
                 </v-row>
-
             </v-card-title>
-            <v-virtual-scroll :items="messages" :item-height="50" height="600" id="virtualScroll">
+            <v-virtual-scroll :items="messages" :item-height="100" height="600" id="virtualScroll">
                 <template v-slot:default="{ item }">
                     <v-list-item v-if="item.author == 'client'">
-                        <v-list-item-content>
+                        <v-list-item-content class="mb-5">
                             <v-list-item-title>
                                 <v-row justify="end">
-                                    <v-col cols="auto">
-                                        {{ item.text }}
+                                    <v-col cols="10">
+                                        <v-row justify="end">
+                                            <v-col cols="auto">
+                                                <v-card elevation="2" outlined>
+                                                    <v-card-text>
+                                                        <div class="text--primary">{{item.text}}</div>
+                                                    </v-card-text>
+                                                </v-card>
+                                            </v-col>
+                                        </v-row>
                                     </v-col>
                                 </v-row>
                             </v-list-item-title>
                         </v-list-item-content>
                         <v-list-item-icon>
-                            <v-icon>mdi-alpha-q-box</v-icon>
+                            <v-icon color="blue">mdi-alpha-q-box</v-icon>
                         </v-list-item-icon>
                     </v-list-item>
                     <v-list-item v-if="item.author == 'server'">
                         <v-list-item-icon>
-                            <v-icon>mdi-alpha-a-box</v-icon>
+                            <v-icon color="#FF8EA0">mdi-alpha-a-box</v-icon>
                         </v-list-item-icon>
                         <v-list-item-content>
-                            <v-list-item-title>{{ item.text }}</v-list-item-title>
+                            <v-list-item-title>
+                                <v-row>
+                                    <v-col cols="10">
+                                        <v-row>
+                                            <v-col cols="auto">
+                                                <v-card elevation="2" outlined>
+                                                    <v-card-text>
+                                                        <div class="text--primary">{{item.text}}</div>
+                                                    </v-card-text>
+                                                </v-card>
+                                            </v-col>
+                                        </v-row>
+                                    </v-col>
+                                </v-row>
+                            </v-list-item-title>
+                            <v-list-item-subtitle v-if="item.buttons != undefined">
+                                <v-btn tile v-for="button in item.buttons" :key="button" @click="message = button; sendMessage()" color="primary">{{button}}</v-btn>
+                            </v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
                 </template>
@@ -109,10 +133,10 @@
             <v-divider></v-divider>
             <v-card-text>
                 <v-row>
-                    <v-col cols="10">
+                    <v-col>
                         <v-text-field v-model="message" clearable hide-details @keyup.enter="sendMessage"></v-text-field>
                     </v-col>
-                    <v-col cols="2" class="mt-3">
+                    <v-col cols="auto" class="mt-3">
                         <v-btn color="primary" @click="sendMessage">입력</v-btn>
                     </v-col>
                 </v-row>
@@ -140,6 +164,7 @@ export default {
             dialog: false,
             message: '',
             messages: [],
+            buttonLength: 0,
             pages: [{
                 name: 'MAIN',
                 to: '/',
@@ -285,12 +310,26 @@ export default {
         toTop() {
             this.$vuetify.goTo(0)
         },
+        reset() {
+            this.messages = [];
+            this.message = '';
+            this.messages.push({
+                text: '안녕하세요 spring 입니다. 무엇을 도와드릴까요?',
+                author: 'server'
+            });
+        },
         sendMessage() {
             this.messages.push({
                 text: this.message,
                 author: 'client'
             });
 
+            if (this.message == '종료') {
+                this.reset();
+                return;
+            } else if (this.buttonLength == 3) {
+                this.message = '배송준비' + this.message;
+            }
             let id = null;
             if (this.getLogin == null) {
                 var timestamp = new Date().getUTCMilliseconds();
@@ -298,22 +337,35 @@ export default {
             } else {
                 id = this.getLogin.user.id;
             }
-
+            console.log(this.message);
             axios({
-                    method: 'get',
-                    url: `/api/chatbot/chatbotform`,
+                    method: 'post',
+                    url: `/api/chatbot/chatbot`,
                     params: {
                         query: this.message,
                         id: id,
                     }
                 })
                 .then(res => {
-                    this.messages.push({
-                        text: res.data,
-                        author: 'server'
-                    });
+                    console.log(res.data.description.length);
+                    if (res.data.buttonList != null) {
+                        this.buttonLength = res.data.buttonList.length;
+                        this.messages.push({
+                            text: res.data.description,
+                            buttons: res.data.buttonList,
+                            author: 'server'
+                        });
+                    } else {
+                        this.messages.push({
+                            text: res.data.description,
+                            author: 'server'
+                        });
+                    }
                     this.message = '';
-                }).finally(() => {
+                }).catch(err => {
+                    console.log(err);
+                })
+                .finally(() => {
                     var container = this.$el.querySelector("#virtualScroll");
                     container.scrollTop = container.scrollHeight;
                 })
@@ -337,6 +389,9 @@ export default {
             }
         },
         ...LoginStore.mapGetters(['getLogin']),
+    },
+    mounted() {
+        this.reset();
     }
 }
 </script>

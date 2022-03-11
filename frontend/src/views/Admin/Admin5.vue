@@ -28,8 +28,8 @@
                     <v-btn class="success " @click="insertBanner">추가</v-btn>
                 </v-col>
                 <v-col cols="auto" align-self="center" class="pa-2" v-else>
-                    <v-btn class="info " @click="insertBanner">수정</v-btn>
-                    <v-btn class="info ml-4" @click="isUpdate = true, file = null, link = null, num = null">초기화</v-btn>
+                    <v-btn class="info " @click="updateBanner">수정</v-btn>
+                    <v-btn class="info ml-4" @click="isUpdate = true, file = null, link = null, num = null, image = null">초기화</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -49,10 +49,11 @@ export default {
         },
         select(value) {
             this.isUpdate = false;
-            this.image = value.image;
+            // this.image = value.image;
+
             this.link = value.link;
             this.num = value.num;
-
+            this.oldImage = value.image;
             // axios
             //     .get(`/api/banner/image/${value.image}`)
             //     .then(res => {
@@ -61,10 +62,13 @@ export default {
             //             lastModified: Date.now()
             //         })
 
-            //         this.createImageURL();
             //     })
             //     .catch(err => console.log(err))
-
+            this.image = `/api/banner/image/${value.image}`
+            this.file = new File([], value.image, {
+                type: "image/*",
+                lastModified: Date.now()
+            })
         },
         getBanners() {
 
@@ -90,69 +94,62 @@ export default {
                 .finally(this.loading = false);
         },
         insertBanner() {
+            if (this.link == null)
+                this.link = '';
+            let data = {
+                image: this.file.name,
+                link: this.link,
+                num: this.num
+            }
 
-            // if (this.link == null)
-            //     this.link = '';
-            // let data = {
-            //     image: this.file.name,
-            //     link: this.link,
-            //     num: this.num
-            // }
-            // let formData = new FormData();
-            // formData.append(
-            //     'data',
-            //     new Blob([JSON.stringify(data)], {
-            //         type: "application/json"
-            //     })
-            // );
-            // formData.append(`banner`, this.file);
-            // axios
-            //     .post('/api/banner/insertBanner', formData)
-            //     .then(() => {
-            //         console.log("성공");
-            //         this
-            //             .banners
-            //             .sort((a, b) => a.num - b.num);
-            //         this.changeOrder(data);
-            //         this.getBanners();
-            //         // this.banners.push(data);
-            //         console.log("배열길이", this.banners.length)
-            //         for (let i = 0; i < this.banners.length; i++) {
-            //             console.log(this.banners[i].image)
-            //             axios
-            //                 .put('/api/banner/update', this.banners[i])
-            //                 .catch(err => {
-            //                     console.log(err.response.data)
-            //                 })
-            //         }
-
-            //         this.file = null;
-            //         this.link = null;
-            //         this.image = null;
-            //         console.log(this.banners)
-            //     })
-            //     .catch((err) => {
-            //         console.log(err)
-            //     })
+            let formData = new FormData();
+            formData.append(
+                'data',
+                new Blob([JSON.stringify(data)], {
+                    type: "application/json"
+                })
+            );
+            formData.append(`banner`, this.file);
+            axios
+                .post('/api/banner/insertBanner', formData)
+                .then(() => {
+                    this.getBanners();
+                    this.file = null;
+                    this.link = null;
+                    this.num = null;
+                    this.image = null;
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
         },
-        removeBanner() {},
-        changeOrder(data) {
-            let index = -1;
-            for (let i = 0; i < this.banners.length; i++) {
-                if (data.num == this.banners[i].num)
-                    index = i;
+        updateBanner() {
+            let data = {
+                image: this.file.name,
+                link: this.link,
+                num: this.num
             }
-
-            if (index != -1) {
-                for (let i = this.banners.length - 1; i >= index; i--) {
-                    this
-                        .banners[i]
-                        .num = Number(this.banners[i].num) + 1;
-                }
-            }
+            axios.put(`/api/banner/update/${this.oldImage}`, data)
+                .then(() => {
+                    this.getBanners();
+                    this.file = null;
+                    this.link = null;
+                    this.num = null;
+                    this.image = null;
+                });
+        },
+        removeBanner() {
+            axios.delete(`/api/banner/delete/${this.file.name}`)
+                .then(() => {
+                    this.getBanners();
+                    this.file = null;
+                    this.link = null;
+                    this.num = null;
+                    this.image = null;
+                });
         },
         createImageURL() {
-            console.log("111")
+            console.log(this.file)
             const file = this.file;
             if (file) {
                 this.image = URL.createObjectURL(file);
@@ -175,6 +172,7 @@ export default {
     },
     data() {
         return {
+            oldImage: null,
             isUpdate: true,
             pageView: 1,
             pageCount: 0,

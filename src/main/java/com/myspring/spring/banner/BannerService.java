@@ -47,8 +47,9 @@ public class BannerService {
 		return null;
 	}
 
-	public ResponseEntity<?> updateBanner(BannerVO data) {
-		int res = bannerMapper.updateBanner(data);
+
+	public ResponseEntity<?> updateBanner(String old, BannerVO data) {
+		int res = bannerMapper.updateBanner(old, data);
 		if (res == 0) {
 			return new ResponseEntity<>("IMAGE NAME EXIST", HttpStatus.INTERNAL_SERVER_ERROR);
 		} else {
@@ -72,6 +73,15 @@ public class BannerService {
 		int start = (page - 1) * perPage;
 		List<BannerVO> res =  bannerMapper.getBanners(start, perPage);
 		return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
+	public ResponseEntity<?> deleteBanner(String image) {
+		int res = bannerMapper.deleteBanner(image);
+		if (res == 0) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		} else {
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
 	}
 
 //	ProductVO result = new ProductVO();

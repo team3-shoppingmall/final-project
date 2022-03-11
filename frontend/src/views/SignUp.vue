@@ -8,7 +8,7 @@
                 <v-simple-table>
                     <template slot="default">
                         <tbody>
-                            <tr v-if="naverInfo == undefined">
+                            <tr v-if="naverInfo == undefined && kakaoInfo == undefined">
                                 <td> 아이디 </td>
                                 <td>
                                     <div class="d-flex ">
@@ -17,13 +17,13 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr v-if="naverInfo == undefined">
+                            <tr v-if="naverInfo == undefined && kakaoInfo == undefined">
                                 <td> 비밀번호 </td>
                                 <td>
                                     <v-text-field v-model="pwd1" :rules="rules.pwd1" type="password" outlined hide-details="auto" dense required></v-text-field>
                                 </td>
                             </tr>
-                            <tr v-if="naverInfo == undefined">
+                            <tr v-if="naverInfo == undefined && kakaoInfo == undefined">
                                 <td> 비밀번호 확인 </td>
                                 <td>
                                     <v-text-field v-model="pwd2" :rules="rules.pwd2" type="password" outlined hide-details="auto" dense required></v-text-field>
@@ -39,11 +39,11 @@
                                 <td> 주소 </td>
                                 <td>
                                     <div class="d-flex ">
-                                        <v-text-field v-model="zipcode" :rules="rules.zipcode" class="my-2" outlined hide-details="auto" label="우편번호" dense required></v-text-field>
+                                        <v-text-field v-model="zipcode" :rules="rules.zipcode" class="my-2" outlined hide-details="auto" label="우편번호" dense required readonly @click="execDaumPostcode"></v-text-field>
                                         <v-btn class="align-self-center ml-2 py-2 px-1 primary" height="100%" style="font-size:1.1rem" @click="execDaumPostcode">검색</v-btn>
                                     </div>
 
-                                    <v-text-field v-model="addr1" :rules="rules.addr1" class="mt-1" outlined hide-details="auto" label="기본주소" dense required></v-text-field>
+                                    <v-text-field v-model="addr1" :rules="rules.addr1" class="mt-1" outlined hide-details="auto" label="기본주소" dense required readonly @click="execDaumPostcode"></v-text-field>
                                     <v-text-field v-model="addr2" :rules="rules.addr2" class="mt-3 mb-2" outlined hide-details="auto" label="상세주소" dense required></v-text-field>
                                 </td>
                             </tr>
@@ -80,8 +80,8 @@
                 <v-divider class="mt-8"></v-divider>
                 <v-row class="my-5" justify="center">
                     <v-btn class="primary text-h5 pa-3" height="100%" @click="goBack">돌아가기</v-btn>
-                    <v-btn class="primary text-h5 pa-3 ml-5" height="100%" @click="signUp" v-if="naverInfo == undefined">가입하기</v-btn>
-                    <v-btn class="primary text-h5 pa-3 ml-5" height="100%" @click="signUpBySocial" v-if="naverInfo != undefined">가입하기</v-btn>
+                    <v-btn class="primary text-h5 pa-3 ml-5" height="100%" @click="signUp" v-if="naverInfo == undefined && kakaoInfo == undefined">가입하기</v-btn>
+                    <v-btn class="primary text-h5 pa-3 ml-5" height="100%" @click="signUpBySocial" v-if="naverInfo != undefined || kakaoInfo != undefined">가입하기</v-btn>
                 </v-row>
             </v-form>
         </v-col>
@@ -124,9 +124,15 @@ export default {
         signUpBySocial() {
             let validate = this.$refs.form.validate();
             if (validate) {
+                let tempId = null;
+                if (this.naverInfo != undefined) {
+                    tempId = this.naverInfo.id;
+                } else if (this.kakaoInfo != undefined) {
+                    tempId = this.kakaoInfo.id;
+                }
                 let member = {
-                    id: this.naverInfo.id,
-                    password: this.naverInfo.id + 'password',
+                    id: tempId,
+                    password: tempId + 'rh7369#n',
                     name: this.name,
                     zipcode: this.zipcode,
                     addr1: this.addr1,
@@ -201,11 +207,14 @@ export default {
     mounted() {
         this.$vuetify.goTo(0);
         this.naverInfo = this.$route.params.naver;
-        console.log(this.naverInfo);
+        this.kakaoInfo = this.$route.params.kakao;
         if (this.naverInfo != undefined) {
             // 개인정보 때문에 전화번호는 제거함
             this.name = this.naverInfo.name;
             this.email = this.naverInfo.email;
+        } else if (this.kakaoInfo != undefined) {
+            // 개인정보 때문에 전화번호는 제거함            
+            this.name = this.kakaoInfo.kakao_account.profile.nickname;
         }
     },
     data() {

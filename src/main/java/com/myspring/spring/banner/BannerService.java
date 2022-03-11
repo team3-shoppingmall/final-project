@@ -1,31 +1,77 @@
 package com.myspring.spring.banner;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.myspring.spring.product.ProductVO;
-
 @Service
 public class BannerService {
+	private BannerMapper bannerMapper;
+
+	@Autowired
+	public BannerService(BannerMapper bannerMapper) {
+		this.bannerMapper = bannerMapper;
+	}
 
 	public ResponseEntity<?> insertBanner(BannerVO data, List<MultipartFile> banner) {
-		try {
-			System.out.println(data.getImage());
-			System.out.println(data.getLink());
-			System.out.println(data.getNum());
-			
-		} 
-		catch (Exception e) {
-			// TODO: handle exception
+		int res = bannerMapper.insertBanner(data);
+
+		if (res == 0) {
+			return new ResponseEntity<>("IMAGE NAME EXIST", HttpStatus.INTERNAL_SERVER_ERROR);
+		} else {
+			try {
+				MultipartFile multipartFile = banner.get(0);
+				FileOutputStream writer = new FileOutputStream("./images/banner/" + data.getImage());
+				writer.write(multipartFile.getBytes());
+				writer.close();
+				return new ResponseEntity<>(HttpStatus.OK);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 		}
+
+//			System.out.println(data.getImage());
+//			System.out.println(data.getLink());
+//			System.out.println(data.getNum());
+
 		return null;
+	}
+
+	public ResponseEntity<?> updateBanner(BannerVO data) {
+		int res = bannerMapper.updateBanner(data);
+		if (res == 0) {
+			return new ResponseEntity<>("IMAGE NAME EXIST", HttpStatus.INTERNAL_SERVER_ERROR);
+		} else {
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
+	}
+
+	public ResponseEntity<?> getImage(String image) throws IOException {
+		InputStream imageStream;
+		try {
+			imageStream = new FileInputStream("./images/banner/" + image);
+		} catch (FileNotFoundException e) {
+			imageStream = new FileInputStream("./images/error.png");
+		}
+		byte[] imageByteArray = IOUtils.toByteArray(imageStream);
+		imageStream.close();
+		return new ResponseEntity<byte[]>(imageByteArray, HttpStatus.OK);
+	}
+
+	public ResponseEntity<?> getBanners(int page, int perPage) {
+		int start = (page - 1) * perPage;
+		List<BannerVO> res =  bannerMapper.getBanners(start, perPage);
+		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 //	ProductVO result = new ProductVO();

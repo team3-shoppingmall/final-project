@@ -75,11 +75,21 @@
                 <v-row justify="space-between">
                     <v-col>Spring Chatbot</v-col>
                     <v-col cols="auto">
-                        <v-icon @click="dialog = false" color="#FF8EA0">mdi-exit-to-app</v-icon>
+                        <v-row>
+                            <v-col>
+
+                                <v-btn @click="dialog2 = true" text>
+                                    <v-icon color="#FF8EA0">mdi-magnify</v-icon>주문 확인
+                                </v-btn>
+                            </v-col>
+                            <v-col>
+                                <v-icon @click="dialog = false" color="#FF8EA0">mdi-exit-to-app</v-icon>
+                            </v-col>
+                        </v-row>
                     </v-col>
                 </v-row>
             </v-card-title>
-            <v-virtual-scroll :items="messages" :item-height="100" height="600" id="virtualScroll">
+            <v-virtual-scroll :items="messages" :item-height="120" height="600" id="virtualScroll">
                 <template v-slot:default="{ item }">
                     <v-list-item v-if="item.author == 'client'">
                         <v-list-item-content class="mb-5">
@@ -124,7 +134,7 @@
                                 </v-row>
                             </v-list-item-title>
                             <v-list-item-subtitle v-if="item.buttons != undefined">
-                                <v-btn tile v-for="button in item.buttons" :key="button" @click="message = button; sendMessage()" color="primary">{{button}}</v-btn>
+                                <v-btn tile v-for="button in item.buttons" :key="button" @click="selectMessage(item, button)" color="primary">{{button}}</v-btn>
                             </v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
@@ -141,7 +151,34 @@
                     </v-col>
                 </v-row>
             </v-card-text>
-
+        </v-card>
+    </v-dialog>
+    <v-dialog v-model="dialog2" width="400px" persistent>
+        <v-card>
+            <v-card-title class="text-h5 grey lighten-2">
+                <v-row justify="space-between">
+                    <v-col>주문 확인</v-col>
+                    <v-col cols="auto">
+                        <v-icon @click="dialog2 = false; orderState = ''" color="#FF8EA0">mdi-exit-to-app</v-icon>
+                    </v-col>
+                </v-row>
+            </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text>
+                <v-row>
+                    <v-col>
+                        <v-text-field prefix="주문번호 : " v-model="orderNo" clearable hide-details @keyup.enter="searchOrder"></v-text-field>
+                    </v-col>
+                    <v-col cols="auto" class="mt-3">
+                        <v-btn color="primary" @click="searchOrder">확인</v-btn>
+                    </v-col>
+                </v-row>
+                <v-row v-if="orderState != ''">
+                    <v-col>
+                        주문상태 : {{orderState}}
+                    </v-col>
+                </v-row>
+            </v-card-text>
         </v-card>
     </v-dialog>
     <v-footer color="primary lighten-1" padless>
@@ -162,9 +199,12 @@ export default {
         return {
             fab: false,
             dialog: false,
+            dialog2: false,
             message: '',
+            orderNo: '',
+            orderState: '',
             messages: [],
-            buttonLength: 0,
+            previousMessage: '',
             pages: [{
                 name: 'MAIN',
                 to: '/',
@@ -317,6 +357,25 @@ export default {
                 text: '안녕하세요 spring 입니다. 무엇을 도와드릴까요?',
                 author: 'server'
             });
+            this.previousMessage = '안녕하세요 spring 입니다. 무엇을 도와드릴까요?';
+        },
+        searchOrder() {
+            axios.get(`/api/order/getOrder/${this.orderNo}`)
+                .then(res => {
+                    this.orderState = res.data;
+                }).finally(
+                    this.orderNo = ''
+                )
+        },
+        selectMessage(item, selected) {
+            this.message = selected;
+            if (item.text == '주소를 변경할 주문의 현재 배송 상태를 선택해주세요') {
+                this.message = '주소변경' + selected;
+            }
+            if (item.text == '배송 상태를 선택해주세요') {
+                this.message = '배송문의' + selected;
+            }
+            this.sendMessage();
         },
         sendMessage() {
             this.messages.push({
@@ -325,10 +384,8 @@ export default {
             });
 
             if (this.message == '종료') {
-                this.reset();
+                this.dialog = false;
                 return;
-            } else if (this.buttonLength == 3) {
-                this.message = '배송준비' + this.message;
             }
             let id = null;
             if (this.getLogin == null) {
@@ -337,7 +394,6 @@ export default {
             } else {
                 id = this.getLogin.user.id;
             }
-            console.log(this.message);
             axios({
                     method: 'post',
                     url: `/api/chatbot/chatbot`,
@@ -347,9 +403,8 @@ export default {
                     }
                 })
                 .then(res => {
-                    console.log(res.data.description.length);
+                    this.previousMessage = res.data.description;
                     if (res.data.buttonList != null) {
-                        this.buttonLength = res.data.buttonList.length;
                         this.messages.push({
                             text: res.data.description,
                             buttons: res.data.buttonList,

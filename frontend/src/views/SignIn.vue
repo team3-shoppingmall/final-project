@@ -22,21 +22,13 @@
                         <v-icon class="pr-1">mdi-account</v-icon>
                         sign Up
                     </v-btn>
-                    <!-- <v-btn class="mr-5 primary pl-2 pr-3" @click="loginKakao">
-                        <v-icon class="pr-1">mdi-login-variant</v-icon>
-                        kakao
-                    </v-btn> -->
-                     <v-btn class="mr-5 primary pl-2 pr-3" @click="loginKakao">
-                        <v-icon class="pr-1">mdi-login-variant</v-icon>
-                        kakao
-                    </v-btn>
                 </v-row>
                 <v-row class="mt-10" justify="center">
-                    <v-col cols="auto">
+                    <v-col cols="auto" class="mt-1">
                         <div id="naver_id_login"></div>
                     </v-col>
                     <v-col cols="auto">
-                        <v-btn>aa</v-btn>
+                        <v-img class="kakao_btn" src="@/assets/kakao_login_medium.png" @click="loginWithKakao" />
                     </v-col>
                 </v-row>
             </v-form>
@@ -108,26 +100,63 @@ export default {
         signUp() {
             this.$router.push('/authentication/signUp');
         },
-        // loginKakao() {
-        //     window.location.replace(
-        //     "https://kauth.kakao.com/oauth/authorize?client_id=AppKey
-        //     &redirect_uri=http://localhost:9000/kakaologin&response_type=code"
-        // );
-        // }, 
-             loginKakao() {
-            window.location.replace(
-            "https://kauth.kakao.com/oauth/authorize?client_id=42b435f74388d237a488dc4489022bf7&redirect_uri=http://localhost:8085/api/member/getKakaoLogin&response_type=code"
-        );
-        },  
-       
-     
+        loginWithKakao() {
+            window.Kakao.init('255b187f87731368f5e47c3310b3cf02')
+            window.Kakao.Auth.login({
+                success: this.kakaoLoginCheck(),
+                fail: function (error) {
+                    console.log(error)
+                },
+            })
+        },
+        kakaoLoginCheck() {
+            window.Kakao.API.request({
+                url: '/v2/user/me',
+                success: res => {
+                    axios.get('/api/member/login', {
+                            params: {
+                                id: res.id,
+                                password: res.id + 'rh7369#n',
+                            }
+                        })
+                        .then(result => {
+                            let temp = result.data;
+                            let user = {
+                                id: temp.id,
+                                authority: temp.authority,
+                            };
+                            this.Login({
+                                user
+                            })
+                        })
+                        .then(() => {
+                            this.$router.push(this.getPath)
+                        })
+                        .catch(err => {
+                            if (err.response.data == 'ID NOT FOUND') {
+                                alert('회원가입되지 않은 아이디입니다. 회원가입 페이지로 이동합니다.')
+                                this.$router.push({
+                                    name: "Social",
+                                    params: {
+                                        kakao: res,
+                                    }
+                                });
+                            }
+                        })
+                },
+                fail: error => {
+                    this.$router.push("/errorPage");
+                    console.log(error);
+                }
+            })
+        },
         naverLogin(token) {
             axios.get(`/api/member/getNaverLogin/${token}`)
                 .then(res => {
                     axios.get('/api/member/login', {
                             params: {
                                 id: res.data.response.id,
-                                password: res.data.response.id + 'password',
+                                password: res.data.response.id + 'rh7369#n',
                             }
                         })
                         .then(res => {

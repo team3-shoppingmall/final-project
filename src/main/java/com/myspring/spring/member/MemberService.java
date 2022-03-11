@@ -114,7 +114,6 @@ public class MemberService {
 		MemberVO res = memberMapper.getMemberInfo(id);
 
 		if (res == null) {
-			System.out.println("OK");
 			return new ResponseEntity<>(HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -180,6 +179,15 @@ public class MemberService {
 			return responseBody.toString();
 		} catch (IOException e) {
 			throw new RuntimeException("API 응답을 읽는데 실패했습니다.", e);
+		}
+	}
+
+	public ResponseEntity<?> deleteMember(String id) {
+		int res = memberMapper.deleteMember(id);
+		if (res == 0) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		} else {
+			return new ResponseEntity<>(HttpStatus.OK);
 		}
 	}
 

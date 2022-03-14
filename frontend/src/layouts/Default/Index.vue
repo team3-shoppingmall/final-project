@@ -1,8 +1,8 @@
 <template>
 <v-app>
     <v-app-bar color="primary" app dark height="60px">
-
-        <v-btn color="primary" :to="'/'">
+        {{messages}}
+        <v-btn color="primary" active-class="no-active" :to="'/'">
             <v-icon>mdi-home</v-icon>
         </v-btn>
 
@@ -92,7 +92,56 @@
             </v-row>
         </v-col>
     </v-main>
-    <v-dialog v-model="dialog" width="600px" persistent>
+    <v-dialog v-model="dialog" scrollable width="600px" persistent>
+        <template v-slot:activator="{ on, attrs }">
+            <v-btn color="primary" dark v-bind="attrs" v-on="on">
+                Open Dialog
+            </v-btn>
+        </template>
+        <v-container style="background-color:white;">
+            <v-container>
+                <v-row justify="space-between">
+                    <v-col align-self="center">Spring Chatbot</v-col>
+                    <v-col align-self="center" cols="auto">
+                        <v-row>
+                            <v-col align-self="center">
+                                <v-btn @click="dialog2 = true" text>
+                                    <v-icon color="#FF8EA0">mdi-magnify</v-icon>주문 확인
+                                </v-btn>
+                            </v-col>
+                            <v-col align-self="center">
+                                <v-icon @click="dialog = false" color="#FF8EA0">mdi-exit-to-app</v-icon>
+                            </v-col>
+                        </v-row>
+                    </v-col>
+                </v-row>
+            </v-container>
+            <v-container style="height: 600px; overflow-y:scroll" id="test">
+                <v-row justify="end" v-for="(msg, idx) in messages" :key="idx">
+                    <v-col cols="10">
+                        <v-row justify="end">
+                            <v-col cols="auto">
+                                <v-card elevation="2" outlined color="blue lighten-1">
+                                    <v-card-text>
+                                        <div class="text--primary">{{msg.text}}</div>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </v-col>
+                </v-row>
+            </v-container>
+            <v-row>
+                <v-col>
+                    <v-text-field v-model="message" clearable hide-details @keyup.enter="sendMessage"></v-text-field>
+                </v-col>
+                <v-col cols="auto" class="mt-3">
+                    <v-btn color="primary" @click="sendMessage">입력</v-btn>
+                </v-col>
+            </v-row>
+        </v-container>
+    </v-dialog>
+    <v-dialog v-model="dialog1" width="600px" persistent>
         <v-card>
             <v-card-title class="text-h5 grey lighten-2">
                 <v-row justify="space-between">
@@ -112,9 +161,10 @@
                     </v-col>
                 </v-row>
             </v-card-title>
-            <v-virtual-scroll :items="messages" item-height="auto" height="600" id="virtualScroll">
+            <v-virtual-scroll :items="messages" :item-height="160" height="600" id="virtualScroll">
                 <template v-slot:default="{ item }">
-                    <v-list-item v-if="item.author == 'client'" style="background-color : black">
+
+                    <v-list-item v-if="item.author == 'client'">
                         <v-list-item-content class="mb-5">
                             <v-list-item-title>
                                 <v-row justify="end">
@@ -123,7 +173,7 @@
                                             <v-col cols="auto">
                                                 <v-card elevation="2" outlined color="blue lighten-1">
                                                     <v-card-text>
-                                                        <div class="text--primary">{{item.text}}11</div>
+                                                        <div class="text--primary">{{item.text}}</div>
                                                     </v-card-text>
                                                 </v-card>
                                             </v-col>
@@ -136,7 +186,7 @@
                             <v-icon color="blue">mdi-alpha-q-box</v-icon>
                         </v-list-item-icon>
                     </v-list-item>
-                    <v-list-item v-if="item.author == 'server'" style="background-color : red">
+                    <v-list-item v-if="item.author == 'server'">
                         <v-list-item-icon>
                             <v-icon color="#FF8EA0">mdi-alpha-a-box</v-icon>
                         </v-list-item-icon>
@@ -148,7 +198,7 @@
                                             <v-col cols="auto">
                                                 <v-card elevation="2" outlined color="#FF8EA0b3">
                                                     <v-card-text>
-                                                        <div class="text--primary">{{item.text}}22</div>
+                                                        <div class="text--primary">{{item.text}}{{item.text.length}}</div>
                                                     </v-card-text>
                                                 </v-card>
                                             </v-col>
@@ -227,6 +277,7 @@ export default {
             orderNo: '',
             orderState: '',
             messages: [],
+            textHeight: 200,
             previousMessage: '',
             pages: [{
                     name: 'OUTER',
@@ -361,7 +412,7 @@ export default {
             });
             this.previousMessage = '안녕하세요 spring 입니다. 무엇을 도와드릴까요?';
         },
-      searchOrder() {
+        searchOrder() {
             axios.get(`/api/order/getOrder/${this.orderNo}`)
                 .then(res => {
                     this.orderState = res.data;
@@ -426,9 +477,20 @@ export default {
                     console.log(err);
                 })
                 .finally(() => {
-                    var container = this.$el.querySelector("#virtualScroll");
+                    let container = this.$el.querySelector("#test");
                     container.scrollTop = container.scrollHeight;
                 })
+        },
+        itemHeight(item) {
+            console.log(item)
+
+            if (item) {
+                if (item.text.length > 100) {
+                    return 200
+                } else
+                    return 100
+            } else
+                return 50
         },
         ...LoginStore.mapMutations(['Logout']),
     },
@@ -458,4 +520,7 @@ export default {
 </script>
 
 <style scoped>
+.v-btn--active.no-active::before {
+    opacity: 0 !important;
+}
 </style>

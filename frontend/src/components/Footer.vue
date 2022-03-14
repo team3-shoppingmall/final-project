@@ -1,7 +1,7 @@
 <template>
 <v-row justify="center" no-gutters>
     <!-- <v-divider vertical="true" class="white"></v-divider> -->
-    <v-btn v-for="(link, idx) in links" :key="idx" color="white" text rounded class="my-2" :to="link.to">
+    <v-btn v-for="(link, idx) in links" :key="idx"  class="primary lighten-1 my-2 " active-class="no-active" text rounded :to="link.to">
         {{ link.text }}
     </v-btn>
     <v-col class="primary lighten-2 py-4 text-center white--text" cols="12">
@@ -72,6 +72,9 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+.v-btn--active.no-active::before {
+  opacity: 0 !important;
+}
 </style>
+

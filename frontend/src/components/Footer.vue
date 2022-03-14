@@ -1,8 +1,8 @@
 <template>
 <v-row justify="center" no-gutters>
     <!-- <v-divider vertical="true" class="white"></v-divider> -->
-    <v-btn v-for="link in links" :key="link" color="white" text rounded class="my-2">
-        {{ link }}
+    <v-btn v-for="(link, idx) in links" :key="idx" color="white" text rounded class="my-2" :to="link.to">
+        {{ link.text }}
     </v-btn>
     <v-col class="primary lighten-2 py-4 text-center white--text" cols="12">
         <v-row justify="center">
@@ -32,7 +32,6 @@
                     <div class="text-h6">NOTIFICATION</div>
                     <div class="caption my-1"> [반품 주소] </div>
                     <div class="caption my-1"> 우체국 : 서울시 가나구 다라동 87-3, 2층 202호 스프링 </div>
-                    <div class="caption my-1"> 타택배 : 서울시 가나구 다라동 87-3, 2층 202호 스프링 </div>
                     <div class="caption my-1"> (선불결제) </div>
                     <div class="text-h6">BANK INFO</div>
                     <div class="caption my-1"> 마바은행 000-000000-00-000 (예금주:스프링) </div>
@@ -49,15 +48,25 @@
 export default {
     data() {
         return {
-            links: [
-                '홈으로',
-                '회사소개',
-                '이용약관',
-                '개인정보취급방침',
-                '이용안내',
-                '고객센터',
-                '자주묻는질문',
-            ],
+            links: [{
+                text: '홈으로',
+                to: '/'
+            }, {
+                text: '이용약관',
+                to: '/termsOfUse'
+            }, {
+                text: '개인정보취급방침',
+                to: '/privacyPolicy'
+            }, {
+                text: '이용안내',
+                to: '/shopGuide'
+            }, {
+                text: '고객센터',
+                to: '/qna/productQnA'
+            }, {
+                text: '자주 묻는 질문',
+                to: '/community/faq'
+            }, ],
         }
     }
 }

@@ -3,12 +3,10 @@
     <v-row justify="center">
         <v-col class="px-0">
             <v-carousel cycle height="400" hide-delimiter-background show-arrows-on-hover>
-                <v-carousel-item v-for="(slide, i) in slides" :key="i">
-                    <v-sheet :color="colors[i]" height="100%">
+                <v-carousel-item v-for="(banner, i) in banners" :key="i">
+                    <v-sheet height="100%">
                         <v-row class="fill-height" align="center" justify="center">
-                            <div class="text-h2">
-                                {{ slide }} Slide
-                            </div>
+                            <v-img :src="`/api/banner/image/${banner.image}`" max-height="400" @click="moveToBanner(banner)"></v-img>
                         </v-row>
                     </v-sheet>
                 </v-carousel-item>
@@ -119,25 +117,12 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            colors: [
-                'indigo',
-                'warning',
-                'pink darken-2',
-                'red lighten-1',
-                'deep-purple accent-4',
-            ],
-            slides: [
-                'First',
-                'Second',
-                'Third',
-                'Fourth',
-                'Fifth',
-            ],
             dataLoaded: false,
             eventProducts: [],
             weeklyBestProducts: [],
             newProducts: [],
             bestProducts: [],
+            banners: [],
         }
     },
     methods: {
@@ -160,9 +145,26 @@ export default {
         moveToDetail(num) {
             this.$router.push(`/productDetail/${num}`)
         },
+        moveToBanner(banner) {
+            if (banner.link != '') {
+                this.$router.push(`${banner.link}`);
+            }
+        },
+        getAllBanners() {
+            axios.get('/api/banner/getAllBanners')
+            .then(res => {
+                this.banners = res.data;
+            })
+        },
+        moveToBanner(banner){
+            if(banner.link != ''){
+                this.$router.push(`${banner.link}`);
+            }
+        }
     },
     mounted() {
         this.getProduct();
+        this.getAllBanners();
     }
 }
 </script>

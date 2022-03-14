@@ -1,31 +1,35 @@
 <template>
-<v-container fluid>
+<v-container fluid="fluid">
     <v-row>
         <v-col cols="12" align-self="center">
-            <v-data-table :headers="headers" :page.sync="page" :items-per-page="8" :items="banners" hide-default-footer @page-count="pageCount = $event" :sort-by="'num'" dense height="288px"></v-data-table>
-            <v-pagination v-model="page" :length="pageCount"></v-pagination>
+            <v-data-table :headers="headers" :options.sync="options" :page.sync="pageView" :items-per-page="8" :items="banners" :server-items-length="totalContents" :loading="loading" hide-default-footer="hide-default-footer" @page-count="pageCount = $event" :sort-by="'num'" @click:row="select" dense="dense" height="288px"></v-data-table>
+            <v-pagination v-model="pageView" :length="pageCount"></v-pagination>
         </v-col>
     </v-row>
     <v-row>
         <v-col cols="12" align-self="center">
             <v-row>
-                <v-img :src="image" min-height="400px" max-height="400px" contain @click="clickImage" style="cursor:pointer"></v-img>
+                <v-img :src="image" min-height="400px" max-height="400px" contain="contain" @click="clickImage" style="cursor:pointer"></v-img>
             </v-row>
             <v-row justify="center">
                 <v-col cols="2" align-self="center" class="pa-2">
-                    <v-file-input v-model="file" @change="createImageURL" id="imageInput" accept="image/png, image/jpeg, image/bmp" outlined dense hide-details></v-file-input>
+                    <v-file-input v-model="file" @change="createImageURL" id="imageInput" accept="image/png, image/jpeg, image/bmp" outlined="outlined" dense="dense" hide-details="hide-details"></v-file-input>
                 </v-col>
                 <v-col cols="auto" align-self="center" class="pa-2">
-                    <v-text-field v-model="link" outlined dense hide-details label="link"></v-text-field>
+                    <v-text-field v-model="link" outlined="outlined" dense="dense" hide-details="hide-details" label="link"></v-text-field>
                 </v-col>
                 <v-col cols="auto" align-self="center" class="pa-2">
-                    <v-text-field v-model="num" outlined dense hide-details label="INDEX"></v-text-field>
+                    <v-text-field v-model="num" outlined="outlined" dense="dense" hide-details="hide-details" label="INDEX"></v-text-field>
                 </v-col>
                 <v-col cols="auto" align-self="center" class="pa-2">
                     <v-btn class="error pa-0" @click="removeBanner">제거</v-btn>
                 </v-col>
-                <v-col cols="auto" align-self="center" class="pa-2">
+                <v-col cols="auto" align-self="center" class="pa-2" v-if="isUpdate">
                     <v-btn class="success " @click="insertBanner">추가</v-btn>
+                </v-col>
+                <v-col cols="auto" align-self="center" class="pa-2" v-else>
+                    <v-btn class="info " @click="updateBanner">수정</v-btn>
+                    <v-btn class="info ml-4" @click="isUpdate = true, file = null, link = null, num = null, image = null">초기화</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -39,56 +43,125 @@ import axios from 'axios'
 export default {
     methods: {
         clickImage() {
-            document.getElementById('imageInput').click();
+            document
+                .getElementById('imageInput')
+                .click();
+        },
+        select(value) {
+            this.isUpdate = false;
+            // this.image = value.image;
+
+            this.link = value.link;
+            this.num = value.num;
+            this.oldImage = value.image;
+            // axios
+            //     .get(`/api/banner/image/${value.image}`)
+            //     .then(res => {
+            //         this.file = new File([res.data], value.image, {
+            //             type: "image/*",
+            //             lastModified: Date.now()
+            //         })
+
+            //     })
+            //     .catch(err => console.log(err))
+            this.image = `/api/banner/image/${value.image}`
+            this.file = new File([], value.image, {
+                type: "image/*",
+                lastModified: Date.now()
+            })
+        },
+        getBanners() {
+
+            this.loading = true;
+            const {
+                page,
+                itemsPerPage
+            } = this.options;
+            axios
+                .get('/api/banner/getBanners', {
+                    params: {
+                        page: page,
+                        perPage: itemsPerPage
+                    }
+                })
+                .then(res => {
+                    this.banners = res.data;
+                    this.totalContents = res.data.count;
+                })
+                .catch(err => {
+                    console.log(err.response.status);
+                })
+                .finally(this.loading = false);
         },
         insertBanner() {
-            // 추가할 경우 해당 인덱스가 있는지 확인하고 있으면 해당 인덱스 이후 까지 마지막에서부터 더하기 1을 하여 순서를 미룬다
-            // 문제 1 추가할시 DB에 추가하는데 이걸 순서를 어떻게 할지 
+            if (this.link == null)
+                this.link = '';
+            if (this.num == null)
+                this.num = 1;
             let data = {
                 image: this.file.name,
                 link: this.link,
-                num: this.num,
+                num: this.num
             }
+
             let formData = new FormData();
-            formData.append('data', new Blob([JSON.stringify(data)], {
-                type: "application/json"
-            }));
+            formData.append(
+                'data',
+                new Blob([JSON.stringify(data)], {
+                    type: "application/json"
+                })
+            );
             formData.append(`banner`, this.file);
-            axios.post('/api/banner/insertBanner', formData)
+            axios
+                .post('/api/banner/insertBanner', formData)
                 .then(() => {
-                    console.log("성공");
-                    this.banners.sort((a, b) => a.num - b.num);
-                    // 정렬 후 하나씩 더해서 추가하기
-                    this.changeOrder(data);
-                    this.banners.push(data);
-                    // push 할때 악시오스를 실행하도록
-                    // changeORder일때 업데이트할것 
-                    // 혹은 then then 처리할것
-                    
+                    this.getBanners();
                     this.file = null;
                     this.link = null;
+                    this.num = null;
                     this.image = null;
-                    console.log(this.banners)
                 })
                 .catch((err) => {
                     console.log(err)
                 })
         },
-        removeBanner() {},
-        changeOrder(data) {
-            let index = -1;
-            for (let i = 0; i < this.banners.length; i++) {
-                if (data.num == this.banners[i].num)
-                    index = i;
+        updateBanner() {
+            let data = {
+                image: this.file.name,
+                link: this.link,
+                num: this.num
             }
-            console.log("배열길이", this.banners.length)
-            if (index != -1) {
-                for (let i = this.banners.length - 1; i >= index; i--) {
-                    this.banners[i].num = Number(this.banners[i].num) + 1;
-                }
-            }
+            let formData = new FormData();
+            formData.append(
+                'data',
+                new Blob([JSON.stringify(data)], {
+                    type: "application/json"
+                })
+            );
+            formData.append(`banner`, this.file);
+            axios.put(`/api/banner/update/${this.oldImage}`, formData)
+                .then(() => {
+                    this.getBanners();
+                    this.file = null;
+                    this.link = null;
+                    this.num = null;
+                    this.image = null;
+                    this.isUpdate = true;
+                });
+        },
+        removeBanner() {
+            axios.delete(`/api/banner/delete/${this.file.name}`)
+                .then(() => {
+                    this.getBanners();
+                    this.file = null;
+                    this.link = null;
+                    this.num = null;
+                    this.image = null;
+                    this.isUpdate = true;
+                });
         },
         createImageURL() {
+            console.log(this.file)
             const file = this.file;
             if (file) {
                 this.image = URL.createObjectURL(file);
@@ -101,43 +174,50 @@ export default {
             return false;
         }
     },
-    watch: {},
+    watch: {
+        options: {
+            handler() {
+                this.getBanners();
+            },
+            deep: true
+        }
+    },
     data() {
         return {
-            page: 1,
+            oldImage: null,
+            isUpdate: true,
+            pageView: 1,
             pageCount: 0,
             banners: [],
+            totalContents: 0,
             file: null,
-            images: null,
-            link: null,
+            // images: null,
+            image: null,
+            link: '',
             num: null,
             options: {
-                itemsPerPage: 8,
+                itemsPerPage: 8
             },
             headers: [{
-                    text: 'IMAGE',
-                    value: 'image',
-                    align: 'center',
-                    sortable: false,
-                    divider: true,
-                },
-                {
-                    text: 'LINK',
-                    value: 'link',
-                    align: 'center',
-                    sortable: false,
-                    divider: true,
-                },
-                {
-                    text: 'INDEX',
-                    value: 'num',
-                    align: 'center',
-                    sortable: false,
-                },
-            ],
-            rules: {
+                text: 'IMAGE',
+                value: 'image',
+                align: 'center',
+                sortable: false,
+                divider: true
+            }, {
+                text: 'LINK',
+                value: 'link',
+                align: 'center',
+                sortable: false,
+                divider: true
+            }, {
+                text: 'INDEX',
+                value: 'num',
+                align: 'center',
+                sortable: false
+            }],
 
-            }
+            rules: {}
         }
     }
 }

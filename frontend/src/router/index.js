@@ -10,6 +10,10 @@ import ProductDetail from '../views/ProductDetail.vue'
 import Basket from '../views/Basket.vue'
 import Payment from '../views/Payment.vue'
 
+import TermsOfUse from '../views/Company/TermsOfUse.vue'
+import PrivacyPolicy from '../views/Company/PrivacyPolicy.vue'
+import ShopGuide from '../views/Company/ShopGuide.vue'
+
 import MyPage from '../views/MyPage.vue'
 import MyPageHome from '../views/MyPage/MyPageHome.vue'
 import Order from '../views/MyPage/Order.vue'
@@ -57,6 +61,18 @@ const routes = [
                 path: '/',
                 name: 'Main',
                 component: Main
+            }, {
+                path: '/termsOfUse',
+                name: 'TermsOfUse',
+                component: TermsOfUse
+            }, {
+                path: '/privacyPolicy',
+                name: 'PrivacyPolicy',
+                component: PrivacyPolicy
+            }, {
+                path: '/shopGuide',
+                name: 'ShopGuide',
+                component: ShopGuide
             }, {
                 path: '/productList/:id/:sub',
                 name: 'ProductList',
@@ -123,11 +139,6 @@ const routes = [
                     console.log(`${from.path} ---> ${to.path}`)
                     const isLogin = store.getters['LoginStore/getLogin']
                     if (isLogin) {
-                        if (isLogin.user.authority == 'ROLE_ADMIN') {
-                            next({
-                                name: 'Main',
-                            })
-                        }
                         next();
                     } else {
                         next({

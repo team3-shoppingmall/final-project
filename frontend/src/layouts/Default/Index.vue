@@ -446,8 +446,10 @@ export default {
         },
         ...LoginStore.mapActions(['Logout']),
         signOut(){
-            this.Logout;
-            this.$router.push('/')
+            this.Logout();
+            if(this.$route.path!=='/') {
+                this.$router.push('/');
+            }
         }
     },
     computed: {

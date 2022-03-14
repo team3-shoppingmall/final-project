@@ -28,6 +28,11 @@ public class BannerController {
 		this.bannerService = bannerService;
 	}
 	
+	@GetMapping(value = "/getAllBanners")
+	public ResponseEntity<?> getAllBanners() {
+		return bannerService.getAllBanners();
+	}
+	
 	@GetMapping(value = "/getBanners")
 	public ResponseEntity<?> getBanners(@RequestParam("page") int page, @RequestParam("perPage") int perPage) {
 		return bannerService.getBanners(page, perPage);
@@ -40,8 +45,8 @@ public class BannerController {
 	}
 	
 	@PutMapping(value = "/update/{oldimage}")
-	public ResponseEntity<?> updateBanner(@PathVariable("oldimage") String old, @RequestBody BannerVO data){
-		return bannerService.updateBanner(old, data);
+	public ResponseEntity<?> updateBanner(@PathVariable("oldimage") String old,@RequestPart(value = "data") BannerVO data, @RequestParam("banner") List<MultipartFile> banner) throws NotFoundException {
+		return bannerService.updateBanner(old, data, banner);
 	}
 	
 	@GetMapping("/image/{image}")

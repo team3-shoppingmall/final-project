@@ -2,14 +2,11 @@
 <v-container class="pt-1">
     <v-row justify="center">
         <v-col class="px-0">
-            <v-carousel cycle height="500" hide-delimiter-background show-arrows-on-hover>
+            <v-carousel cycle height="400" hide-delimiter-background show-arrows-on-hover>
                 <v-carousel-item v-for="(banner, i) in banners" :key="i">
-                    <v-sheet  height="100%">
+                    <v-sheet height="100%">
                         <v-row class="fill-height" align="center" justify="center">
-                            <!-- <div class="text-h2">
-                                {{ slide }} Slide
-                            </div> -->
-                            <v-img :src="`/api/banner/image/${banner.image}`" contain @click="moveToBanner(banner)"></v-img>
+                            <v-img :src="`/api/banner/image/${banner.image}`" max-height="400" @click="moveToBanner(banner)"></v-img>
                         </v-row>
                     </v-sheet>
                 </v-carousel-item>
@@ -125,7 +122,7 @@ export default {
             weeklyBestProducts: [],
             newProducts: [],
             bestProducts: [],
-            banners:[],
+            banners: [],
         }
     },
     methods: {
@@ -148,7 +145,12 @@ export default {
         moveToDetail(num) {
             this.$router.push(`/productDetail/${num}`)
         },
-        getAllBanners(){
+        moveToBanner(banner) {
+            if (banner.link != '') {
+                this.$router.push(`${banner.link}`);
+            }
+        },
+        getAllBanners() {
             axios.get('/api/banner/getAllBanners')
             .then(res => {
                 this.banners = res.data;
@@ -162,7 +164,7 @@ export default {
     },
     mounted() {
         this.getProduct();
-           this.getAllBanners();
+        this.getAllBanners();
     }
 }
 </script>

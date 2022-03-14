@@ -32,7 +32,6 @@
                     <div class="text-h6">NOTIFICATION</div>
                     <div class="caption my-1"> [반품 주소] </div>
                     <div class="caption my-1"> 우체국 : 서울시 가나구 다라동 87-3, 2층 202호 스프링 </div>
-                    <div class="caption my-1"> 타택배 : 서울시 가나구 다라동 87-3, 2층 202호 스프링 </div>
                     <div class="caption my-1"> (선불결제) </div>
                     <div class="text-h6">BANK INFO</div>
                     <div class="caption my-1"> 마바은행 000-000000-00-000 (예금주:스프링) </div>

@@ -152,10 +152,15 @@ export default {
         },
         getAllBanners() {
             axios.get('/api/banner/getAllBanners')
-                .then(res => {
-                    this.banners = res.data;
-                })
+            .then(res => {
+                this.banners = res.data;
+            })
         },
+        moveToBanner(banner){
+            if(banner.link != ''){
+                this.$router.push(`${banner.link}`);
+            }
+        }
     },
     mounted() {
         this.getProduct();

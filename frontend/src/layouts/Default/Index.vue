@@ -55,7 +55,7 @@
                         <v-btn color="primary" v-if="getLogin.user.authority!='ROLE_ADMIN'" dark :to="'/myPage/home'">
                             {{getLogin.user.id}}
                         </v-btn>
-                        <v-btn color="primary" dark @click="Logout">
+                        <v-btn color="primary" dark @click="signOut">
                             SignOut
                         </v-btn>
                     </v-col>
@@ -444,7 +444,11 @@ export default {
             } else
                 return 50
         },
-        ...LoginStore.mapMutations(['Logout']),
+        ...LoginStore.mapActions(['Logout']),
+        signOut(){
+            this.Logout;
+            this.$router.push('/')
+        }
     },
     computed: {
         width() {

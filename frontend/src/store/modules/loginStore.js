@@ -23,7 +23,10 @@ const loginStore = {
     actions: {
         Login(context, payload) {
             return context.commit('Login', payload);
-        }
+        },
+        Logout(context) {
+            return context.commit('Logout');
+        },
     },
     getters: {
         getLogin: function (state) {

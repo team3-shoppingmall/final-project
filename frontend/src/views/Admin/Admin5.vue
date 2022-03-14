@@ -131,13 +131,22 @@ export default {
                 link: this.link,
                 num: this.num
             }
-            axios.put(`/api/banner/update/${this.oldImage}`, data)
+            let formData = new FormData();
+            formData.append(
+                'data',
+                new Blob([JSON.stringify(data)], {
+                    type: "application/json"
+                })
+            );
+            formData.append(`banner`, this.file);
+            axios.put(`/api/banner/update/${this.oldImage}`, formData)
                 .then(() => {
                     this.getBanners();
                     this.file = null;
                     this.link = null;
                     this.num = null;
                     this.image = null;
+                    this.isUpdate = true;
                 });
         },
         removeBanner() {
@@ -148,7 +157,7 @@ export default {
                     this.link = null;
                     this.num = null;
                     this.image = null;
-                    this.isUpdate = true
+                    this.isUpdate = true;
                 });
         },
         createImageURL() {

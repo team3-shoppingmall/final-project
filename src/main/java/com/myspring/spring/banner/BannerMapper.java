@@ -18,10 +18,13 @@ public interface BannerMapper {
 	@Insert("call bannerUpdate(#{old}, #{new.image}, #{new.link}, #{new.num})")
 	int updateBanner(@Param("old") String old, @Param("new") BannerVO data);
 	
-	@Select("Select * from bannertable limit #{perPage} offset #{start}")
+	@Select("Select * from bannertable  order by num limit #{perPage} offset #{start}")
 	List<BannerVO> getBanners(@Param("start") int start, @Param("perPage") int perPage);
 
 	@Insert("call bannerDelete (#{image})")
 	int deleteBanner(@Param("image") String image);
+
+	@Select("Select * from bannertable order by num")
+	List<BannerVO> getAllBanners();
 	
 }

@@ -79,7 +79,7 @@
                             </div>
                         </template>
                         <template v-slot:[`item.btn`]="{item}">
-                            <v-btn color="primary" @click="cancelOrder(item)" v-if="item.state != '배송완료'">
+                            <v-btn color="primary" @click="cancelOrder(item)" v-if="item.state != '배송완료' && item.state != '구매확정'">
                                 취소
                             </v-btn>
                             <v-btn color="primary" @click="purchaseConfirm(item)" v-if="item.state == '배송완료'">

@@ -58,7 +58,7 @@ public class QnaService {
 		try {
 			qnaMapper.insertQna(requestData, result);
 			int qnaNo = result.getQnaNo();
-			System.out.println("qnaNo:" + qnaNo);
+//			System.out.println("qnaNo:" + qnaNo);
 			File file = new File("./images/qna/" + qnaNo + "/");
 			file.mkdir();
 			if (fileList != null) {
@@ -80,7 +80,7 @@ public class QnaService {
 
 	// 댓글 등록 - originalNo 받아서 reply = true로 바꿔주기
 	public ResponseEntity<?> insertReply(QnaVO qnaVO) {
-		System.out.println(qnaVO.getType());
+//		System.out.println(qnaVO.getType());
 		int res, resReply;
 		int originalNo = qnaVO.getOriginalNo();
 		// productReply일때 원글의 productNo와 동일하게 셋팅 -> productDetail 페이지에 답글도 같이 불러오기 위함

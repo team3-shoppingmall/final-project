@@ -82,7 +82,10 @@
                             <v-btn color="primary" @click="cancelOrder(item)" v-if="item.state != '배송완료'">
                                 취소
                             </v-btn>
-                            <v-btn color="primary" @click="cancelOrder(item)" v-if="item.state == '배송완료'">
+                            <v-btn color="primary" @click="purchaseConfirm(item)" v-if="item.state == '배송완료'">
+                                구매 확정
+                            </v-btn>
+                            <v-btn color="primary" @click="cancelOrder(item)" v-if="item.state == '배송완료'" class="mt-1">
                                 환불 및 교환
                             </v-btn>
                         </template>
@@ -231,7 +234,14 @@ export default {
             this.selectedOrder = put;
             this.reset();
         },
-        searchOrder(put) {
+        searchOrder(selectedOrder) {
+            if (this.options.page != 1) {
+                this.options.page = 1;
+            } else {
+                this.getOrder(selectedOrder);
+            }
+        },
+        getOrder(put) {
             this.loading = true;
             let pageInfo = '';
             if (put == '주문 내역조회') {
@@ -254,6 +264,9 @@ export default {
                 }, {
                     text: '배송완료',
                     value: '배송완료',
+                }, {
+                    text: '구매확정',
+                    value: '구매확정',
                 }, ];
             } else {
                 pageInfo = 'returns';
@@ -299,6 +312,29 @@ export default {
                 this.loading = false
             )
         },
+        purchaseConfirm(item) {
+            let states = [];
+            let data = {
+                orderIdx: item.orderIdx,
+                state: '구매확정',
+            }
+            states.push(data);
+            axios.patch(`/api/order/update`, states)
+                .then(res => {
+                    if (res.data.length == 0) {
+                        alert('구매를 확정하셨습니다');
+                        if (this.options.page != 1) {
+                            this.options.page = 1;
+                        } else {
+                            this.getOrder(this.selectedOrder);
+                        }
+                    } else {
+                        alert(`미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`)
+                    }
+                }).catch(err => {
+                    console.log(err)
+                })
+        },
         cancelOrder(item) {
             if (item.state == '입금전' || item.state == '결제완료') {
                 let states = [];
@@ -311,7 +347,11 @@ export default {
                     .then(res => {
                         if (res.data.length == 0) {
                             alert('주문을 취소하셨습니다');
-                            this.searchOrder(this.selectedOrder);
+                            if (this.options.page != 1) {
+                                this.options.page = 1;
+                            } else {
+                                this.getOrder(this.selectedOrder);
+                            }
                         } else {
                             alert(`미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`)
                         }
@@ -336,7 +376,7 @@ export default {
             this.searchDate2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
             this.options.page = 1;
             this.options.itemsPerPage = 10;
-            this.searchOrder(this.selectedOrder);
+            this.getOrder(this.selectedOrder);
         },
         changeDate(period) {
             let date = new Date();
@@ -385,7 +425,7 @@ export default {
             this.searchWord = null;
             this.options.page = 1;
             this.options.itemsPerPage = 10;
-            this.searchOrder(this.selectedOrder);
+            this.getOrder(this.selectedOrder);
         },
     },
     computed: {
@@ -394,7 +434,7 @@ export default {
     watch: {
         options: {
             handler() {
-                this.searchOrder(this.selectedOrder);
+                this.getOrder(this.selectedOrder);
             },
             deep: true,
         },

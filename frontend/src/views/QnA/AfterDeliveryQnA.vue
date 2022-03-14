@@ -33,6 +33,7 @@
             </v-row>
         </v-col>
         <v-col cols="auto" v-if="getLogin != null">
+            <v-btn @click="searchReplyFalse" color="primary" v-if="getLogin.user.authority == 'ROLE_ADMIN'">미답변</v-btn>
             <v-btn :to="'/writePost/afterDeliveryQnA'" color="primary" v-if="getLogin.user.authority == 'ROLE_USER'">글쓰기</v-btn>
         </v-col>
     </v-row>
@@ -123,6 +124,23 @@ export default {
             }).finally(() => {
                 this.loading = false;
             })
+        },
+        searchQnA() {
+            if (this.options.page != 1) {
+                this.options.page = 1;
+            } else {
+                this.getQnA();
+            }
+        },
+        searchReplyFalse() {
+            this.search = 'reply';
+            this.searchWord = '';
+            if (this.options.page != 1) {
+                this.options.page = 1;
+            } else {
+                this.getQnA();
+            }
+            this.getQnA();
         },
         moveto(item) {
             if (item.secret == true) {

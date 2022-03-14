@@ -35,11 +35,12 @@
                     <v-text-field v-model="searchWord" hide-details @keyup.enter="getQnA"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn @click="getQnA" color="primary">검색</v-btn>
+                    <v-btn @click="searchQnA" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
-        <v-col cols="auto" v-if="getLogin != null">
+        <v-col cols="auto" v-if="getLogin != null" class="mt-3">
+            <v-btn @click="searchReplyFalse" color="primary" v-if="getLogin.user.authority == 'ROLE_ADMIN'">미답변</v-btn>
             <v-btn :to="'/writePost/productQnA'" color="primary" v-if="getLogin.user.authority == 'ROLE_USER'">글쓰기</v-btn>
         </v-col>
     </v-row>
@@ -108,7 +109,7 @@ export default {
             }, {
                 text: '작성자',
                 value: 'id'
-            }],
+            }, ],
             search: 'id',
             searchWord: '',
 
@@ -135,8 +136,28 @@ export default {
                 this.contents = res.data.qnaList;
                 this.totalContents = res.data.count;
             }).finally(() => {
+                if (this.search == 'reply') {
+                    this.search = 'id';
+                }
                 this.loading = false;
             })
+        },
+        searchQnA() {
+            if (this.options.page != 1) {
+                this.options.page = 1;
+            } else {
+                this.getQnA();
+            }
+        },
+        searchReplyFalse() {
+            this.search = 'reply';
+            this.searchWord = '';
+            if (this.options.page != 1) {
+                this.options.page = 1;
+            } else {
+                this.getQnA();
+            }
+            this.getQnA();
         },
         moveto(item) {
             if (item.secret == true) {
@@ -146,7 +167,7 @@ export default {
                 }
             }
             this.$router.push(`/qna/${item.qnaNo}`)
-        },
+        }
     },
     computed: {
         ...LoginStore.mapGetters(['getLogin']),

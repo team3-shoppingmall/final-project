@@ -184,6 +184,7 @@ export default {
     },
     data() {
         return {
+            loading: false,
             oldImage: null,
             isUpdate: true,
             pageView: 1,

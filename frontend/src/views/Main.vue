@@ -156,11 +156,6 @@ export default {
                 this.banners = res.data;
             })
         },
-        moveToBanner(banner){
-            if(banner.link != ''){
-                this.$router.push(`${banner.link}`);
-            }
-        }
     },
     mounted() {
         this.getProduct();

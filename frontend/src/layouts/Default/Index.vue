@@ -112,9 +112,9 @@
                     </v-col>
                 </v-row>
             </v-card-title>
-            <v-virtual-scroll :items="messages" :item-height="120" height="600" id="virtualScroll">
+            <v-virtual-scroll :items="messages" item-height="auto" height="600" id="virtualScroll">
                 <template v-slot:default="{ item }">
-                    <v-list-item v-if="item.author == 'client'">
+                    <v-list-item v-if="item.author == 'client'" style="background-color : black">
                         <v-list-item-content class="mb-5">
                             <v-list-item-title>
                                 <v-row justify="end">
@@ -123,7 +123,7 @@
                                             <v-col cols="auto">
                                                 <v-card elevation="2" outlined color="blue lighten-1">
                                                     <v-card-text>
-                                                        <div class="text--primary">{{item.text}}</div>
+                                                        <div class="text--primary">{{item.text}}11</div>
                                                     </v-card-text>
                                                 </v-card>
                                             </v-col>
@@ -136,7 +136,7 @@
                             <v-icon color="blue">mdi-alpha-q-box</v-icon>
                         </v-list-item-icon>
                     </v-list-item>
-                    <v-list-item v-if="item.author == 'server'">
+                    <v-list-item v-if="item.author == 'server'" style="background-color : red">
                         <v-list-item-icon>
                             <v-icon color="#FF8EA0">mdi-alpha-a-box</v-icon>
                         </v-list-item-icon>
@@ -148,7 +148,7 @@
                                             <v-col cols="auto">
                                                 <v-card elevation="2" outlined color="#FF8EA0b3">
                                                     <v-card-text>
-                                                        <div class="text--primary">{{item.text}}</div>
+                                                        <div class="text--primary">{{item.text}}22</div>
                                                     </v-card-text>
                                                 </v-card>
                                             </v-col>
@@ -361,11 +361,14 @@ export default {
             });
             this.previousMessage = '안녕하세요 spring 입니다. 무엇을 도와드릴까요?';
         },
-        searchOrder() {
+      searchOrder() {
             axios.get(`/api/order/getOrder/${this.orderNo}`)
                 .then(res => {
                     this.orderState = res.data;
-                }).finally(
+                }).catch(() => {
+                    this.orderState = '';
+                })
+                .finally(
                     this.orderNo = ''
                 )
         },

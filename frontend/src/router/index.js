@@ -139,11 +139,6 @@ const routes = [
                     console.log(`${from.path} ---> ${to.path}`)
                     const isLogin = store.getters['LoginStore/getLogin']
                     if (isLogin) {
-                        if (isLogin.user.authority == 'ROLE_ADMIN') {
-                            next({
-                                name: 'Main',
-                            })
-                        }
                         next();
                     } else {
                         next({

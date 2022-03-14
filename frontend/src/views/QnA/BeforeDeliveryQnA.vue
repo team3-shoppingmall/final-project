@@ -32,7 +32,7 @@
                 </v-col>
             </v-row>
         </v-col>
-        <v-col cols="auto" v-if="getLogin != null">
+        <v-col cols="auto" v-if="getLogin != null" class="mt-3">
             <v-btn @click="searchReplyFalse" color="primary" v-if="getLogin.user.authority == 'ROLE_ADMIN'">미답변</v-btn>
             <v-btn :to="'/writePost/beforeDeliveryQnA'" color="primary" v-if="getLogin.user.authority == 'ROLE_USER'">글쓰기</v-btn>
         </v-col>

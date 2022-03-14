@@ -303,7 +303,6 @@ end if;
 update bannertable set image = imageTemp, link = linkTemp, num = numTemp where num = 0;
 END$$
 DELIMITER ;
-DELIMITER ;
 
 DELIMITER $$
 USE `springdb`$$

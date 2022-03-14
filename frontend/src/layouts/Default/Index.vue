@@ -100,7 +100,6 @@
                     <v-col cols="auto">
                         <v-row>
                             <v-col>
-
                                 <v-btn @click="dialog2 = true" text>
                                     <v-icon color="#FF8EA0">mdi-magnify</v-icon>주문 확인
                                 </v-btn>
@@ -112,9 +111,9 @@
                     </v-col>
                 </v-row>
             </v-card-title>
-            <v-virtual-scroll :items="messages" item-height="auto" height="600" id="virtualScroll">
+            <v-virtual-scroll :items="messages" item-height="150" height="600" id="virtualScroll">
                 <template v-slot:default="{ item }">
-                    <v-list-item v-if="item.author == 'client'" style="background-color : black">
+                    <v-list-item v-if="item.author == 'client'">
                         <v-list-item-content class="mb-5">
                             <v-list-item-title>
                                 <v-row justify="end">
@@ -123,7 +122,7 @@
                                             <v-col cols="auto">
                                                 <v-card elevation="2" outlined color="blue lighten-1">
                                                     <v-card-text>
-                                                        <div class="text--primary">{{item.text}}11</div>
+                                                        <div class="text--primary" v-html="item.text"></div>
                                                     </v-card-text>
                                                 </v-card>
                                             </v-col>
@@ -136,7 +135,7 @@
                             <v-icon color="blue">mdi-alpha-q-box</v-icon>
                         </v-list-item-icon>
                     </v-list-item>
-                    <v-list-item v-if="item.author == 'server'" style="background-color : red">
+                    <v-list-item v-if="item.author == 'server'">
                         <v-list-item-icon>
                             <v-icon color="#FF8EA0">mdi-alpha-a-box</v-icon>
                         </v-list-item-icon>
@@ -148,7 +147,7 @@
                                             <v-col cols="auto">
                                                 <v-card elevation="2" outlined color="#FF8EA0b3">
                                                     <v-card-text>
-                                                        <div class="text--primary">{{item.text}}22</div>
+                                                        <div class="text--primary" v-html="item.text"></div>
                                                     </v-card-text>
                                                 </v-card>
                                             </v-col>
@@ -158,6 +157,9 @@
                             </v-list-item-title>
                             <v-list-item-subtitle v-if="item.buttons != undefined">
                                 <v-btn tile v-for="button in item.buttons" :key="button" @click="selectMessage(item, button)" color="primary">{{button}}</v-btn>
+                            </v-list-item-subtitle>
+                            <v-list-item-subtitle v-if="item.url != undefined">
+                                <v-btn tile color="primary" :to="`${item.url}`" @click="dialog = false">이동</v-btn>
                             </v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
@@ -361,12 +363,12 @@ export default {
             });
             this.previousMessage = '안녕하세요 spring 입니다. 무엇을 도와드릴까요?';
         },
-      searchOrder() {
+        searchOrder() {
             axios.get(`/api/order/getOrder/${this.orderNo}`)
                 .then(res => {
                     this.orderState = res.data;
                 }).catch(() => {
-                    this.orderState = '';
+                    this.orderState = '해당 주문이 없습니다';
                 })
                 .finally(
                     this.orderNo = ''
@@ -383,6 +385,9 @@ export default {
             this.sendMessage();
         },
         sendMessage() {
+            if (this.message == '') {
+                return;
+            }
             this.messages.push({
                 text: this.message,
                 author: 'client'
@@ -408,16 +413,18 @@ export default {
                     }
                 })
                 .then(res => {
-                    this.previousMessage = res.data.description;
-                    if (res.data.buttonList != null) {
+                    this.previousMessage = res.data.description.replace(/(?:\r\n|\r|\n)/g, '<br />');
+                    if (res.data.url != undefined) {
                         this.messages.push({
-                            text: res.data.description,
+                            text: res.data.description.replace(/(?:\r\n|\r|\n)/g, '<br />'),
                             buttons: res.data.buttonList,
+                            url: res.data.url.substring(21),
                             author: 'server'
                         });
                     } else {
                         this.messages.push({
-                            text: res.data.description,
+                            text: res.data.description.replace(/(?:\r\n|\r|\n)/g, '<br />'),
+                            buttons: res.data.buttonList,
                             author: 'server'
                         });
                     }
@@ -429,6 +436,9 @@ export default {
                     var container = this.$el.querySelector("#virtualScroll");
                     container.scrollTop = container.scrollHeight;
                 })
+        },
+        moveToUrl(url) {
+            this.$router.replace(url);
         },
         ...LoginStore.mapMutations(['Logout']),
     },

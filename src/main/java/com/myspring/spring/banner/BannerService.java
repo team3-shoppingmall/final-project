@@ -1,5 +1,6 @@
 package com.myspring.spring.banner;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -47,13 +48,31 @@ public class BannerService {
 		return null;
 	}
 
-
-	public ResponseEntity<?> updateBanner(String old, BannerVO data) {
-		int res = bannerMapper.updateBanner(old, data);
-		if (res == 0) {
-			return new ResponseEntity<>("IMAGE NAME EXIST", HttpStatus.INTERNAL_SERVER_ERROR);
-		} else {
-			return new ResponseEntity<>(HttpStatus.OK);
+	public ResponseEntity<?> updateBanner(String old, BannerVO data, List<MultipartFile> banner) {
+		
+		try {
+			File file = new File("./images/banner/" + old);
+			if(!old.equals(data.getImage())){
+				file.delete();
+				try {
+					MultipartFile multipartFile = banner.get(0);
+					FileOutputStream writer = new FileOutputStream("./images/banner/" + data.getImage());
+					writer.write(multipartFile.getBytes());
+					writer.close();
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+			int res = 0;
+			
+			res = bannerMapper.updateBanner(old, data);
+			if (res == 0) {
+				return new ResponseEntity<>("IMAGE NAME EXIST", HttpStatus.INTERNAL_SERVER_ERROR);
+			} else {
+				return new ResponseEntity<>(HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getStackTrace(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -71,17 +90,30 @@ public class BannerService {
 
 	public ResponseEntity<?> getBanners(int page, int perPage) {
 		int start = (page - 1) * perPage;
-		List<BannerVO> res =  bannerMapper.getBanners(start, perPage);
+		List<BannerVO> res = bannerMapper.getBanners(start, perPage);
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 	public ResponseEntity<?> deleteBanner(String image) {
-		int res = bannerMapper.deleteBanner(image);
-		if (res == 0) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		} else {
-			return new ResponseEntity<>(HttpStatus.OK);
+		try {
+			File file;
+			file = new File("./images/banner/" + image);
+			file.delete();
+
+			int res = bannerMapper.deleteBanner(image);
+			if (res == 0) {
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			} else {
+				return new ResponseEntity<>(HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getStackTrace(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	public ResponseEntity<?> getAllBanners() {
+		List<BannerVO> res = bannerMapper.getAllBanners();
+		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 //	ProductVO result = new ProductVO();

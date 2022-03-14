@@ -651,9 +651,12 @@ call autoQuestion(null, 'return', false, '<p>♥해당 양식에 정확한 정�
 call autoQuestion(null, 'error', false, '<p>♥해당 양식에 정확한 정보를 기재해주셔야 처리가 가능합니다♥<br><br>--------------------------------------<br>*불량/오배송*<br><br><strong>▷바코드(검수완료)사진</strong><br><strong>▷불량사진</strong><br><strong>(필수첨부 부탁드립니다!)</strong><br><br>주문번호 : 102319532<br>교환/반품 (원하시는 처리 선택해주세요!) : 반품<br>상품 수령일자 : (3/2)<br>반품 접수일자 : (3/7)<br>상품명(사이즈,컬러) : 스노우 버튼 모직 스커트(m, 그레이지)<br>불량/오배송 사유 : 스커트 단추가 불량이네요<br>검수번호(숫자나 알파벳) : 123ew2<br><br>(상품바코드옆 검수자 숫자한자리/두자리를 기재합니다.)</p>','portal', true, 'bar-code-g042121347_640.png;jeans-ga6ae8c0ef_640.jpg;');
 
 -- 배너
--- insert into bannertable(image, link) values('test1.jpg','testlink1'); 
--- insert into bannertable(image, link) values('test2.jpg','testlink2');
+ insert into bannertable(image, link, num) values('b001.png','testlink1', 1); 
+ insert into bannertable(image, link, num) values('b002.png','testlink1',2); 
+insert into bannertable(image, link, num) values('b003.png','testlink1',3); 
+insert into bannertable(image, link, num) values('b004.png','testlink1',4); 
 
+insert into bannertable(image, link, num) values('b006.png','testlink1',5); 
 commit;
 
 -- select data

@@ -306,7 +306,8 @@ export default {
                 selectedColor: color,
                 selectedSize: size,
                 basketAmount: 1,
-                price: this.product.price - this.product.discount
+                price: this.product.price,
+                discount: this.product.discount
             }
             for (let i = 0; i < this.selected.length; i++) {
                 if (this.selected[i].selectedColor == data.selectedColor && this.selected[i].selectedSize == data.selectedSize) {

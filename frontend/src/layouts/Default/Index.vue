@@ -1,7 +1,6 @@
 <template>
 <v-app>
     <v-app-bar color="primary" app dark height="60px">
-        {{messages}}
         <v-btn color="primary" active-class="no-active" :to="'/'">
             <v-icon>mdi-home</v-icon>
         </v-btn>
@@ -92,14 +91,9 @@
             </v-row>
         </v-col>
     </v-main>
-    <v-dialog v-model="dialog" width="600px" persistent>
-        <template v-slot:activator="{ on, attrs }">
-            <v-btn color="primary" dark v-bind="attrs" v-on="on">
-                Open Dialog
-            </v-btn>
-        </template>
+    <v-dialog v-model="dialog" scrollable width="600px" persistent>
         <v-container style="background-color:white;">
-            <v-container>
+            <v-container class="text-h5">
                 <v-row justify="space-between">
                     <v-col align-self="center">Spring Chatbot</v-col>
                     <v-col align-self="center" cols="auto">
@@ -116,21 +110,56 @@
                     </v-col>
                 </v-row>
             </v-container>
-            <v-container style="height: 600px; overflow-y:scroll;" id="test">
-                <v-row justify="end" v-for="(msg, idx) in messages" :key="idx">
-                    <v-col cols="10">
-                        <v-row justify="end">
+            <v-divider></v-divider>
+            <v-container style="height: 600px; overflow-y:scroll" id="test">
+                <v-row v-for="(msg, idx) in messages" :key="idx">
+                    <v-col>
+                        <v-row justify="end" v-if="msg.author == 'client'">
+                            <v-col cols="10">
+                                <v-row justify="end">
+                                    <v-col cols="auto">
+                                        <v-card elevation="2" outlined color="blue lighten-1">
+                                            <v-card-text>
+                                                <div class="text--primary" v-html="msg.text"></div>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
                             <v-col cols="auto">
-                                <v-card elevation="2" outlined color="blue lighten-1">
-                                    <v-card-text>
-                                        <div class="text--primary">{{msg.text}}</div>
-                                    </v-card-text>
-                                </v-card>
+                                <v-icon color="blue">mdi-alpha-q-box</v-icon>
+                            </v-col>
+                        </v-row>
+                        <v-row v-if="msg.author == 'server'">
+                            <v-col cols="auto">
+                                <v-icon color="#FF8EA0">mdi-alpha-a-box</v-icon>
+                            </v-col>
+                            <v-col cols="10">
+                                <v-row>
+                                    <v-col cols="auto">
+                                        <v-card elevation="2" outlined color="#FF8EA0b3">
+                                            <v-card-text>
+                                                <div class="text--primary" v-html="msg.text"></div>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-col>
+                                </v-row>
+                                <v-row v-if="msg.buttons != undefined">
+                                    <v-col v-for="button in msg.buttons" :key="button" cols="2">
+                                        <v-btn tile @click="selectMessage(msg, button)" color="primary">{{button}}</v-btn>
+                                    </v-col>
+                                </v-row>
+                                <v-row v-if="msg.url != undefined">
+                                    <v-col cols="2">
+                                        <v-btn tile color="primary" :to="`${msg.url}`" @click="dialog = false">이동</v-btn>
+                                    </v-col>
+                                </v-row>
                             </v-col>
                         </v-row>
                     </v-col>
                 </v-row>
             </v-container>
+            <v-divider></v-divider>
             <v-row>
                 <v-col>
                     <v-text-field v-model="message" clearable hide-details @keyup.enter="sendMessage"></v-text-field>
@@ -140,91 +169,6 @@
                 </v-col>
             </v-row>
         </v-container>
-    </v-dialog>
-    <v-dialog v-model="dialog1" width="600px" persistent>
-        <v-card>
-            <v-card-title class="text-h5 grey lighten-2">
-                <v-row justify="space-between">
-                    <v-col>Spring Chatbot</v-col>
-                    <v-col cols="auto">
-                        <v-row>
-                            <v-col>
-
-                                <v-btn @click="dialog2 = true" text>
-                                    <v-icon color="#FF8EA0">mdi-magnify</v-icon>주문 확인
-                                </v-btn>
-                            </v-col>
-                            <v-col>
-                                <v-icon @click="dialog = false" color="#FF8EA0">mdi-exit-to-app</v-icon>
-                            </v-col>
-                        </v-row>
-                    </v-col>
-                </v-row>
-            </v-card-title>
-            <v-virtual-scroll :items="messages" :item-height="160" height="600" id="virtualScroll">
-                <template v-slot:default="{ item }">
-
-                    <v-list-item v-if="item.author == 'client'">
-                        <v-list-item-content class="mb-5">
-                            <v-list-item-title>
-                                <v-row justify="end">
-                                    <v-col cols="10">
-                                        <v-row justify="end">
-                                            <v-col cols="auto">
-                                                <v-card elevation="2" outlined color="blue lighten-1">
-                                                    <v-card-text>
-                                                        <div class="text--primary">{{item.text}}</div>
-                                                    </v-card-text>
-                                                </v-card>
-                                            </v-col>
-                                        </v-row>
-                                    </v-col>
-                                </v-row>
-                            </v-list-item-title>
-                        </v-list-item-content>
-                        <v-list-item-icon>
-                            <v-icon color="blue">mdi-alpha-q-box</v-icon>
-                        </v-list-item-icon>
-                    </v-list-item>
-                    <v-list-item v-if="item.author == 'server'">
-                        <v-list-item-icon>
-                            <v-icon color="#FF8EA0">mdi-alpha-a-box</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                            <v-list-item-title>
-                                <v-row>
-                                    <v-col cols="10">
-                                        <v-row>
-                                            <v-col cols="auto">
-                                                <v-card elevation="2" outlined color="#FF8EA0b3">
-                                                    <v-card-text>
-                                                        <div class="text--primary">{{item.text}}{{item.text.length}}</div>
-                                                    </v-card-text>
-                                                </v-card>
-                                            </v-col>
-                                        </v-row>
-                                    </v-col>
-                                </v-row>
-                            </v-list-item-title>
-                            <v-list-item-subtitle v-if="item.buttons != undefined">
-                                <v-btn tile v-for="button in item.buttons" :key="button" @click="selectMessage(item, button)" color="primary">{{button}}</v-btn>
-                            </v-list-item-subtitle>
-                        </v-list-item-content>
-                    </v-list-item>
-                </template>
-            </v-virtual-scroll>
-            <v-divider></v-divider>
-            <v-card-text>
-                <v-row>
-                    <v-col>
-                        <v-text-field v-model="message" clearable hide-details @keyup.enter="sendMessage"></v-text-field>
-                    </v-col>
-                    <v-col cols="auto" class="mt-3">
-                        <v-btn color="primary" @click="sendMessage">입력</v-btn>
-                    </v-col>
-                </v-row>
-            </v-card-text>
-        </v-card>
     </v-dialog>
     <v-dialog v-model="dialog2" width="400px" persistent>
         <v-card>
@@ -417,7 +361,7 @@ export default {
                 .then(res => {
                     this.orderState = res.data;
                 }).catch(() => {
-                    this.orderState = '';
+                    this.orderState = '해당 주문이 없습니다';
                 })
                 .finally(
                     this.orderNo = ''
@@ -434,6 +378,9 @@ export default {
             this.sendMessage();
         },
         sendMessage() {
+            if (this.message == '') {
+                return;
+            }
             this.messages.push({
                 text: this.message,
                 author: 'client'
@@ -459,16 +406,18 @@ export default {
                     }
                 })
                 .then(res => {
-                    this.previousMessage = res.data.description;
-                    if (res.data.buttonList != null) {
+                    this.previousMessage = res.data.description.replace(/(?:\r\n|\r|\n)/g, '<br />');
+                    if (res.data.url != undefined) {
                         this.messages.push({
-                            text: res.data.description,
+                            text: res.data.description.replace(/(?:\r\n|\r|\n)/g, '<br />'),
                             buttons: res.data.buttonList,
+                            url: res.data.url.substring(21),
                             author: 'server'
                         });
                     } else {
                         this.messages.push({
-                            text: res.data.description,
+                            text: res.data.description.replace(/(?:\r\n|\r|\n)/g, '<br />'),
+                            buttons: res.data.buttonList,
                             author: 'server'
                         });
                     }
@@ -480,6 +429,9 @@ export default {
                     let container = this.$el.querySelector("#test");
                     container.scrollTop = container.scrollHeight;
                 })
+        },
+        moveToUrl(url) {
+            this.$router.replace(url);
         },
         itemHeight(item) {
             console.log(item)

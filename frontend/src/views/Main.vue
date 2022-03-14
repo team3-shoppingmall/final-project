@@ -2,7 +2,7 @@
 <v-container class="pt-1">
     <v-row justify="center">
         <v-col class="px-0">
-            <v-carousel cycle height="400" hide-delimiter-background show-arrows-on-hover>
+            <v-carousel interval="5000" cycle height="400" hide-delimiter-background show-arrows-on-hover>
                 <v-carousel-item v-for="(banner, i) in banners" :key="i">
                     <v-sheet height="100%">
                         <v-row class="fill-height" align="center" justify="center">
@@ -154,6 +154,8 @@ export default {
             axios.get('/api/banner/getAllBanners')
             .then(res => {
                 this.banners = res.data;
+            }).catch(err => {
+                console.log(err.response.data);
             })
         },
     },

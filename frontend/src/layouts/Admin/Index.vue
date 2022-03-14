@@ -70,7 +70,7 @@ export default {
                 {
                     title: '배너 관리',
                     icon: 'mdi-help-box',
-                    to: '/admin/admin5'
+                    to: '/admin/bannerManage'
                 },
                    {
                     title: '회원 관리',

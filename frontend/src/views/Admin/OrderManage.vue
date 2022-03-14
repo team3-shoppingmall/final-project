@@ -255,6 +255,9 @@ export default {
                 text: '배송완료',
                 value: '배송완료',
             }, {
+                text: '구매확정',
+                value: '구매확정',
+            }, {
                 text: '취소완료',
                 value: '취소완료',
             }, {
@@ -342,8 +345,8 @@ export default {
                         alert('선택되지 않은 상태가 있습니다.');
                         return;
                     }
-                    if (this.orders[i].state == '취소완료' || this.orders[i].state == '교환완료' || this.orders[i].state == '환불완료') {
-                        alert(`주문번호 : ${this.orders[i].orderIdx}\n취소 완료, 교환 완료, 환불 완료된 주문은 변경이 불가능합니다.`);
+                    if (this.orders[i].state == '구매확정' || this.orders[i].state == '취소완료' || this.orders[i].state == '교환완료' || this.orders[i].state == '환불완료') {
+                        alert(`주문번호 : ${this.orders[i].orderIdx}\n구매 확정, 취소 완료, 교환 완료, 환불 완료된 주문은 변경이 불가능합니다.`);
                         continue;
                     }
                     let data = {

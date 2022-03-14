@@ -29,7 +29,7 @@
                     <v-text-field v-model="searchWord" @keyup.enter="getQnA"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn @click="getQnA" color="primary">검색</v-btn>
+                    <v-btn @click="searchQnA" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -112,6 +112,13 @@ export default {
             }).finally(() => {
                 this.loading = false;
             })
+        },
+        searchQnA() {
+            if (this.options.page != 1) {
+                this.options.page = 1;
+            } else {
+                this.getQnA();
+            }
         },
         moveto(item) {
             this.$router.push(`/qna/${item.qnaNo}`)

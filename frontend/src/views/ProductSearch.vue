@@ -213,6 +213,13 @@ export default {
             this.$router.push(`/productDetail/${num}`)
         },
         searchProduct() {
+            if (this.page != 1) {
+                this.page = 1;
+            } else {
+                this.getProduct();
+            }
+        },
+        getProduct() {
             this.noSearch = false;
             let type1 = null;
             let type2 = null;
@@ -257,7 +264,7 @@ export default {
     watch: {
         page: {
             handler() {
-                this.searchProduct();
+                this.getProduct();
             }
         }
     },

@@ -29,7 +29,6 @@ public class BannerController {
 	
 	@GetMapping(value = "/getAllBanners")
 	public ResponseEntity<?> getAllBanners() {
-		System.out.println("Test");
 		return bannerService.getAllBanners();
 	}
 	

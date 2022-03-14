@@ -22,6 +22,7 @@ drop table if exists membertable;
 DROP TRIGGER IF EXISTS `springdb`.`membertable_BEFORE_INSERT`;
 DROP TRIGGER IF EXISTS `springdb`.`ordertable_BEFORE_INSERT`;
 DROP TRIGGER IF EXISTS `springdb`.`pointtable_BEFORE_INSERT`;
+DROP TRIGGER IF EXISTS `springdb`.`ordertable_BEFORE_UPDATE`;
 DROP TRIGGER IF EXISTS `springdb`.`membertable_AFTER_DELETE`;
 DROP procedure IF EXISTS `autoQuestion`;
 DROP procedure IF EXISTS `autoReply`;
@@ -120,7 +121,8 @@ CREATE TABLE ordertable (
 	SELECTEDSIZE VARCHAR(100),
 	ORDERAMOUNT INT NOT NULL,
 	TOTALPRICE INT NOT NULL,
-	ORDERDATE TIMESTAMP DEFAULT (current_timestamp),
+	ORDERDATE TIMESTAMP DEFAULT current_timestamp,
+	UPDATEDATE TIMESTAMP DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
 	STATE VARCHAR(20),
 	ORDERMETHOD VARCHAR(100) NOT NULL,
 	NAME VARCHAR(50) NOT NULL,
@@ -136,7 +138,7 @@ DELIMITER $$
 USE `springdb`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`ordertable_BEFORE_INSERT` BEFORE INSERT ON `ordertable` FOR EACH ROW
 BEGIN
-if(new.state = null)
+if(new.state is null)
 then
 if(new.ORDERMETHOD = 'cash')
 then
@@ -152,6 +154,8 @@ DELIMITER $$
 USE `springdb`$$
 CREATE PROCEDURE `orderChangeSchedule` ()
 BEGIN
+UPDATE ordertable set state = '구매확정' where state = '배송완료' and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
+UPDATE ordertable set state = '취소완료' where state = '입금전' and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
 IF( DAYOFWEEK(curdate()) between 2 and 6)
 THEN
 UPDATE ordertable set state = '배송준비중' where state = '결제완료';
@@ -161,7 +165,7 @@ DELIMITER ;
 
 create EVENT event_AutoScheduler
 ON schedule 
-EVERY 1 day starts '2022-03-06 15:00:00'
+EVERY 1 DAY starts '2022-03-06 15:00:00'
 COMMENT '매일 15:00 결제완료 -> 배송준비중으로 변경'
 DO Call orderChangeSchedule();
 
@@ -183,6 +187,17 @@ update membertable
 set point = point + New.point
 where id = New.id;
 End if;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`ordertable_BEFORE_UPDATE` BEFORE UPDATE ON `ordertable` FOR EACH ROW
+BEGIN
+if(new.state = '구매확정')
+then
+insert into pointtable(id, point, content) values (old.id, old.totalPrice * 0.02, '구매 확정');
+end if;
 END$$
 DELIMITER ;
 
@@ -473,36 +488,36 @@ insert into wishlisttable(id, productno) values('portal', 10);
 insert into wishlisttable(id, productno) values('aodremm', 1);
 insert into wishlisttable(id, productno) values('grimhink', 2);
 -- 주문
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',1,1,'그레이지','S',1,38000,'2018-10-27 13:24:51','배송완료','cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('portal',1,2,'소프트민트','M',1,38000,'2019-08-03 13:24:51','교환완료','credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('portal',2,2,'피치베이지',null,4,119600,'2019-05-13 13:24:51','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',4,3,'블랙','S',1,31000,'2020-09-15 13:24:51','환불완료','cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',5,4,'메란지',null,1,28800,'2021-02-02 13:24:51','배송완료','credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('portal',6,5,'베이지',null,2,62000,'2021-09-25 13:24:51','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',7,6,'아이보리','S',1,41000,'2021-12-22 13:24:51','배송완료','cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('portal',8,6,'소라',null,1,115000,'2022-02-14 13:24:51','취소완료','credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',5,6,'오트밀',null,2,87600,'2022-03-04 13:24:51','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',1,7,'소프트민트','L',1,38000,'2022-03-04 15:24:51','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',3,8,'아이보리',null,1,92000,'2022-03-04 20:24:51','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',4,9,'크림','M',1,31000,'2022-03-05 00:56:31','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',15,9,'네이비',null,1,39600,'2022-03-05 01:56:31','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('portal',10,10,'블랙','M',1,49000,'2022-03-05 13:24:51','배송중','credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',20,10,'아이보리',null,1,44000,'2022-03-06 13:24:51','cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
+values('tester',1,1,'그레이지','S',1,38000,'2018-10-27 13:24:51','2018-10-31 13:24:51','구매확정','cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
+values('portal',1,2,'소프트민트','M',1,38000,'2019-08-03 13:24:51','2019-08-12 13:24:51','교환완료','credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
+values('portal',2,2,'피치베이지',null,4,119600,'2019-05-13 13:24:51','2019-05-20 13:24:51','구매확정','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
+values('tester',4,3,'블랙','S',1,31000,'2020-09-15 13:24:51','2020-09-24 13:24:51','환불완료','cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
+values('tester',5,4,'메란지',null,1,28800,'2021-02-02 13:24:51','2021-02-06 13:24:51','구매확정','credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
+values('portal',6,5,'베이지',null,2,62000,'2021-09-25 13:24:51','2021-10-07 15:00:00','구매확정','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
+values('tester',7,6,'아이보리','S',1,41000,'2021-12-22 13:24:51','2021-12-26 13:24:51','구매확정','cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
+values('portal',8,6,'소라',null,1,115000,'2022-02-14 13:24:51','2022-02-14 14:04:51','취소완료','credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
+values('tester',5,6,'오트밀',null,2,87600,'2022-03-05 13:24:51','2022-03-09 13:24:51','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
+values('tester',1,7,'소프트민트','L',1,38000,'2022-03-10 15:24:51','2022-03-13 15:24:51','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
+values('tester',3,8,'아이보리',null,1,92000,'2022-03-11 20:24:51','2022-03-14 20:24:51','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
+values('tester',4,9,'크림','M',1,31000,'2022-03-11 00:56:31','2022-03-14 00:56:31','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
+values('tester',15,9,'네이비',null,1,39600,'2022-03-12 01:56:31','2022-03-15 01:56:31','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
+values('portal',10,10,'블랙','M',1,49000,'2022-03-13 13:24:51','2022-03-15 13:24:21','배송중','credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, ordermethod, name, tel, zipcode, address, detailaddr)
+values('tester',20,10,'아이보리',null,1,44000,'2022-03-15 12:24:51','2022-03-15 17:24:51','cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
 values('portal',11,11,'퍼플',null,1,17000,'credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 -- 포인트 내역

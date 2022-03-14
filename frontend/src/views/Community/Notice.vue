@@ -23,7 +23,7 @@
                     <v-text-field v-model="searchWord" hide-details @keyup.enter="getNotice"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn @click="getNotice" color="primary">검색</v-btn>
+                    <v-btn @click="searchNotice" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -103,6 +103,13 @@ export default {
                 }).finally(
                     this.loading = false
                 )
+        },
+        searchNotice() {
+            if (this.options.page != 1) {
+                this.options.page = 1;
+            } else {
+                this.getNotice();
+            }
         },
         moveto(item) {
             this.$router.push(`/community/noticePost/${item.noticeNo}`)

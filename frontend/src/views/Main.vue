@@ -152,11 +152,11 @@ export default {
         },
         getAllBanners() {
             axios.get('/api/banner/getAllBanners')
-            .then(res => {
-                this.banners = res.data;
-            }).catch(err => {
-                console.log(err.response.data);
-            })
+                .then(res => {
+                    this.banners = res.data;
+                }).catch(err => {
+                    console.log(err.response.data);
+                })
         },
     },
     mounted() {

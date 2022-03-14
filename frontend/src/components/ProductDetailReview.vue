@@ -53,7 +53,7 @@
                     <v-text-field v-model="searchWord" @keyup.enter="getReview"></v-text-field>
                 </v-col>
                 <v-col cols="1" class="mt-3">
-                    <v-btn @click="getReview" color="primary">검색</v-btn>
+                    <v-btn @click="searchReview" color="primary">검색</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -221,7 +221,13 @@ export default {
                 this.loading = false;
             })
         },
-
+        searchReview() {
+            if (this.options.page != 1) {
+                this.options.page = 1;
+            } else {
+                this.getReview();
+            }
+        },
         // 이미지
         fileInputClick() {
             document.getElementById(`fileInput`).click();

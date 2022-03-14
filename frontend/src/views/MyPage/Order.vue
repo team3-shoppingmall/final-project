@@ -79,10 +79,13 @@
                             </div>
                         </template>
                         <template v-slot:[`item.btn`]="{item}">
-                            <v-btn color="primary" @click="cancelOrder(item)" v-if="item.state != '배송완료'">
+                            <v-btn color="primary" @click="cancelOrder(item)" v-if="item.state != '배송완료' && item.state != '구매확정'">
                                 취소
                             </v-btn>
-                            <v-btn color="primary" @click="cancelOrder(item)" v-if="item.state == '배송완료'">
+                            <v-btn color="primary" @click.stop="selectItem(item), dialog = true" v-if="item.state == '배송완료'">
+                                구매 확정
+                            </v-btn>
+                            <v-btn color="primary" @click="cancelOrder(item)" v-if="item.state == '배송완료'" class="mt-1">
                                 환불 및 교환
                             </v-btn>
                         </template>
@@ -91,6 +94,23 @@
             </v-row>
         </v-col>
     </v-row>
+    <v-dialog v-model="dialog" persistent max-width="290">
+        <v-card>
+            <v-card-title class="text-body-1">
+                <span>구매 확정 시 포인트가 적립되며 </span>
+                <span> 반품 및 교환이 <span class="red--text">불가능</span> 합니다.</span>
+            </v-card-title>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="green darken-1" text @click="purchaseConfirm()">
+                    구매확정
+                </v-btn>
+                <v-btn color="red darken-1" text @click="dialog = false">
+                    취소
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -107,6 +127,7 @@ export default {
     },
     data() {
         return {
+            dialog: false,
             orders: [],
             totalContents: 0,
             loading: false,
@@ -134,13 +155,13 @@ export default {
                 value: 'orderAmount',
                 divider: true,
                 align: 'center',
-                width: '10%',
+                width: '8%',
             }, {
                 text: '가격',
                 value: 'totalPrice',
                 divider: true,
                 align: 'center',
-                width: '10%',
+                width: '12%',
             }, {
                 text: '주문 날짜',
                 value: 'orderDate',
@@ -183,13 +204,13 @@ export default {
                 value: 'orderAmount',
                 divider: true,
                 align: 'center',
-                width: '10%',
+                width: '8%',
             }, {
                 text: '가격',
                 value: 'totalPrice',
                 divider: true,
                 align: 'center',
-                width: '10%',
+                width: '12%',
             }, {
                 text: '주문 날짜',
                 value: 'orderDate',
@@ -214,6 +235,8 @@ export default {
 
             selectedOrder: '주문 내역조회',
             selectedColor: true,
+
+            purchaseItem: '',
         }
     },
     methods: {
@@ -231,7 +254,14 @@ export default {
             this.selectedOrder = put;
             this.reset();
         },
-        searchOrder(put) {
+        searchOrder(selectedOrder) {
+            if (this.options.page != 1) {
+                this.options.page = 1;
+            } else {
+                this.getOrder(selectedOrder);
+            }
+        },
+        getOrder(put) {
             this.loading = true;
             let pageInfo = '';
             if (put == '주문 내역조회') {
@@ -254,6 +284,9 @@ export default {
                 }, {
                     text: '배송완료',
                     value: '배송완료',
+                }, {
+                    text: '구매확정',
+                    value: '구매확정',
                 }, ];
             } else {
                 pageInfo = 'returns';
@@ -311,7 +344,11 @@ export default {
                     .then(res => {
                         if (res.data.length == 0) {
                             alert('주문을 취소하셨습니다');
-                            this.searchOrder(this.selectedOrder);
+                            if (this.options.page != 1) {
+                                this.options.page = 1;
+                            } else {
+                                this.getOrder(this.selectedOrder);
+                            }
                         } else {
                             alert(`미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`)
                         }
@@ -336,7 +373,7 @@ export default {
             this.searchDate2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
             this.options.page = 1;
             this.options.itemsPerPage = 10;
-            this.searchOrder(this.selectedOrder);
+            this.getOrder(this.selectedOrder);
         },
         changeDate(period) {
             let date = new Date();
@@ -385,7 +422,37 @@ export default {
             this.searchWord = null;
             this.options.page = 1;
             this.options.itemsPerPage = 10;
-            this.searchOrder(this.selectedOrder);
+            this.getOrder(this.selectedOrder);
+        },
+        selectItem(item) {
+            this.purchaseItem = item;
+        },
+        purchaseConfirm() {
+            let states = [];
+            let data = {
+                orderIdx: this.purchaseItem.orderIdx,
+                state: '구매확정',
+            }
+            states.push(data);
+            axios.patch(`/api/order/update`, states)
+                .then(res => {
+                    if (res.data.length == 0) {
+                        alert('구매를 확정하셨습니다');
+                        if (this.options.page != 1) {
+                            this.options.page = 1;
+                        } else {
+                            this.getOrder(this.selectedOrder);
+                        }
+                    } else {
+                        alert(`미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`)
+                    }
+                }).catch(err => {
+                    console.log(err)
+                }).finally(() => {                    
+                    this.purchaseItem = '';
+                    this.dialog = false;
+                }
+                )
         },
     },
     computed: {
@@ -394,7 +461,7 @@ export default {
     watch: {
         options: {
             handler() {
-                this.searchOrder(this.selectedOrder);
+                this.getOrder(this.selectedOrder);
             },
             deep: true,
         },

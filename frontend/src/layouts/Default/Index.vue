@@ -92,7 +92,7 @@
             </v-row>
         </v-col>
     </v-main>
-    <v-dialog v-model="dialog" scrollable width="600px" persistent>
+    <v-dialog v-model="dialog" width="600px" persistent>
         <template v-slot:activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on">
                 Open Dialog
@@ -116,7 +116,7 @@
                     </v-col>
                 </v-row>
             </v-container>
-            <v-container style="height: 600px; overflow-y:scroll" id="test">
+            <v-container style="height: 600px; overflow-y:scroll;" id="test">
                 <v-row justify="end" v-for="(msg, idx) in messages" :key="idx">
                     <v-col cols="10">
                         <v-row justify="end">

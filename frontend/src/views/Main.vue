@@ -9,7 +9,7 @@
                             <!-- <div class="text-h2">
                                 {{ slide }} Slide
                             </div> -->
-                            <v-img :src="`/api/banner/image/${banner.image}`" contain></v-img>
+                            <v-img :src="`/api/banner/image/${banner.image}`" contain @click="moveToBanner(banner)"></v-img>
                         </v-row>
                     </v-sheet>
                 </v-carousel-item>
@@ -153,6 +153,11 @@ export default {
             .then(res => {
                 this.banners = res.data;
             })
+        },
+        moveToBanner(banner){
+            if(banner.link != ''){
+                this.$router.push(`${banner.link}`);
+            }
         }
     },
     mounted() {

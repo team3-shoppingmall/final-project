@@ -267,13 +267,7 @@ DECLARE getMaxNum INT;
 if(numTemp is null)
 then
 
-if((SELECT count(*) FROM bannertable) = 0)
-then
-SET getMaxNum = 1;
-else
 SET getMaxNum = (SELECT max(num) FROM bannertable) + 1;
-end if;
-
 insert into bannertable values(imageTemp, linkTemp, getMaxNum);
 
 else

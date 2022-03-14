@@ -55,6 +55,15 @@ insert into pointtable(id, point, content) values (new.id, 2000, '회원 가입 
 END$$
 DELIMITER ;
 
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`membertable_AFTER_DELETE` AFTER DELETE ON `membertable` FOR EACH ROW
+BEGIN
+delete from qnatable where originalNo in (select * from (select qnaNo from qnatable where id = old.id) temp);
+delete from pointtable where id = old.id;
+END$$
+DELIMITER ;
+
 CREATE TABLE producttable(
 	PRODUCTNO INT PRIMARY KEY AUTO_INCREMENT,
 	PRODUCTNAME VARCHAR(100) NOT NULL,
@@ -241,14 +250,6 @@ BEGIN
 DECLARE getMaxQnaNo BIGINT;
 SET getMaxQnaNo = (SELECT max(qnaNo) FROM qnatable) + 1;
 insert into qnatable(QNANO, PRODUCTNO, type, originalNo, content, id, secret, image) values(getMaxQnaNo, qna_productNo, qna_type, qna_originalNo, qna_content, qna_id, qna_secret, qna_image);
-END$$
-DELIMITER ;
-
-DELIMITER $$
-USE `springdb`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`membertable_AFTER_DELETE` AFTER DELETE ON `membertable` FOR EACH ROW
-BEGIN
-delete from qnatable where originalNo in (select * from (select qnaNo from qnatable where id = old.id) temp);
 END$$
 DELIMITER ;
 

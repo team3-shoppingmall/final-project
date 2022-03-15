@@ -118,8 +118,8 @@ export default {
                 success: res => {
                     axios.get('/api/member/login', {
                             params: {
-                                id: res.id,
-                                password: res.id + 'rh7369#n',
+                                id: 'kakao' + res.id,
+                                password: 'kakao' + res.id + 'rh7369#n',
                             }
                         })
                         .then(result => {
@@ -159,8 +159,8 @@ export default {
                 .then(res => {
                     axios.get('/api/member/login', {
                             params: {
-                                id: res.data.response.id,
-                                password: res.data.response.id + 'rh7369#n',
+                                id: 'naver' + res.data.response.id,
+                                password: 'naver' + res.data.response.id + 'rh7369#n',
                             }
                         })
                         .then(res => {

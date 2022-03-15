@@ -7,7 +7,7 @@
                 <v-simple-table>
                     <template slot="default">
                         <tbody>
-                            <tr>
+                            <tr v-if="social == false">
                                 <td>
                                     아이디
                                 </td>
@@ -15,7 +15,7 @@
                                     <v-text-field v-model="id" outlined="outlined" hide-details="hide-details" dense="dense"></v-text-field>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr v-if="social == false">
                                 <td>
                                     비밀번호
                                 </td>
@@ -23,7 +23,7 @@
                                     <v-text-field v-model="pwd1" type="password" outlined="outlined" hide-details="hide-details" dense="dense"></v-text-field>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr v-if="social == false">
                                 <td>
                                     비밀번호 확인
                                 </td>
@@ -118,6 +118,7 @@ const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     methods: {
         getData() {
+            this.social = false;
             axios.get(`/api/member/getMemberInfo/${this.getLogin.user.id}`)
                 .then(res => {
                     this.id = this.getLogin.user.id;
@@ -127,6 +128,9 @@ export default {
                     this.addr2 = res.data.addr2;
                     this.tel = res.data.tel;
                     this.email = res.data.email;
+                    if (this.id.slice(0, 5) == 'kakao' || this.id.slice(0, 5) == 'naver') {
+                        this.social = true;
+                    }
                 })
         },
         update() {
@@ -250,6 +254,7 @@ export default {
             tel: '',
             email: '',
             password: '',
+            social: false,
         }
     }
 }

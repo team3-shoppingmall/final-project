@@ -114,6 +114,7 @@ public class QnaService {
 			File[] underDir;
 
 			file = new File("./images/qna/" + requestData.getQnaNo() + "/");
+			file.mkdir();
 			underDir = file.listFiles();
 			if (underDir != null) {
 				for (int i = 0; i < underDir.length; i++) {
@@ -172,6 +173,7 @@ public class QnaService {
 			File[] underDir;
 
 			file = new File("./images/qna/" + qnaNo + "/");
+			file.mkdir();
 			underDir = file.listFiles();
 			if (underDir != null) {
 				for (int i = 0; i < underDir.length; i++) {

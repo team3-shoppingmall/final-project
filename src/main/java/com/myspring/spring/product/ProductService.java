@@ -131,6 +131,7 @@ public class ProductService {
 
 //			폴더 내 모든 파일 삭제
 			file = new File("./images/product/" + requestData.getProductNo() + "/product/");
+			file.mkdir();
 			underDir = file.listFiles();
 			if (underDir != null) {
 				for (int i = 0; i < underDir.length; i++) {
@@ -138,6 +139,7 @@ public class ProductService {
 				}
 			}
 			file = new File("./images/product/" + requestData.getProductNo() + "/detail/");
+			file.mkdir();
 			underDir = file.listFiles();
 			if (underDir != null) {
 				for (int i = 0; i < underDir.length; i++) {
@@ -195,6 +197,7 @@ public class ProductService {
 
 //			폴더 내 모든 파일 삭제
 			file = new File("./images/product/" + productNo + "/product/");
+			file.mkdir();
 			underDir = file.listFiles();
 			if (underDir != null) {
 				for (int i = 0; i < underDir.length; i++) {
@@ -202,6 +205,7 @@ public class ProductService {
 				}
 			}
 			file = new File("./images/product/" + productNo + "/detail/");
+			file.mkdir();
 			underDir = file.listFiles();
 			if (underDir != null) {
 				for (int i = 0; i < underDir.length; i++) {

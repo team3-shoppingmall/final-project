@@ -29,7 +29,7 @@ public class OrderController {
 //	주문 추가
 	@PostMapping("/insertOrder")
 	public ResponseEntity<?> insertOrder(@RequestPart(value = "orderList") List<OrderVO> orderList,
-			@RequestPart(value = "basketIdxList") List<Long> basketIdxList,
+			@RequestPart(value = "basketIdxList", required = false) List<Long> basketIdxList,
 			@RequestPart(value = "pointData") PointVO pointVO) {
 		return orderService.insertOrder(orderList, basketIdxList, pointVO);
 	}
@@ -74,6 +74,12 @@ public class OrderController {
 	@GetMapping(value = "/getOrder/{orderIdx}")
 	public ResponseEntity<?> getOrder(@PathVariable("orderIdx") int orderIdx) {
 		return orderService.getOrderByNo(orderIdx);
+	}
+
+//	주문 조회
+	@GetMapping(value = "/getCountToReview")
+	public ResponseEntity<?> getCountToReview(@RequestParam("id") String id, @RequestParam("productNo") int productNo) {
+		return orderService.getCountToReview(id, productNo);
 	}
 
 //	주문 상태 변경

@@ -126,9 +126,9 @@ export default {
             if (validate) {
                 let tempId = null;
                 if (this.naverInfo != undefined) {
-                    tempId = this.naverInfo.id;
+                    tempId = 'naver' + this.naverInfo.id;
                 } else if (this.kakaoInfo != undefined) {
-                    tempId = this.kakaoInfo.id;
+                    tempId = 'kakao' + this.kakaoInfo.id;
                 }
                 let member = {
                     id: tempId,
@@ -151,17 +151,22 @@ export default {
             }
         },
         idCheck() {
-            axios.get(`/api/member/check/${this.id}`)
-                .then(() => {
-                    alert("사용 가능합니다.")
-                    this.check = true;
+            if (this.id.slice(0, 5) == 'kakao' || this.id.slice(0, 5) == 'naver') {
+                alert("사용 불가합니다.")
+                this.check = false;
+            } else {
+                axios.get(`/api/member/check/${this.id}`)
+                    .then(() => {
+                        alert("사용 가능합니다.")
+                        this.check = true;
 
-                })
-                .catch(() => {
-                    alert("사용 불가합니다.")
-                    this.check = false;
+                    })
+                    .catch(() => {
+                        alert("사용 불가합니다.")
+                        this.check = false;
 
-                })
+                    })
+            }
         },
         execDaumPostcode() {
             new window.daum.Postcode({

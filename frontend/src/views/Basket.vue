@@ -29,8 +29,8 @@
                     <v-row justify="end" class="ma-1">
                         <v-col cols="auto">
                             상품구매금액 {{AddComma(totalPrice)}} 원
-                            + 배송비 <span v-if="totalPrice<50000">{{AddComma(2500)}}</span><span v-if="totalPrice>=50000">0</span> 원
-                            = 합계 : <span v-if="totalPrice<50000">{{AddComma(totalPrice+2500)}}</span><span v-if="totalPrice>=50000">{{AddComma(totalPrice)}}</span> 원
+                            + 배송비 <span v-if="totalPrice < 50000 && totalPrice > 0">{{AddComma(2500)}}</span><span v-if="totalPrice >= 50000 || totalPrice == 0">0</span> 원
+                            = 합계 : <span v-if="totalPrice < 50000 && totalPrice > 0">{{AddComma(totalPrice+2500)}}</span><span v-if="totalPrice >= 50000 || totalPrice == 0">{{AddComma(totalPrice)}}</span> 원
                         </v-col>
                     </v-row>
                 </template>

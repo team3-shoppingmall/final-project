@@ -114,9 +114,12 @@ public class QnaService {
 			File[] underDir;
 
 			file = new File("./images/qna/" + requestData.getQnaNo() + "/");
+			file.mkdir();
 			underDir = file.listFiles();
-			for (int i = 0; i < underDir.length; i++) {
-				underDir[i].delete();
+			if (underDir != null) {
+				for (int i = 0; i < underDir.length; i++) {
+					underDir[i].delete();
+				}
 			}
 			if (fileList != null) {
 				for (int i = 0; i < fileList.size(); i++) {
@@ -170,9 +173,12 @@ public class QnaService {
 			File[] underDir;
 
 			file = new File("./images/qna/" + qnaNo + "/");
+			file.mkdir();
 			underDir = file.listFiles();
-			for (int i = 0; i < underDir.length; i++) {
-				underDir[i].delete();
+			if (underDir != null) {
+				for (int i = 0; i < underDir.length; i++) {
+					underDir[i].delete();
+				}
 			}
 			entity = new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {

@@ -131,6 +131,7 @@ CREATE TABLE ordertable (
 	ADDRESS VARCHAR(200) NOT NULL,
 	DETAILADDR VARCHAR(50) NOT NULL,
     MESSAGE VARCHAR(50),
+    reviewable BOOLEAN DEFAULT FALSE,
     CONSTRAINT order_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
 );
 
@@ -140,11 +141,11 @@ CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`ordertable_BEFORE_INSERT` BEFO
 BEGIN
 if(new.state is null)
 then
-if(new.ORDERMETHOD = 'cash')
+if(new.ORDERMETHOD = 'credit' || new.ORDERMETHOD = 'mobile')
 then
-	set new.state = '입금전';
-else
 	set new.state = '결제완료';
+else
+	set new.state = '입금전';
 END if;
 END if;
 END$$
@@ -154,7 +155,8 @@ DELIMITER $$
 USE `springdb`$$
 CREATE PROCEDURE `orderChangeSchedule` ()
 BEGIN
-UPDATE ordertable set state = '구매확정' where state = '배송완료' and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
+UPDATE ordertable set reviewable = false where state in ('구매확정', '교환완료') and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
+UPDATE ordertable set state = '구매확정', reviewable = true where state = '배송완료' and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
 UPDATE ordertable set state = '취소완료' where state = '입금전' and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
 IF( DAYOFWEEK(curdate()) between 2 and 6)
 THEN
@@ -166,7 +168,7 @@ DELIMITER ;
 create EVENT event_AutoScheduler
 ON schedule 
 EVERY 1 DAY starts '2022-03-06 15:00:00'
-COMMENT '매일 15:00 결제완료 -> 배송준비중으로 변경'
+COMMENT '매일 15:00 결제완료 -> 배송준비중(평일), 배송완료 -> 구매확정(7일 경과 시)으로 변경'
 DO Call orderChangeSchedule();
 
 CREATE TABLE pointtable (
@@ -339,8 +341,8 @@ DELIMITER ;
 -- insert data
 -- 회원
 insert into membertable values('spring','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','Spring','0212345678','spring@gmail.com','12345','서울 강남구 테헤란로 212 (멀티캠퍼스)','2층 201호',false,null,'ROLE_ADMIN');
-insert into membertable values('tester','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','유저','01098765432','tester@gmail.com','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호',false,null,'ROLE_USER');
-insert into membertable values('portal','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','강기룡','01077777777','portal@gmail.com','02000','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('shine','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','김진우','01098765432','shine@gmail.com','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호',false,null,'ROLE_USER');
+insert into membertable values('portal','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','정은지','01077777777','portal@gmail.com','02000','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 insert into membertable values('aodremm','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','안동근','01011111111','aodremm@gmail.com','11111','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 insert into membertable values('grimhink','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','정호재','01022222222','grimhink@gmail.com','22222','부산 문현로 56-1 (네이버코리아)','4층 405호',true,null,'ROLE_USER');
 insert into membertable values('madana','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','서기준','01033333333','madana@gmail.com','33333','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
@@ -463,24 +465,23 @@ values('테이스트 부츠컷 데님', 'pants','denim','port-6587129__340.webp'
 
 -- 장바구니
 insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('portal',1,'소프트민트','S',2);
-insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('tester',2,'아이보리',null,1);
-insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('tester',3,'블랙',null,2);
-insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('tester',4,'아이보리','L',3);
+insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('shine',2,'아이보리',null,1);
+insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('shine',3,'블랙',null,2);
+insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('shine',4,'아이보리','L',3);
 insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('aodremm',5,'소프트민트',null,1);
 insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('portal',6,'아이보리',null,2);
 insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('madana',7,'소프트민트','S',2);
-insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('tester',8,'아이보리',null,1);
+insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('shine',8,'아이보리',null,1);
 insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('grimhink',9,'소프트민트',null,1);
 insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('portal',10,'아이보리','M',3);
 insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('prose',11,'소프트민트',null,2);
 insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('rhonia',12,'아이보리',null,1);
-insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('tester',13,'소프트민트','숏',2);
+insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('shine',13,'소프트민트','숏',2);
 insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('rhonnyn',14,'아이보리','XS',1);
 -- 관심상품
-insert into wishlisttable(id, productno) values('tester', 1);
-insert into wishlisttable(id, productno) values('tester', 2);
-insert into wishlisttable(id, productno) values('tester', 3);
-insert into wishlisttable(id, productno) values('tester', 4);
+insert into wishlisttable(id, productno) values('shine', 1);
+insert into wishlisttable(id, productno) values('shine', 3);
+insert into wishlisttable(id, productno) values('shine', 4);
 insert into wishlisttable(id, productno) values('portal', 1);
 insert into wishlisttable(id, productno) values('portal', 2);
 insert into wishlisttable(id, productno) values('portal', 7);
@@ -489,46 +490,50 @@ insert into wishlisttable(id, productno) values('aodremm', 1);
 insert into wishlisttable(id, productno) values('grimhink', 2);
 -- 주문
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',1,1,'그레이지','S',1,38000,'2018-10-27 13:24:51','2018-10-31 13:24:51','구매확정','cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('shine',1,1,'그레이지','S',1,38000,'2018-10-27 13:24:51','2018-10-31 13:24:51','구매확정','cash','김진우','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('portal',1,2,'소프트민트','M',1,38000,'2019-08-03 13:24:51','2019-08-12 13:24:51','교환완료','credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('portal',1,2,'소프트민트','M',1,38000,'2019-08-03 13:24:51','2019-08-12 13:24:51','교환완료','credit','정은지','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('portal',2,2,'피치베이지',null,4,119600,'2019-05-13 13:24:51','2019-05-20 13:24:51','구매확정','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('portal',2,2,'피치베이지',null,4,119600,'2019-05-13 13:24:51','2019-05-20 13:24:51','구매확정','credit','정은지','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',4,3,'블랙','S',1,31000,'2020-09-15 13:24:51','2020-09-24 13:24:51','환불완료','cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('shine',4,3,'블랙','S',1,31000,'2020-09-15 13:24:51','2020-09-24 13:24:51','환불완료','cash','김진우','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',5,4,'메란지',null,1,28800,'2021-02-02 13:24:51','2021-02-06 13:24:51','구매확정','credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('shine',5,4,'메란지',null,1,28800,'2021-02-02 13:24:51','2021-02-06 13:24:51','구매확정','credit','김진우','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('portal',6,5,'베이지',null,2,62000,'2021-09-25 13:24:51','2021-10-07 15:00:00','구매확정','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('portal',6,5,'베이지',null,2,62000,'2021-09-25 13:24:51','2021-10-07 15:00:00','구매확정','credit','정은지','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',7,6,'아이보리','S',1,41000,'2021-12-22 13:24:51','2021-12-26 13:24:51','구매확정','cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('shine',7,6,'아이보리','S',1,41000,'2021-12-22 13:24:51','2021-12-26 13:24:51','구매확정','cash','김진우','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('portal',8,6,'소라',null,1,115000,'2022-02-14 13:24:51','2022-02-14 14:04:51','취소완료','credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('portal',8,6,'소라',null,1,115000,'2022-02-14 13:24:51','2022-02-14 14:04:51','취소완료','credit','정은지','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',5,6,'오트밀',null,2,87600,'2022-03-05 13:24:51','2022-03-09 13:24:51','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',5,6,'오트밀',null,2,87600,'2022-03-05 13:24:51','2022-03-09 05:24:51','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr, reviewable)
+values('shine',5,6,'오트밀',null,2,87600,'2022-03-05 13:24:51','2022-03-09 13:24:51','교환완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호', true);
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr, reviewable)
+values('shine',1,7,'소프트민트','L',1,38000,'2022-03-10 15:24:51','2022-03-13 15:24:51','구매확정','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호', true);
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',1,7,'소프트민트','L',1,38000,'2022-03-10 15:24:51','2022-03-13 15:24:51','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',3,8,'아이보리',null,1,92000,'2022-03-11 20:24:51','2022-03-14 20:24:51','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',3,8,'아이보리',null,1,92000,'2022-03-11 20:24:51','2022-03-14 20:24:51','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',4,9,'크림','M',1,31000,'2022-03-11 00:56:31','2022-03-14 00:56:31','배송중','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',4,9,'크림','M',1,31000,'2022-03-11 00:56:31','2022-03-14 00:56:31','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',15,9,'네이비',null,1,39600,'2022-03-12 01:56:31','2022-03-15 01:56:31','배송준비중','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',15,9,'네이비',null,1,39600,'2022-03-12 01:56:31','2022-03-15 01:56:31','배송완료','credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('portal',10,10,'블랙','M',1,49000,'2022-03-13 13:24:51','2022-03-15 13:24:21','배송중','credit','유저2','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('portal',10,10,'블랙','M',1,49000,'2022-03-13 13:24:51','2022-03-15 13:24:21','배송중','credit','정은지','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, ordermethod, name, tel, zipcode, address, detailaddr)
-values('tester',20,10,'아이보리',null,1,44000,'2022-03-15 12:24:51','2022-03-15 17:24:51','cash','유저','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('shine',20,10,'아이보리',null,1,44000,'2022-03-15 12:24:51','2022-03-15 17:24:51','cash','김진우','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, ordermethod, name, tel, zipcode, address, detailaddr)
+values('shine',20,10,'아이보리',null,1,44000,'2022-03-15 12:24:51','2022-03-15 17:24:51','credit','김진우','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
-values('portal',11,11,'퍼플',null,1,17000,'credit','유저2','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('portal',11,11,'퍼플',null,1,17000,'credit','정은지','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 -- 포인트 내역
-insert into pointtable(id, point, content) values ('tester',-2000, '상품 구매');
-insert into pointtable(id, point, content) values ('tester',500, '구매 확정');
+insert into pointtable(id, point, content) values ('shine',-2000, '상품 구매');
+insert into pointtable(id, point, content) values ('shine',500, '구매 확정');
 insert into pointtable(id, point, content) values ('portal',-2000, '상품 구매');
 insert into pointtable(id, point, content) values ('portal',500, '구매 확정');
 insert into pointtable(id, point, content) values ('portal',100, '구매 확정');
-insert into pointtable(id, point, content) values ('tester',2000, '리뷰 이벤트 당첨');
-insert into pointtable(id, point, content) values ('tester',210, '구매 확정');
-insert into pointtable(id, point, content) values ('tester',500, '구매 확정');
+insert into pointtable(id, point, content) values ('shine',2000, '리뷰 이벤트 당첨');
+insert into pointtable(id, point, content) values ('shine',210, '구매 확정');
+insert into pointtable(id, point, content) values ('shine',500, '구매 확정');
 -- 공지사항
 insert into noticetable(title, content, id, image) values('Grand Open!', '<p><br>2022년 1월 1일 Spring Mall Grand Open!', 'spring', '001.png');
 insert into noticetable(title, content, id, image) values('1월 리뷰 이벤트', '<p><br>스프링몰 오픈 기념 리뷰 2배 이벤트르 진행합니다.', 'spring', '001.png');
@@ -621,11 +626,11 @@ insert into faqtable(type, title, content) values('delivery', '부분 배송 가
 insert into faqtable(type, title, content) values('delivery', '도서산간지역은 배송비가 얼마인가요?', '<p>스프링은 5만원 이상 구매 시 무료배송 혜택이 적용됩니다.</p><p>5만원 미만 구매 시<strong> 2,500원 배송비가</strong> 자동 결제됩니다. (도서산간지역 동일)</p>'); 
 																						
 -- 후기
-insert into reviewtable(productno, content, id, image, star) values(1,'<p>처음 입고 됐을 땐 네이비, 색상 추가로 재입고 됐을 땐 다크네이비로 사서 잘 입고 다녔는데&nbsp;</p><p>민트브라운이 계속 아른거리더라구요...재입고 될 때마다 풀렸나 싶어 몇번을 기웃거렸던지요...</p><p>그래서 이번에 추가로 재입고 해주셔서 너무 좋아요!!ㅎㅎ</p>','tester', 'image1.jpg','5');
+insert into reviewtable(productno, content, id, image, star) values(1,'<p>처음 입고 됐을 땐 네이비, 색상 추가로 재입고 됐을 땐 다크네이비로 사서 잘 입고 다녔는데&nbsp;</p><p>민트브라운이 계속 아른거리더라구요...재입고 될 때마다 풀렸나 싶어 몇번을 기웃거렸던지요...</p><p>그래서 이번에 추가로 재입고 해주셔서 너무 좋아요!!ㅎㅎ</p>','shine', 'image1.jpg','5');
 insert into reviewtable(productno, content, id, image, star) values(1,'<p>이전에 다른 색상으로 구매했었는데 재질도 좋고 착용감도 좋아서 새로 또 구매했어요!&nbsp;</p><p>그레이 색상이라 전체적으로 색감이 다운됐지만, 그 만의 매력이 있어서 마음에 들어요!</p>','portal', 'image1.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(2,'<p>가을에 휘뚜루마뚜루 입으려고 샀어요 검정+보라 스트라이프 사고 싶었는데 라벤더네이비도 충분히 예쁘네요&nbsp;</p><p>너무 오버핏도 아니고 너무 베이직한 핏도 아니라서 딱 맘에 들어요 다른 색으로 더 살 것 같아요 쌩유</p>','portal', 'image2.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(1,'완전 딱 진짜 기본이에요!! 탄탄한 재질은 아니지만 봄에 가볍게 입기 좋을것 같아요!! 그리고 흰색배경이 아니라 색감 진짜 너무 예쁜것같아요 : )','tester', 'image1.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(2,'<p>챠콜이랑 아이보리 고민했었는데 아이보리가 하의를 뭘입어도 다 잘어울릴것같아서 선택했어요!&nbsp;</p><p>핏도 낙낙하고 안에 목티입으니까 완전 제스타일이에요=) 다른색깔도 구매하고 싶네용</p>','tester', 'image2.jpg','5');
+insert into reviewtable(productno, content, id, image, star) values(1,'완전 딱 진짜 기본이에요!! 탄탄한 재질은 아니지만 봄에 가볍게 입기 좋을것 같아요!! 그리고 흰색배경이 아니라 색감 진짜 너무 예쁜것같아요 : )','shine', 'image1.jpg','4');
+insert into reviewtable(productno, content, id, image, star) values(3,'<p>챠콜이랑 아이보리 고민했었는데 아이보리가 하의를 뭘입어도 다 잘어울릴것같아서 선택했어요!&nbsp;</p><p>핏도 낙낙하고 안에 목티입으니까 완전 제스타일이에요=) 다른색깔도 구매하고 싶네용</p>','shine', 'image2.jpg','5');
 insert into reviewtable(productno, content, id, image, star) values(1,'<p>개인적으로 색깔은 솔직히 실망했어요. 예쁜 베이지가 아니라 그냥 황토색? 상세샷보다도 좀 어두워요.</p><p>다른 분들 후기처럼 냄새는 많이 나고 꺼끌거려요. 그리고 무엇보다 털이 진짜.. 어마무시하게 빠집니다.&nbsp;</p><p>안에 검정색 히트텍 입었다가 깜짝 놀랐어요..</p>','portal', 'image1.jpg','1');
 insert into reviewtable(productno, content, id, image, star) values(2,'<p>너무 이뻐요 사길 후회 안할정도로 ...팔뚝잇는66인데 이거 입고 55로 보인데요..(엄마 눈에만)&nbsp;</p><p>배송은 좀 느리게 왓더라고요! 제가 사진후기 잘 안올리는데 품절 풀리면 바로사세오...</p>','rhonnyn', 'image2.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(1,'<p>바스락거리는 소재에요! 약간 단작셔츠같은 느낌..! 제가 좋아하는 느낌이에요 히히&nbsp;</p><p>근데 159인 제 키에는 뒷쪽 언발 부분이 엉덩이를 다 가리고도 살짝 더 내려와서&nbsp;</p><p>안그래도 작은 키가 더 작아보이긴 하네요,, 그래도 색감이나 핏 다 너무 예쁘고&nbsp;</p><p>소매쪽 핀턱때문에 포인트도 되고! 마음에 들어요 ´ㅅ`</p>','prose', 'image1.jpg','3');
@@ -635,33 +640,33 @@ insert into reviewtable(productno, content, id, image, star) values(1,'<p>인기
 insert into reviewtable(productno, content, id, image, star) values(2,'<p>색이 정말 이뻐요! 색상은 화면과 같아요! 다만 구김 옴청 잘 가는 소재 ㅠ&nbsp;</p><p>알고 샀지만 생각보다 더 바스락 거리는 구김 가는 소재에요 ㅎㅎ</p><p>입을때마다 열심히 다리미해야겠어요!</p>','rhonnyn', 'image2.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(1,'<p>거울이 너무 더럽지만 리뷰 써봐용 ㅠㅠ&nbsp;</p><p>교복 같을까봐 걱정했는데 블랙이라 그런 느낌도 덜 해서 다행이고&nbsp;</p><p>길이도 너무 짧지 않고 적당해서 자주 입을 것 같아요</p>','prose', 'image1.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(2,'<p>바스락바스락 얇은 옷이에요. 근데 무엇보다.. 색감이 미쳤어요ㅠㅠㅠㅠ 진짜 너무 예쁩니다.&nbsp;</p><p>유치하고 가벼운 느낌 아니고 차분해요. 핏은 오버핏인데 언발란스한 기장 덕분에 남의 옷 입은 느낌 1도 없고 여리여리해보여요.&nbsp;</p><p>빨리 따뜻해져서 단독으로 입고싶은 옷이에요.ㅠㅠㅠ</p>','madana', 'image2.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(2,'<p>첨에 입을 땐 스판이 아예 없어서 놀랐는데 그만큼 세탁만 잘 하면 오래 입을 수 있을 것 같아 마음에 들어욤 ㅎ-ㅎ&nbsp;</p><p>길이감도 적당합니당 제작 아닌 상품 오랜만에 구매해보는데 만족해요!&nbsp;</p>','tester', 'image1.jpg','4');
+insert into reviewtable(productno, content, id, image, star) values(3,'<p>첨에 입을 땐 스판이 아예 없어서 놀랐는데 그만큼 세탁만 잘 하면 오래 입을 수 있을 것 같아 마음에 들어욤 ㅎ-ㅎ&nbsp;</p><p>길이감도 적당합니당 제작 아닌 상품 오랜만에 구매해보는데 만족해요!&nbsp;</p>','shine', 'image1.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(1,'<p>이번에 산 옷들끼리 코디해봤는데 이 스커트 인스타로 봤을 때 부터 이건 사야한다 싶었는데 진짜 너무 이쁘네요ㅜㅜ</p><p>이번 할인구매 물품 중에 1등입니다ㅜㅜ저는 사실 쬐끔만 더 짧았으면 햇는데 딱 안정적으로 이쁜 길이긴 해요ㅎㅎ</p>','aodremm', 'image1.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(2,'<p>요즘 옷들이 작아서 안 맞을까 걱정했는데(ㅠㅠ)&nbsp;</p><p>불편하지 않게 딱 맞아요! 핏도 맘에 들고 만족스러워용^.^</p>','aodremm', 'image2.jpg','5');
 insert into reviewtable(productno, content, id, image, star) values(1,'<p>딱 봄 가을에 입기 좋을 얇은 두께입니다 겨울에는 너무 추울 것 같아요&nbsp;</p><p>에스 사이즈로 샀는데 조금 크게 나온 것 같아요</p><p>그래서인지 핏하게 예쁘게 떨어지지는 않아 조금 아쉽습니다 ㅠㅠ</p>','aodremm', 'image1.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(3,'<p>첨에 입을 땐 스판이 아예 없어서 놀랐는데 그만큼 세탁만 잘 하면 오래 입을 수 있을 것 같아 마음에 들어욤 ㅎ-ㅎ&nbsp;</p><p>길이감도 적당합니당 제작 아닌 상품 오랜만에 구매해보는데 만족해요!&nbsp;</p>','tester', 'winter-7046920__340.webp','4');
+insert into reviewtable(productno, content, id, image, star) values(3,'<p>첨에 입을 땐 스판이 아예 없어서 놀랐는데 그만큼 세탁만 잘 하면 오래 입을 수 있을 것 같아 마음에 들어욤 ㅎ-ㅎ&nbsp;</p><p>길이감도 적당합니당 제작 아닌 상품 오랜만에 구매해보는데 만족해요!&nbsp;</p>','shine', 'winter-7046920__340.webp','4');
 insert into reviewtable(productno, content, id, image, star) values(4,'<p>이번에 산 옷들끼리 코디해봤는데 이 스커트 인스타로 봤을 때 부터 이건 사야한다 싶었는데 진짜 너무 이쁘네요ㅜㅜ</p><p>이번 할인구매 물품 중에 1등입니다ㅜㅜ저는 사실 쬐끔만 더 짧았으면 햇는데 딱 안정적으로 이쁜 길이긴 해요ㅎㅎ</p>','aodremm', 'flowers-6574079__340.webp','4');
 insert into reviewtable(productno, content, id, image, star) values(5,'<p>요즘 옷들이 작아서 안 맞을까 걱정했는데(ㅠㅠ)&nbsp;</p><p>불편하지 않게 딱 맞아요! 핏도 맘에 들고 만족스러워용^.^</p>','aodremm', 'heart-6997703__340.jpg','5');
 insert into reviewtable(productno, content, id, image, star) values(6,'<p>딱 봄 가을에 입기 좋을 얇은 두께입니다 겨울에는 너무 추울 것 같아요&nbsp;</p><p>에스 사이즈로 샀는데 조금 크게 나온 것 같아요</p><p>그래서인지 핏하게 예쁘게 떨어지지는 않아 조금 아쉽습니다 ㅠㅠ</p>','aodremm', 'tulip-7045491__340.webp','4');
 -- 문의
 insert into qnatable(qnaNo, productno, type, originalNo, reply, content, id, secret, image) values(1, 1,'product', 1, true, '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------</p><p><br>이 셔츠랑 소프트 민트색이랑 잘어울릴까요?</p>', 'trice', true, 'wardrobe-gf579a32fc_640.jpg');
-call autoQuestion(2,'product', false, '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>실키 블라우스 워터리블루 색상이랑 이 색상이랑 비슷할까요?</p><p>이 색이랑 비슷해보이는데 실제 색상이 이거랑 비슷한지 알고싶어요!!</p>', 'tester',true, 'blue-g19cc294a9_1280.jpg');
+call autoQuestion(2,'product', false, '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>실키 블라우스 워터리블루 색상이랑 이 색상이랑 비슷할까요?</p><p>이 색이랑 비슷해보이는데 실제 색상이 이거랑 비슷한지 알고싶어요!!</p>', 'shine',true, 'blue-g19cc294a9_1280.jpg');
 call autoReply(1,'productReply', 1, '<p>안녕하세요 고객님!</p><p>네~ 화이트 셔츠라서 어떤 색상이든 잘 어울릴것으로 보입니다~^^</p><p>문의 감사드립니다~!&nbsp;</p><p>spring에서 즐거운 쇼핑되시길 바랍니다 ♥</p><p>&nbsp;</p>', 'spring',true, null);
 call autoQuestion(null, 'general', false, '<p>이곳은 일반문의를 위한 게시판입니다.<br>상품과 관련된 문의는 제목을 상품문의로 선택해주세요!<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>모델분 스펙이 어떻게 되나요 ?!&nbsp;</p><p>키랑 몸무게 알고싶어요~~</p>', 'portal',true, null);
 call autoQuestion(1,'product', true, '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>160/55 인데 스노우 버튼 모직스커트 m사이즈 맞을까요?</p><p>160이 m입으면 길이는 어디까지 오나요?</p>', 'rhonia',true, null);
-call autoQuestion(2,'product', true, '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>실키 블라우스랑 스노우 모직 스커트랑 잘어울릴까요?</p>', 'portal',true, null);
+call autoQuestion(2,'product', true, '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>실키 블라우스랑 스노우 모직 스커트랑 잘어울릴까요?</p>', 'shine',true, null);
 call autoReply(1,'productReply', 5, '<p>안녕하세요 고객님!</p><p>165/50정도면 m사이즈 무난하게 잘 맞으실것으로 예상됩니다~^^♥</p><p>길이는 체형에 따라 조금씩 다르기 때문에 정확한 답변은 어려울 것 같습니다ㅜㅜ</p><p>문의 감사드립니다~!&nbsp;</p><p>spring에서 즐거운 쇼핑되시길 바랍니다 ♥</p><p>&nbsp;</p>', 'spring',true, null);
 call autoReply(2,'productReply', 6, '<p>안녕하세요 고객님!</p><p> 네!! 실키 여리핏 히든블라우스랑 모직 스노우 스커트는 세트로 잘 팔리는 상품입니다!♥</p><p>문의 감사드립니다~!&nbsp;</p><p>spring에서 즐거운 쇼핑되시길 바랍니다 ♥</p><p>&nbsp;</p>', 'spring',true, null);
 call autoQuestion(null, 'general', false, '<p>이곳은 일반문의를 위한 게시판입니다.<br>상품과 관련된 문의는 제목을 상품문의로 선택해주세요!<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p> 혹시 spring 쇼룸 있나요? 직접 가서 입어보고 구매하고싶은데 ㅠㅠ</p>', 'madana',true, null);
 call autoQuestion(null, 'delivery', false, '<p>★배송전 상품 변경/취소/환불/주소지변경 등 처리는<br>꼭!<strong> &#39;배송전 변경/취소&#39; </strong>게시판에 남겨주세요!★<br><br>---------------------------------------------<br>주문번호: 20292835</p><p>방금 주문했는데 제가 금요일에 꼭 입어야하는데 목요일까지 배송되나요??</p><p>꼭 목요일까지 배송 부탁드려요 ㅜㅜ</p>', 'prose',true, null);
 call autoQuestion(null, 'delivery', false, '<p>★배송전 상품 변경/취소/환불/주소지변경 등 처리는<br>꼭!<strong> &#39;배송전 변경/취소&#39; </strong>게시판에 남겨주세요!★<br><br>---------------------------------------------<br>주문번호: 20254327</p><p>제가 3주 전에 주문했는데 아직까지 안와서요..;; 언제쯤 받아볼 수 있을까요??</p>', 'rhonnyn',true, null);
 call autoQuestion(null, 'delivery', false, '<p>★배송전 상품 변경/취소/환불/주소지변경 등 처리는<br>꼭!<strong> &#39;배송전 변경/취소&#39; </strong>게시판에 남겨주세요!★<br><br>---------------------------------------------<br>주문번호: 20321124</p><p>배송 출발했다고 3일 전에 문자 받았는데 아직까지도 출고중이라고 되어있는데 누락된거 아닌가요? 확인부탁드립니다.</p>', 'talwyn',true, null);
-call autoQuestion(null, 'cancel', false, '<p><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>-----------------------------------------------<br>*주문취소*(전체취소시 상품명에  &#39;전체취소&#39; 꼭! 기재해주세요!)<br><br><strong>주문번호 : 12121360</strong><br><strong>상품명(옵션포함기재): 스노우 버튼 모직 스커트 (그레이지, s)</strong><br><strong>※결제시 입금한 이름의 계좌번호※</strong><br><strong>환불계좌번호: 1002-010-0023459</strong><br><strong>은행사 : 우리은행</strong><br><strong>예금주명 : 박나나</strong><br><br>♥해당 양식에 정확한 상품명 남겨주셔야 처리가 가능합니다♥</p>', 'portal',true, null);
-call autoReply(null, 'cancelReply', 14, '<p>안녕하세요 고객님!</p><p> 주문 취소 완료되었습니다~! </p><p>문의 감사드립니다~!&nbsp;</p><p>spring에서 즐거운 쇼핑되시길 바랍니다 ♥</p><p>&nbsp;</p>', 'spring',true, null);
+call autoQuestion(null, 'cancel', true, '<p><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>-----------------------------------------------<br>*주문취소*(전체취소시 상품명에  &#39;전체취소&#39; 꼭! 기재해주세요!)<br><br><strong>주문번호 : 12121360</strong><br><strong>상품명(옵션포함기재): 스노우 버튼 모직 스커트 (그레이지, s)</strong><br><strong>※결제시 입금한 이름의 계좌번호※</strong><br><strong>환불계좌번호: 1002-010-0023459</strong><br><strong>은행사 : 우리은행</strong><br><strong>예금주명 : 박나나</strong><br><br>♥해당 양식에 정확한 상품명 남겨주셔야 처리가 가능합니다♥</p>', 'portal',true, null);
+call autoReply(null, 'cancelReply', 13, '<p>안녕하세요 고객님!</p><p> 주문 취소 완료되었습니다~! </p><p>문의 감사드립니다~!&nbsp;</p><p>spring에서 즐거운 쇼핑되시길 바랍니다 ♥</p><p>&nbsp;</p>', 'spring',true, null);
 call autoQuestion(null, 'cancel', false, '<p><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>-----------------------------------------------<br>*주문취소*(전체취소시 상품명에  &#39;전체취소&#39; 꼭! 기재해주세요!)<br><br><strong>주문번호 : 23456323</strong><br><strong>상품명(옵션포함기재): 전체 취소</strong><br><strong>※결제시 입금한 이름의 계좌번호※</strong><br><strong>환불계좌번호: 235-021-087159</strong><br><strong>은행사 : 국민은행</strong><br><strong>예금주명 : 김주영</strong><br><br>♥해당 양식에 정확한 상품명 남겨주셔야 처리가 가능합니다♥</p>', 'talwyn',true, null);
 call autoQuestion(null, 'change', false, '<p>♥해당 양식에 정확한 상품명을 기재해주셔야 처리가 가능합니다♥<br><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>-----------------------------------------------<br>*상품변경*<br><br>주문번호 :<br>변경전 상품명 (사이즈,컬러) : 스노우 버튼 모직 스커트(s, 그레이지)<br>변경후 상품명 (사이즈,컬러) : 스노우 버트 모직 스커트(m, 그레이지)</p>', 'wantin',true, null);
 call autoQuestion(null, 'changeAddress', false, '<p>♥해당 양식에 정확한 주문번호를 기재해주셔야 처리가 가능합니다♥<br><br><br>-----------------------------------------------<br>*주소지 변경*<br><br>주문번호 : 101284623<br>변경 주소지(번지수포함) : 서울 강남구 언주로 508 서울상록빌딩</p>', 'madana', true, null);
-call autoQuestion(null, 'exchange', false, '<p>♥해당 양식에 정확한 정보를 기재해주셔야 처리가 가능합니다♥<br><br><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>--------------------------------------<br>*교환*<br><br><strong>주문번호 : 120984323</strong><br><strong>교환전 상품명(사이즈,컬러) : 비프리 자켓(아이보리)</strong><br><strong>교환후 상품명(사이즈,컬러) : 비프리 자켓(블랙)</strong><br><strong>왕복 배송비 입금자명/입금날짜 : 주현영/ 2022-03-07</strong><br><br>(수령주소지로 자동 회수접수)<br>※회수/교환상품수령지 변경 원하실 경우에만 새주소지 함께 기재해 주세요.<br><br>회수주소: 서울 강남구 대치동 889-41<br>교환상품 수령 주소: 서울 강남구 대치동 889-41<br>&nbsp;</p>', 'tester', true, null);
+call autoQuestion(null, 'exchange', false, '<p>♥해당 양식에 정확한 정보를 기재해주셔야 처리가 가능합니다♥<br><br><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>--------------------------------------<br>*교환*<br><br><strong>주문번호 : 120984323</strong><br><strong>교환전 상품명(사이즈,컬러) : 비프리 자켓(아이보리)</strong><br><strong>교환후 상품명(사이즈,컬러) : 비프리 자켓(블랙)</strong><br><strong>왕복 배송비 입금자명/입금날짜 : 주현영/ 2022-03-07</strong><br><br>(수령주소지로 자동 회수접수)<br>※회수/교환상품수령지 변경 원하실 경우에만 새주소지 함께 기재해 주세요.<br><br>회수주소: 서울 강남구 대치동 889-41<br>교환상품 수령 주소: 서울 강남구 대치동 889-41<br>&nbsp;</p>', 'shine', true, null);
 call autoQuestion(null, 'return', false, '<p>♥해당 양식에 정확한 정보를 기재해주셔야 처리가 가능합니다♥<br><br><br>예치금 환불 시 철회 불가능하며<br>쿠폰/적립금과 중복 사용 불가능합니다.<br>쿠폰은 일회성으로 변심 취소 시 자동삭제/재지급이 불가능합니다.<br>이점 꼭 참고하여 예치금 환불 요청 부탁드리겠습니다:)<br><br>--------------------------------------<br>*반품*<br><br><strong>주문번호 : 546787654</strong><br><strong>상품명(사이즈,컬러): 스노우 버튼 모직 스커트(m, 소프트민트)</strong><br><strong>반품 사유 : 사이즈가 안맞고 색상도 화면이랑 많이 다르네요</strong><br><strong>※결제시 입금한 이름의 계좌번호※</strong><br><strong>환불계좌번호(은행사포함) : 123-36777-33-562</strong><br><strong>예금주명 : 이나라</strong><br><br>(수령주소지로 자동 회수접수)<br>※회수주소 변경 원하실 경우에만 새주소지와 함께 기재해 주세요.<br><br>회수주소: 서울 강남구 테헤란로 212<br><br>--------------------------------------<br>&nbsp;</p>', 'rhonia', true,null);
 call autoQuestion(null, 'error', false, '<p>♥해당 양식에 정확한 정보를 기재해주셔야 처리가 가능합니다♥<br><br>--------------------------------------<br>*불량/오배송*<br><br><strong>▷바코드(검수완료)사진</strong><br><strong>▷불량사진</strong><br><strong>(필수첨부 부탁드립니다!)</strong><br><br>주문번호 : 102319532<br>교환/반품 (원하시는 처리 선택해주세요!) : 반품<br>상품 수령일자 : (3/2)<br>반품 접수일자 : (3/7)<br>상품명(사이즈,컬러) : 스노우 버튼 모직 스커트(m, 그레이지)<br>불량/오배송 사유 : 스커트 단추가 불량이네요<br>검수번호(숫자나 알파벳) : 123ew2<br><br>(상품바코드옆 검수자 숫자한자리/두자리를 기재합니다.)</p>','portal', true, 'bar-code-g042121347_640.png;jeans-ga6ae8c0ef_640.jpg;');
 

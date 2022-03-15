@@ -145,7 +145,18 @@ export default {
         moveto(item) {
             if (item.secret == true) {
                 if (this.getLogin == null || this.getLogin.user.id != item.id && this.getLogin.user.authority != 'ROLE_ADMIN') {
-                    alert('비밀글입니다');
+                    if (item.id == 'spring') {
+                        axios.get(`/api/qna/getQna/${item.originalNo}`)
+                            .then(res => {
+                                if (res.data.id == this.getLogin.user.id) {
+                                    this.$router.push(`/qna/${item.qnaNo}`)
+                                } else {
+                                    alert('비밀글입니다');
+                                }
+                            })
+                    } else {
+                        alert('비밀글입니다');
+                    }
                     return;
                 }
             }

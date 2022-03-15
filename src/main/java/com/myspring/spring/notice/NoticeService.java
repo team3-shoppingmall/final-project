@@ -59,9 +59,11 @@ public class NoticeService {
 	        // 폴더 내 모든 파일 삭제
 	         file = new File("./images/notice/" + noticeNo + "/");
 	         underDir = file.listFiles();
-	         for (int i = 0; i < underDir.length; i++) {
-	            underDir[i].delete();
-	         }
+				if (underDir != null) {
+					for (int i = 0; i < underDir.length; i++) {
+						underDir[i].delete();
+					}
+				}
 
 	         entity = new ResponseEntity<>(HttpStatus.OK);
 
@@ -129,8 +131,10 @@ public class NoticeService {
 //			폴더 내 모든 파일 삭제
 			file = new File("./images/notice/" + requestData.getNoticeNo() + "/");
 			underDir = file.listFiles();
-			for (int i = 0; i < underDir.length; i++) {
-				underDir[i].delete();
+			if (underDir != null) {
+				for (int i = 0; i < underDir.length; i++) {
+					underDir[i].delete();
+				}
 			}
 
 			if (fileList != null) {

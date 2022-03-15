@@ -74,7 +74,7 @@ export default {
                         let temp = res.data;
                         let user = {
                             id: temp.id,
-                            name :temp.name,
+                            name: temp.name,
                             authority: temp.authority,
                         };
                         this.Login({
@@ -102,11 +102,13 @@ export default {
             this.$router.push('/authentication/signUp');
         },
         loginWithKakao() {
-            window.Kakao.init('255b187f87731368f5e47c3310b3cf02')
+            if (window.Kakao.isInitialized() == false) {
+                window.Kakao.init('255b187f87731368f5e47c3310b3cf02');
+            }
             window.Kakao.Auth.login({
                 success: this.kakaoLoginCheck(),
                 fail: function (error) {
-                    console.log(error)
+                    console.log(error);
                 },
             })
         },
@@ -124,6 +126,7 @@ export default {
                             let temp = result.data;
                             let user = {
                                 id: temp.id,
+                                name: temp.name,
                                 authority: temp.authority,
                             };
                             this.Login({
@@ -164,6 +167,7 @@ export default {
                             let temp = res.data;
                             let user = {
                                 id: temp.id,
+                                name: temp.name,
                                 authority: temp.authority,
                             };
                             this.Login({

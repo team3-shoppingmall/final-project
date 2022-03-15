@@ -2,10 +2,10 @@
 <v-container>
     <v-row justify="center">
         <v-col align-self="center" cols="9">
-            <div class="text-h3" v-if="originalNo == undefined">글쓰기</div>
+            <div class="text-h3" v-if="originalNo == undefined && !(pageID == 'qna' && admin == true)">글쓰기</div>
 
             <!-- 답글일 경우 출력 -->
-            <div class="text-h3" v-if="originalNo != undefined">답변</div>
+            <div class="text-h3" v-if="originalNo != undefined || (pageID == 'qna' && admin == true)">답변</div>
             <div v-if="productNo != 0 && productNo != undefined">
                 <ProductDetailDisplay :productNo="productNo" />
             </div>
@@ -15,7 +15,7 @@
                 <v-simple-table>
                     <template slot="default">
                         <tbody>
-                            <tr v-if="originalNo == undefined && pageID != 'review'">
+                            <tr v-if="originalNo == undefined && pageID != 'review' && !(pageID == 'qna' && admin == true)">
                                 <td style="width:10%"> 제목 </td>
                                 <td>
                                     <v-select v-model="titleSelected" :items="titles" v-if="!admin" @change="setContent(titleSelected)"></v-select>
@@ -46,7 +46,7 @@
                                     </v-row>
                                 </td>
                             </tr>
-                            <tr v-if="originalNo == undefined && pageID != 'faq'">
+                            <tr v-if="originalNo == undefined && pageID != 'faq' && !(pageID == 'qna' && admin == true)">
                                 <td> 파일 첨부 </td>
                                 <td>
                                     <v-row v-if="pageID != 'review'">
@@ -309,15 +309,17 @@ export default {
             }
         },
         updateForm() {
-            if (this.admin) {
-                if (this.titleDetail == '') {
-                    alert('제목을 입력해주세요');
-                    return;
-                }
-            } else {
-                if (this.titleSelected == 'default') {
-                    alert('제목을 선택해주세요')
-                    return;
+            if (!(this.pageID == 'qna' && this.admin)) {
+                if (this.admin) {
+                    if (this.titleDetail == '') {
+                        alert('제목을 입력해주세요');
+                        return;
+                    }
+                } else {
+                    if (this.titleSelected == 'default') {
+                        alert('제목을 선택해주세요')
+                        return;
+                    }
                 }
             }
 
@@ -495,18 +497,20 @@ export default {
                 .then((res) => {
                     this.content = res.data.content;
                     this.star = res.data.star;
-                    axios.get(`/api/review/reviewImage/${this.num}/${res.data.image}`, {
-                            responseType: "blob",
-                        })
-                        .then(res => {
-                            this.imageFiles.pop();
-                            let file = new File([res.data], res.data.image, {
-                                type: "image/*",
-                                lastModified: Date.now()
-                            });
-                            this.imageFiles.push(file);
-                            this.onImageChange(0);
-                        })
+                    if (res.data.image != null) {
+                        axios.get(`/api/review/reviewImage/${this.num}/${res.data.image}`, {
+                                responseType: "blob",
+                            })
+                            .then(res => {
+                                this.imageFiles.pop();
+                                let file = new File([res.data], res.data.image, {
+                                    type: "image/*",
+                                    lastModified: Date.now()
+                                });
+                                this.imageFiles.push(file);
+                                this.onImageChange(0);
+                            })
+                    }
                 }).catch((err) => {
                     alert("정보를 불러오는데 실패했습니다.");
                     console.log(err);
@@ -525,7 +529,10 @@ export default {
         },
         getQnA() {
             axios.get(`/api/qna/getQna/${this.num}`)
-                .then((res) => {
+                .then(res => {
+                    if (res.data.id == 'spring') {
+                        this.admin = true;
+                    }
                     this.titleSelected = res.data.type;
                     this.content = res.data.content;
                     this.secret = res.data.secret;

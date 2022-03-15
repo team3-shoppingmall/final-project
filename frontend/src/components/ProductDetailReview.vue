@@ -264,7 +264,7 @@ export default {
                     this.dialog = false;
                     this.content = '';
                     alert("리뷰 등록 완료");
-                    this.$router.go();
+                    this.getReview();
                 }).catch((err) => {
                     alert('리뷰 작성에 실패했습니다.')
                     console.log(err);
@@ -274,7 +274,7 @@ export default {
             axios.delete(`/api/review/delete/${num}`)
                 .then(() => {
                     alert("삭제가 완료되었습니다.")
-                    this.$router.go();
+                    this.getReview();
                 })
         },
         updateReview(num) {
@@ -287,7 +287,7 @@ export default {
     watch: {
         options: {
             handler() {
-                this.getReview()
+                this.getReview();
             },
             deep: true
         },

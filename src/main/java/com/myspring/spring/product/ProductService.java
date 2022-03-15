@@ -132,13 +132,17 @@ public class ProductService {
 //			폴더 내 모든 파일 삭제
 			file = new File("./images/product/" + requestData.getProductNo() + "/product/");
 			underDir = file.listFiles();
-			for (int i = 0; i < underDir.length; i++) {
-				underDir[i].delete();
+			if (underDir != null) {
+				for (int i = 0; i < underDir.length; i++) {
+					underDir[i].delete();
+				}
 			}
 			file = new File("./images/product/" + requestData.getProductNo() + "/detail/");
 			underDir = file.listFiles();
-			for (int i = 0; i < underDir.length; i++) {
-				underDir[i].delete();
+			if (underDir != null) {
+				for (int i = 0; i < underDir.length; i++) {
+					underDir[i].delete();
+				}
 			}
 
 			String[] imageName = requestData.getImageName().split(";");
@@ -192,15 +196,19 @@ public class ProductService {
 //			폴더 내 모든 파일 삭제
 			file = new File("./images/product/" + productNo + "/product/");
 			underDir = file.listFiles();
-			for (int i = 0; i < underDir.length; i++) {
-				underDir[i].delete();
+			if (underDir != null) {
+				for (int i = 0; i < underDir.length; i++) {
+					underDir[i].delete();
+				}
 			}
 			file = new File("./images/product/" + productNo + "/detail/");
 			underDir = file.listFiles();
-			for (int i = 0; i < underDir.length; i++) {
-				underDir[i].delete();
+			if (underDir != null) {
+				for (int i = 0; i < underDir.length; i++) {
+					underDir[i].delete();
+				}
 			}
-			
+
 			entity = new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();

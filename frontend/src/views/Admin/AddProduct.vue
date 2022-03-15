@@ -315,6 +315,12 @@ export default {
                     alert('파일을 추가하거나 입력칸을 삭제해주세요')
                     return;
                 }
+                for (let j = 0; j < i; j++) {
+                    if (this.imageFiles[i].name == this.imageFiles[j].name) {
+                        alert('이미지 이름이 중복되었습니다');
+                        return;
+                    }
+                }
                 if (imageName == null) {
                     imageName = this.imageFiles[i].name;
                 } else {
@@ -327,6 +333,12 @@ export default {
                 if (this.detailImageFiles[i] == null) {
                     alert('파일을 추가하거나 입력칸을 삭제해주세요')
                     return;
+                }
+                for (let j = 0; j < i; j++) {
+                    if (this.detailImageFiles[i].name == this.detailImageFiles[j].name) {
+                        alert('상세 이미지 이름이 중복되었습니다');
+                        return;
+                    }
                 }
                 if (detailImageName == null) {
                     detailImageName = this.detailImageFiles[i].name;
@@ -442,6 +454,12 @@ export default {
                     alert('파일을 추가하거나 입력칸을 삭제해주세요')
                     return;
                 }
+                for (let j = 0; j < i; j++) {
+                    if (this.imageFiles[i].name == this.imageFiles[j].name) {
+                        alert('이미지 이름이 중복되었습니다');
+                        return;
+                    }
+                }
                 if (imageName == null) {
                     imageName = this.imageFiles[i].name;
                 } else {
@@ -454,6 +472,12 @@ export default {
                 if (this.detailImageFiles[i] == null) {
                     alert('파일을 추가하거나 입력칸을 삭제해주세요')
                     return;
+                }
+                for (let j = 0; j < i; j++) {
+                    if (this.detailImageFiles[i].name == this.detailImageFiles[j].name) {
+                        alert('상세 이미지 이름이 중복되었습니다');
+                        return;
+                    }
                 }
                 if (detailImageName == null) {
                     detailImageName = this.detailImageFiles[i].name;

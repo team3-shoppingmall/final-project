@@ -372,6 +372,14 @@ export default {
             let image = null;
             for (let i = 0; i < this.imageFiles.length; i++) {
                 if (this.imageFiles[i] != null) {
+                    for (let j = 0; j < i; j++) {
+                        if (this.imageFiles[j] != null) {
+                            if (this.imageFiles[i].name == this.imageFiles[j].name) {
+                                alert('이미지 이름이 중복되었습니다');
+                                return;
+                            }
+                        }
+                    }
                     if (image == null) {
                         image = this.imageFiles[i].name;
                     } else {
@@ -422,6 +430,14 @@ export default {
             let image = null;
             for (let i = 0; i < this.imageFiles.length; i++) {
                 if (this.imageFiles[i] != null) {
+                    for (let j = 0; j < i; j++) {
+                        if (this.imageFiles[j] != null) {
+                            if (this.imageFiles[i].name == this.imageFiles[j].name) {
+                                alert('이미지 이름이 중복되었습니다');
+                                return;
+                            }
+                        }
+                    }
                     if (image == null) {
                         image = this.imageFiles[i].name;
                     } else {
@@ -478,6 +494,12 @@ export default {
                                     });
                                     this.imageFiles.push(file);
                                     this.onImageChange(i);
+
+                                    if (i == imageList.length - 1) {
+                                        for (let j = i + 1; j < 4; j++) {
+                                            this.imageFiles.push(null);
+                                        }
+                                    }
                                 })
                         }
                     } else {
@@ -574,6 +596,14 @@ export default {
             let image = null;
             for (let i = 0; i < this.imageFiles.length; i++) {
                 if (this.imageFiles[i] != null) {
+                    for (let j = 0; j < i; j++) {
+                        if (this.imageFiles[j] != null) {
+                            if (this.imageFiles[i].name == this.imageFiles[j].name) {
+                                alert('이미지 이름이 중복되었습니다');
+                                return;
+                            }
+                        }
+                    }
                     if (image == null) {
                         image = this.imageFiles[i].name;
                     } else {
@@ -649,6 +679,14 @@ export default {
         qnaFormUpdate() {
             let image = null;
             for (let i = 0; i < this.imageFiles.length; i++) {
+                for (let j = 0; j < i; j++) {
+                    if (this.imageFiles[j] != null) {
+                        if (this.imageFiles[i].name == this.imageFiles[j].name) {
+                            alert('이미지 이름이 중복되었습니다');
+                            return;
+                        }
+                    }
+                }
                 if (this.imageFiles[i] != null) {
                     if (image == null) {
                         image = this.imageFiles[i].name;

@@ -271,6 +271,7 @@ public class OrderUtils {
 					AND();
 					WHERE("o.state = '" + state + "'");
 				}
+				ORDER_BY("orderidx desc");
 				LIMIT(perPage);
 				OFFSET(start);
 			}

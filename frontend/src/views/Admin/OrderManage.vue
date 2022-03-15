@@ -69,7 +69,7 @@
                     </v-btn>
                 </template>
                 <template v-slot:[`item.stateChange`]="{index}">
-                    <v-select :items="states" v-model="stateChanges[index]" item-key="value" hide-details="hide-details" v-if="stateChanges[index] != '구매확정' && stateChanges[index] != '교환완료' && stateChanges[index] != '환불완료' && stateChanges[index] != '취소완료'"></v-select>
+                    <v-select :items="states" v-model="stateChanges[index]" item-key="value" hide-details="hide-details" v-if="orders[index].state != '구매확정' && orders[index].state != '교환완료' && orders[index].state != '환불완료' && orders[index].state != '취소완료'"></v-select>
                 </template>
                 <template v-slot:[`header.stateChange`]=" {}">
                     <v-row class="ma-0" justify="center">

@@ -58,60 +58,56 @@
             </v-row>
         </v-col>
         <v-col cols="auto" class="mr-3">
-            <v-row>
-                <v-dialog v-model="dialog" persistent max-width="750px">
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-btn color="primary" v-bind="attrs" v-on="on">
-                            리뷰 작성하기
-                        </v-btn>
-                    </template>
-                    <v-card>
-                        <v-card-title>
-                            <span class="text-h5">리뷰 작성</span>
-                        </v-card-title>
-                        <v-card-text>
-                            <v-container>
-                                <v-row>
-                                    <v-col cols="12">
-                                        상품 정보
-                                        <ProductDetailDisplay :productNo="productNo" />
-                                    </v-col>
-                                    <v-col cols="12">
-                                        별점
-                                        <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" hover length="5" size="64" v-model="star"></v-rating>
-                                    </v-col>
-                                    <v-col cols="12">
-                                        리뷰
-                                        <ckeditor :editor="editor" v-model="content" :config="editorConfig"></ckeditor>
-                                        <span :class="contentColor">{{content.length}}/600</span>
-                                    </v-col>
-                                    <v-col cols="12" align="center">
-                                        <v-card :loading="false" class="mx-auto my-5">
-                                            <v-card-title>
-                                                <v-img max-height="250" :src="imageUrl" min-height="250" contain @click="fileInputClick" />
-                                            </v-card-title>
-                                            <v-card-actions>
-                                                <v-file-input v-model="imageFile" :id="`fileInput`" accept="image/*" truncate-length="14" class="pa-0" hide-details @change="onImageChange"></v-file-input>
-                                            </v-card-actions>
-                                        </v-card>
-                                    </v-col>
-                                </v-row>
-                            </v-container>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="blue darken-1" text @click="dialog = false">
-                                Close
-                            </v-btn>
-                            <v-btn color="blue darken-1" text @click="addReview">
-                                Save
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-            </v-row>
+            <v-btn color="primary" @click="dialog = true" v-if="haveOrder">
+                리뷰 작성하기
+            </v-btn>
         </v-col>
     </v-row>
+    <v-dialog v-model="dialog" persistent max-width="750px">
+        <v-card>
+            <v-card-title>
+                <span class="text-h5">리뷰 작성</span>
+            </v-card-title>
+            <v-card-text>
+                <v-container>
+                    <v-row>
+                        <v-col cols="12">
+                            상품 정보
+                            <ProductDetailDisplay :productNo="productNo" />
+                        </v-col>
+                        <v-col cols="12">
+                            별점
+                            <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" hover length="5" size="64" v-model="star"></v-rating>
+                        </v-col>
+                        <v-col cols="12">
+                            리뷰
+                            <ckeditor :editor="editor" v-model="content" :config="editorConfig"></ckeditor>
+                            <span :class="contentColor">{{content.length}}/600</span>
+                        </v-col>
+                        <v-col cols="12" align="center">
+                            <v-card :loading="false" class="mx-auto my-5">
+                                <v-card-title>
+                                    <v-img max-height="250" :src="imageUrl" min-height="250" contain @click="fileInputClick" />
+                                </v-card-title>
+                                <v-card-actions>
+                                    <v-file-input v-model="imageFile" :id="`fileInput`" accept="image/*" truncate-length="14" class="pa-0" hide-details @change="onImageChange"></v-file-input>
+                                </v-card-actions>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="resetReview">
+                    Close
+                </v-btn>
+                <v-btn color="blue darken-1" text @click="addReview">
+                    Save
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -143,6 +139,7 @@ export default {
             },
             admin: true,
             dialog: false,
+            haveOrder: false,
             totalContents: 0,
             contents: [],
             options: {},
@@ -192,8 +189,8 @@ export default {
             star: 5,
             content: '',
             contentColor: 'black--text',
-            imageFile: '',
-            imageUrl: '',
+            imageFile: null,
+            imageUrl: null,
 
         }
     },
@@ -270,6 +267,13 @@ export default {
                     console.log(err);
                 })
         },
+        resetReview() {
+            this.star = 5;
+            this.content = '';
+            this.imageFile = null;
+            this.imageUrl = null;
+            this.dialog = false;
+        },
         deleteReview(num) {
             axios.delete(`/api/review/delete/${num}`)
                 .then(() => {
@@ -279,7 +283,24 @@ export default {
         },
         updateReview(num) {
             this.$router.push(`/updatePost/review/${num}`);
-        }
+        },
+        idCheck() {
+            this.haveOrder = false;
+            axios({
+                    method: 'get',
+                    url: `/api/order/getCountToReview`,
+                    params: {
+                        id: this.getLogin.user.id,
+                        productNo: this.productNo,
+                    }
+                })
+                .then(res => {
+                    if (res.data > 0) {
+                        this.haveOrder = true;
+                    }
+                })
+        },
+
     },
     computed: {
         ...LoginStore.mapGetters(['getLogin']),
@@ -300,6 +321,9 @@ export default {
                 }
             }
         }
+    },
+    mounted() {
+        this.idCheck();
     }
 }
 </script>

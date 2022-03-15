@@ -128,6 +128,8 @@ export default {
                     this.addr2 = res.data.addr2;
                     this.tel = res.data.tel;
                     this.email = res.data.email;
+                    this.pwd1 = '';
+                    this.pwd2 = '';
                     if (this.id.slice(0, 5) == 'kakao' || this.id.slice(0, 5) == 'naver') {
                         this.social = true;
                     }
@@ -135,7 +137,7 @@ export default {
         },
         update() {
             let member;
-            if (this.pwd1 != null)
+            if (this.pwd1 != null) {
                 if (this.pwd1 == this.pwd2) {
                     member = {
                         id: this.id,
@@ -148,7 +150,7 @@ export default {
                         email: this.email,
                     }
                 }
-            else {
+            } else {
                 member = {
                     id: this.id,
                     name: this.name,
@@ -159,7 +161,6 @@ export default {
                     email: this.email,
                 }
             }
-            console.log(member)
             axios.put('/api/member/updateMember', member)
                 .then(() => {
                     alert("수정 성공")

@@ -7,20 +7,34 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.myspring.spring.wishList.WishListMapper;
+import com.myspring.spring.wishList.WishListVO;
+
 @Service
 public class BasketService {
 	private BasketMapper basketMapper;
+	private WishListMapper wishListMapper;
 
 	@Autowired
-	public BasketService(BasketMapper basketMapper) {
+	public BasketService(BasketMapper basketMapper, WishListMapper wishListMapper) {
 		this.basketMapper = basketMapper;
+		this.wishListMapper = wishListMapper;
 	}
 
 	// 장바구니 추가
 	public ResponseEntity<?> insertBakset(List<BasketVO> basketList) {
 		int count = 0;
-		for (BasketVO basket : basketList) {
+		for (BasketVO basket : basketList) {			
+			try {
+				WishListVO wishListVO = new WishListVO();
+				wishListVO.setId(basket.getId());
+				wishListVO.setProductNo(basket.getProductNo());
+				wishListMapper.deleteWishList(wishListVO);
+			} catch(Exception e) {				
+			}
+			
 			int res = basketMapper.basketCheck(basket);
+			
 			if (res > 0) {
 				count++;
 			} else {
@@ -29,7 +43,6 @@ public class BasketService {
 					return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		}
-		System.out.println(count);
 		return new ResponseEntity<>(count, HttpStatus.OK);
 	}
 

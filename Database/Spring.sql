@@ -140,11 +140,11 @@ CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`ordertable_BEFORE_INSERT` BEFO
 BEGIN
 if(new.state is null)
 then
-if(new.ORDERMETHOD = 'cash')
+if(new.ORDERMETHOD = 'credit' || new.ORDERMETHOD = 'mobile')
 then
-	set new.state = '입금전';
-else
 	set new.state = '결제완료';
+else
+	set new.state = '입금전';
 END if;
 END if;
 END$$

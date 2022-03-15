@@ -283,7 +283,7 @@ export default {
             var regexp = /\B(?=(\d{3})+(?!\d))/g;
             return `${num}`.toString().replace(regexp, ",");
         },
-        searchOrder() {
+        getOrder() {
             this.loading = true;
             const {
                 page,
@@ -314,6 +314,13 @@ export default {
                 this.loading = false
             )
         },
+        searchOrder() {
+            if (this.options.page != 1) {
+                this.options.page = 1;
+            } else {
+                this.getOrder();
+            }
+        },
         reset() {
             this.searchWord1 = null;
             this.searchWord2 = null;
@@ -325,7 +332,7 @@ export default {
             }
             this.options.page = 1;
             this.options.itemsPerPage = 10;
-            this.searchOrder();
+            this.getOrder();
         },
         selectItem(item) {
             this.memberInfo = {
@@ -364,7 +371,7 @@ export default {
                 .then(res => {
                     if (res.data.length == 0) {
                         alert('변경하셨습니다');
-                        this.searchOrder();
+                        this.getOrder();
                     } else {
                         alert(`미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`)
                     }
@@ -377,7 +384,7 @@ export default {
     watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
         options: {
             handler() {
-                this.searchOrder();
+                this.getOrder();
             },
             deep: true,
         },

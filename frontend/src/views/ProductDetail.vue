@@ -230,6 +230,28 @@
             </v-row>
         </v-col>
     </v-row>
+    <v-dialog v-model="dialog" persistent max-width="420">
+        <v-card>
+            <v-card-title class="text-body-1">
+                장바구니 담기
+            </v-card-title>
+            <v-card-text v-if="overlap == 0">
+                선택하신 상품이 장바구니에 저장되었습니다.
+            </v-card-text>
+            <v-card-text v-else>
+                중복된 {{overlap}}개의 상품을 제외하고 장바구니에 저장되었습니다.
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" :to="`/basket`">
+                    장바구니로 이동
+                </v-btn>
+                <v-btn color="white" @click="$router.go()">
+                    계속 쇼핑하기
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -266,6 +288,9 @@ export default {
                 if (val == '') return '개수를 입력해주세요'
                 return true
             },
+
+            dialog: false,
+            overlap: 0,
         }
     },
     methods: {
@@ -360,13 +385,8 @@ export default {
                     } else {
                         axios.post(`/api/basket/insert`, this.selected)
                             .then(res => {
-                                console.log(res.data);
-                                if (res.data > 0) {
-                                    alert(`중복된 ${res.data}개의 상품을 제외하고 장바구니에 저장하였습니다.`)
-                                } else {
-                                    alert('장바구니에 저장하셨습니다');
-                                }
-                                this.$router.go();
+                                this.overlap = res.data;
+                                this.dialog = true;
                             }).catch((err) => {
                                 alert('저장에 실패하셨습니다');
                                 console.log(err);

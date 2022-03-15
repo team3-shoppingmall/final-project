@@ -91,7 +91,7 @@
             </v-row>
         </v-col>
     </v-main>
-    <v-dialog v-model="dialog" scrollable width="600px" persistent>
+    <v-dialog v-model="dialog" scrollable width="620px" persistent>
         <v-container style="background-color:white;">
             <v-container class="text-h5">
                 <v-row justify="space-between">
@@ -145,12 +145,12 @@
                                     </v-col>
                                 </v-row>
                                 <v-row v-if="msg.buttons != undefined">
-                                    <v-col v-for="button in msg.buttons" :key="button" cols="2">
-                                        <v-btn tile @click="selectMessage(msg, button)" color="primary">{{button}}</v-btn>
+                                    <v-col cols="auto">
+                                        <v-btn v-for="button in msg.buttons" :key="button" tile @click="selectMessage(msg, button)" color="primary">{{button}}</v-btn>
                                     </v-col>
                                 </v-row>
                                 <v-row v-if="msg.url != undefined">
-                                    <v-col cols="2">
+                                    <v-col cols="auto">
                                         <v-btn tile color="primary" :to="`${msg.url}`" @click="dialog = false">이동</v-btn>
                                     </v-col>
                                 </v-row>
@@ -445,9 +445,9 @@ export default {
                 return 50
         },
         ...LoginStore.mapActions(['Logout']),
-        signOut(){
+        signOut() {
             this.Logout();
-            if(this.$route.path!=='/') {
+            if (this.$route.path !== '/') {
                 this.$router.push('/');
             }
         }

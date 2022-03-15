@@ -23,15 +23,15 @@ public class FaqController {
 	}
 
 	// 전체 조회
-	@GetMapping("/getAll")
-	public ResponseEntity<?> getFaqAll() {
-		return faqService.getFaqAll();
+	@GetMapping("/search/{searchWord}")
+	public ResponseEntity<?> getFaqBySearch(@PathVariable("searchWord") String searchWord) {
+		return faqService.getFaqBySearch(searchWord);
 	}
 
 	// type별 문의 조회
-	@GetMapping("/get/{type}")
-	public ResponseEntity<?> getFaqByType(@PathVariable("type") String type) {
-		return faqService.getFaqByType(type);
+	@GetMapping("/getByType")
+	public ResponseEntity<?> getFaqByType(@RequestParam("type") String type, @RequestParam("limit") int limit) {
+		return faqService.getFaqByType(type, limit);
 	}
 
 	// 수정시 데이터 불러오기 (하나만 조회)

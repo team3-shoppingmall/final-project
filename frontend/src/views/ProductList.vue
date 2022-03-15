@@ -202,6 +202,13 @@ export default {
                 console.log(err);
             })
         },
+        searchProductList() {
+            if (this.page != 1) {
+                this.page = 1;
+            } else {
+                this.getProductList();
+            }
+        },
         AddComma(num) {
             var regexp = /\B(?=(\d{3})+(?!\d))/g;
             return `${num}`.toString().replace(regexp, ",");
@@ -214,7 +221,7 @@ export default {
         '$route'() {
             this.mainCategory = this.$route.params.id;
             this.selectedCategory = this.$route.params.sub;
-            this.getProductList();
+            this.searchProductList();
             this.setSubCategory();
         },
         page: {

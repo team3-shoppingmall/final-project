@@ -31,6 +31,10 @@ public class QnaUtils {
 					WHERE("q.type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply')");
 					break;
 				}
+				if(search.equals("reply")) {
+					AND();
+					WHERE("q.reply = false and q.qnaNo = q.originalNo");
+				}
 				if (searchWord != null && !searchWord.equals("")) {
 					AND();
 					String[] words = searchWord.split(" ");
@@ -56,7 +60,6 @@ public class QnaUtils {
 				OFFSET(start);
 			}
 		};
-//		System.out.println(sql.toString());
 		return sql.toString();
 	}
 
@@ -80,6 +83,10 @@ public class QnaUtils {
 					WHERE("q.type in ('return', 'exchange', 'error', 'returnNotice', 'returnReply', 'exchangeReply', 'errorReply')");
 					break;
 				}
+				if(search.equals("reply")) {
+					AND();
+					WHERE("q.reply = false and q.qnaNo = q.originalNo");
+				}
 				if (searchWord != null && !searchWord.equals("")) {
 					AND();
 					String[] words = searchWord.split(" ");
@@ -102,7 +109,6 @@ public class QnaUtils {
 				}
 			}
 		};
-//		System.out.println(sql.toString());
 		return sql.toString();
 	}
 
@@ -145,7 +151,6 @@ public class QnaUtils {
 				OFFSET(start);
 			}
 		};
-//		System.out.println(sql.toString());
 		return sql.toString();
 	}
 
@@ -185,7 +190,6 @@ public class QnaUtils {
 				}
 			}
 		};
-//		System.out.println(sql.toString());
 		return sql.toString();
 	}
 

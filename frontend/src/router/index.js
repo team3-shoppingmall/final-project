@@ -46,7 +46,7 @@ import ProductManage from '@/views/Admin/ProductManage.vue'
 import AddProduct from '@/views/Admin/AddProduct.vue'
 import OrderManage from '@/views/Admin/OrderManage.vue'
 import SalesSettlement from '@/views/Admin/SalesSettlement.vue'
-import Admin_Child5 from '@/views/Admin/Admin5.vue'
+import BannerManage from '@/views/Admin/BannerManage.vue'
 import MemberManage from '@/views/Admin/MemberManage.vue'
 Vue.use(VueRouter)
 
@@ -93,11 +93,6 @@ const routes = [
                     console.log(`${from.path} ---> ${to.path}`)
                     const isLogin = store.getters['LoginStore/getLogin']
                     if (isLogin) {
-                        if (isLogin.user.authority == 'ROLE_ADMIN') {
-                            next({
-                                name: 'Main',
-                            })
-                        }
                         next();
                     } else {
                         next({
@@ -116,11 +111,6 @@ const routes = [
                     console.log(`${from.path} ---> ${to.path}`)
                     const isLogin = store.getters['LoginStore/getLogin']
                     if (isLogin) {
-                        if (isLogin.user.authority == 'ROLE_ADMIN') {
-                            next({
-                                name: 'Main',
-                            })
-                        }
                         next();
                     } else {
                         next({
@@ -312,9 +302,9 @@ const routes = [
                 name: 'SalesSettlement',
                 component: SalesSettlement
             }, {
-                path: 'admin5',
-                name: 'Admin5',
-                component: Admin_Child5
+                path: 'bannerManage',
+                name: 'BannerManage',
+                component: BannerManage
             }, {
                 path: 'memberManage',
                 name: 'MemberManage',

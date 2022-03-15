@@ -98,6 +98,11 @@ public class Clova_Chatbot {
 		
 		try {
 			resMap.put("description", data.getString("description"));
+			try {
+				resMap.put("url", data.getString("urlAlias"));
+			} catch(Exception e) {
+				
+			}
 		} catch (Exception e) {
 			JSONObject cover = (JSONObject) data.get("cover");
 //			System.out.println("cover:" + cover);

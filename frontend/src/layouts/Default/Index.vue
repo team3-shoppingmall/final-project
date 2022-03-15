@@ -1,8 +1,7 @@
 <template>
 <v-app>
     <v-app-bar color="primary" app dark height="60px">
-
-        <v-btn color="primary" :to="'/'">
+        <v-btn color="primary" active-class="no-active" :to="'/'">
             <v-icon>mdi-home</v-icon>
         </v-btn>
 
@@ -56,7 +55,7 @@
                         <v-btn color="primary" v-if="getLogin.user.authority!='ROLE_ADMIN'" dark :to="'/myPage/home'">
                             {{getLogin.user.id}}
                         </v-btn>
-                        <v-btn color="primary" dark @click="Logout">
+                        <v-btn color="primary" dark @click="signOut">
                             SignOut
                         </v-btn>
                     </v-col>
@@ -92,89 +91,84 @@
             </v-row>
         </v-col>
     </v-main>
-    <v-dialog v-model="dialog" width="600px" persistent>
-        <v-card>
-            <v-card-title class="text-h5 grey lighten-2">
+    <v-dialog v-model="dialog" scrollable width="600px" persistent>
+        <v-container style="background-color:white;">
+            <v-container class="text-h5">
                 <v-row justify="space-between">
-                    <v-col>Spring Chatbot</v-col>
-                    <v-col cols="auto">
+                    <v-col align-self="center">Spring Chatbot</v-col>
+                    <v-col align-self="center" cols="auto">
                         <v-row>
-                            <v-col>
-
+                            <v-col align-self="center">
                                 <v-btn @click="dialog2 = true" text>
                                     <v-icon color="#FF8EA0">mdi-magnify</v-icon>주문 확인
                                 </v-btn>
                             </v-col>
-                            <v-col>
+                            <v-col align-self="center">
                                 <v-icon @click="dialog = false" color="#FF8EA0">mdi-exit-to-app</v-icon>
                             </v-col>
                         </v-row>
                     </v-col>
                 </v-row>
-            </v-card-title>
-            <v-virtual-scroll :items="messages" :item-height="120" height="600" id="virtualScroll">
-                <template v-slot:default="{ item }">
-                    <v-list-item v-if="item.author == 'client'">
-                        <v-list-item-content class="mb-5">
-                            <v-list-item-title>
-                                <v-row justify="end">
-                                    <v-col cols="10">
-                                        <v-row justify="end">
-                                            <v-col cols="auto">
-                                                <v-card elevation="2" outlined color="blue lighten-1">
-                                                    <v-card-text>
-                                                        <div class="text--primary">{{item.text}}</div>
-                                                    </v-card-text>
-                                                </v-card>
-                                            </v-col>
-                                        </v-row>
-                                    </v-col>
-                                </v-row>
-                            </v-list-item-title>
-                        </v-list-item-content>
-                        <v-list-item-icon>
-                            <v-icon color="blue">mdi-alpha-q-box</v-icon>
-                        </v-list-item-icon>
-                    </v-list-item>
-                    <v-list-item v-if="item.author == 'server'">
-                        <v-list-item-icon>
-                            <v-icon color="#FF8EA0">mdi-alpha-a-box</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                            <v-list-item-title>
-                                <v-row>
-                                    <v-col cols="10">
-                                        <v-row>
-                                            <v-col cols="auto">
-                                                <v-card elevation="2" outlined color="#FF8EA0b3">
-                                                    <v-card-text>
-                                                        <div class="text--primary">{{item.text}}</div>
-                                                    </v-card-text>
-                                                </v-card>
-                                            </v-col>
-                                        </v-row>
-                                    </v-col>
-                                </v-row>
-                            </v-list-item-title>
-                            <v-list-item-subtitle v-if="item.buttons != undefined">
-                                <v-btn tile v-for="button in item.buttons" :key="button" @click="selectMessage(item, button)" color="primary">{{button}}</v-btn>
-                            </v-list-item-subtitle>
-                        </v-list-item-content>
-                    </v-list-item>
-                </template>
-            </v-virtual-scroll>
+            </v-container>
             <v-divider></v-divider>
-            <v-card-text>
-                <v-row>
+            <v-container style="height: 600px; overflow-y:scroll" id="test">
+                <v-row v-for="(msg, idx) in messages" :key="idx">
                     <v-col>
-                        <v-text-field v-model="message" clearable hide-details @keyup.enter="sendMessage"></v-text-field>
-                    </v-col>
-                    <v-col cols="auto" class="mt-3">
-                        <v-btn color="primary" @click="sendMessage">입력</v-btn>
+                        <v-row justify="end" v-if="msg.author == 'client'">
+                            <v-col cols="10">
+                                <v-row justify="end">
+                                    <v-col cols="auto">
+                                        <v-card elevation="2" outlined color="blue lighten-1">
+                                            <v-card-text>
+                                                <div class="text--primary" v-html="msg.text"></div>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                            <v-col cols="auto">
+                                <v-icon color="blue">mdi-alpha-q-box</v-icon>
+                            </v-col>
+                        </v-row>
+                        <v-row v-if="msg.author == 'server'">
+                            <v-col cols="auto">
+                                <v-icon color="#FF8EA0">mdi-alpha-a-box</v-icon>
+                            </v-col>
+                            <v-col cols="10">
+                                <v-row>
+                                    <v-col cols="auto">
+                                        <v-card elevation="2" outlined color="#FF8EA0b3">
+                                            <v-card-text>
+                                                <div class="text--primary" v-html="msg.text"></div>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-col>
+                                </v-row>
+                                <v-row v-if="msg.buttons != undefined">
+                                    <v-col v-for="button in msg.buttons" :key="button" cols="2">
+                                        <v-btn tile @click="selectMessage(msg, button)" color="primary">{{button}}</v-btn>
+                                    </v-col>
+                                </v-row>
+                                <v-row v-if="msg.url != undefined">
+                                    <v-col cols="2">
+                                        <v-btn tile color="primary" :to="`${msg.url}`" @click="dialog = false">이동</v-btn>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                        </v-row>
                     </v-col>
                 </v-row>
-            </v-card-text>
-        </v-card>
+            </v-container>
+            <v-divider></v-divider>
+            <v-row>
+                <v-col>
+                    <v-text-field v-model="message" clearable hide-details @keyup.enter="sendMessage"></v-text-field>
+                </v-col>
+                <v-col cols="auto" class="mt-3">
+                    <v-btn color="primary" @click="sendMessage">입력</v-btn>
+                </v-col>
+            </v-row>
+        </v-container>
     </v-dialog>
     <v-dialog v-model="dialog2" width="400px" persistent>
         <v-card>
@@ -227,6 +221,7 @@ export default {
             orderNo: '',
             orderState: '',
             messages: [],
+            textHeight: 200,
             previousMessage: '',
             pages: [{
                     name: 'OUTER',
@@ -365,7 +360,10 @@ export default {
             axios.get(`/api/order/getOrder/${this.orderNo}`)
                 .then(res => {
                     this.orderState = res.data;
-                }).finally(
+                }).catch(() => {
+                    this.orderState = '해당 주문이 없습니다';
+                })
+                .finally(
                     this.orderNo = ''
                 )
         },
@@ -380,6 +378,9 @@ export default {
             this.sendMessage();
         },
         sendMessage() {
+            if (this.message == '') {
+                return;
+            }
             this.messages.push({
                 text: this.message,
                 author: 'client'
@@ -405,16 +406,18 @@ export default {
                     }
                 })
                 .then(res => {
-                    this.previousMessage = res.data.description;
-                    if (res.data.buttonList != null) {
+                    this.previousMessage = res.data.description.replace(/(?:\r\n|\r|\n)/g, '<br />');
+                    if (res.data.url != undefined) {
                         this.messages.push({
-                            text: res.data.description,
+                            text: res.data.description.replace(/(?:\r\n|\r|\n)/g, '<br />'),
                             buttons: res.data.buttonList,
+                            url: res.data.url.substring(21),
                             author: 'server'
                         });
                     } else {
                         this.messages.push({
-                            text: res.data.description,
+                            text: res.data.description.replace(/(?:\r\n|\r|\n)/g, '<br />'),
+                            buttons: res.data.buttonList,
                             author: 'server'
                         });
                     }
@@ -423,11 +426,31 @@ export default {
                     console.log(err);
                 })
                 .finally(() => {
-                    var container = this.$el.querySelector("#virtualScroll");
+                    let container = this.$el.querySelector("#test");
                     container.scrollTop = container.scrollHeight;
                 })
         },
-        ...LoginStore.mapMutations(['Logout']),
+        moveToUrl(url) {
+            this.$router.replace(url);
+        },
+        itemHeight(item) {
+            console.log(item)
+
+            if (item) {
+                if (item.text.length > 100) {
+                    return 200
+                } else
+                    return 100
+            } else
+                return 50
+        },
+        ...LoginStore.mapActions(['Logout']),
+        signOut(){
+            this.Logout();
+            if(this.$route.path!=='/') {
+                this.$router.push('/');
+            }
+        }
     },
     computed: {
         width() {
@@ -455,4 +478,7 @@ export default {
 </script>
 
 <style scoped>
+.v-btn--active.no-active::before {
+    opacity: 0 !important;
+}
 </style>

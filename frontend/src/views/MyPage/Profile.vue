@@ -1,13 +1,9 @@
 <template>
 <v-container fluid>
     <v-row justify="center">
-        <v-col cols="9">
-            <v-divider class="my-5"></v-divider>
-        </v-col>
-    </v-row>
-    <v-row justify="center">
         <v-col align-self="center" cols="5">
             <v-form ref="form">
+                <v-divider class="mt-5 mb-0 pa-0"></v-divider>
                 <v-simple-table>
                     <template slot="default">
                         <tbody>
@@ -50,7 +46,7 @@
                                 <td>
                                     <div class="d-flex ">
                                         <v-text-field v-model="zipcode" outlined="outlined" hide-details="hide-details" label="우편번호" dense="dense"></v-text-field>
-                                        <v-btn class="align-self-center ml-2 pa-2 primary" height="100%" style="font-size:1rem">검색</v-btn>
+                                        <v-btn class="align-self-center ml-2 pa-2 primary" height="100%" style="font-size:1rem" @click="execDaumPostcode">검색</v-btn>
                                     </div>
                                     <v-text-field v-model="addr1" class="mt-1" outlined="outlined" hide-details="hide-details" label="기본주소" dense="dense"></v-text-field>
                                     <v-text-field v-model="addr2" class="mt-2" outlined="outlined" hide-details="hide-details" label="상세주소" dense="dense"></v-text-field>
@@ -75,8 +71,8 @@
                         </tbody>
                     </template>
                 </v-simple-table>
-                <v-divider class="mt-8"></v-divider>
-                <v-row class="my-5" justify="center">
+                <v-divider class="mt-0"></v-divider>
+                <v-row class="my-10" justify="center">
                     <v-btn class="primary text-h5 pa-3 " height="100%" width="120px">취소</v-btn>
                     <v-btn class="primary text-h5 pa-3 ml-5" height="100%" width="120px" @click="update">수정</v-btn>
                 </v-row>
@@ -190,7 +186,45 @@ export default {
                 })
                 .finally(this.$refs.password.reset())
         },
-
+        execDaumPostcode() {
+            new window.daum.Postcode({
+                oncomplete: (data) => {
+                    if (this.extraAddress !== "") {
+                        this.addr2 = "";
+                    }
+                    if (data.userSelectedType === "R") {
+                        // 사용자가 도로명 주소를 선택했을 경우
+                        this.addr1 = data.roadAddress;
+                    } else {
+                        // 사용자가 지번 주소를 선택했을 경우(J)
+                        this.addr1 = data.jibunAddress;
+                    }
+                    // // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                    // if (data.userSelectedType === "R") {
+                    //     // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                    //     // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                    //     if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
+                    //         // this.addr2 += data.bname;
+                    //     }
+                    //     // 건물명이 있고, 공동주택일 경우 추가한다.
+                    //     if (data.buildingName !== "" && data.apartment === "Y") {
+                    //         this.addr2 +=
+                    //             this.addr2 !== "" ?
+                    //             `, ${data.buildingName}` :
+                    //             data.buildingName;
+                    //     }
+                    //     // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                    //     if (this.addr2 !== "") {
+                    //         this.addr2 = `(${this.addr2})`;
+                    //     }
+                    // } else {
+                    //     this.addr2 = "";
+                    // }
+                    // 우편번호를 입력한다.
+                    this.zipcode = data.zonecode;
+                },
+            }).open();
+        }
     },
     components: {},
     computed: {

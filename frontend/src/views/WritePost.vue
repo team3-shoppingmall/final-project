@@ -478,13 +478,11 @@ export default {
                                     });
                                     this.imageFiles.push(file);
                                     this.onImageChange(i);
-
-                                    if (i == imageList.length - 1) {
-                                        for (let j = i + 1; j < 4; j++) {
-                                            this.imageFiles.push(null);
-                                        }
-                                    }
                                 })
+                        }
+                    } else {
+                        for (let j = 1; j < 4; j++) {
+                            this.imageFiles.push(null);
                         }
                     }
                 }).catch((err) => {
@@ -559,6 +557,10 @@ export default {
                                         }
                                     }
                                 })
+                        }
+                    } else {
+                        for (let j = 1; j < 4; j++) {
+                            this.imageFiles.push(null);
                         }
                     }
                 }).catch((err) => {

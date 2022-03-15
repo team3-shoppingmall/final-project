@@ -47,13 +47,16 @@
                         <v-btn color="primary" dark :to="'/basket'">
                             BASKET
                         </v-btn>
+                          <v-btn color="primary" dark :to="'/myPage/wishlist'">
+                            WISHLIST
+                        </v-btn>
                     </v-col>
                     <v-col cols="auto" v-if="getLogin">
                         <v-btn color="primary" v-if="getLogin.user.authority=='ROLE_ADMIN'" dark :to="'/admin/ProductManage'">
                             ADMIN
                         </v-btn>
                         <v-btn color="primary" v-if="getLogin.user.authority!='ROLE_ADMIN'" dark :to="'/myPage/home'">
-                            {{getLogin.user.id}}
+                            {{getLogin.user.name}}
                         </v-btn>
                         <v-btn color="primary" dark @click="signOut">
                             SignOut
@@ -80,7 +83,7 @@
                 </v-btn>
             </v-row>
             <v-row justify="end" class="mb-0">
-                <v-btn fab dark elevation="2" right color="#FF8EA0" :to="'/'">
+                <v-btn active-class="no-active" fab dark elevation="2" right color="#FF8EA0" :to="'/'">
                     <v-icon>mdi-home</v-icon>
                 </v-btn>
             </v-row>

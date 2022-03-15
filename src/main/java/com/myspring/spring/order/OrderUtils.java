@@ -47,6 +47,9 @@ public class OrderUtils {
 						}
 						WHERE("REGEXP_LIKE(p.productName, '" + temp + "')");
 						break;
+					case "id":
+						WHERE("id = '" + searchWord1 + "'");
+						break;
 					case "orderDate":
 						WHERE("o.orderDate >= '" + searchWord1 + "' and o.orderDate <= '" + searchWord2 + " 23:59:59'");
 						break;
@@ -56,7 +59,7 @@ public class OrderUtils {
 					AND();
 					WHERE("o.state = '" + state + "'");
 				}
-
+				ORDER_BY("orderidx desc");
 				LIMIT(perPage);
 				OFFSET(start);
 			}
@@ -108,6 +111,9 @@ public class OrderUtils {
 							}
 						}
 						WHERE("REGEXP_LIKE(p.productName, '" + temp + "')");
+						break;
+					case "id":
+						WHERE("id = '" + searchWord1 + "'");
 						break;
 					case "orderDate":
 						WHERE("o.orderDate >= '" + searchWord1 + "' and o.orderDate <= '" + searchWord2 + " 23:59:59'");

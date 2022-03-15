@@ -274,7 +274,7 @@ export default {
                                 } else {
                                     alert('장바구니에 저장하셨습니다');
                                 }
-                                this.$router.go();
+                                // this.$router.go();
                             }).catch((err) => {
                                 alert('저장에 실패하셨습니다');
                                 console.log(err);

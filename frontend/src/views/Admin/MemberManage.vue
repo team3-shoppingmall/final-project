@@ -10,6 +10,9 @@
         <v-col cols="auto" align-self="center">
             <v-btn class="primary " large="large" @click="searchMember">검색</v-btn>
         </v-col>
+        <v-col cols="auto" align-self="center">
+            <v-btn class="primary " large="large" @click="reset">초기화</v-btn>
+        </v-col>
     </v-row>
     <v-row>
         <v-col>
@@ -115,6 +118,8 @@ export default {
                     params: {
                         page: page,
                         perPage: itemsPerPage,
+                        condition: this.condition,
+                        param: this.value,
                     }
                 })
                 .then(res => {
@@ -127,30 +132,11 @@ export default {
                 .finally(this.loading = false);
         },
         searchMember() {
-            this.loading = true;
-            const {
-                page,
-                itemsPerPage
-            } = this.options;
-
-            axios
-                .get('/api/member/getMembers', {
-                    params: {
-                        page: page,
-                        perPage: itemsPerPage,
-                        condition: this.condition,
-                        param: this.value
-                    }
-                })
-                .then(res => {
-                    this.items = res.data.res;
-                    this.totalContents = res.data.count;
-                })
-                .catch(err => {
-                    console.log(err.response.status);
-                })
-                .finally(this.loading = false);
-
+            if (this.options.page != 1) {
+                this.options.page = 1
+            } else {
+                this.getAllMembers();
+            }
         },
         telFormatter(tel) {
             let first;
@@ -205,6 +191,13 @@ export default {
                     this.dialog = false;
                 })
         },
+        reset() {
+            this.condition = 'id';
+            this.value = null;
+            this.options.page = 1;
+            this.options.itemsPerPage = 10;
+            this.getAllMembers();
+        },
 
     },
     watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
@@ -214,10 +207,12 @@ export default {
             },
             deep: true,
         },
+        search: {
+            handler() {
+                this.value = '';
+            }
+        },
     },
-    // mounted() {
-    //     this.getAllMembers();
-    // },
     data() {
         return {
             dialog: false,

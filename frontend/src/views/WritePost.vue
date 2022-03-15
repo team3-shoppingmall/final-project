@@ -39,9 +39,6 @@
                                 <td>
                                     <v-row>
                                         <v-col>
-                                            <div>
-                                                {{content}}
-                                            </div>
                                             <ckeditor :editor="editor" v-model="content" :config="editorConfig"></ckeditor>
                                             <span :class="contentColor" v-if="pageID != 'notice'">{{content.length}}/2000</span>
                                             <span :class="contentColor" v-if="pageID == 'notice'">{{content.length}}/10000</span>

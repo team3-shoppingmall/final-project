@@ -17,7 +17,7 @@
         <v-col cols="8" sm="7" md="5" lg="4" xl="3">
             <v-row>
                 <v-col cols="4">
-                    <v-select :items="searches" v-model="search" hide-details></v-select>
+                    <v-select :items="searches" v-model="search" hide-details readonly append-icon=""></v-select>
                 </v-col>
                 <v-col cols="7">
                     <v-text-field v-model="searchWord" hide-details @keyup.enter="getNotice"></v-text-field>
@@ -93,7 +93,6 @@ export default {
                     params: {
                         page: page,
                         perPage: itemsPerPage,
-                        search: this.search,
                         searchWord: this.searchWord,
                     }
                 })

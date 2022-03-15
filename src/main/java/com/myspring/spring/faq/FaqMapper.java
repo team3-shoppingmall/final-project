@@ -14,11 +14,20 @@ import com.myspring.spring.qna.QnaVO;
 @Mapper
 public interface FaqMapper {
 	//전체 조회시 최신순으로 나오게 역순으로 조회
-    @Select("select * from faqtable order by faqNo desc")
-	List<FaqVO> getFaqAll();
+    @Select("select * from faqtable order by faqNo desc limit #{limit}")
+	List<FaqVO> getFaqAll(@Param("limit") int limit);
     
-    @Select("select * from faqtable where type = #{type}")
-	List<FaqVO> getFaqByType(@Param("type") String type);
+    @Select("select count(*) from faqtable")
+	int getFaqCountAll();
+    
+    @Select("select * from faqtable where type = #{type} limit #{limit}")
+	List<FaqVO> getFaqByType(@Param("type") String type, @Param("limit") int limit);
+
+    @Select("select count(*) from faqtable where type = #{type}")
+	int getFaqCountByType(@Param("type") String type);
+
+    @Select("select * from faqtable where title like CONCAT('%',#{searchWord},'%') or content like CONCAT('%',#{searchWord},'%') order by type")
+	List<FaqVO> getFaqBySearch(@Param("searchWord") String searchWord);
     
     @Select("select * from faqtable where faqNo = #{faqNo}")
 	FaqVO getFaqByFaqNo(@Param("faqNo") int faqNo);

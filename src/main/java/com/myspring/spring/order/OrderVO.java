@@ -12,6 +12,7 @@ public class OrderVO {
 	private int orderAmount;
 	private int totalPrice;
 	private Date orderDate;
+	private Date updateDate;
 	private String state;
 	private String orderMethod;
 	private String name;
@@ -19,13 +20,16 @@ public class OrderVO {
 	private String zipCode;
 	private String address;
 	private String detailAddr;
+	private String message;
+	private boolean reviewable;
 
 	public OrderVO() {
 	}
 
 	public OrderVO(long orderIdx, String id, int productNo, long orderNo, String selectedColor, String selectedSize,
-			int orderAmount, int totalPrice, Date orderDate, String state, String orderMethod, String name, String tel,
-			String zipCode, String address, String detailAddr) {
+			int orderAmount, int totalPrice, Date orderDate, Date updateDate, String state, String orderMethod,
+			String name, String tel, String zipCode, String address, String detailAddr, String message,
+			boolean reviewable) {
 		this.orderIdx = orderIdx;
 		this.id = id;
 		this.productNo = productNo;
@@ -35,6 +39,7 @@ public class OrderVO {
 		this.orderAmount = orderAmount;
 		this.totalPrice = totalPrice;
 		this.orderDate = orderDate;
+		this.updateDate = updateDate;
 		this.state = state;
 		this.orderMethod = orderMethod;
 		this.name = name;
@@ -42,6 +47,8 @@ public class OrderVO {
 		this.zipCode = zipCode;
 		this.address = address;
 		this.detailAddr = detailAddr;
+		this.message = message;
+		this.reviewable = reviewable;
 	}
 
 	public long getOrderIdx() {
@@ -116,6 +123,14 @@ public class OrderVO {
 		this.orderDate = orderDate;
 	}
 
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
 	public String getState() {
 		return state;
 	}
@@ -170,6 +185,22 @@ public class OrderVO {
 
 	public void setDetailAddr(String detailAddr) {
 		this.detailAddr = detailAddr;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public boolean isReviewable() {
+		return reviewable;
+	}
+
+	public void setReviewable(boolean reviewable) {
+		this.reviewable = reviewable;
 	}
 
 }

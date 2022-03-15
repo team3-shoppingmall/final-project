@@ -131,6 +131,7 @@ CREATE TABLE ordertable (
 	ADDRESS VARCHAR(200) NOT NULL,
 	DETAILADDR VARCHAR(50) NOT NULL,
     MESSAGE VARCHAR(50),
+    reviewable BOOLEAN DEFAULT FALSE,
     CONSTRAINT order_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
 );
 
@@ -154,7 +155,8 @@ DELIMITER $$
 USE `springdb`$$
 CREATE PROCEDURE `orderChangeSchedule` ()
 BEGIN
-UPDATE ordertable set state = '구매확정' where state = '배송완료' and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
+UPDATE ordertable set reviewable = false where state in ('구매확정', '교환완료') and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
+UPDATE ordertable set state = '구매확정', reviewable = true where state = '배송완료' and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
 UPDATE ordertable set state = '취소완료' where state = '입금전' and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
 IF( DAYOFWEEK(curdate()) between 2 and 6)
 THEN
@@ -166,7 +168,7 @@ DELIMITER ;
 create EVENT event_AutoScheduler
 ON schedule 
 EVERY 1 DAY starts '2022-03-06 15:00:00'
-COMMENT '매일 15:00 결제완료 -> 배송준비중으로 변경'
+COMMENT '매일 15:00 결제완료 -> 배송준비중(평일), 배송완료 -> 구매확정(7일 경과 시)으로 변경'
 DO Call orderChangeSchedule();
 
 CREATE TABLE pointtable (
@@ -478,7 +480,6 @@ insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount
 insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('rhonnyn',14,'아이보리','XS',1);
 -- 관심상품
 insert into wishlisttable(id, productno) values('shine', 1);
-insert into wishlisttable(id, productno) values('shine', 2);
 insert into wishlisttable(id, productno) values('shine', 3);
 insert into wishlisttable(id, productno) values('shine', 4);
 insert into wishlisttable(id, productno) values('portal', 1);
@@ -505,15 +506,17 @@ values('shine',7,6,'아이보리','S',1,41000,'2021-12-22 13:24:51','2021-12-26 
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
 values('portal',8,6,'소라',null,1,115000,'2022-02-14 13:24:51','2022-02-14 14:04:51','취소완료','credit','정은지','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',5,6,'오트밀',null,2,87600,'2022-03-05 13:24:51','2022-03-09 13:24:51','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
-insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',1,7,'소프트민트','L',1,38000,'2022-03-10 15:24:51','2022-03-13 15:24:51','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',5,6,'오트밀',null,2,87600,'2022-03-05 13:24:51','2022-03-09 05:24:51','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr, reviewable)
+values('shine',5,6,'오트밀',null,2,87600,'2022-03-05 13:24:51','2022-03-09 13:24:51','교환완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호', true);
+insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr, reviewable)
+values('shine',1,7,'소프트민트','L',1,38000,'2022-03-10 15:24:51','2022-03-13 15:24:51','구매확정','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호', true);
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
 values('shine',3,8,'아이보리',null,1,92000,'2022-03-11 20:24:51','2022-03-14 20:24:51','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',4,9,'크림','M',1,31000,'2022-03-11 00:56:31','2022-03-14 00:56:31','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',4,9,'크림','M',1,31000,'2022-03-11 00:56:31','2022-03-14 00:56:31','배송중','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',15,9,'네이비',null,1,39600,'2022-03-12 01:56:31','2022-03-15 01:56:31','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',15,9,'네이비',null,1,39600,'2022-03-12 01:56:31','2022-03-15 01:56:31','배송준비중','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
 values('portal',10,10,'블랙','M',1,49000,'2022-03-13 13:24:51','2022-03-15 13:24:21','배송중','credit','정은지','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, ordermethod, name, tel, zipcode, address, detailaddr)
@@ -627,7 +630,7 @@ insert into reviewtable(productno, content, id, image, star) values(1,'<p>처음
 insert into reviewtable(productno, content, id, image, star) values(1,'<p>이전에 다른 색상으로 구매했었는데 재질도 좋고 착용감도 좋아서 새로 또 구매했어요!&nbsp;</p><p>그레이 색상이라 전체적으로 색감이 다운됐지만, 그 만의 매력이 있어서 마음에 들어요!</p>','portal', 'image1.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(2,'<p>가을에 휘뚜루마뚜루 입으려고 샀어요 검정+보라 스트라이프 사고 싶었는데 라벤더네이비도 충분히 예쁘네요&nbsp;</p><p>너무 오버핏도 아니고 너무 베이직한 핏도 아니라서 딱 맘에 들어요 다른 색으로 더 살 것 같아요 쌩유</p>','portal', 'image2.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(1,'완전 딱 진짜 기본이에요!! 탄탄한 재질은 아니지만 봄에 가볍게 입기 좋을것 같아요!! 그리고 흰색배경이 아니라 색감 진짜 너무 예쁜것같아요 : )','shine', 'image1.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(2,'<p>챠콜이랑 아이보리 고민했었는데 아이보리가 하의를 뭘입어도 다 잘어울릴것같아서 선택했어요!&nbsp;</p><p>핏도 낙낙하고 안에 목티입으니까 완전 제스타일이에요=) 다른색깔도 구매하고 싶네용</p>','shine', 'image2.jpg','5');
+insert into reviewtable(productno, content, id, image, star) values(3,'<p>챠콜이랑 아이보리 고민했었는데 아이보리가 하의를 뭘입어도 다 잘어울릴것같아서 선택했어요!&nbsp;</p><p>핏도 낙낙하고 안에 목티입으니까 완전 제스타일이에요=) 다른색깔도 구매하고 싶네용</p>','shine', 'image2.jpg','5');
 insert into reviewtable(productno, content, id, image, star) values(1,'<p>개인적으로 색깔은 솔직히 실망했어요. 예쁜 베이지가 아니라 그냥 황토색? 상세샷보다도 좀 어두워요.</p><p>다른 분들 후기처럼 냄새는 많이 나고 꺼끌거려요. 그리고 무엇보다 털이 진짜.. 어마무시하게 빠집니다.&nbsp;</p><p>안에 검정색 히트텍 입었다가 깜짝 놀랐어요..</p>','portal', 'image1.jpg','1');
 insert into reviewtable(productno, content, id, image, star) values(2,'<p>너무 이뻐요 사길 후회 안할정도로 ...팔뚝잇는66인데 이거 입고 55로 보인데요..(엄마 눈에만)&nbsp;</p><p>배송은 좀 느리게 왓더라고요! 제가 사진후기 잘 안올리는데 품절 풀리면 바로사세오...</p>','rhonnyn', 'image2.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(1,'<p>바스락거리는 소재에요! 약간 단작셔츠같은 느낌..! 제가 좋아하는 느낌이에요 히히&nbsp;</p><p>근데 159인 제 키에는 뒷쪽 언발 부분이 엉덩이를 다 가리고도 살짝 더 내려와서&nbsp;</p><p>안그래도 작은 키가 더 작아보이긴 하네요,, 그래도 색감이나 핏 다 너무 예쁘고&nbsp;</p><p>소매쪽 핀턱때문에 포인트도 되고! 마음에 들어요 ´ㅅ`</p>','prose', 'image1.jpg','3');
@@ -637,7 +640,7 @@ insert into reviewtable(productno, content, id, image, star) values(1,'<p>인기
 insert into reviewtable(productno, content, id, image, star) values(2,'<p>색이 정말 이뻐요! 색상은 화면과 같아요! 다만 구김 옴청 잘 가는 소재 ㅠ&nbsp;</p><p>알고 샀지만 생각보다 더 바스락 거리는 구김 가는 소재에요 ㅎㅎ</p><p>입을때마다 열심히 다리미해야겠어요!</p>','rhonnyn', 'image2.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(1,'<p>거울이 너무 더럽지만 리뷰 써봐용 ㅠㅠ&nbsp;</p><p>교복 같을까봐 걱정했는데 블랙이라 그런 느낌도 덜 해서 다행이고&nbsp;</p><p>길이도 너무 짧지 않고 적당해서 자주 입을 것 같아요</p>','prose', 'image1.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(2,'<p>바스락바스락 얇은 옷이에요. 근데 무엇보다.. 색감이 미쳤어요ㅠㅠㅠㅠ 진짜 너무 예쁩니다.&nbsp;</p><p>유치하고 가벼운 느낌 아니고 차분해요. 핏은 오버핏인데 언발란스한 기장 덕분에 남의 옷 입은 느낌 1도 없고 여리여리해보여요.&nbsp;</p><p>빨리 따뜻해져서 단독으로 입고싶은 옷이에요.ㅠㅠㅠ</p>','madana', 'image2.jpg','4');
-insert into reviewtable(productno, content, id, image, star) values(2,'<p>첨에 입을 땐 스판이 아예 없어서 놀랐는데 그만큼 세탁만 잘 하면 오래 입을 수 있을 것 같아 마음에 들어욤 ㅎ-ㅎ&nbsp;</p><p>길이감도 적당합니당 제작 아닌 상품 오랜만에 구매해보는데 만족해요!&nbsp;</p>','shine', 'image1.jpg','4');
+insert into reviewtable(productno, content, id, image, star) values(3,'<p>첨에 입을 땐 스판이 아예 없어서 놀랐는데 그만큼 세탁만 잘 하면 오래 입을 수 있을 것 같아 마음에 들어욤 ㅎ-ㅎ&nbsp;</p><p>길이감도 적당합니당 제작 아닌 상품 오랜만에 구매해보는데 만족해요!&nbsp;</p>','shine', 'image1.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(1,'<p>이번에 산 옷들끼리 코디해봤는데 이 스커트 인스타로 봤을 때 부터 이건 사야한다 싶었는데 진짜 너무 이쁘네요ㅜㅜ</p><p>이번 할인구매 물품 중에 1등입니다ㅜㅜ저는 사실 쬐끔만 더 짧았으면 햇는데 딱 안정적으로 이쁜 길이긴 해요ㅎㅎ</p>','aodremm', 'image1.jpg','4');
 insert into reviewtable(productno, content, id, image, star) values(2,'<p>요즘 옷들이 작아서 안 맞을까 걱정했는데(ㅠㅠ)&nbsp;</p><p>불편하지 않게 딱 맞아요! 핏도 맘에 들고 만족스러워용^.^</p>','aodremm', 'image2.jpg','5');
 insert into reviewtable(productno, content, id, image, star) values(1,'<p>딱 봄 가을에 입기 좋을 얇은 두께입니다 겨울에는 너무 추울 것 같아요&nbsp;</p><p>에스 사이즈로 샀는데 조금 크게 나온 것 같아요</p><p>그래서인지 핏하게 예쁘게 떨어지지는 않아 조금 아쉽습니다 ㅠㅠ</p>','aodremm', 'image1.jpg','4');
@@ -651,7 +654,7 @@ call autoQuestion(2,'product', false, '<p>이곳은 상품문의를 위한 게�
 call autoReply(1,'productReply', 1, '<p>안녕하세요 고객님!</p><p>네~ 화이트 셔츠라서 어떤 색상이든 잘 어울릴것으로 보입니다~^^</p><p>문의 감사드립니다~!&nbsp;</p><p>spring에서 즐거운 쇼핑되시길 바랍니다 ♥</p><p>&nbsp;</p>', 'spring',true, null);
 call autoQuestion(null, 'general', false, '<p>이곳은 일반문의를 위한 게시판입니다.<br>상품과 관련된 문의는 제목을 상품문의로 선택해주세요!<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>모델분 스펙이 어떻게 되나요 ?!&nbsp;</p><p>키랑 몸무게 알고싶어요~~</p>', 'portal',true, null);
 call autoQuestion(1,'product', true, '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>160/55 인데 스노우 버튼 모직스커트 m사이즈 맞을까요?</p><p>160이 m입으면 길이는 어디까지 오나요?</p>', 'rhonia',true, null);
-call autoQuestion(2,'product', true, '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>실키 블라우스랑 스노우 모직 스커트랑 잘어울릴까요?</p>', 'portal',true, null);
+call autoQuestion(2,'product', true, '<p>이곳은 상품문의를 위한 게시판입니다.<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p>실키 블라우스랑 스노우 모직 스커트랑 잘어울릴까요?</p>', 'shine',true, null);
 call autoReply(1,'productReply', 5, '<p>안녕하세요 고객님!</p><p>165/50정도면 m사이즈 무난하게 잘 맞으실것으로 예상됩니다~^^♥</p><p>길이는 체형에 따라 조금씩 다르기 때문에 정확한 답변은 어려울 것 같습니다ㅜㅜ</p><p>문의 감사드립니다~!&nbsp;</p><p>spring에서 즐거운 쇼핑되시길 바랍니다 ♥</p><p>&nbsp;</p>', 'spring',true, null);
 call autoReply(2,'productReply', 6, '<p>안녕하세요 고객님!</p><p> 네!! 실키 여리핏 히든블라우스랑 모직 스노우 스커트는 세트로 잘 팔리는 상품입니다!♥</p><p>문의 감사드립니다~!&nbsp;</p><p>spring에서 즐거운 쇼핑되시길 바랍니다 ♥</p><p>&nbsp;</p>', 'spring',true, null);
 call autoQuestion(null, 'general', false, '<p>이곳은 일반문의를 위한 게시판입니다.<br>상품과 관련된 문의는 제목을 상품문의로 선택해주세요!<br><br>※게시판 성격에 맞지 않는 내용을 문의주실 경우 처리가 불가할 수 있습니다.<br><br>---------------------------------------------<br>&nbsp;</p><p> 혹시 spring 쇼룸 있나요? 직접 가서 입어보고 구매하고싶은데 ㅠㅠ</p>', 'madana',true, null);

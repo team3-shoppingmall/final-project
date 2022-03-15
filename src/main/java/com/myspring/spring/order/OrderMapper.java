@@ -53,6 +53,10 @@ public interface OrderMapper {
 	int getOrderByIdCount(String pageInfo, String state, String searchWord, String searchDate1, String searchDate2,
 			String id);
 
+//	리뷰 가능 주문 개수 조회
+	@Select("select count(*) from ordertable where id = #{id} and productNo = #{productNo} and reviewable = true")
+	int getOrderToReview(@Param("id") String id, @Param("productNo") int productNo);
+
 //	마이 페이지 메인 각각 주문 개수 조회
 	@Select("select state, count(*) as orderNo from ordertable where id = #{id} group by state")
 	List<OrderVO> getOrdersByIdGroupByState(@Param("id") String id);

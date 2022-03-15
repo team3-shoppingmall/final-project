@@ -1,14 +1,18 @@
 <template>
 <v-container fluid>
     <v-row justify="center">
-        <v-col>
-            <MyPageReview class="mt-0" :id="id" />
-        </v-col>
-    </v-row>
-    <v-divider class="my-5"></v-divider>
-    <v-row justify="center">
-        <v-col>
-            <MyPageQnA class="mt-0" :id="id" />
+        <v-col cols="11">
+            <v-row>
+                <v-col>
+                    <MyPageReview class="mt-0" :id="id" />
+                </v-col>
+            </v-row>
+            <v-divider class="my-5"></v-divider>
+            <v-row>
+                <v-col>
+                    <MyPageQnA class="mt-0" :id="id" />
+                </v-col>
+            </v-row>
         </v-col>
     </v-row>
 

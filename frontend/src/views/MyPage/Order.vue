@@ -1,7 +1,7 @@
 <template>
 <v-container fluid>
     <v-row justify="center">
-        <v-col cols="9">
+        <v-col cols="11">
             <v-row>
                 <v-col cols="auto">
                     <v-btn :color="colorPicker('주문 내역조회')" @click="selectOrder('주문 내역조회')" width="240px">주문 내역조회</v-btn>
@@ -55,7 +55,7 @@
                         </template>
                         <template #[`item.productName`]="{item}">
                             <v-btn text :to="`/productDetail/${item.productNo}`">
-                                <div class="text-left text-truncate" style="max-width: 90px;">
+                                <div class="text-left text-truncate" style="max-width: 190px;">
                                     {{ item.productName }}
                                 </div>
                             </v-btn>
@@ -75,8 +75,13 @@
                                 <DateDisplay :regDate="item.orderDate" />
                             </div>
                         </template>
+                        <template #[`item.delivery`]="{item}">
+                            <v-btn color="primary" @click="selectItem(item), dialog4 = true">
+                                배송정보
+                            </v-btn>
+                        </template>
                         <template v-slot:[`item.btn`]="{item}">
-                            <v-btn color="primary" @click="selectItem(item), dialog2 = true" v-if="selectedOrder=='주문 내역조회' && item.state != '배송완료' && item.state != '구매확정'">
+                            <v-btn color="primary" @click="selectItem(item), dialog2 = true" v-if="selectedOrder=='주문 내역조회' && (item.state == '입금전' || item.state == '결제완료' || item.state == '배송준비중')">
                                 취소
                             </v-btn>
                             <v-btn color="primary" @click.stop="selectItem(item), dialog = true" v-if="selectedOrder=='주문 내역조회' && item.state == '배송완료'">
@@ -172,6 +177,64 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+    <v-dialog v-model="dialog4" width="600px">
+        <v-card class="pa-2">
+            <v-simple-table>
+                <thead>
+                    <tr>
+                        <th class="text-h5" colspan="2">배송지 확인</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-h6">ID</td>
+                        <td>
+                            <v-text-field v-model="purchaseItem.id" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">이름</td>
+                        <td>
+                            <v-text-field v-model="purchaseItem.name" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">전화번호</td>
+                        <td>
+                            <v-text-field v-model="purchaseItem.tel" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">우편번호</td>
+                        <td>
+                            <v-text-field v-model="purchaseItem.zipCode" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">기본주소</td>
+                        <td>
+                            <v-text-field v-model="purchaseItem.address" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">상세주소</td>
+                        <td>
+                            <v-text-field v-model="purchaseItem.detailAddr" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <v-row justify="end">
+                                <v-col cols="auto">
+                                    <v-btn class="primary" @click="dialog4 = false">확인</v-btn>
+                                </v-col>
+                            </v-row>
+                        </td>
+                    </tr>
+                </tbody>
+            </v-simple-table>
+        </v-card>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -201,6 +264,7 @@ export default {
             dialog: false,
             dialog2: false,
             dialog3: false,
+            dialog4: false,
             orders: [],
             totalContents: 0,
             loading: false,
@@ -210,31 +274,31 @@ export default {
                 value: 'orderIdx',
                 divider: true,
                 align: 'center',
-                width: '10%',
+                width: '8%',
             }, {
                 text: '이미지',
                 value: 'imageName',
                 divider: true,
                 align: 'center',
-                width: '15%',
+                width: '12%',
             }, {
                 text: '상품명',
                 value: 'productName',
                 divider: true,
                 align: 'center',
-                width: '15%',
+                width: '19%',
             }, {
                 text: '개수',
                 value: 'orderAmount',
                 divider: true,
                 align: 'center',
-                width: '8%',
+                width: '6%',
             }, {
                 text: '가격',
                 value: 'totalPrice',
                 divider: true,
                 align: 'center',
-                width: '12%',
+                width: '10%',
             }, {
                 text: '주문 날짜',
                 value: 'orderDate',
@@ -246,53 +310,16 @@ export default {
                 value: 'state',
                 divider: true,
                 align: 'center',
-                width: '15%',
+                width: '10%',
+            }, {
+                text: '배송',
+                value: 'delivery',
+                divider: true,
+                align: 'center',
+                width: '10%',
             }, {
                 text: '',
                 value: 'btn',
-                align: 'center',
-                width: '15%',
-            }, ],
-
-            returnHeaders: [{
-                text: '주문번호',
-                value: 'orderIdx',
-                divider: true,
-                align: 'center',
-                width: '10%',
-            }, {
-                text: '이미지',
-                value: 'imageName',
-                divider: true,
-                align: 'center',
-                width: '15%',
-            }, {
-                text: '상품명',
-                value: 'productName',
-                divider: true,
-                align: 'center',
-                width: '25%',
-            }, {
-                text: '개수',
-                value: 'orderAmount',
-                divider: true,
-                align: 'center',
-                width: '8%',
-            }, {
-                text: '가격',
-                value: 'totalPrice',
-                divider: true,
-                align: 'center',
-                width: '12%',
-            }, {
-                text: '주문 날짜',
-                value: 'orderDate',
-                divider: true,
-                align: 'center',
-                width: '15%',
-            }, {
-                text: '주문 상태',
-                value: 'state',
                 align: 'center',
                 width: '15%',
             }, ],
@@ -438,9 +465,6 @@ export default {
             } else if (item.state == '배송준비중') {
                 alert('배송 준비중인 주문입니다. 배송 전 변경/취소 게시판에서 요청해주시기 바랍니다.');
                 this.$router.push(`/qna/beforeDeliveryQnA`);
-            } else {
-                alert('배송 후 교환/반품 게시판에서 요청해주시기 바랍니다.');
-                this.$router.push(`/qna/afterDeliveryQnA`);
             }
         },
         reset() {

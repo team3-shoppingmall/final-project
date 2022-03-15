@@ -27,9 +27,9 @@
                     <v-divider></v-divider>
                     <v-row justify="end" class="ma-1">
                         <v-col cols="auto">
-                            상품구매금액 {{AddComma(totalPrice)}} 원
-                            + 배송비 <span v-if="totalPrice<50000">{{AddComma(2500)}}</span><span v-if="totalPrice>=50000">0</span> 원
-                            = 합계 : <span v-if="totalPrice<50000">{{AddComma(totalPrice+2500)}}</span><span v-if="totalPrice>=50000">{{AddComma(totalPrice)}}</span> 원
+                            상품구매금액 {{AddComma(totalPrice - totalDiscount)}} 원
+                            + 배송비 <span v-if="totalPrice - totalDiscount<50000">{{AddComma(2500)}}</span><span v-if="totalPrice - totalDiscount>=50000">0</span> 원
+                            = 합계 : <span v-if="totalPrice - totalDiscount<50000">{{AddComma(totalPrice - totalDiscount+2500)}}</span><span v-if="totalPrice - totalDiscount>=50000">{{AddComma(totalPrice - totalDiscount)}}</span> 원
                         </v-col>
                     </v-row>
                 </template>
@@ -140,9 +140,9 @@
                         <td style="width:33%; text-align: center;" class="text-body-1">총 결제 예정 금액</td>
                     </tr>
                     <tr>
-                        <td style="width:33%; text-align: center;" class="v-data-table__divider text-h6">{{AddComma(totalPrice)}} 원</td>
+                        <td style="width:33%; text-align: center;" class="v-data-table__divider text-h6"><span v-if="totalPrice - totalDiscount<50000">{{AddComma(totalPrice + 2500)}}</span><span v-if="totalPrice - totalDiscount>=50000">{{AddComma(totalPrice)}}</span> 원</td>
                         <td style="width:33%; text-align: center;" class="v-data-table__divider text-h6">- {{AddComma(totalDiscount)}} 원</td>
-                        <td style="width:33%; text-align: center;" class="text-h6">= {{AddComma(totalPrice - totalDiscount)}} 원</td>
+                        <td style="width:33%; text-align: center;" class="text-h6">= <span v-if="totalPrice - totalDiscount<50000">{{AddComma(totalPrice - totalDiscount+2500)}}</span><span v-if="totalPrice - totalDiscount>=50000">{{AddComma(totalPrice - totalDiscount)}}</span> 원</td>
                     </tr>
                 </tbody>
             </v-simple-table>
@@ -224,13 +224,13 @@
                             <v-row justify="space-between" align="center">
                                 <v-col cols="auto" class="text-h6">최종 결제 금액</v-col>
                                 <v-col cols="auto" class="text-h4">
-                                    {{AddComma(totalPrice - totalDiscount)}}원
+                                    <span v-if="totalPrice - totalDiscount<50000">{{AddComma(totalPrice - totalDiscount - point+2500)}}</span><span v-if="totalPrice - totalDiscount>=50000">{{AddComma(totalPrice - totalDiscount - point)}}</span> 원
                                 </v-col>
                             </v-row>
                             <v-row justify="space-between" align="center">
                                 <v-col cols="auto">총 적립 예정 금액</v-col>
                                 <v-col cols="auto">
-                                    {{AddComma((totalPrice - totalDiscount)*0.02)}}원
+                                    {{AddComma(Math.round((totalPrice - totalDiscount - point)*0.02))}}원
                                 </v-col>
                             </v-row>
                         </v-col>
@@ -548,11 +548,8 @@ export default {
         } else {
             this.getMember();
             for (let i = 0; i < this.selected.length; i++) {
-                this.totalPrice += (this.selected[i].price - this.selected[i].discount) * this.selected[i].basketAmount;
-                this.totalDiscount += this.selected[i].discount;
-            }
-            if (Number(this.totalPrice) < 50000) {
-                this.totalPrice += 2500;
+                this.totalPrice += this.selected[i].price * this.selected[i].basketAmount;
+                this.totalDiscount += this.selected[i].discount * this.selected[i].basketAmount;
             }
         }
     }

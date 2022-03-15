@@ -44,36 +44,38 @@ public class NoticeService {
 	}
 
 	// 공지사항 삭제
-	
+
 	public ResponseEntity<?> deleteNotice(int noticeNo) {
 		ResponseEntity<?> entity = null;
 		try {
-			
+
 			int res = noticeMapper.deleteNotice(noticeNo);
 			if (res == 0)
-				return new ResponseEntity<> (HttpStatus.INTERNAL_SERVER_ERROR);
-			
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+
 			File file;
-	        File[] underDir;
+			File[] underDir;
 
-	        // 폴더 내 모든 파일 삭제
-	         file = new File("./images/notice/" + noticeNo + "/");
-	         underDir = file.listFiles();
-	         for (int i = 0; i < underDir.length; i++) {
-	            underDir[i].delete();
-	         }
+			// 폴더 내 모든 파일 삭제
+			file = new File("./images/notice/" + noticeNo + "/");
+			file.mkdir();
+			underDir = file.listFiles();
+			if (underDir != null) {
+				for (int i = 0; i < underDir.length; i++) {
+					underDir[i].delete();
+				}
+			}
 
-	         entity = new ResponseEntity<>(HttpStatus.OK);
+			entity = new ResponseEntity<>(HttpStatus.OK);
 
-	      } catch (Exception e) {
-	         e.printStackTrace();
-	         entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	      }
-	      return entity;
-			
+		} catch (Exception e) {
+			e.printStackTrace();
+			entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	
-	
+		return entity;
+
+	}
+
 //	public ResponseEntity<?> deleteNotice(int noticeNo) {
 //		System.out.println(noticeNo);
 //		int res = noticeMapper.deleteNotice(noticeNo);
@@ -128,9 +130,12 @@ public class NoticeService {
 
 //			폴더 내 모든 파일 삭제
 			file = new File("./images/notice/" + requestData.getNoticeNo() + "/");
+			file.mkdir();
 			underDir = file.listFiles();
-			for (int i = 0; i < underDir.length; i++) {
-				underDir[i].delete();
+			if (underDir != null) {
+				for (int i = 0; i < underDir.length; i++) {
+					underDir[i].delete();
+				}
 			}
 
 			if (fileList != null) {

@@ -157,7 +157,7 @@ export default {
             axios.delete(`/api/faq/deletefaq/${num}`)
                 .then(() => {
                     alert("삭제가 완료되었습니다.")
-                    this.$router.go();
+                    this.getFAQ(this.search);
                 })
 
         },

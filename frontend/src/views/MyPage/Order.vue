@@ -448,11 +448,10 @@ export default {
                     }
                 }).catch(err => {
                     console.log(err)
-                }).finally(() => {                    
+                }).finally(() => {
                     this.purchaseItem = '';
                     this.dialog = false;
-                }
-                )
+                })
         },
     },
     computed: {

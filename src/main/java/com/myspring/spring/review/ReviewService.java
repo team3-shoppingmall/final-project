@@ -87,9 +87,12 @@ public class ReviewService {
 				File[] underDir;
 				// 폴더 내 모든 파일 삭제
 				file = new File("./images/review/" + reviewNo + "/");
+				file.mkdir();
 				underDir = file.listFiles();
-				for (int i = 0; i < underDir.length; i++) {
-					underDir[i].delete();
+				if (underDir != null) {
+					for (int i = 0; i < underDir.length; i++) {
+						underDir[i].delete();
+					}
 				}
 				entity = new ResponseEntity<>(HttpStatus.OK);
 			} catch (Exception e) {
@@ -113,9 +116,12 @@ public class ReviewService {
 
 			// 폴더 내 모든 파일 삭제
 			file = new File("./images/review/" + requestData.getReviewNo() + "/");
+			file.mkdir();
 			underDir = file.listFiles();
-			for (int i = 0; i < underDir.length; i++) {
-				underDir[i].delete();
+			if (underDir != null) {
+				for (int i = 0; i < underDir.length; i++) {
+					underDir[i].delete();
+				}
 			}
 			if (fileList != null) {
 				MultipartFile multipartFile = fileList.get(0);

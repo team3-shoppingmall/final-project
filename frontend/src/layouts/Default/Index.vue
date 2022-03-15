@@ -47,7 +47,7 @@
                         <v-btn color="primary" dark :to="'/basket'">
                             BASKET
                         </v-btn>
-                          <v-btn color="primary" dark :to="'/myPage/wishlist'">
+                        <v-btn color="primary" dark :to="'/myPage/wishlist'">
                             WISHLIST
                         </v-btn>
                     </v-col>
@@ -56,7 +56,7 @@
                             ADMIN
                         </v-btn>
                         <v-btn color="primary" v-if="getLogin.user.authority!='ROLE_ADMIN'" dark :to="'/myPage/home'">
-                            {{getLogin.user.name}}
+                            {{getLogin.user.name}}님
                         </v-btn>
                         <v-btn color="primary" dark @click="signOut">
                             SignOut

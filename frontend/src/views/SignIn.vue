@@ -74,6 +74,7 @@ export default {
                         let temp = res.data;
                         let user = {
                             id: temp.id,
+                            name :temp.name,
                             authority: temp.authority,
                         };
                         this.Login({

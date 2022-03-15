@@ -1,5 +1,6 @@
 package com.myspring.spring.member;
 
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.jdbc.SQL;
 
 public class MemberUtils {
@@ -13,6 +14,21 @@ public class MemberUtils {
 					WHERE(condition + " like " + "'%" + param + "%'");
 				LIMIT(perPage);
 				OFFSET(start);
+			}
+		};
+
+//		System.out.println(sql.toString());
+		return sql.toString();
+	}
+	
+//	@Select("select count(id) from membertable")
+	public String getCount(String condition, Object param) {
+		SQL sql = new SQL() {
+			{
+				SELECT("count(id)");
+				FROM("membertable");
+				if (condition != null)
+					WHERE(condition + " like " + "'%" + param + "%'");
 			}
 		};
 

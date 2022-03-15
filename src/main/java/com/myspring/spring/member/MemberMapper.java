@@ -23,11 +23,13 @@ public interface MemberMapper {
 	// perPage);
 
 	// 전체 멤버 수 조회
-	@Select("select count(id) from membertable")
-	int getMemberCount();
+	@SelectProvider(type = MemberUtils.class, method = "getCount")
+//	@Select("select count(id) from membertable")
+	int getMemberCount(String condition, Object param);
 
 	// 멤버 조회
 	// select * from membertable where ? like %?%
+
 	@SelectProvider(type = MemberUtils.class, method = "getMembers")
 	List<MemberVO> getMembers(int start, int perPage, String condition, Object param);
 
@@ -52,6 +54,5 @@ public interface MemberMapper {
 
 	@Delete("delete from membertable where id = #{id} and 0 = (select count(*) from ordertable where id = #{id} and STATE in ('입금전', '결제완료', '배송준비중', '배송중'))")
 	int deleteMember(@Param("id") String id);
-
 
 }

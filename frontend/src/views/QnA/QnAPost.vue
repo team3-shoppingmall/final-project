@@ -120,7 +120,6 @@ export default {
                 }
             }).then((res) => {
                 const link = res.data;
-                console.log(link);
                 this.$router.push(`/qna/${link}`)
 
             }).catch((err) => {
@@ -141,8 +140,7 @@ export default {
         },
         deleteQnA() {
             axios.delete(`/api/qna/deleteqna/${this.qna.qnaNo}`)
-                .then(res => {
-                    console.log(res.data);
+                .then(() => {
                     alert("삭제되었습니다.");
                     this.$router.go(this.returnCount);
                 }).catch((err) => {

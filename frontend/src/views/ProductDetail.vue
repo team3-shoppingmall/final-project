@@ -60,7 +60,7 @@
                                 <tr v-if="sizeOption != null">
                                     <td style="width:10%"> SIZE </td>
                                     <td colspan="2">
-                                        <v-chip-group active-class="deep-purple--text text--accent-4">
+                                        <v-chip-group active-class="deep-purple--text text--accent-4" v-model="sizeSelection">
                                             <v-chip label outlined v-for="size in sizeOption" :key="size" :value="size" :disabled="(colorOption != null && colorSelection == null) || product.amount == 0 || product.onSale == false" @click="addSelected(colorSelection, size)">
                                                 {{ size }}
                                             </v-chip>
@@ -246,7 +246,7 @@
                 <v-btn color="primary" :to="`/basket`">
                     장바구니로 이동
                 </v-btn>
-                <v-btn color="white" @click="$router.go()">
+                <v-btn color="white" @click="reset">
                     계속 쇼핑하기
                 </v-btn>
             </v-card-actions>
@@ -279,11 +279,11 @@ export default {
             colorOption: null,
             colorSelection: null,
             sizeOption: null,
+            sizeSelection: null,
             selected: [],
             images: [],
             detailImages: [],
             totalPrice: 0,
-            number: 0,
             numberRule: val => {
                 if (val == '') return '개수를 입력해주세요'
                 return true
@@ -297,7 +297,7 @@ export default {
         randomNumber(count) {
             return Math.floor(Math.random() * 100) + count;
         },
-        getProudct() {
+        getProduct() {
             this.dataLoaded = false;
             axios.get(`/api/product/getProduct/${this.pageID}`).then(res => {
                 this.product = res.data;
@@ -324,24 +324,25 @@ export default {
                         nextPage: this.$route.path
                     }
                 });
-            }
-            let data = {
-                id: this.getLogin.user.id,
-                productNo: this.product.productNo,
-                selectedColor: color,
-                selectedSize: size,
-                basketAmount: 1,
-                price: this.product.price,
-                discount: this.product.discount
-            }
-            for (let i = 0; i < this.selected.length; i++) {
-                if (this.selected[i].selectedColor == data.selectedColor && this.selected[i].selectedSize == data.selectedSize) {
-                    alert('이미 추가한 옵션입니다. 옵션 개수를 조정해주세요.');
-                    return;
+            } else {
+                let data = {
+                    id: this.getLogin.user.id,
+                    productNo: this.product.productNo,
+                    selectedColor: color,
+                    selectedSize: size,
+                    basketAmount: 1,
+                    price: this.product.price,
+                    discount: this.product.discount
                 }
+                for (let i = 0; i < this.selected.length; i++) {
+                    if (this.selected[i].selectedColor == data.selectedColor && this.selected[i].selectedSize == data.selectedSize) {
+                        alert('이미 추가한 옵션입니다. 옵션 개수를 조정해주세요.');
+                        return;
+                    }
+                }
+                this.selected.push(data);
+                this.amountFilter();
             }
-            this.selected.push(data);
-            this.amountFilter();
         },
         deleteSelected(num) {
             this.selected.splice(num, 1);
@@ -350,7 +351,6 @@ export default {
         amountFilter() {
             let amount = 0;
             for (let i = 0; i < this.selected.length; i++) {
-                console.log(this.selected[i].basketAmount);
                 if (this.selected[i].basketAmount > 0 && this.selected[i].basketAmount == Math.round(this.selected[i].basketAmount)) {
                     amount += Number(this.selected[i].basketAmount);
                 } else {
@@ -394,6 +394,13 @@ export default {
                     }
                 })
         },
+        reset() {
+            this.colorSelection = null;
+            this.sizeSelection = null;
+            this.selected = [];
+            this.totalPrice = 0;
+            this.dialog = false;
+        },
         addToWishList() {
             if (this.getLogin == null) {
                 alert('로그인을 해주세요');
@@ -403,17 +410,18 @@ export default {
                         nextPage: this.$route.path
                     }
                 });
+            } else {
+                axios.post(`/api/wishList/insert`, {
+                        id: this.getLogin.user.id,
+                        productNo: this.pageID
+                    })
+                    .then(() => {
+                        alert('관심 상품에 저장하셨습니다');
+                    }).catch((err) => {
+                        alert('이미 추가된 상품입니다');
+                        console.log(err);
+                    })
             }
-            axios.post(`/api/wishList/insert`, {
-                    id: this.getLogin.user.id,
-                    productNo: this.pageID
-                })
-                .then(() => {
-                    alert('관심 상품에 저장하셨습니다');
-                }).catch((err) => {
-                    alert('이미 추가된 상품입니다');
-                    console.log(err);
-                })
         },
         scrollTo(tag) {
             let scroll = 0;
@@ -437,12 +445,12 @@ export default {
     watch: {
         '$route'() {
             this.pageID = this.$route.params.id;
-            this.getProudct();
+            this.getProduct();
         }
     },
     mounted() {
         this.pageID = this.$route.params.id;
-        this.getProudct();
+        this.getProduct();
 
     }
 }

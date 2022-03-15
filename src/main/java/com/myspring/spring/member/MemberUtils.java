@@ -1,6 +1,5 @@
 package com.myspring.spring.member;
 
-import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.jdbc.SQL;
 
 public class MemberUtils {
@@ -10,8 +9,10 @@ public class MemberUtils {
 			{
 				SELECT("id, name, tel, email, zipcode, addr1, addr2, terms, point");
 				FROM("membertable");
-				if (condition != null)
-					WHERE(condition + " like " + "'%" + param + "%'");
+				if (!(param == null || param.equals(""))){
+					WHERE(condition + " like " + "'%" + param + "%'");					
+				}
+				ORDER_BY("authority, name");
 				LIMIT(perPage);
 				OFFSET(start);
 			}
@@ -27,8 +28,9 @@ public class MemberUtils {
 			{
 				SELECT("count(id)");
 				FROM("membertable");
-				if (condition != null)
-					WHERE(condition + " like " + "'%" + param + "%'");
+				if (!(param == null || param.equals(""))){
+					WHERE(condition + " like " + "'%" + param + "%'");					
+				}
 			}
 		};
 

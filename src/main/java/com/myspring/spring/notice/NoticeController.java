@@ -35,8 +35,8 @@ public class NoticeController {
 	// 공지사항 목록 출력
 	@GetMapping("/getNotice")
 	public ResponseEntity<?> getNotice(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
-			@RequestParam("search") String search, @RequestParam("searchWord") String searchWord) {
-		return noticeService.getNotice(page, perPage, search, searchWord);
+			@RequestParam("searchWord") String searchWord) {
+		return noticeService.getNotice(page, perPage, searchWord);
 	}
 
 	// 공지사항 게시물 보기
@@ -54,23 +54,23 @@ public class NoticeController {
 	// 공지사항 추가 + 파일
 	@PostMapping("/insertNotice")
 	public ResponseEntity<?> insertNotice(@RequestPart(value = "data") NoticeVO requestData,
-					@RequestParam(value = "fileList", required = false) List<MultipartFile> fileList) throws NotFoundException {
+			@RequestParam(value = "fileList", required = false) List<MultipartFile> fileList) throws NotFoundException {
 		return noticeService.insertNotice(requestData, fileList);
 	}
-	
+
 	// 공지사항 수정 + 파일
 	@PatchMapping("/updateNotice")
 	public ResponseEntity<?> updateNotice(@RequestPart(value = "data") NoticeVO requestData,
-					@RequestParam(value = "fileList", required = false) List<MultipartFile> fileList) throws NotFoundException {
+			@RequestParam(value = "fileList", required = false) List<MultipartFile> fileList) throws NotFoundException {
 		return noticeService.updateNotice(requestData, fileList);
 	}
-	
+
 	// 서버에서 이미지 가져오기
 	@GetMapping("/noticeImage/{noticeNo}/{image}")
 	public ResponseEntity<?> noticeImage(@PathVariable("noticeNo") int noticeNo, @PathVariable("image") String image)
-				throws IOException {
+			throws IOException {
 		InputStream imageStream;
-		
+
 		try {
 			imageStream = new FileInputStream("./images/notice/" + noticeNo + "/" + image);
 		} catch (FileNotFoundException e) {
@@ -78,8 +78,8 @@ public class NoticeController {
 		}
 		byte[] imageByteArray = IOUtils.toByteArray(imageStream);
 		imageStream.close();
-		
-		return new ResponseEntity<byte[]> (imageByteArray, HttpStatus.OK);
+
+		return new ResponseEntity<byte[]>(imageByteArray, HttpStatus.OK);
 	}
-	
+
 }

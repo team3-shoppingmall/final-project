@@ -69,7 +69,7 @@
                 <tbody>
                     <tr v-if="colorOption != null">
                         <td style="width:10%"> COLOR </td>
-                        <td colspan="2">
+                        <td>
                             <v-chip-group v-model="colorSelection" active-class="deep-purple--text text--accent-4">
                                 <v-chip label outlined v-for="color in colorOption" :key="color" :value="color">
                                     {{ color }}
@@ -79,12 +79,18 @@
                     </tr>
                     <tr v-if="sizeOption != null">
                         <td style="width:10%"> SIZE </td>
-                        <td colspan="2">
+                        <td>
                             <v-chip-group v-model="sizeSelection" active-class="deep-purple--text text--accent-4">
                                 <v-chip label outlined v-for="size in sizeOption" :key="size" :value="size" :disabled="colorOption != null && colorSelection == null">
                                     {{ size }}
                                 </v-chip>
                             </v-chip-group>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:10%"> 수량 </td>
+                        <td>
+                            <v-text-field type="number" min="1" :rules="[numberRule]" v-model="basketAmount" @keyup="amountFilter" @click="amountFilter"></v-text-field>
                         </td>
                     </tr>
                     <tr>
@@ -102,6 +108,28 @@
             </v-simple-table>
         </v-card>
     </v-dialog>
+    <v-dialog v-model="dialog2" persistent max-width="420">
+        <v-card>
+            <v-card-title class="text-body-1">
+                장바구니 담기
+            </v-card-title>
+            <v-card-text v-if="overlap == 0">
+                선택하신 상품이 장바구니에 저장되었습니다.
+            </v-card-text>
+            <v-card-text v-else>
+                중복된 {{overlap}}개의 상품을 제외하고 장바구니에 저장되었습니다.
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" :to="`/basket`">
+                    장바구니로 이동
+                </v-btn>
+                <v-btn color="white" @click="reset">
+                    계속 쇼핑하기
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -116,6 +144,8 @@ export default {
     data() {
         return {
             dialog: false,
+            dialog2: false,
+            overlap: 0,
             loading: false,
             options: {},
             headers: [{
@@ -155,9 +185,13 @@ export default {
             colorSelection: null,
             sizeOption: null,
             sizeSelection: null,
+            basketAmount: 1,
             selectedItem: '',
 
-            id: 'tester',
+            numberRule: val => {
+                if (val == '') return '개수를 입력해주세요'
+                return true
+            },
         }
     },
     methods: {
@@ -233,6 +267,16 @@ export default {
             this.selectedItem = item;
             this.dialog = true;
         },
+        reset() {
+            this.colorOption = null;
+            this.colorSelection = null;
+            this.sizeOption = null;
+            this.sizeSelection = null;
+            this.basketAmount = 1;
+            this.dialog2 = false;
+            this.dialog = false;
+            this.getWishList();
+        },
         buyItNow() {
             let selection = [];
             let data = {
@@ -240,8 +284,9 @@ export default {
                 productNo: this.selectedItem.productNo,
                 selectedColor: this.colorSelection,
                 selectedSize: this.sizeSelection,
-                basketAmount: 1,
-                price: this.selectedItem.price - this.selectedItem.discount
+                basketAmount: this.basketAmount,
+                price: this.selectedItem.price,
+                discount: this.selectedItem.discount,
             }
             selection.push(data);
             this.$router.push({
@@ -258,8 +303,9 @@ export default {
                 productNo: this.selectedItem.productNo,
                 selectedColor: this.colorSelection,
                 selectedSize: this.sizeSelection,
-                basketAmount: 1,
-                price: this.selectedItem.price - this.selectedItem.discount
+                basketAmount: this.basketAmount,
+                price: this.selectedItem.price,
+                discount: this.selectedItem.discount,
             }
             selection.push(data);
             axios.get(`/api/basket/getBasketCount/${this.getLogin.user.id}`)
@@ -272,15 +318,20 @@ export default {
                                 if (res.data > 0) {
                                     alert('저장에 실패하셨습니다');
                                 } else {
-                                    alert('장바구니에 저장하셨습니다');
+                                    this.dialog2 = true;
                                 }
-                                this.$router.go();
                             }).catch((err) => {
                                 alert('저장에 실패하셨습니다');
                                 console.log(err);
                             })
                     }
                 })
+        },
+        amountFilter() {
+            if (!(this.basketAmount > 0 && this.basketAmount == Math.round(this.basketAmount))) {
+                alert('잘못된 입력입니다.');
+                this.basketAmount = 1;
+            }
         },
     },
     computed: {

@@ -9,10 +9,28 @@ public class MemberUtils {
 			{
 				SELECT("id, name, tel, email, zipcode, addr1, addr2, terms, point");
 				FROM("membertable");
-				if (condition != null)
-					WHERE(condition + " like " + "'%" + param + "%'");
+				if (!(param == null || param.equals(""))){
+					WHERE(condition + " like " + "'%" + param + "%'");					
+				}
+				ORDER_BY("authority, name");
 				LIMIT(perPage);
 				OFFSET(start);
+			}
+		};
+
+//		System.out.println(sql.toString());
+		return sql.toString();
+	}
+	
+//	@Select("select count(id) from membertable")
+	public String getCount(String condition, Object param) {
+		SQL sql = new SQL() {
+			{
+				SELECT("count(id)");
+				FROM("membertable");
+				if (!(param == null || param.equals(""))){
+					WHERE(condition + " like " + "'%" + param + "%'");					
+				}
 			}
 		};
 

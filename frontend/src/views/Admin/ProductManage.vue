@@ -334,7 +334,7 @@ export default {
         }
     },
     methods: {
-        searchProduct() {
+        getProduct() {
             let type1 = null;
             let type2 = null;
             if (this.typeSelected != null) {
@@ -367,6 +367,13 @@ export default {
                 console.log(err);
             })
         },
+        searchProduct() {
+            if (this.options.page != 1) {
+                this.options.page = 1;
+            } else {
+                this.getProduct();
+            }
+        },
         reset() {
             this.searchWord1 = null;
             this.searchWord2 = null;
@@ -384,13 +391,13 @@ export default {
             }
             this.options.page = 1;
             this.options.itemsPerPage = 10;
-            this.searchProduct();
+            this.getProduct();
         },
         changeOnSale(item) {
             axios.patch(`/api/product/updateOnSale/${item.productNo}`)
                 .then(() => {
                     alert('판매 여부가 변경되었습니다');
-                    this.searchProduct();
+                    this.getProduct();
                 }).catch(err => {
                     alert('변경 실패했습니다.')
                     console.log(err);
@@ -423,7 +430,7 @@ export default {
     watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
         options: {
             handler() {
-                this.searchProduct();
+                this.getProduct();
             },
             deep: true,
         },

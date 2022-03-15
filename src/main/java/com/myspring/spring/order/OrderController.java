@@ -29,7 +29,7 @@ public class OrderController {
 //	주문 추가
 	@PostMapping("/insertOrder")
 	public ResponseEntity<?> insertOrder(@RequestPart(value = "orderList") List<OrderVO> orderList,
-			@RequestPart(value = "basketIdxList") List<Long> basketIdxList,
+			@RequestPart(value = "basketIdxList", required = false) List<Long> basketIdxList,
 			@RequestPart(value = "pointData") PointVO pointVO) {
 		return orderService.insertOrder(orderList, basketIdxList, pointVO);
 	}

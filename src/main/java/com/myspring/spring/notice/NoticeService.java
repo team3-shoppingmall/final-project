@@ -22,10 +22,10 @@ public class NoticeService {
 	}
 
 	// 게시물 목록과 개수 가져오기
-	public ResponseEntity<?> getNotice(int page, int perPage, String search, String searchWord) {
+	public ResponseEntity<?> getNotice(int page, int perPage, String searchWord) {
 		int start = (page - 1) * perPage;
-		int count = noticeMapper.getCount(search, searchWord);
-		List<NoticeVO> noticeList = noticeMapper.getNotice(start, perPage, search, searchWord);
+		int count = noticeMapper.getCount(searchWord);
+		List<NoticeVO> noticeList = noticeMapper.getNotice(start, perPage, searchWord);
 
 		Map<String, Object> resMap = new HashMap<>();
 		resMap.put("noticeList", noticeList);

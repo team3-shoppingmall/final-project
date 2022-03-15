@@ -174,6 +174,7 @@ export default {
                     axios.delete(`/api/member/delete/${this.id}`)
                         .then(() => {
                             alert("탈퇴가 완료되었습니다.");
+                            this.Logout();
                             this.$router.push('/')
                         })
                         .catch(() => {
@@ -224,14 +225,14 @@ export default {
                     this.zipcode = data.zonecode;
                 },
             }).open();
-        }
+        },
+        ...LoginStore.mapActions(['Logout']),
     },
     components: {},
     computed: {
         ...LoginStore.mapGetters(['getLogin']),
     },
     mounted() {
-        console.log(this.getLogin)
         if (this.getLogin) {
             this.getData();
         }

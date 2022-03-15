@@ -127,7 +127,7 @@ export default {
         }
     },
     methods: {
-        searchSales() {
+        getSales() {
             this.sales = [];
             this.totalContents = 0;
             this.totalPrice = 0;
@@ -158,6 +158,13 @@ export default {
                 this.loading = false
             )
         },
+        searchSales() {
+            if (this.options.page != 1) {
+                this.options.page = 1;
+            } else {
+                this.getSales();
+            }
+        },
         reset() {
             this.searchWord1 = null;
             this.searchWord2 = null;
@@ -171,7 +178,7 @@ export default {
             }
             this.options.page = 1;
             this.options.itemsPerPage = 10;
-            this.searchSales();
+            this.getSales();
         },
         searchPolicy() {
             if (this.searchWord1 < 0 || this.searchWord1 > 999999999 || this.searchWord1 != Math.round(this.searchWord1)) {
@@ -190,7 +197,7 @@ export default {
     watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
         options: {
             handler() {
-                this.searchSales();
+                this.getSales();
             },
             deep: true,
         },

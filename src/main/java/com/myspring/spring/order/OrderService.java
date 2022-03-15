@@ -47,10 +47,13 @@ public class OrderService {
 			if (res == 0)
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		for (long basketIdx : basketIdxList) {
-			res = basketMapper.deleteBasket(basketIdx);
-			if (res == 0)
-				return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+		if(basketIdxList.get(0) != null) {
+			for (long basketIdx : basketIdxList) {
+				System.out.println(basketIdx);
+				res = basketMapper.deleteBasket(basketIdx);
+				if (res == 0)
+					return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
+			}			
 		}
 		if (pointVO.getPoint() != 0) {
 			res = pointMapper.insertPoint(pointVO);

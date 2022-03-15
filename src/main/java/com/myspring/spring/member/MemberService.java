@@ -47,7 +47,7 @@ public class MemberService {
 	public ResponseEntity<?> getMembers(int page, int perPage, String condition, Object param) {
 		int start = (page - 1) * perPage;
 		List<MemberVO> res = memberMapper.getMembers(start, perPage, condition, param);
-		int count = memberMapper.getMemberCount();
+		int count = memberMapper.getMemberCount(condition, param);
 		Map<String, Object> resMap = new HashMap<>();
 		resMap.put("res", res);
 		resMap.put("count", count);
@@ -101,8 +101,11 @@ public class MemberService {
 		}
 //		System.out.println("1 " + pwd + " 2 " + resPwd);
 		if (encoder.matches(pwd, res.getPassword())) {
-			res.setPassword(null);
-			return new ResponseEntity<>(res, HttpStatus.OK);
+			LoginVO login = new LoginVO();
+			login.setId(res.getId());
+			login.setName(res.getName());
+			login.setAuthority(res.getAuthority());
+			return new ResponseEntity<>(login, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>("PASSWORD NOT MATCHED", HttpStatus.INTERNAL_SERVER_ERROR);
 		}

@@ -55,7 +55,7 @@
                         <v-btn color="primary" v-if="getLogin.user.authority=='ROLE_ADMIN'" dark :to="'/admin/ProductManage'">
                             ADMIN
                         </v-btn>
-                        <v-btn color="primary" v-if="getLogin.user.authority!='ROLE_ADMIN'" dark :to="'/myPage/home'">
+                        <v-btn color="primary" v-if="getLogin.user.authority!='ROLE_ADMIN'" dark :to="'/myPage/home'" width="100">
                             {{getLogin.user.name}}
                         </v-btn>
                         <v-btn color="primary" dark @click="signOut">
@@ -148,8 +148,8 @@
                                     </v-col>
                                 </v-row>
                                 <v-row v-if="msg.buttons != undefined">
-                                    <v-col v-for="button in msg.buttons" :key="button" cols="2">
-                                        <v-btn tile @click="selectMessage(msg, button)" color="primary">{{button}}</v-btn>
+                                    <v-col  cols="auto">
+                                        <v-btn v-for="button in msg.buttons" :key="button" tile @click="selectMessage(msg, button)" color="primary">{{button}}</v-btn>
                                     </v-col>
                                 </v-row>
                                 <v-row v-if="msg.url != undefined">

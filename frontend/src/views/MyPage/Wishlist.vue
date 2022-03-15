@@ -199,7 +199,6 @@ export default {
                     deletes.push(data);
                 }
             } else {
-                console.log('test');
                 console.log(item);
                 let data = {
                     id: this.getLogin.user.id,

@@ -155,7 +155,6 @@ export default {
                     email: this.email,
                 }
             }
-            console.log(member)
             axios.put('/api/member/updateMember', member)
                 .then(() => {
                     alert("수정 성공")
@@ -231,7 +230,6 @@ export default {
         ...LoginStore.mapGetters(['getLogin']),
     },
     mounted() {
-        console.log(this.getLogin)
         if (this.getLogin) {
             this.getData();
         }

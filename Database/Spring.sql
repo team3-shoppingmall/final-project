@@ -42,7 +42,7 @@ CREATE TABLE membertable (
 	ZIPCODE VARCHAR(10) NOT NULL,
 	ADDR1 VARCHAR(80) NOT NULL,
 	ADDR2 VARCHAR(50) NOT NULL,
-	TERMS BOOLEAN NOT NULL,
+	TERMS BOOLEAN DEFAULT FALSE,
 	POINT INT,
 	AUTHORITY VARCHAR(20) NOT NULL
 );
@@ -198,7 +198,16 @@ CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`ordertable_BEFORE_UPDATE` BEFO
 BEGIN
 if(new.state = '구매확정')
 then
+set new.reviewable = true;
 insert into pointtable(id, point, content) values (old.id, old.totalPrice * 0.02, '구매 확정');
+end if;
+if(new.state = '교환완료')
+then
+set new.reviewable = true;
+end if;
+if(new.state in ('환불완료','취소완료'))
+then
+set new.reviewable = false;
 end if;
 END$$
 DELIMITER ;

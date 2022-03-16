@@ -51,10 +51,11 @@ public class ReviewController {
 	}
 
 	// 리뷰 작성
-	@PostMapping("/insert")
-	public ResponseEntity<?> insertReview(@RequestPart(value = "data") ReviewVO requestData,
+	@PostMapping("/insert/{orderIdx}")
+	public ResponseEntity<?> insertReview(@PathVariable("orderIdx") int orderIdx,
+			@RequestPart(value = "data") ReviewVO requestData,
 			@RequestParam(value = "fileList", required = false) List<MultipartFile> filList) throws NotFoundException {
-		return reviewService.insertReview(requestData, filList);
+		return reviewService.insertReview(orderIdx, requestData, filList);
 	}
 
 	// 리뷰 삭제

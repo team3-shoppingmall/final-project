@@ -17,6 +17,15 @@
     <v-row>
         <v-col>
             <v-data-table :headers="headers" :options.sync="options" :items="items" :server-items-length="totalContents" :loading="loading">
+                <template v-slot:[`item.id`]="{ item }">
+                    <v-row justify="center">
+                        <v-col cols="auto">
+                            <div class="text-left text-truncate" style="max-width: 130px;">
+                                {{ item.id }}
+                            </div>
+                        </v-col>
+                    </v-row>
+                </template>
                 <template v-slot:[`item.tel`]="{ item }">
                     <div>{{telFormatter(item.tel)}}</div>
                 </template>
@@ -252,7 +261,7 @@ export default {
                 value: 'id',
                 divider: true,
                 align: 'center',
-                width: '7%',
+                width: '10%',
                 sortable: false,
                 class: 'text-subtitle-1'
             }, {
@@ -300,7 +309,7 @@ export default {
                 value: 'addr2',
                 divider: true,
                 align: 'center',
-                width: '15%',
+                width: '12%',
                 sortable: false,
                 class: 'text-subtitle-1'
             }, {

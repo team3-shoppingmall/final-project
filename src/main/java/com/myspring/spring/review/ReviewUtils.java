@@ -14,7 +14,7 @@ public class ReviewUtils {
 				LEFT_OUTER_JOIN("producttable p on p.productNo = r.productNo");
 				if (searchWord != null && !searchWord.equals("")) {
 					AND();
-					String[] words = searchWord.split(" ");
+					String[] words = searchWord.split(",");
 					String temp = null;
 					for (int i = 0; i < words.length; i++) {
 						if (i == 0) {
@@ -60,7 +60,7 @@ public class ReviewUtils {
 				LEFT_OUTER_JOIN("producttable p on p.productNo = r.productNo");
 				if (searchWord != null && !searchWord.equals("")) {
 					AND();
-					String[] words = searchWord.split(" ");
+					String[] words = searchWord.split(",");
 					String temp = null;
 					for (int i = 0; i < words.length; i++) {
 						if (i == 0) {

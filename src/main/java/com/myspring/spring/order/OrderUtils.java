@@ -14,7 +14,7 @@ public class OrderUtils {
 				if (!((searchWord1 == null || searchWord1.equals(""))
 						&& (searchWord2 == null || searchWord2.equals("")))) {
 					AND();
-					String[] words = searchWord1.split(" ");
+					String[] words = searchWord1.split(",");
 					String temp = null;
 					switch (search) {
 					case "orderIdx":
@@ -79,7 +79,7 @@ public class OrderUtils {
 				if (!((searchWord1 == null || searchWord1.equals(""))
 						&& (searchWord2 == null || searchWord2.equals("")))) {
 					AND();
-					String[] words = searchWord1.split(" ");
+					String[] words = searchWord1.split(",");
 					String temp = null;
 					switch (search) {
 					case "orderIdx":
@@ -141,7 +141,7 @@ public class OrderUtils {
 				if (!((searchWord1 == null || searchWord1.equals(""))
 						&& (searchWord2 == null || searchWord2.equals("")))) {
 					AND();
-					String[] words = searchWord1.split(" ");
+					String[] words = searchWord1.split(",");
 					String temp = null;
 					switch (search) {
 					case "productNo":
@@ -195,7 +195,7 @@ public class OrderUtils {
 				if (!((searchWord1 == null || searchWord1.equals(""))
 						&& (searchWord2 == null || searchWord2.equals("")))) {
 					AND();
-					String[] words = searchWord1.split(" ");
+					String[] words = searchWord1.split(",");
 					String temp = null;
 					switch (search) {
 					case "productNo":
@@ -256,7 +256,7 @@ public class OrderUtils {
 				}
 				if (!((searchWord == null || searchWord.equals("")))) {
 					AND();
-					String[] words = searchWord.split(" ");
+					String[] words = searchWord.split(",");
 					String temp = null;
 					for (int i = 0; i < words.length; i++) {
 						if (i == 0) {
@@ -303,7 +303,7 @@ public class OrderUtils {
 				}
 				if (!((searchWord == null || searchWord.equals("")))) {
 					AND();
-					String[] words = searchWord.split(" ");
+					String[] words = searchWord.split(",");
 					String temp = null;
 					for (int i = 0; i < words.length; i++) {
 						if (i == 0) {

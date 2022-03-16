@@ -37,7 +37,7 @@ public class QnaUtils {
 				}
 				if (searchWord != null && !searchWord.equals("")) {
 					AND();
-					String[] words = searchWord.split(" ");
+					String[] words = searchWord.split(",");
 					String temp = null;
 					for (int i = 0; i < words.length; i++) {
 						if (i == 0) {
@@ -90,7 +90,7 @@ public class QnaUtils {
 				}
 				if (searchWord != null && !searchWord.equals("")) {
 					AND();
-					String[] words = searchWord.split(" ");
+					String[] words = searchWord.split(",");
 					String temp = null;
 					for (int i = 0; i < words.length; i++) {
 						if (i == 0) {
@@ -122,7 +122,7 @@ public class QnaUtils {
 				LEFT_OUTER_JOIN("producttable p on p.productNo = q.productNo");
 				if (searchWord != null && !searchWord.equals("")) {
 					AND();
-					String[] words = searchWord.split(" ");
+					String[] words = searchWord.split(",");
 					String temp = null;
 					for (int i = 0; i < words.length; i++) {
 						if (i == 0) {
@@ -165,7 +165,7 @@ public class QnaUtils {
 				LEFT_OUTER_JOIN("producttable p on p.productNo = q.productNo");
 				if (searchWord != null && !searchWord.equals("")) {
 					AND();
-					String[] words = searchWord.split(" ");
+					String[] words = searchWord.split(",");
 					String temp = null;
 					for (int i = 0; i < words.length; i++) {
 						if (i == 0) {

@@ -97,25 +97,25 @@
                                     <tr>
                                         <td> 받으시는 분 </td>
                                         <td>
-                                            <v-text-field v-model="delivery.name" outlined hide-details dense></v-text-field>
+                                            <v-text-field v-model="delivery.name" outlined hide-details dense :readonly="deliverySelect"></v-text-field>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td> 주소 </td>
                                         <td>
                                             <div class="d-flex ">
-                                                <v-text-field v-model="delivery.zipcode" outlined hide-details label="우편번호" dense type="number" @click="execDaumPostcode('delivery')" hide-spin-buttons readonly></v-text-field>
-                                                <v-btn color="primary" class="mx-1" @click="execDaumPostcode('delivery')">검색</v-btn>
+                                                <v-text-field v-model="delivery.zipcode" outlined hide-details label="우편번호" dense type="number" @click="deliverySelect ? '' : execDaumPostcode('delivery')" hide-spin-buttons readonly></v-text-field>
+                                                <v-btn color="primary" class="mx-1" @click="deliverySelect ? '' : execDaumPostcode('delivery')">검색</v-btn>
                                             </div>
 
-                                            <v-text-field v-model="delivery.addr1" outlined hide-details label="기본주소" dense class="mt-2" @click="execDaumPostcode('delivery')" readonly></v-text-field>
-                                            <v-text-field v-model="delivery.addr2" outlined hide-details label="상세주소" dense class="mt-2"></v-text-field>
+                                            <v-text-field v-model="delivery.addr1" outlined hide-details label="기본주소" dense class="mt-2" @click="deliverySelect ? '' : execDaumPostcode('delivery')" readonly></v-text-field>
+                                            <v-text-field v-model="delivery.addr2" outlined hide-details label="상세주소" dense class="mt-2" :readonly="deliverySelect"></v-text-field>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td> 전화번호 </td>
                                         <td>
-                                            <v-text-field v-model="delivery.tel" outlined hide-details dense></v-text-field>
+                                            <v-text-field v-model="delivery.tel" outlined hide-details dense :readonly="deliverySelect"></v-text-field>
                                         </td>
                                     </tr>
                                     <tr>

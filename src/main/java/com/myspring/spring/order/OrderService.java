@@ -122,7 +122,7 @@ public class OrderService {
 
 //  리뷰 가능 주문 개수 조회
 	public ResponseEntity<?> getCountToReview(String id, int productNo) {
-		int res = orderMapper.getOrderToReview(id, productNo);
+		OrderVO res = orderMapper.getOrderToReview(id, productNo);
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 

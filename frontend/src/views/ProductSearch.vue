@@ -20,7 +20,7 @@
                                     <tr>
                                         <td style="width:30%"> 상품명 </td>
                                         <td>
-                                            <v-text-field v-model="productName"></v-text-field>
+                                            <v-text-field v-model="productName" @keyup.enter="searchProduct"></v-text-field>
                                         </td>
                                     </tr>
                                     <tr>

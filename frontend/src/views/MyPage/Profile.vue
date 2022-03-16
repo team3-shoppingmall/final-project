@@ -12,7 +12,7 @@
                                     아이디
                                 </td>
                                 <td>
-                                    <v-text-field v-model="id" outlined="outlined" hide-details="hide-details" dense="dense"></v-text-field>
+                                    <v-text-field v-model="id" outlined="outlined" hide-details="hide-details" dense="dense" readonly></v-text-field>
                                 </td>
                             </tr>
                             <tr v-if="social == false">

@@ -132,7 +132,7 @@ public class ProductUtils {
 //	select * from producttable where price>=최소값 and mrice<=최대값 and productName like %검색어% and UPPER(type1) = 대분류 and UPPER(type2) = 소분류 order by 정렬순서 limit 페이지  offset 시작점
 	public String getProductList(int start, int perPage, String type1, String type2, String searchWord, int minPrice,
 			int maxPrice, String searchOrder) {
-		SQL sql = new SQL() {
+		SQL sqla = new SQL() {
 			{
 				SELECT("*");
 				FROM("producttable");
@@ -141,7 +141,7 @@ public class ProductUtils {
 				WHERE("price <= " + maxPrice);
 				if (searchWord != null) {
 					AND();
-					String[] words = searchWord.split(" ");
+					String[] words = searchWord.split(",");
 					String temp = null;
 					for (int i = 0; i < words.length; i++) {
 						if (i == 0) {
@@ -162,16 +162,78 @@ public class ProductUtils {
 						WHERE("UPPER(type2) = UPPER('" + type2 + "')");
 					}
 				}
+			}
+		};
+		SQL sqlaa = new SQL() {
+			{
+				SELECT("*");
+				FROM("(" + sqla.toString() + ") AS A");
+				GROUP_BY("A.productNo");
 				if (searchOrder != null) {
 
-					ORDER_BY(searchOrder);
+					ORDER_BY("A." + searchOrder);
 				}
+			}
+		};
+		SQL sqlaaa = new SQL() {
+			{
+				SELECT("*");
+				FROM("(" + sqlaa.toString() + ") AS AA");
+			}
+		};
+		SQL sqlb = new SQL() {
+			{
+				SELECT("*");
+				FROM("producttable");
+				WHERE("price >= " + minPrice);
+				AND();
+				WHERE("price <= " + maxPrice);
+				if (searchWord != null) {
+					AND();
+					String[] words = searchWord.split(",| ");
+					String temp = null;
+					for (int i = 0; i < words.length; i++) {
+						if (i == 0) {
+							temp = words[i];
+						} else {
+							temp = temp + "|" + words[i];
+						}
+					}
+					WHERE("REGEXP_LIKE(productName, '" + temp + "')");
+				}
+				if (type1 != null) {
+					AND();
+					WHERE("UPPER(type1) = UPPER('" + type1 + "')");
+				}
+				if (type2 != null) {
+					if (!type2.equals("all")) {
+						AND();
+						WHERE("UPPER(type2) = UPPER('" + type2 + "')");
+					}
+				}
+			}
+		};
+		SQL sqlbb = new SQL() {
+			{
+				SELECT("*");
+				FROM("(" + sqlb.toString() + ") AS B");
+				GROUP_BY("B.productNo");
+				if (searchOrder != null) {
+
+					ORDER_BY("B." + searchOrder);
+				}
+			}
+		};
+		SQL sqlbbb = new SQL() {
+			{
+				SELECT("*");
+				FROM("(" + sqlbb.toString() + ") AS BB");
 				LIMIT(perPage);
 				OFFSET(start);
 			}
-		};
-//		System.out.println(sql.toString());
-		return sql.toString();
+		};		
+//		System.out.println(sqlaaa.toString() + " UNION " + sqlbbb.toString());
+		return sqlaaa.toString() + " UNION " + sqlbbb.toString();
 	}
 
 //	select * from producttable where price>=최소값 and mrice<=최대값 and productName like %검색어% and UPPER(type1) = 대분류 and UPPER(type2) = 소분류
@@ -186,7 +248,7 @@ public class ProductUtils {
 				WHERE("price <= " + maxPrice);
 				if (searchWord != null) {
 					AND();
-					String[] words = searchWord.split(" ");
+					String[] words = searchWord.split(",| ");
 					String temp = null;
 					for (int i = 0; i < words.length; i++) {
 						if (i == 0) {

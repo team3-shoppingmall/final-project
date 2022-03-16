@@ -141,13 +141,33 @@ CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`ordertable_BEFORE_INSERT` BEFO
 BEGIN
 if(new.state is null)
 then
-if(new.ORDERMETHOD = 'credit' || new.ORDERMETHOD = 'mobile')
+	if(new.ORDERMETHOD = 'credit' || new.ORDERMETHOD = 'mobile')
+	then
+		set new.state = '결제완료';
+	else
+		set new.state = '입금전';
+	END if;
+END if;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`ordertable_BEFORE_UPDATE` BEFORE UPDATE ON `ordertable` FOR EACH ROW
+BEGIN
+if(old.state != '구매확정' and new.state = '구매확정')
 then
-	set new.state = '결제완료';
-else
-	set new.state = '입금전';
-END if;
-END if;
+	set new.reviewable = true;
+	insert into pointtable(id, point, content) values (old.id, old.totalPrice * 0.02, '구매 확정');
+end if;
+if(old.state != '교환완료' and new.state = '교환완료')
+then
+	set new.reviewable = true;
+end if;
+if(new.state in ('환불완료','취소완료'))
+then
+	set new.reviewable = false;
+end if;
 END$$
 DELIMITER ;
 
@@ -160,7 +180,7 @@ UPDATE ordertable set state = '구매확정', reviewable = true where state = '�
 UPDATE ordertable set state = '취소완료' where state = '입금전' and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
 IF( DAYOFWEEK(curdate()) between 2 and 6)
 THEN
-UPDATE ordertable set state = '배송준비중' where state = '결제완료';
+	UPDATE ordertable set state = '배송준비중' where state = '결제완료';
 END IF;
 END$$
 DELIMITER ;
@@ -186,29 +206,8 @@ BEGIN
 if(new.content != '회원 가입 축하 포인트')
 Then
 update membertable
-set point = point + New.point
-where id = New.id;
+	set point = point + New.point where id = New.id;
 End if;
-END$$
-DELIMITER ;
-
-DELIMITER $$
-USE `springdb`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`ordertable_BEFORE_UPDATE` BEFORE UPDATE ON `ordertable` FOR EACH ROW
-BEGIN
-if(new.state = '구매확정')
-then
-set new.reviewable = true;
-insert into pointtable(id, point, content) values (old.id, old.totalPrice * 0.02, '구매 확정');
-end if;
-if(new.state = '교환완료')
-then
-set new.reviewable = true;
-end if;
-if(new.state in ('환불완료','취소완료'))
-then
-set new.reviewable = false;
-end if;
 END$$
 DELIMITER ;
 
@@ -292,17 +291,14 @@ BEGIN
 DECLARE getMaxNum INT;
 if(numTemp is null)
 then
-
-SET getMaxNum = (SELECT max(num) FROM bannertable) + 1;
-insert into bannertable values(imageTemp, linkTemp, getMaxNum);
-
+	SET getMaxNum = (SELECT max(num) FROM bannertable) + 1;
+	insert into bannertable values(imageTemp, linkTemp, getMaxNum);
 else
-
-if((select image from bannertable where num = numTemp) is not null)
-then
-update bannertable set num = num+1 where num in (select * from (select num from bannertable where num >= numTemp) temp);
-end if;
-insert into bannertable values(imageTemp, linkTemp, numTemp);
+	if((select image from bannertable where num = numTemp) is not null)
+	then
+		update bannertable set num = num+1 where num in (select * from (select num from bannertable where num >= numTemp) temp);
+	end if;
+	insert into bannertable values(imageTemp, linkTemp, numTemp);
 
 end if;
 END$$
@@ -314,17 +310,15 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `bannerUpdate`(beforeImage varchar(1
 BEGIN
 DECLARE endTemp INT;
 set endTemp = (select num from bannertable where image = beforeImage);
-
-update bannertable set num = 0 where image = beforeImage;
-
-if((select image from bannertable where num = numTemp) is not null)
-then
-if(endTemp >= numTemp)
-then
-update bannertable set num = num+1 where num in (select * from (select num from bannertable where num >= numTemp and num <= endTemp) temp);
-else
-update bannertable set num = num-1 where num in (select * from (select num from bannertable where num >= endTemp and num <= numTemp) temp);
-end if;
+	update bannertable set num = 0 where image = beforeImage;
+	if((select image from bannertable where num = numTemp) is not null)
+	then
+	if(endTemp >= numTemp)
+	then
+		update bannertable set num = num+1 where num in (select * from (select num from bannertable where num >= numTemp and num <= endTemp) temp);
+	else
+		update bannertable set num = num-1 where num in (select * from (select num from bannertable where num >= endTemp and num <= numTemp) temp);
+	end if;
 end if;
 
 update bannertable set image = imageTemp, link = linkTemp, num = numTemp where num = 0;
@@ -340,7 +334,7 @@ set numTemp = (select num from bannertable where image = imageTemp);
 
 if((select image from bannertable where num = numTemp) is not null)
 then
-update bannertable set num = num-1 where num in (select * from (select num from bannertable where num >= numTemp) temp);
+	update bannertable set num = num-1 where num in (select * from (select num from bannertable where num >= numTemp) temp);
 end if;
 
 delete from bannertable where image = imageTemp;

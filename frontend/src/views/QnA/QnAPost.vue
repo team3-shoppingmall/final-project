@@ -155,6 +155,7 @@ export default {
                 this.returnCount = -2;
             }
             this.pageID = this.$route.params.id;
+            this.images = [];
             this.getQnA();
         },
     },

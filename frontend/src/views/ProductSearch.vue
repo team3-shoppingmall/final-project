@@ -48,7 +48,10 @@
                         </v-simple-table>
                         <v-row justify="center" class="mt-3">
                             <v-col cols="auto">
-                                <v-btn @click="searchProduct" outlined>검색</v-btn>
+                                <v-btn @click="searchProduct" color="primary">검색</v-btn>
+                            </v-col>
+                            <v-col cols="auto" align-self="center">
+                                <v-btn @click="reset" color="primary">초기화</v-btn>
                             </v-col>
                         </v-row>
                     </v-form>
@@ -258,6 +261,18 @@ export default {
             } else if (this.maxPrice < 0 || this.maxPrice > 9999999 || this.maxPrice != Math.round(this.maxPrice)) {
                 alert('0원 ~ 9,999,999원의 상품만 검색이 가능합니다');
                 this.maxPrice = 9999999;
+            }
+        },
+        reset() {
+            this.typeSelected = null;
+            this.productName = null;
+            this.minPrice = 0;
+            this.maxPrice = 9999999;
+            this.searchOrder = null;
+            if (this.page != 1) {
+                this.page = 1;
+            } else {
+                this.getProduct();
             }
         },
     },

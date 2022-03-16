@@ -74,7 +74,7 @@ export default {
                         let temp = res.data;
                         let user = {
                             id: temp.id,
-                            name :temp.name,
+                            name: temp.name,
                             authority: temp.authority,
                         };
                         this.Login({
@@ -102,11 +102,13 @@ export default {
             this.$router.push('/authentication/signUp');
         },
         loginWithKakao() {
-            window.Kakao.init('255b187f87731368f5e47c3310b3cf02')
+            if (window.Kakao.isInitialized() == false) {
+                window.Kakao.init('255b187f87731368f5e47c3310b3cf02');
+            }
             window.Kakao.Auth.login({
                 success: this.kakaoLoginCheck(),
                 fail: function (error) {
-                    console.log(error)
+                    console.log(error);
                 },
             })
         },
@@ -116,14 +118,15 @@ export default {
                 success: res => {
                     axios.get('/api/member/login', {
                             params: {
-                                id: res.id,
-                                password: res.id + 'rh7369#n',
+                                id: 'kakao' + res.id,
+                                password: 'kakao' + res.id + 'rh7369#n',
                             }
                         })
                         .then(result => {
                             let temp = result.data;
                             let user = {
                                 id: temp.id,
+                                name: temp.name,
                                 authority: temp.authority,
                             };
                             this.Login({
@@ -156,14 +159,15 @@ export default {
                 .then(res => {
                     axios.get('/api/member/login', {
                             params: {
-                                id: res.data.response.id,
-                                password: res.data.response.id + 'rh7369#n',
+                                id: 'naver' + res.data.response.id,
+                                password: 'naver' + res.data.response.id + 'rh7369#n',
                             }
                         })
                         .then(res => {
                             let temp = res.data;
                             let user = {
                                 id: temp.id,
+                                name: temp.name,
                                 authority: temp.authority,
                             };
                             this.Login({

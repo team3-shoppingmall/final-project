@@ -1,7 +1,7 @@
 <template>
 <v-container fluid>
     <v-row justify="center">
-        <v-col cols="9">
+        <v-col cols="11">
             <v-row>
                 <v-col cols="auto">
                     <v-btn :color="colorPicker('주문 내역조회')" @click="selectOrder('주문 내역조회')" width="240px">주문 내역조회</v-btn>
@@ -49,16 +49,13 @@
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <v-data-table :headers="selectedOrder=='주문 내역조회' ? headers : returnHeaders" :items="orders" :options.sync="options" item-key="orderIdx" :server-items-length="totalContents" :loading="loading" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
+                    <v-data-table :headers="headers" :items="orders" :options.sync="options" item-key="orderIdx" :server-items-length="totalContents" :loading="loading" disable-sort no-data-text="검색된 자료가 없습니다" :footer-props="{'items-per-page-options': [5, 10, 15]}">
                         <template #top="{ }">
                             <div class="text-h5 pa-3">{{selectedOrder}}</div>
                         </template>
                         <template #[`item.productName`]="{item}">
                             <v-btn text :to="`/productDetail/${item.productNo}`">
-                                <div class="text-left text-truncate" style="max-width: 90px;" v-if="selectedOrder =='주문 내역조회'">
-                                    {{ item.productName }}
-                                </div>
-                                <div class="text-left text-truncate" style="max-width: 220px;" v-if="selectedOrder !='주문 내역조회'">
+                                <div class="text-left text-truncate" style="max-width: 190px;">
                                     {{ item.productName }}
                                 </div>
                             </v-btn>
@@ -78,15 +75,23 @@
                                 <DateDisplay :regDate="item.orderDate" />
                             </div>
                         </template>
+                        <template #[`item.delivery`]="{item}">
+                            <v-btn color="primary" @click="selectItem(item), dialog4 = true">
+                                배송정보
+                            </v-btn>
+                        </template>
                         <template v-slot:[`item.btn`]="{item}">
-                            <v-btn color="primary" @click="cancelOrder(item)" v-if="item.state != '배송완료' && item.state != '구매확정'">
+                            <v-btn color="primary" @click="selectItem(item), dialog2 = true" v-if="selectedOrder=='주문 내역조회' && (item.state == '입금전' || item.state == '결제완료' || item.state == '배송준비중')">
                                 취소
                             </v-btn>
-                            <v-btn color="primary" @click.stop="selectItem(item), dialog = true" v-if="item.state == '배송완료'">
+                            <v-btn color="primary" @click.stop="selectItem(item), dialog = true" v-if="selectedOrder=='주문 내역조회' && item.state == '배송완료'">
                                 구매 확정
                             </v-btn>
                             <v-btn color="primary" @click="cancelOrder(item)" v-if="item.state == '배송완료'" class="mt-1">
                                 환불 및 교환
+                            </v-btn>
+                            <v-btn color="primary" @click.stop="selectItem(item), dialog3 = true" v-if="item.reviewable">
+                                리뷰 작성하기
                             </v-btn>
                         </template>
                     </v-data-table>
@@ -111,12 +116,133 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+    <v-dialog v-model="dialog2" persistent max-width="290">
+        <v-card>
+            <v-card-title class="text-body-1">
+                <span>주문을 취소하시겠습니까?</span>
+            </v-card-title>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="green darken-1" text @click="cancelOrder(purchaseItem)">
+                    예
+                </v-btn>
+                <v-btn color="red darken-1" text @click="dialog2 = false">
+                    아니오
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+    <v-dialog v-model="dialog3" persistent max-width="750px">
+        <v-card>
+            <v-card-title>
+                <span class="text-h5">리뷰 작성</span>
+            </v-card-title>
+            <v-card-text>
+                <v-container>
+                    <v-row>
+                        <v-col cols="12">
+                            상품 정보
+                            <ProductDetailDisplay :productNo="purchaseItem.productNo" />
+                        </v-col>
+                        <v-col cols="12">
+                            별점
+                            <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" hover length="5" size="64" v-model="star"></v-rating>
+                        </v-col>
+                        <v-col cols="12">
+                            리뷰
+                            <ckeditor :editor="editor" v-model="content" :config="editorConfig"></ckeditor>
+                            <span :class="contentColor">{{content.length}}/600</span>
+                        </v-col>
+                        <v-col cols="12" align="center">
+                            <v-card :loading="false" class="mx-auto my-5">
+                                <v-card-title>
+                                    <v-img max-height="250" :src="imageUrl" min-height="250" contain @click="fileInputClick" />
+                                </v-card-title>
+                                <v-card-actions>
+                                    <v-file-input v-model="imageFile" :id="`fileInput`" accept="image/*" truncate-length="14" class="pa-0" hide-details @change="onImageChange"></v-file-input>
+                                </v-card-actions>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="resetReview">
+                    Close
+                </v-btn>
+                <v-btn color="blue darken-1" text @click="addReview">
+                    Save
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+    <v-dialog v-model="dialog4" width="600px">
+        <v-card class="pa-2">
+            <v-simple-table>
+                <thead>
+                    <tr>
+                        <th class="text-h5" colspan="2">배송지 확인</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-h6">ID</td>
+                        <td>
+                            <v-text-field v-model="purchaseItem.id" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">이름</td>
+                        <td>
+                            <v-text-field v-model="purchaseItem.name" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">전화번호</td>
+                        <td>
+                            <v-text-field v-model="purchaseItem.tel" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">우편번호</td>
+                        <td>
+                            <v-text-field v-model="purchaseItem.zipCode" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">기본주소</td>
+                        <td>
+                            <v-text-field v-model="purchaseItem.address" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-h6">상세주소</td>
+                        <td>
+                            <v-text-field v-model="purchaseItem.detailAddr" hide-details readonly></v-text-field>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <v-row justify="end">
+                                <v-col cols="auto">
+                                    <v-btn class="primary" @click="dialog4 = false">확인</v-btn>
+                                </v-col>
+                            </v-row>
+                        </td>
+                    </tr>
+                </tbody>
+            </v-simple-table>
+        </v-card>
+    </v-dialog>
 </v-container>
 </template>
 
 <script>
 import axios from 'axios'
 import DateDisplay from '@/components/DateDisplay.vue'
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import ProductDetailDisplay from '@/components/ProductDetailDisplay.vue'
 import {
     createNamespacedHelpers
 } from 'vuex'
@@ -124,10 +250,21 @@ const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         DateDisplay,
+        ProductDetailDisplay,
     },
     data() {
         return {
+            editor: ClassicEditor,
+            editorConfig: {
+                ckfinder: {},
+                toolbar: {
+                    shouldNotGroupWhenFull: true
+                }
+            },
             dialog: false,
+            dialog2: false,
+            dialog3: false,
+            dialog4: false,
             orders: [],
             totalContents: 0,
             loading: false,
@@ -137,31 +274,31 @@ export default {
                 value: 'orderIdx',
                 divider: true,
                 align: 'center',
-                width: '10%',
+                width: '8%',
             }, {
                 text: '이미지',
                 value: 'imageName',
                 divider: true,
                 align: 'center',
-                width: '15%',
+                width: '12%',
             }, {
                 text: '상품명',
                 value: 'productName',
                 divider: true,
                 align: 'center',
-                width: '15%',
+                width: '19%',
             }, {
                 text: '개수',
                 value: 'orderAmount',
                 divider: true,
                 align: 'center',
-                width: '8%',
+                width: '6%',
             }, {
                 text: '가격',
                 value: 'totalPrice',
                 divider: true,
                 align: 'center',
-                width: '12%',
+                width: '10%',
             }, {
                 text: '주문 날짜',
                 value: 'orderDate',
@@ -173,53 +310,16 @@ export default {
                 value: 'state',
                 divider: true,
                 align: 'center',
-                width: '15%',
+                width: '10%',
+            }, {
+                text: '배송',
+                value: 'delivery',
+                divider: true,
+                align: 'center',
+                width: '10%',
             }, {
                 text: '',
                 value: 'btn',
-                align: 'center',
-                width: '15%',
-            }, ],
-
-            returnHeaders: [{
-                text: '주문번호',
-                value: 'orderIdx',
-                divider: true,
-                align: 'center',
-                width: '10%',
-            }, {
-                text: '이미지',
-                value: 'imageName',
-                divider: true,
-                align: 'center',
-                width: '15%',
-            }, {
-                text: '상품명',
-                value: 'productName',
-                divider: true,
-                align: 'center',
-                width: '25%',
-            }, {
-                text: '개수',
-                value: 'orderAmount',
-                divider: true,
-                align: 'center',
-                width: '8%',
-            }, {
-                text: '가격',
-                value: 'totalPrice',
-                divider: true,
-                align: 'center',
-                width: '12%',
-            }, {
-                text: '주문 날짜',
-                value: 'orderDate',
-                divider: true,
-                align: 'center',
-                width: '15%',
-            }, {
-                text: '주문 상태',
-                value: 'state',
                 align: 'center',
                 width: '15%',
             }, ],
@@ -237,6 +337,12 @@ export default {
             selectedColor: true,
 
             purchaseItem: '',
+
+            star: 5,
+            content: '',
+            contentColor: 'black--text',
+            imageFile: null,
+            imageUrl: null,
         }
     },
     methods: {
@@ -344,6 +450,7 @@ export default {
                     .then(res => {
                         if (res.data.length == 0) {
                             alert('주문을 취소하셨습니다');
+                            this.dialog2 = false;
                             if (this.options.page != 1) {
                                 this.options.page = 1;
                             } else {
@@ -358,9 +465,6 @@ export default {
             } else if (item.state == '배송준비중') {
                 alert('배송 준비중인 주문입니다. 배송 전 변경/취소 게시판에서 요청해주시기 바랍니다.');
                 this.$router.push(`/qna/beforeDeliveryQnA`);
-            } else {
-                alert('배송 후 교환/반품 게시판에서 요청해주시기 바랍니다.');
-                this.$router.push(`/qna/afterDeliveryQnA`);
             }
         },
         reset() {
@@ -448,12 +552,60 @@ export default {
                     }
                 }).catch(err => {
                     console.log(err)
-                }).finally(() => {                    
+                }).finally(() => {
                     this.purchaseItem = '';
                     this.dialog = false;
-                }
-                )
+                })
         },
+        // 이미지
+        fileInputClick() {
+            document.getElementById(`fileInput`).click();
+        },
+        onImageChange() {
+            const file = this.imageFile;
+            if (file) {
+                this.imageUrl = URL.createObjectURL(file);
+                URL.revokeObjectURL(file);
+            } else {
+                this.imageUrl = null;
+            }
+        },
+
+        addReview() {
+            if (this.content == '') {
+                alert('후기를 입력해주세요');
+                return;
+            }
+            let data = {
+                productNo: this.purchaseItem.productNo,
+                star: this.star,
+                content: this.content,
+                image: this.imageFile.name,
+                id: this.getLogin.user.id,
+            };
+            let formData = new FormData();
+            formData.append('data', new Blob([JSON.stringify(data)], {
+                type: "application/json"
+            }));
+            formData.append(`fileList`, this.imageFile);
+            axios.post(`/api/review/insert`, formData)
+                .then(() => {
+                    this.dialog = false;
+                    this.content = '';
+                    alert("리뷰 등록 완료");
+                    this.getReview();
+                }).catch((err) => {
+                    alert('리뷰 작성에 실패했습니다.')
+                    console.log(err);
+                })
+        },
+        resetReview() {
+            this.star = 5;
+            this.content = '';
+            this.imageFile = null;
+            this.imageUrl = null;
+            this.dialog3 = false;
+        }
     },
     computed: {
         ...LoginStore.mapGetters(['getLogin']),
@@ -465,6 +617,15 @@ export default {
             },
             deep: true,
         },
+        content: {
+            handler() {
+                if (this.content.length > 600) {
+                    this.contentColor = 'red--text';
+                } else {
+                    this.contentColor = 'black--text';
+                }
+            }
+        }
     },
     mounted() {
         let date = new Date();

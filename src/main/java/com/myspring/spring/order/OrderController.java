@@ -76,6 +76,12 @@ public class OrderController {
 		return orderService.getOrderByNo(orderIdx);
 	}
 
+//	주문 조회
+	@GetMapping(value = "/getCountToReview")
+	public ResponseEntity<?> getCountToReview(@RequestParam("id") String id, @RequestParam("productNo") int productNo) {
+		return orderService.getCountToReview(id, productNo);
+	}
+
 //	주문 상태 변경
 	@PatchMapping("/update")
 	public ResponseEntity<?> updateOrder(@RequestBody List<OrderVO> states) {

@@ -27,9 +27,9 @@
                     <v-divider></v-divider>
                     <v-row justify="end" class="ma-1">
                         <v-col cols="auto">
-                            상품구매금액 {{AddComma(totalPrice)}} 원
-                            + 배송비 <span v-if="totalPrice<50000">{{AddComma(2500)}}</span><span v-if="totalPrice>=50000">0</span> 원
-                            = 합계 : <span v-if="totalPrice<50000">{{AddComma(totalPrice+2500)}}</span><span v-if="totalPrice>=50000">{{AddComma(totalPrice)}}</span> 원
+                            상품구매금액 {{AddComma(totalPrice - totalDiscount)}} 원
+                            + 배송비 <span v-if="totalPrice - totalDiscount<50000">{{AddComma(2500)}}</span><span v-if="totalPrice - totalDiscount>=50000">0</span> 원
+                            = 합계 : <span v-if="totalPrice - totalDiscount<50000">{{AddComma(totalPrice - totalDiscount+2500)}}</span><span v-if="totalPrice - totalDiscount>=50000">{{AddComma(totalPrice - totalDiscount)}}</span> 원
                         </v-col>
                     </v-row>
                 </template>
@@ -97,25 +97,25 @@
                                     <tr>
                                         <td> 받으시는 분 </td>
                                         <td>
-                                            <v-text-field v-model="delivery.name" outlined hide-details dense></v-text-field>
+                                            <v-text-field v-model="delivery.name" outlined hide-details dense :readonly="deliverySelect"></v-text-field>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td> 주소 </td>
                                         <td>
                                             <div class="d-flex ">
-                                                <v-text-field v-model="delivery.zipcode" outlined hide-details label="우편번호" dense type="number" @click="execDaumPostcode('delivery')" hide-spin-buttons readonly></v-text-field>
-                                                <v-btn color="primary" class="mx-1" @click="execDaumPostcode('delivery')">검색</v-btn>
+                                                <v-text-field v-model="delivery.zipcode" outlined hide-details label="우편번호" dense type="number" @click="deliverySelect ? '' : execDaumPostcode('delivery')" hide-spin-buttons readonly></v-text-field>
+                                                <v-btn color="primary" class="mx-1" @click="deliverySelect ? '' : execDaumPostcode('delivery')">검색</v-btn>
                                             </div>
 
-                                            <v-text-field v-model="delivery.addr1" outlined hide-details label="기본주소" dense class="mt-2" @click="execDaumPostcode('delivery')" readonly></v-text-field>
-                                            <v-text-field v-model="delivery.addr2" outlined hide-details label="상세주소" dense class="mt-2"></v-text-field>
+                                            <v-text-field v-model="delivery.addr1" outlined hide-details label="기본주소" dense class="mt-2" @click="deliverySelect ? '' : execDaumPostcode('delivery')" readonly></v-text-field>
+                                            <v-text-field v-model="delivery.addr2" outlined hide-details label="상세주소" dense class="mt-2" :readonly="deliverySelect"></v-text-field>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td> 전화번호 </td>
                                         <td>
-                                            <v-text-field v-model="delivery.tel" outlined hide-details dense></v-text-field>
+                                            <v-text-field v-model="delivery.tel" outlined hide-details dense :readonly="deliverySelect"></v-text-field>
                                         </td>
                                     </tr>
                                     <tr>
@@ -140,9 +140,9 @@
                         <td style="width:33%; text-align: center;" class="text-body-1">총 결제 예정 금액</td>
                     </tr>
                     <tr>
-                        <td style="width:33%; text-align: center;" class="v-data-table__divider text-h6">{{AddComma(totalPrice)}} 원</td>
+                        <td style="width:33%; text-align: center;" class="v-data-table__divider text-h6"><span v-if="totalPrice - totalDiscount<50000">{{AddComma(totalPrice + 2500)}}</span><span v-if="totalPrice - totalDiscount>=50000">{{AddComma(totalPrice)}}</span> 원</td>
                         <td style="width:33%; text-align: center;" class="v-data-table__divider text-h6">- {{AddComma(totalDiscount)}} 원</td>
-                        <td style="width:33%; text-align: center;" class="text-h6">= {{AddComma(totalPrice - totalDiscount)}} 원</td>
+                        <td style="width:33%; text-align: center;" class="text-h6">= <span v-if="totalPrice - totalDiscount<50000">{{AddComma(totalPrice - totalDiscount+2500)}}</span><span v-if="totalPrice - totalDiscount>=50000">{{AddComma(totalPrice - totalDiscount)}}</span> 원</td>
                     </tr>
                 </tbody>
             </v-simple-table>
@@ -224,13 +224,13 @@
                             <v-row justify="space-between" align="center">
                                 <v-col cols="auto" class="text-h6">최종 결제 금액</v-col>
                                 <v-col cols="auto" class="text-h4">
-                                    {{AddComma(totalPrice - totalDiscount)}}원
+                                    <span v-if="totalPrice - totalDiscount<50000">{{AddComma(totalPrice - totalDiscount - point+2500)}}</span><span v-if="totalPrice - totalDiscount>=50000">{{AddComma(totalPrice - totalDiscount - point)}}</span> 원
                                 </v-col>
                             </v-row>
                             <v-row justify="space-between" align="center">
                                 <v-col cols="auto">총 적립 예정 금액</v-col>
                                 <v-col cols="auto">
-                                    {{AddComma((totalPrice - totalDiscount)*0.02)}}원
+                                    {{AddComma(Math.round((totalPrice - totalDiscount - point)*0.02))}}원
                                 </v-col>
                             </v-row>
                         </v-col>
@@ -548,11 +548,8 @@ export default {
         } else {
             this.getMember();
             for (let i = 0; i < this.selected.length; i++) {
-                this.totalPrice += (this.selected[i].price - this.selected[i].discount) * this.selected[i].basketAmount;
-                this.totalDiscount += this.selected[i].discount;
-            }
-            if (Number(this.totalPrice) < 50000) {
-                this.totalPrice += 2500;
+                this.totalPrice += this.selected[i].price * this.selected[i].basketAmount;
+                this.totalDiscount += this.selected[i].discount * this.selected[i].basketAmount;
             }
         }
     }

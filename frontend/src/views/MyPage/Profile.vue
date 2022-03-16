@@ -7,15 +7,15 @@
                 <v-simple-table>
                     <template slot="default">
                         <tbody>
-                            <tr>
+                            <tr v-if="social == false">
                                 <td>
                                     아이디
                                 </td>
                                 <td>
-                                    <v-text-field v-model="id" outlined="outlined" hide-details="hide-details" dense="dense"></v-text-field>
+                                    <v-text-field v-model="id" outlined="outlined" hide-details="hide-details" dense="dense" readonly></v-text-field>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr v-if="social == false">
                                 <td>
                                     비밀번호
                                 </td>
@@ -23,7 +23,7 @@
                                     <v-text-field v-model="pwd1" type="password" outlined="outlined" hide-details="hide-details" dense="dense"></v-text-field>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr v-if="social == false">
                                 <td>
                                     비밀번호 확인
                                 </td>
@@ -118,6 +118,7 @@ const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     methods: {
         getData() {
+            this.social = false;
             axios.get(`/api/member/getMemberInfo/${this.getLogin.user.id}`)
                 .then(res => {
                     this.id = this.getLogin.user.id;
@@ -127,11 +128,16 @@ export default {
                     this.addr2 = res.data.addr2;
                     this.tel = res.data.tel;
                     this.email = res.data.email;
+                    this.pwd1 = '';
+                    this.pwd2 = '';
+                    if (this.id.slice(0, 5) == 'kakao' || this.id.slice(0, 5) == 'naver') {
+                        this.social = true;
+                    }
                 })
         },
         update() {
             let member;
-            if (this.pwd1 != null)
+            if (this.pwd1 != null) {
                 if (this.pwd1 == this.pwd2) {
                     member = {
                         id: this.id,
@@ -144,7 +150,7 @@ export default {
                         email: this.email,
                     }
                 }
-            else {
+            } else {
                 member = {
                     id: this.id,
                     name: this.name,
@@ -155,7 +161,6 @@ export default {
                     email: this.email,
                 }
             }
-            console.log(member)
             axios.put('/api/member/updateMember', member)
                 .then(() => {
                     alert("수정 성공")
@@ -250,6 +255,7 @@ export default {
             tel: '',
             email: '',
             password: '',
+            social: false,
         }
     }
 }

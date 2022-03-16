@@ -159,7 +159,7 @@ export default {
             axios.delete(`/api/review/delete/${num}`)
                 .then(() => {
                     alert("삭제가 완료되었습니다.")
-                    this.$router.go();
+                    this.getReview();
                 })
         },
         updateReview(num) {

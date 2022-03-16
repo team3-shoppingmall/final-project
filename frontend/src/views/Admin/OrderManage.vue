@@ -4,7 +4,7 @@
         <v-col cols="1" align-self="center">
             <v-select :items="searches" v-model="search" hide-details="hide-details"></v-select>
         </v-col>
-        <v-col cols="4" align-self="center" v-if="search == 'orderIdx' || search == 'productNo' || search == 'productName'">
+        <v-col cols="4" align-self="center" v-if="search == 'orderIdx' || search == 'productNo' || search == 'productName' || search == 'id'">
             <v-text-field hide-details="hide-details" v-model="searchWord1" @keyup.enter="searchOrder"></v-text-field>
         </v-col>
 
@@ -69,9 +69,9 @@
                     </v-btn>
                 </template>
                 <template v-slot:[`item.stateChange`]="{index}">
-                    <v-select :items="states" v-model="stateChanges[index]" item-key="value" hide-details="hide-details"></v-select>
+                    <v-select :items="states" v-model="stateChanges[index]" item-key="value" hide-details="hide-details" v-if="orders[index].state != '구매확정' && orders[index].state != '교환완료' && orders[index].state != '환불완료' && orders[index].state != '취소완료'"></v-select>
                 </template>
-                <template v-slot:[`header.stateChange`]="{}">
+                <template v-slot:[`header.stateChange`]=" {}">
                     <v-row class="ma-0" justify="center">
                         <v-col cols="auto">
                             <v-btn class="primary" @click="stateChange">상태 변경</v-btn>
@@ -229,6 +229,9 @@ export default {
                 text: '주문 날짜',
                 value: 'orderDate',
             }, {
+                text: 'ID',
+                value: 'id',
+            }, {
                 text: '주문 상태',
                 value: 'state',
             }, ],
@@ -239,9 +242,11 @@ export default {
             states: [{
                 text: '기준 선택',
                 value: null,
+                disabled: true,
             }, {
                 text: '입금전',
                 value: '입금전',
+                disabled: true,
             }, {
                 text: '결제완료',
                 value: '결제완료',
@@ -254,9 +259,6 @@ export default {
             }, {
                 text: '배송완료',
                 value: '배송완료',
-            }, {
-                text: '구매확정',
-                value: '구매확정',
             }, {
                 text: '취소완료',
                 value: '취소완료',
@@ -285,6 +287,7 @@ export default {
         },
         getOrder() {
             this.loading = true;
+            this.stateChanges = [];
             const {
                 page,
                 itemsPerPage
@@ -351,10 +354,6 @@ export default {
                     if (this.stateChanges[i] == null) {
                         alert('선택되지 않은 상태가 있습니다.');
                         return;
-                    }
-                    if (this.orders[i].state == '구매확정' || this.orders[i].state == '취소완료' || this.orders[i].state == '교환완료' || this.orders[i].state == '환불완료') {
-                        alert(`주문번호 : ${this.orders[i].orderIdx}\n구매 확정, 취소 완료, 교환 완료, 환불 완료된 주문은 변경이 불가능합니다.`);
-                        continue;
                     }
                     let data = {
                         orderIdx: this.orders[i].orderIdx,

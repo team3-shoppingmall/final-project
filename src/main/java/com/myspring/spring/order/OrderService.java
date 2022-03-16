@@ -15,6 +15,7 @@ import com.myspring.spring.member.MemberMapper;
 import com.myspring.spring.point.PointMapper;
 import com.myspring.spring.point.PointVO;
 import com.myspring.spring.product.ProductVO;
+import com.myspring.spring.review.ReviewMapper;
 
 @Service
 public class OrderService {
@@ -47,13 +48,13 @@ public class OrderService {
 			if (res == 0)
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		if(basketIdxList.get(0) != null) {
+		if (basketIdxList.get(0) != null) {
 			for (long basketIdx : basketIdxList) {
 				System.out.println(basketIdx);
 				res = basketMapper.deleteBasket(basketIdx);
 				if (res == 0)
 					return new ResponseEntity<>(res, HttpStatus.INTERNAL_SERVER_ERROR);
-			}			
+			}
 		}
 		if (pointVO.getPoint() != 0) {
 			res = pointMapper.insertPoint(pointVO);
@@ -117,6 +118,12 @@ public class OrderService {
 	public ResponseEntity<?> getOrderByNo(int orderIdx) {
 		OrderVO res = orderMapper.getOrderByNo(orderIdx);
 		return new ResponseEntity<>(res.getState(), HttpStatus.OK);
+	}
+
+//  리뷰 가능 주문 개수 조회
+	public ResponseEntity<?> getCountToReview(String id, int productNo) {
+		int res = orderMapper.getOrderToReview(id, productNo);
+		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 //	주문 변경

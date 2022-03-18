@@ -149,7 +149,7 @@ export default {
                         })
                 },
                 fail: error => {
-                    this.$router.push("/errorPage");
+                    this.$router.push("/authentication/signIn");
                     console.log(error);
                 }
             })

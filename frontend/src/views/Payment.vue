@@ -249,8 +249,8 @@
         <v-alert class="mb-0" :type="alertType">
             {{alertMessage}}
             <v-row justify="end" v-if="alertPath != null">
-                <v-col cols="auto">
-                    <v-btn text :to="alertPath">이동하기</v-btn>
+                <v-col cols="auto" class="pr-1 pb-1">
+                    <v-btn text :to="alertPath">확인</v-btn>
                 </v-col>
             </v-row>
         </v-alert>

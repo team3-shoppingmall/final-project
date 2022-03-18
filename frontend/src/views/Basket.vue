@@ -59,9 +59,9 @@
     <v-dialog v-model="alertDialog" :persistent="alertPath != null" max-width="350">
         <v-alert class="mb-0" :type="alertType">
             {{alertMessage}}
-            <v-row justify="end">
-                <v-col cols="auto">
-                    <v-btn text @click="alertDialog=false; alertPath = null; getBasket();" v-if="alertPath != null">확인</v-btn>
+            <v-row justify="end" v-if="alertPath != null">
+                <v-col cols="auto" class="pr-1 pb-1">
+                    <v-btn text @click="alertDialog=false; alertPath = null; getBasket();">확인</v-btn>
                 </v-col>
             </v-row>
         </v-alert>

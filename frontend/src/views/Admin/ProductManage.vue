@@ -127,6 +127,11 @@
             </v-data-table>
         </v-col>
     </v-row>
+    <v-dialog v-model="alertDialog" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -139,6 +144,9 @@ export default {
     },
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
             totalContents: 0,
             loading: false,
             options: {},
@@ -396,28 +404,40 @@ export default {
         changeOnSale(item) {
             axios.patch(`/api/product/updateOnSale/${item.productNo}`)
                 .then(() => {
-                    alert('판매 여부가 변경되었습니다');
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '판매 여부가 변경되었습니다';
                     this.getProduct();
                 }).catch(err => {
-                    alert('변경 실패했습니다.')
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '변경 실패했습니다';
                     console.log(err);
                 })
         },
         searchPolicy() {
             if (this.search == 'price') {
                 if (this.searchWord1 < 0 || this.searchWord1 > 9999999 || this.searchWord1 != Math.round(this.searchWord1)) {
-                    alert('가격 제한 : 0원 ~ 9,999,999원');
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '가격 제한 : 0원 ~ 9,999,999원';
                     this.searchWord1 = 0;
                 } else if (this.searchWord2 < 0 || this.searchWord2 > 9999999 || this.searchWord2 != Math.round(this.searchWord2)) {
-                    alert('가격 제한 : 0원 ~ 9,999,999원');
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '가격 제한 : 0원 ~ 9,999,999원';
                     this.searchWord2 = 9999999;
                 }
             } else {
                 if (this.searchWord1 < 0 || this.searchWord1 > 9999 || this.searchWord1 != Math.round(this.searchWord1)) {
-                    alert('개수 제한 : 0개 ~ 9,999개');
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '개수 제한 : 0개 ~ 9,999개';
                     this.searchWord1 = 0;
                 } else if (this.searchWord2 < 0 || this.searchWord2 > 9999 || this.searchWord2 != Math.round(this.searchWord2)) {
-                    alert('개수 제한 : 0개 ~ 9,999개');
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '개수 제한 : 0개 ~ 9,999개';
                     this.searchWord2 = 9999;
                 }
             }

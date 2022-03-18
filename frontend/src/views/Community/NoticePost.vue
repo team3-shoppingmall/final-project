@@ -44,6 +44,16 @@
             <v-btn @click="deleteNotice" color="primary">삭제</v-btn>
         </v-col>
     </v-row>
+    <v-dialog v-model="alertDialog" :persistent="alertPath != null" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+            <v-row justify="end">
+                <v-col cols="auto">
+                    <v-btn text :to="alertPath" v-if="alertPath != null">확인</v-btn>
+                </v-col>
+            </v-row>
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -61,6 +71,10 @@ export default {
     data() {
         //Vue component에서 사용할 변수들을 선언, data=key:value
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
+            alertPath: null,
             dataLoaded: false,
             pageID: '',
             notice: '',
@@ -86,7 +100,9 @@ export default {
                         this.images = this.notice.image.split(';');
                     }
                 }).catch((err) => {
-                    alert("정보를 불러오는데 실패했습니다.");
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '정보를 불러오는데 실패했습니다';
                     console.log(err);
                 }).finally(
                     this.dataLoaded = true
@@ -95,8 +111,10 @@ export default {
         deleteNotice() {
             axios.delete(`/api/notice/deleteNotice/${this.pageID}`)
                 .then(() => {
-                    alert("공지사항 삭제 완료");
-                    this.$router.go(-1);
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '공지사항 삭제 완료';
+                    this.alertPath = `/community/notice`;
                 }).catch((err) => {
                     console.log(err);
                 })

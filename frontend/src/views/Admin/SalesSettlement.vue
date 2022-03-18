@@ -67,6 +67,11 @@
             <div class="text-h4">총 판매 금액 : {{AddComma(totalPrice)}}원</div>
         </v-col>
     </v-row>
+    <v-dialog v-model="alertDialog" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -75,6 +80,9 @@ import axios from 'axios'
 export default {
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
             sales: [],
             totalContents: 0,
             loading: false,
@@ -182,10 +190,14 @@ export default {
         },
         searchPolicy() {
             if (this.searchWord1 < 0 || this.searchWord1 > 999999999 || this.searchWord1 != Math.round(this.searchWord1)) {
-                alert('가격 제한 : 0원 ~ 999,999,999원');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '가격 제한 : 0원 ~ 999,999,999원';
                 this.searchWord1 = 0;
             } else if (this.searchWord2 < 0 || this.searchWord2 > 999999999 || this.searchWord2 != Math.round(this.searchWord2)) {
-                alert('가격 제한 : 0원 ~ 999,999,999원');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '가격 제한 : 0원 ~ 999,999,999원';
                 this.searchWord2 = 999999999;
             }
         },

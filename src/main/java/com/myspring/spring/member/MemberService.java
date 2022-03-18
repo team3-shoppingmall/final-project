@@ -33,8 +33,12 @@ public class MemberService {
 			member.setAuthority("ROLE_USER");
 		String secPwd = encoder.encode(member.getPassword());
 		member.setPassword(secPwd);
-
-		int res = memberMapper.insertMember(member);
+		int res = 0;
+		if (member.getAuthority().equals("ROLE_MANAGER")) {
+			res = memberMapper.insertManager(member);
+		} else {
+			res = memberMapper.insertMember(member);
+		}
 
 		if (res == 1) {
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -44,10 +48,10 @@ public class MemberService {
 	}
 
 	// 멤버 조회
-	public ResponseEntity<?> getMembers(int page, int perPage, String condition, Object param) {
+	public ResponseEntity<?> getMembers(int page, int perPage, String condition, Object param, boolean role) {
 		int start = (page - 1) * perPage;
-		List<MemberVO> res = memberMapper.getMembers(start, perPage, condition, param);
-		int count = memberMapper.getMemberCount(condition, param);
+		List<MemberVO> res = memberMapper.getMembers(start, perPage, condition, param, role);
+		int count = memberMapper.getMemberCount(condition, param, role);
 		Map<String, Object> resMap = new HashMap<>();
 		resMap.put("res", res);
 		resMap.put("count", count);
@@ -120,6 +124,23 @@ public class MemberService {
 		} else {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+
+	}
+
+	public ResponseEntity<?> find(String tel, String id) {
+		MemberVO member = memberMapper.getMemberInfoByTel(tel);
+		String res = null;
+		if (id != null) {
+			if (member.getId().equals(id)) {
+				res = "yes";
+			} else {
+				res = "no";
+			}
+		} else {
+			res = member.getId();
+		}
+		
+		return new ResponseEntity<>(res, HttpStatus.OK);
 
 	}
 

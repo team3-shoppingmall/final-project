@@ -245,6 +245,16 @@
             </v-row>
         </v-col>
     </v-row>
+    <v-dialog v-model="alertDialog" :persistent="alertPath != null" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+            <v-row justify="end" v-if="alertPath != null">
+                <v-col cols="auto">
+                    <v-btn text :to="alertPath">이동하기</v-btn>
+                </v-col>
+            </v-row>
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -262,6 +272,10 @@ export default {
     name: 'Payment',
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
+            alertPath: null,
             selected: [],
             totalPrice: 0,
             totalDiscount: 0,
@@ -354,59 +368,83 @@ export default {
         },
         addOrder() {
             if (this.memberInfo.name == '') {
-                alert('주문하시는 분의 성함을 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '주문하시는 분의 성함을 입력해주세요';
                 return;
             }
             if (this.memberInfo.zipcode == '' || this.memberInfo.addr1 == '' || this.memberInfo.addr2 == '') {
-                alert('주문하시는 분의 주소를 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '주문하시는 분의 주소를 입력해주세요';
                 return;
             }
             if (this.memberInfo.tel == '') {
-                alert('주문하시는 분의 전화번호를 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '주문하시는 분의 전화번호를 입력해주세요';
                 return;
             }
             if (this.memberInfo.email == '') {
-                alert('주문하시는 분의 전화번호를 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '주문하시는 분의 전화번호를 입력해주세요';
                 return;
             }
             if (this.delivery.name == '') {
-                alert('받으시는 분의 성함을 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '받으시는 분의 성함을 입력해주세요';
                 return;
             }
             if (this.delivery.zipcode == '' || this.delivery.addr1 == '' || this.delivery.addr2 == '') {
-                alert('받으시는 분의 주소를 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '받으시는 분의 주소를 입력해주세요';
                 return;
             }
             if (this.delivery.tel == '') {
-                alert('받으시는 분의 전화번호를 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '받으시는 분의 전화번호를 입력해주세요';
                 return;
             }
             if (!(this.point >= 0 && (this.point == Math.round(this.point)))) {
-                alert('포인트가 유효하지 않습니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '포인트가 유효하지 않습니다';
                 this.point = 0;
                 return;
             }
             if (this.point > this.memberInfo.point) {
-                alert('사용 가능한 포인트보다 많은 포인트를 사용하셨습니다. 포인트를 다시 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '사용 가능한 포인트보다 많은 포인트를 사용하셨습니다. 포인트를 다시 입력해주세요';
                 this.point = 0;
                 return;
             }
             if (this.orderMethod == 'cash') {
                 if (this.bankSelected == '') {
-                    alert('입금계좌를 선택해주세요');
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '입금계좌를 선택해주세요';
                     return;
                 }
                 this.orderMethod = this.orderMethod + ';' + this.bankSelected + ';' + this.cashReceipts;
                 if (this.cashReceipts == true) {
                     if (this.cashReceiptsNum == '') {
-                        alert('현금영수증을 발행할 현금영수증 카드나 핸드폰 번호를 입력해주세요');
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '현금영수증을 발행할 현금영수증 카드나 핸드폰 번호를 입력해주세요';
                         return;
                     }
                     this.orderMethod = this.orderMethod + ';' + this.cashReceiptsNum;
                 }
             }
             if (this.readyToBuy == false) {
-                alert('구매 진행에 동의해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '구매 진행에 동의해주세요';
                 return;
             }
             let orderList = [];
@@ -449,10 +487,14 @@ export default {
 
             axios.post(`/api/order/insertOrder`, formData)
                 .then(() => {
-                    alert('주문이 완료되었습니다');
-                    this.$router.push('/');
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '주문이 완료되었습니다';
+                    this.alertPath = `/`;
                 }).catch(err => {
-                    alert('주문에 실패하였습니다');
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '주문에 실패하였습니다';
                     console.log(err);
                 })
         },
@@ -509,12 +551,16 @@ export default {
         },
         pointCheck() {
             if (!(this.point >= 0 && (this.point == Math.round(this.point)) && this.point != '')) {
-                alert('포인트가 유효하지 않습니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '포인트가 유효하지 않습니다';
                 this.point = 0;
                 return;
             }
             if (this.point > this.memberInfo.point) {
-                alert('사용 가능한 포인트보다 많은 포인트를 사용하셨습니다. 포인트를 다시 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '사용 가능한 포인트보다 많은 포인트를 사용하셨습니다. 포인트를 다시 입력해주세요';
                 this.point = 0;
                 return;
             }

@@ -86,6 +86,16 @@
             </v-form>
         </v-col>
     </v-row>
+    <v-dialog v-model="alertDialog" :persistent="alertPath != null" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+            <v-row justify="end" v-if="alertPath != null">
+                <v-col cols="auto">
+                    <v-btn text :to="alertPath">이동하기</v-btn>
+                </v-col>
+            </v-row>
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -98,9 +108,12 @@ export default {
         },
         signUp() {
             let validate = this.$refs.form.validate();
-            if (!this.check)
-                alert("아이디 중복검사를 해야합니다.")
-            else if (validate) {
+            if (!this.check) {
+
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '아이디 중복검사를 해야합니다';
+            } else if (validate) {
                 let member = {
                     id: this.id,
                     password: this.pwd1,
@@ -114,10 +127,14 @@ export default {
                 }
                 axios.post('/api/member/insert', member)
                     .then(() => {
-                        alert("가입 완료")
-                        this.$router.push('/')
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '가입 완료';
+                        this.alertPath = `/`;
                     }).catch(() => {
-                        alert("가입 실패")
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '가입 실패';
                     })
             }
         },
@@ -143,26 +160,36 @@ export default {
                 }
                 axios.post('/api/member/insert', member)
                     .then(() => {
-                        alert("가입 완료")
-                        this.$router.push('/')
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '가입 완료';
+                        this.alertPath = `/`;
                     }).catch(() => {
-                        alert("가입 실패")
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '가입 실패';
                     })
             }
         },
         idCheck() {
             if (this.id.slice(0, 5) == 'kakao' || this.id.slice(0, 5) == 'naver') {
-                alert("사용 불가합니다.")
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '사용 불가합니다';
                 this.check = false;
             } else {
                 axios.get(`/api/member/check/${this.id}`)
                     .then(() => {
-                        alert("사용 가능합니다.")
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '사용 가능합니다';
                         this.check = true;
 
                     })
                     .catch(() => {
-                        alert("사용 불가합니다.")
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '사용 불가합니다';
                         this.check = false;
 
                     })
@@ -223,6 +250,10 @@ export default {
     },
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
+            alertPath: null,
             id: '',
             pwd1: '',
             pwd2: '',
@@ -255,7 +286,9 @@ export default {
                 zipcode: [v => !!v || '우편번호는 필수 입력사항입니다.', ],
                 addr1: [v => !!v || '기본주소는 필수 입력사항입니다.', ],
                 addr2: [v => !!v || '상세주소는 필수 입력사항입니다.', ],
-                tel: [v => !!v || '전화번호는 필수 입력사항입니다.', ],
+                tel: [v => !!v || '전화번호는 필수 입력사항입니다.',
+                    v => /^(01[016789]{1}|02|0[3-9]{1}[0-9]{1})-?[0-9]{3,4}-?[0-9]{4}$/.test(v) || '전화번호는 숫자만 입력 가능합니다.',
+                ],
                 email: [v => !!v || '이메일는 필수 입력사항입니다.',
                     v => /^[A-Za-z0-9_\\.\\-]+@[A-Za-z0-9\\-]+\.[A-Za-z0-9\\-]+/.test(v) || '옳바른 이메일 양식을 입력해야합니다.'
                 ],

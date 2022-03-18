@@ -44,7 +44,8 @@ CREATE TABLE membertable (
 	ADDR2 VARCHAR(50) NOT NULL,
 	TERMS BOOLEAN DEFAULT FALSE,
 	POINT INT,
-	AUTHORITY VARCHAR(20) NOT NULL
+	AUTHORITY VARCHAR(20) NOT NULL,
+    UNIQUE KEY member_uk_tel(TEL)
 );
 
 DELIMITER $$
@@ -345,7 +346,7 @@ DELIMITER ;
 -- 회원
 insert into membertable values('spring','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','Spring','0212345678','spring@gmail.com','12345','서울 강남구 테헤란로 212 (멀티캠퍼스)','2층 201호',false,null,'ROLE_ADMIN');
 insert into membertable values('shine','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','김진우','01098765432','shine@gmail.com','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호',false,null,'ROLE_USER');
-insert into membertable values('portal','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','정은지','01077777777','portal@gmail.com','02000','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('portal','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','정은지','01076543210','portal@gmail.com','02000','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 insert into membertable values('aodremm','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','안동근','01011111111','aodremm@gmail.com','11111','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 insert into membertable values('grimhink','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','정호재','01022222222','grimhink@gmail.com','22222','부산 문현로 56-1 (네이버코리아)','4층 405호',true,null,'ROLE_USER');
 insert into membertable values('madana','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','서기준','01033333333','madana@gmail.com','33333','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');

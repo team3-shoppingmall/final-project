@@ -238,6 +238,16 @@
             </v-simple-table>
         </v-card>
     </v-dialog>
+    <v-dialog v-model="alertDialog" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+            <v-row justify="end">
+                <v-col cols="auto">
+                    <v-btn text :to="alertPath" v-if="alertPath != null">이동하기</v-btn>
+                </v-col>
+            </v-row>
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -257,6 +267,10 @@ export default {
     },
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
+            alertPath: null,
             editor: ClassicEditor,
             editorConfig: {
                 ckfinder: {},
@@ -452,7 +466,9 @@ export default {
                 axios.patch(`/api/order/update`, states)
                     .then(res => {
                         if (res.data.length == 0) {
-                            alert('주문을 취소하셨습니다');
+                            this.alertDialog = true;
+                            this.alertType = 'success';
+                            this.alertMessage = '주문을 취소하셨습니다';
                             this.dialog2 = false;
                             if (this.options.page != 1) {
                                 this.options.page = 1;
@@ -460,14 +476,18 @@ export default {
                                 this.getOrder(this.selectedOrder);
                             }
                         } else {
-                            alert(`미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`)
+                            this.alertDialog = true;
+                            this.alertType = 'warning';
+                            this.alertMessage = `미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`;
                         }
                     }).catch(err => {
                         console.log(err)
                     })
             } else if (item.state == '배송준비중') {
-                alert('배송 준비중인 주문입니다. 배송 전 변경/취소 게시판에서 요청해주시기 바랍니다.');
-                this.$router.push(`/qna/beforeDeliveryQnA`);
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '배송 준비중인 주문입니다. 배송 전 변경/취소 게시판에서 요청해주시기 바랍니다';
+                this.alertPath = `/qna/beforeDeliveryQnA`;
             }
         },
         reset() {
@@ -486,7 +506,7 @@ export default {
             let date = new Date();
             let year = date.getFullYear();
             let month = date.getMonth() + 1;
-            let day = date.getDate()
+            let day = date.getDate();
 
             if (period == '1week') {
                 if (day > 6) {
@@ -522,6 +542,17 @@ export default {
                     month = month + 6;
                 }
             }
+            let lastDay = new Date(year, month, 0).getDate();
+            if (day > lastDay) {
+                if (month != 12) {
+                    month = month + 1;
+                    day = day - lastDay;
+                } else {
+                    year = year + 1;
+                    month = 1;
+                    day = day - lastDay;
+                }
+            }
             this.searchDate1 = `${year}-${month}-${day}`;
             this.searchDate2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
 
@@ -544,14 +575,18 @@ export default {
             axios.patch(`/api/order/update`, states)
                 .then(res => {
                     if (res.data.length == 0) {
-                        alert('구매를 확정하셨습니다');
+                        this.alertDialog = true;
+                        this.alertType = 'success';
+                        this.alertMessage = '구매를 확정하셨습니다';
                         if (this.options.page != 1) {
                             this.options.page = 1;
                         } else {
                             this.getOrder(this.selectedOrder);
                         }
                     } else {
-                        alert(`미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`)
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = `미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`;
                     }
                 }).catch(err => {
                     console.log(err)
@@ -576,7 +611,9 @@ export default {
 
         addReview() {
             if (this.content == '') {
-                alert('후기를 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '후기를 입력해주세요';
                 return;
             }
             let image = null;
@@ -602,11 +639,15 @@ export default {
                 .then(() => {
                     this.dialog = false;
                     this.content = '';
-                    alert("리뷰 등록 완료");
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '리뷰 등록 완료';
                     this.resetReview();
                     this.getOrder(this.selectedOrder);
                 }).catch((err) => {
-                    alert('리뷰 작성에 실패했습니다.')
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '리뷰 작성에 실패했습니다';
                     console.log(err);
                 })
         },

@@ -252,6 +252,11 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+    <v-dialog v-model="alertDialog" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -272,6 +277,9 @@ export default {
     },
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
             dataLoaded: false,
             isActive: false,
             pageID: null,
@@ -316,33 +324,25 @@ export default {
             })
         },
         addSelected(color, size) {
-            if (this.getLogin == null) {
-                alert('로그인을 해주세요');
-                this.$router.push({
-                    name: 'SignIn',
-                    params: {
-                        nextPage: this.$route.path
-                    }
-                });
-            } else {
-                let data = {
-                    id: this.getLogin.user.id,
-                    productNo: this.product.productNo,
-                    selectedColor: color,
-                    selectedSize: size,
-                    basketAmount: 1,
-                    price: this.product.price,
-                    discount: this.product.discount
-                }
-                for (let i = 0; i < this.selected.length; i++) {
-                    if (this.selected[i].selectedColor == data.selectedColor && this.selected[i].selectedSize == data.selectedSize) {
-                        alert('이미 추가한 옵션입니다. 옵션 개수를 조정해주세요.');
-                        return;
-                    }
-                }
-                this.selected.push(data);
-                this.amountFilter();
+            let data = {
+                id: this.getLogin.user.id,
+                productNo: this.product.productNo,
+                selectedColor: color,
+                selectedSize: size,
+                basketAmount: 1,
+                price: this.product.price,
+                discount: this.product.discount
             }
+            for (let i = 0; i < this.selected.length; i++) {
+                if (this.selected[i].selectedColor == data.selectedColor && this.selected[i].selectedSize == data.selectedSize) {
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '이미 추가한 옵션입니다. 옵션 개수를 조정해주세요';
+                    return;
+                }
+            }
+            this.selected.push(data);
+            this.amountFilter();
         },
         deleteSelected(num) {
             this.selected.splice(num, 1);
@@ -354,7 +354,9 @@ export default {
                 if (this.selected[i].basketAmount > 0 && this.selected[i].basketAmount == Math.round(this.selected[i].basketAmount)) {
                     amount += Number(this.selected[i].basketAmount);
                 } else {
-                    alert('잘못된 입력입니다.');
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '잘못된 입력입니다';
                     this.selected[i].basketAmount = 1;
                     amount += Number(this.selected[i].basketAmount);
                 }
@@ -362,37 +364,61 @@ export default {
             this.totalPrice = amount * (this.product.price - this.product.discount);
         },
         buyItNow() {
-            if (this.selected.length == 0) {
-                alert('구매할 상품이 없습니다');
+            if (this.getLogin == null) {
+                this.$router.push({
+                    name: 'SignIn',
+                    params: {
+                        nextPage: this.$route.path
+                    }
+                });
+            } else if (this.selected.length == 0) {
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '구매할 상품이 없습니다';
                 return;
+            } else {
+                this.$router.push({
+                    name: "Payment",
+                    params: {
+                        Payment: this.selected
+                    }
+                });
             }
-            this.$router.push({
-                name: "Payment",
-                params: {
-                    Payment: this.selected
-                }
-            });
         },
         addToBasket() {
-            if (this.selected.length == 0) {
-                alert('장바구니에 추가할 상품이 없습니다');
-                return;
-            }
-            axios.get(`/api/basket/getBasketCount/${this.getLogin.user.id}`)
-                .then(res => {
-                    if (res.data + this.selected.length > 50) {
-                        alert('장바구니에는 50개까지만 저장이 가능합니다.')
-                    } else {
-                        axios.post(`/api/basket/insert`, this.selected)
-                            .then(res => {
-                                this.overlap = res.data;
-                                this.dialog = true;
-                            }).catch((err) => {
-                                alert('저장에 실패하셨습니다');
-                                console.log(err);
-                            })
+            if (this.getLogin == null) {
+                this.$router.push({
+                    name: 'SignIn',
+                    params: {
+                        nextPage: this.$route.path
                     }
-                })
+                });
+            } else if (this.selected.length == 0) {
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '장바구니에 추가할 상품이 없습니다';
+                return;
+            } else {
+                axios.get(`/api/basket/getBasketCount/${this.getLogin.user.id}`)
+                    .then(res => {
+                        if (res.data + this.selected.length > 50) {
+                            this.alertDialog = true;
+                            this.alertType = 'warning';
+                            this.alertMessage = '장바구니에는 50개까지만 저장이 가능합니다';
+                        } else {
+                            axios.post(`/api/basket/insert`, this.selected)
+                                .then(res => {
+                                    this.overlap = res.data;
+                                    this.dialog = true;
+                                }).catch((err) => {
+                                    this.alertDialog = true;
+                                    this.alertType = 'error';
+                                    this.alertMessage = '저장에 실패하셨습니다';
+                                    console.log(err);
+                                })
+                        }
+                    })
+            }
         },
         reset() {
             this.colorSelection = null;
@@ -403,7 +429,6 @@ export default {
         },
         addToWishList() {
             if (this.getLogin == null) {
-                alert('로그인을 해주세요');
                 this.$router.push({
                     name: 'SignIn',
                     params: {
@@ -416,9 +441,13 @@ export default {
                         productNo: this.pageID
                     })
                     .then(() => {
-                        alert('관심 상품에 저장하셨습니다');
+                        this.alertDialog = true;
+                        this.alertType = 'success';
+                        this.alertMessage = '관심 상품에 저장하셨습니다';
                     }).catch((err) => {
-                        alert('이미 추가된 상품입니다');
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '이미 추가된 상품입니다';
                         console.log(err);
                     })
             }

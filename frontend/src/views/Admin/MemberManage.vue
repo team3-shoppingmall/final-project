@@ -1,17 +1,31 @@
 <template>
 <v-container fluid="fluid">
-    <v-row justify="center">
+    <v-row justify="space-between">
         <v-col cols="2" align-self="center">
-            <v-select :items="searchType" v-model="condition" hide-details="hide-details"></v-select>
+            <v-switch v-model="showManager" :label="`${showManager? '관리자':'유저'} 보기`"></v-switch>
         </v-col>
-        <v-col cols="3" align-self="center">
-            <v-text-field hide-details="hide-details" v-model="value" @keyup.enter="searchMember"></v-text-field>
+        <v-col cols="8">
+            <v-row justify="center">
+                <v-col cols="2" align-self="center">
+                    <v-select :items="searchType" v-model="condition" hide-details="hide-details"></v-select>
+                </v-col>
+                <v-col cols="6" align-self="center">
+                    <v-text-field hide-details="hide-details" v-model="value" @keyup.enter="searchMember"></v-text-field>
+                </v-col>
+                <v-col cols="auto" align-self="center">
+                    <v-btn class="primary " large="large" @click="searchMember">검색</v-btn>
+                </v-col>
+                <v-col cols="auto" align-self="center">
+                    <v-btn class="primary " large="large" @click="reset">초기화</v-btn>
+                </v-col>
+            </v-row>
         </v-col>
-        <v-col cols="auto" align-self="center">
-            <v-btn class="primary " large="large" @click="searchMember">검색</v-btn>
-        </v-col>
-        <v-col cols="auto" align-self="center">
-            <v-btn class="primary " large="large" @click="reset">초기화</v-btn>
+        <v-col cols="2" align-self="center">
+            <v-row justify="end">
+                <v-col cols="auto">
+                    <v-btn class="primary " @click="dialog3 = true">관리자 추가</v-btn>
+                </v-col>
+            </v-row>
         </v-col>
     </v-row>
     <v-row>
@@ -91,15 +105,19 @@
                     <tr>
                         <td class="text-h6">포인트</td>
                         <td>
-                            <v-text-field v-model="editItem.point" hide-details readonly></v-text-field>
+                            <v-text-field v-model="editItem.point" hide-details :readonly="getLogin.user.authority != 'ROLE_ADMIN'"></v-text-field>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <v-row justify="end">
+                            <v-row justify="space-between">
                                 <v-col cols="auto">
-                                    <v-btn class="error" @click="dialog = false">취소</v-btn>
-                                    <v-btn class="primary ml-3" @click="updateMember">수정</v-btn>
+                                    <v-btn class="error ml-3" @click="dialog2 = true" v-if="getLogin.user.authority == 'ROLE_ADMIN' && editItem.authority != 'ROLE_ADMIN'">탈퇴</v-btn>
+                                    <v-btn class="error ml-3" @click="dialog2 = true" v-if="getLogin.user.authority == 'ROLE_MANAGER' && editItem.authority == 'ROLE_USER'">탈퇴</v-btn>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-btn class="primary" @click="updateMember">수정</v-btn>
+                                    <v-btn class="error ml-3" @click="dialog = false; editItem = {};">취소</v-btn>
                                 </v-col>
                             </v-row>
                         </td>
@@ -108,11 +126,96 @@
             </v-simple-table>
         </v-card>
     </v-dialog>
+    <v-dialog v-model="dialog2" persistent max-width="350">
+        <v-card>
+            <v-card-title class="text-body-1">
+                <span>정말 이 회원을 탈퇴시키시겠습니까?</span>
+            </v-card-title>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="green darken-1" text @click="deleteMember">
+                    예
+                </v-btn>
+                <v-btn color="red darken-1" text @click="dialog2 = false">
+                    아니오
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+    <v-dialog v-model="dialog3" persistent max-width="500">
+        <v-card>
+            <v-form ref="form">
+                <v-simple-table>
+                    <template slot="default">
+                        <thead>
+                            <tr>
+                                <th class="text-h5" colspan="2">관리자 등록</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td> 아이디 </td>
+                                <td>
+                                    <div class="d-flex ">
+                                        <v-text-field v-model="manager.id" :rules="rules.id" outlined hide-details="auto" dense></v-text-field>
+                                        <v-btn class="align-self-center ml-2 py-2 px-1 primary" height="100%" style="font-size:1.1rem" @click="idCheck">검사</v-btn>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td> 비밀번호 </td>
+                                <td>
+                                    <v-text-field v-model="manager.pwd1" :rules="rules.pwd1" type="password" outlined hide-details="auto" dense required></v-text-field>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td> 비밀번호 확인 </td>
+                                <td>
+                                    <v-text-field v-model="manager.pwd2" :rules="rules.pwd2" type="password" outlined hide-details="auto" dense required></v-text-field>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td> 이름 </td>
+                                <td>
+                                    <v-text-field v-model="manager.name" :rules="rules.name" outlined hide-details="auto" dense required></v-text-field>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td> 전화번호 </td>
+                                <td>
+                                    <v-text-field v-model="manager.tel" :rules="rules.tel" outlined hide-details="auto" dense required></v-text-field>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <v-row justify="end">
+                                        <v-col cols="auto">
+                                            <v-btn class="primary" @click="addManager">등록</v-btn>
+                                            <v-btn class="error ml-3" @click="managerReset">취소</v-btn>
+                                        </v-col>
+                                    </v-row>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </template>
+                </v-simple-table>
+            </v-form>
+        </v-card>
+    </v-dialog>
+    <v-dialog v-model="alertDialog" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
 <script>
 import axios from 'axios'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     methods: {
         getAllMembers() {
@@ -129,6 +232,7 @@ export default {
                         perPage: itemsPerPage,
                         condition: this.condition,
                         param: this.value,
+                        role: this.showManager,
                     }
                 })
                 .then(res => {
@@ -176,7 +280,6 @@ export default {
             }
         },
         selectItem(item) {
-            console.log(item)
             let temp = this.items[
                 this
                 .items
@@ -190,7 +293,8 @@ export default {
                 zipcode: temp.zipcode,
                 addr1: temp.addr1,
                 addr2: temp.addr2,
-                point: temp.point
+                point: temp.point,
+                authority: temp.authority
             }
         },
         updateMember() {
@@ -200,6 +304,23 @@ export default {
                     this.dialog = false;
                 })
         },
+        deleteMember() {
+            axios.delete(`/api/member/delete/${this.id}`)
+                .then(() => {
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '탈퇴가 완료되었습니다';
+                    this.editItem = {};
+                    this.dialog2 = false;
+                    this.dialog = false;
+                    this.getAllMembers();
+                })
+                .catch(() => {
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '배송중인 상품이 있어 탈퇴에 실패했습니다';
+                })
+        },
         reset() {
             this.condition = 'id';
             this.value = null;
@@ -207,7 +328,75 @@ export default {
             this.options.itemsPerPage = 10;
             this.getAllMembers();
         },
+        addManager() {
+            let validate = this.$refs.form.validate();
+            if (!this.check) {
 
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '아이디 중복검사를 해야합니다';
+            } else if (validate) {
+                let member = {
+                    id: this.manager.id,
+                    password: this.manager.pwd1,
+                    name: this.manager.name,
+                    tel: this.manager.tel,
+                    authority: 'ROLE_MANAGER',
+                }
+                axios.post('/api/member/insert', member)
+                    .then(() => {
+                        this.alertDialog = true;
+                        this.alertType = 'success';
+                        this.alertMessage = '관리자 등록 완료';
+                        this.managerReset();
+                        this.getAllMembers();
+                    }).catch(() => {
+                        this.alertDialog = true;
+                        this.alertType = 'error';
+                        this.alertMessage = '가입 실패';
+                    })
+            }
+        },
+        idCheck() {
+            if (this.manager.id == null) {
+                return;
+            } else if (this.manager.id.slice(0, 5) == 'kakao' || this.manager.id.slice(0, 5) == 'naver') {
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '사용 불가합니다';
+                this.check = false;
+            } else {
+                axios.get(`/api/member/check/${this.manager.id}`)
+                    .then(() => {
+                        this.alertDialog = true;
+                        this.alertType = 'success';
+                        this.alertMessage = '사용 가능합니다';
+                        this.check = true;
+
+                    })
+                    .catch(() => {
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '사용 불가합니다';
+                        this.check = false;
+
+                    })
+            }
+        },
+        managerReset() {
+            this.manager = {
+                id: '',
+                pwd1: '',
+                pwd2: '',
+                name: '',
+                tel: '',
+            }
+            this.dialog3 = false
+        }
+
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
         options: {
@@ -221,10 +410,22 @@ export default {
                 this.value = '';
             }
         },
+        showManager: {
+            handler() {
+                this.searchMember();
+            }
+        }
     },
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
             dialog: false,
+            dialog2: false,
+            dialog3: false,
+            showManager: false,
+            check: false,
             totalContents: 0,
             loading: false,
             editItem: {},
@@ -336,7 +537,33 @@ export default {
                 sortable: false,
                 class: 'text-subtitle-1'
             }],
-            items: []
+            items: [],
+            manager: {
+                id: '',
+                pwd1: '',
+                pwd2: '',
+                name: '',
+                tel: '',
+            },
+            rules: {
+                id: [v => !!v || '아이디는 필수 입력사항입니다.',
+                    v => /^[a-zA-Z0-9]*$/.test(v) || '아이디는 영문+숫자만 입력 가능합니다.',
+                    v => v.length >= 4 || '최소 4글자입니다.',
+                    v => v.length <= 24 || '최대 24글자입니다.',
+                ],
+                pwd1: [v => !!v || '비밀번호는 필수 입력사항입니다.',
+                    v => /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^*+=-]).{0,}$/.test(v) || '비밀번호는 영문 대소문자, 숫자, 특수문자로 구성돼야합니다.',
+                    v => v.length >= 8 || '최소 8글자입니다.',
+                    v => v.length <= 20 || '최대 20글자입니다.',
+                ],
+                pwd2: [v => !!v || '비밀번호확인은 필수 입력사항입니다.',
+                    v => v === this.manager.pwd1 || '비밀번호가 일치하지 않습니다.'
+                ],
+                name: [v => !!v || '이름은 필수 입력사항입니다.', ],
+                tel: [v => !!v || '전화번호는 필수 입력사항입니다.',
+                    v => /^(01[016789]{1}|02|0[3-9]{1}[0-9]{1})-?[0-9]{3,4}-?[0-9]{4}$/.test(v) || '전화번호는 숫자만 입력 가능합니다.',
+                ],
+            },
         }
     }
 }

@@ -139,6 +139,12 @@
             </v-simple-table>
         </v-card>
     </v-dialog>
+    <v-dialog v-model="alertDialog" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+        </v-alert>
+    </v-dialog>
+
 </v-container>
 </template>
 
@@ -151,6 +157,9 @@ export default {
     },
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
             orders: [],
             totalContents: 0,
             loading: false,
@@ -352,7 +361,9 @@ export default {
             for (let i = 0; i < this.orders.length; i++) {
                 if (this.orders[i].state != this.stateChanges[i]) {
                     if (this.stateChanges[i] == null) {
-                        alert('선택되지 않은 상태가 있습니다.');
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '선택되지 않은 상태가 있습니다';
                         return;
                     }
                     let data = {
@@ -363,16 +374,22 @@ export default {
                 }
             }
             if (states.length == 0) {
-                alert('수정할 사항이 없습니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '수정할 사항이 없습니다';
                 return;
             }
             axios.patch(`/api/order/update`, states)
                 .then(res => {
                     if (res.data.length == 0) {
-                        alert('변경하셨습니다');
+                        this.alertDialog = true;
+                        this.alertType = 'success';
+                        this.alertMessage = '변경하셨습니다';
                         this.getOrder();
                     } else {
-                        alert(`미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`)
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = `미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`;
                     }
                 }).catch(err => {
                     console.log(err)

@@ -230,7 +230,7 @@
                             <v-row justify="space-between" align="center">
                                 <v-col cols="auto">총 적립 예정 금액</v-col>
                                 <v-col cols="auto">
-                                    {{AddComma(Math.round((totalPrice - totalDiscount - point)*0.02))}}원
+                                    {{AddComma(Math.round((totalPrice - totalDiscount)*0.02))}}원
                                 </v-col>
                             </v-row>
                         </v-col>

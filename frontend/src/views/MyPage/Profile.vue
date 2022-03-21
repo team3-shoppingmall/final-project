@@ -45,10 +45,10 @@
                                 </td>
                                 <td>
                                     <div class="d-flex ">
-                                        <v-text-field v-model="zipcode" outlined="outlined" hide-details="hide-details" label="우편번호" dense="dense"></v-text-field>
+                                        <v-text-field v-model="zipcode" outlined="outlined" hide-details="hide-details" label="우편번호" dense="dense" @click="execDaumPostcode" readonly></v-text-field>
                                         <v-btn class="align-self-center ml-2 pa-2 primary" height="100%" style="font-size:1rem" @click="execDaumPostcode">검색</v-btn>
                                     </div>
-                                    <v-text-field v-model="addr1" class="mt-1" outlined="outlined" hide-details="hide-details" label="기본주소" dense="dense"></v-text-field>
+                                    <v-text-field v-model="addr1" class="mt-1" outlined="outlined" hide-details="hide-details" label="기본주소" dense="dense" @click="execDaumPostcode" readonly></v-text-field>
                                     <v-text-field v-model="addr2" class="mt-2" outlined="outlined" hide-details="hide-details" label="상세주소" dense="dense"></v-text-field>
                                 </td>
                             </tr>
@@ -73,8 +73,8 @@
                 </v-simple-table>
                 <v-divider class="mt-0"></v-divider>
                 <v-row class="my-10" justify="center">
-                    <v-btn class="primary text-h5 pa-3 " height="100%" width="120px">취소</v-btn>
-                    <v-btn class="primary text-h5 pa-3 ml-5" height="100%" width="120px" @click="update">수정</v-btn>
+                    <v-btn class="primary text-h6" @click="update">수정</v-btn>
+                    <v-btn class="primary text-h6 ml-5" @click="reset">초기화</v-btn>
                 </v-row>
                 <v-row class="my-5" justify="end">
                     <!-- <v-btn class="error text-h5 pa-3 " height="100%" width="120px" @click="secession">탈퇴</v-btn> -->
@@ -253,6 +253,9 @@ export default {
                     this.zipcode = data.zonecode;
                 },
             }).open();
+        },
+        reset() {
+            this.getData();
         },
         ...LoginStore.mapActions(['Logout']),
     },

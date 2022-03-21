@@ -235,6 +235,13 @@ export default {
             }).open();
         }
     },
+    watch: {
+        id: {
+            handler() {
+                this.check = false;
+            }
+        }
+    },
     mounted() {
         this.$vuetify.goTo(0);
         this.naverInfo = this.$route.params.naver;

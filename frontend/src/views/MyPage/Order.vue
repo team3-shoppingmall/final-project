@@ -489,6 +489,11 @@ export default {
                 this.alertType = 'warning';
                 this.alertMessage = '배송 준비중인 주문입니다. 배송 전 변경/취소 게시판에서 요청해주시기 바랍니다';
                 this.alertPath = `/qna/beforeDeliveryQnA`;
+            } else if (item.state == '배송완료') {
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '배송 후 교환/반품 게시판에서 요청해주시기 바랍니다';
+                this.alertPath = `/qna/afterDeliveryQnA`;
             }
         },
         reset() {

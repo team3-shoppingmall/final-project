@@ -418,7 +418,6 @@ export default {
         ...LoginStore.mapActions(['Login']),
         ...LoginStore.mapMutations(['setPath']),
     },
-
     computed: {
         ...LoginStore.mapGetters(['getLogin']),
         ...LoginStore.mapGetters(['getPath'])

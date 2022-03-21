@@ -324,25 +324,34 @@ export default {
             })
         },
         addSelected(color, size) {
-            let data = {
-                id: this.getLogin.user.id,
-                productNo: this.product.productNo,
-                selectedColor: color,
-                selectedSize: size,
-                basketAmount: 1,
-                price: this.product.price,
-                discount: this.product.discount
-            }
-            for (let i = 0; i < this.selected.length; i++) {
-                if (this.selected[i].selectedColor == data.selectedColor && this.selected[i].selectedSize == data.selectedSize) {
-                    this.alertDialog = true;
-                    this.alertType = 'warning';
-                    this.alertMessage = '이미 추가한 옵션입니다. 옵션 개수를 조정해주세요';
-                    return;
+            if (this.getLogin == null) {
+                this.$router.push({
+                    name: 'SignIn',
+                    params: {
+                        nextPage: this.$route.path
+                    }
+                });
+            } else {
+                let data = {
+                    id: this.getLogin.user.id,
+                    productNo: this.product.productNo,
+                    selectedColor: color,
+                    selectedSize: size,
+                    basketAmount: 1,
+                    price: this.product.price,
+                    discount: this.product.discount
                 }
+                for (let i = 0; i < this.selected.length; i++) {
+                    if (this.selected[i].selectedColor == data.selectedColor && this.selected[i].selectedSize == data.selectedSize) {
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '이미 추가한 옵션입니다. 옵션 개수를 조정해주세요';
+                        return;
+                    }
+                }
+                this.selected.push(data);
+                this.amountFilter();
             }
-            this.selected.push(data);
-            this.amountFilter();
         },
         deleteSelected(num) {
             this.selected.splice(num, 1);

@@ -312,19 +312,23 @@ export default {
         },
         idCheck() {
             this.orderInfo = null;
-            axios({
-                    method: 'get',
-                    url: `/api/order/getCountToReview`,
-                    params: {
-                        id: this.getLogin.user.id,
-                        productNo: this.productNo,
-                    }
-                })
-                .then(res => {
-                    if (res.data != '') {
-                        this.orderInfo = res.data;
-                    }
-                })
+            if (this.getLogin == null) {
+                return;
+            } else {
+                axios({
+                        method: 'get',
+                        url: `/api/order/getCountToReview`,
+                        params: {
+                            id: this.getLogin.user.id,
+                            productNo: this.productNo,
+                        }
+                    })
+                    .then(res => {
+                        if (res.data != '') {
+                            this.orderInfo = res.data;
+                        }
+                    })
+            }
         },
 
     },

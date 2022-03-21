@@ -11,7 +11,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>상품 타입</td>
+                        <td>상품 분류</td>
                         <td>
                             <v-select v-model="typeSelected" :items="types" hide-details></v-select>
                         </td>
@@ -134,6 +134,16 @@
             </v-row>
         </v-col>
     </v-row>
+    <v-dialog v-model="alertDialog" :persistent="alertPath != null" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+            <v-row justify="end" v-if="alertPath != null">
+                <v-col cols="auto" class="pr-1 pb-1">
+                    <v-btn text :to="alertPath" hide-details>확인</v-btn>
+                </v-col>
+            </v-row>
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -143,6 +153,10 @@ import axios from 'axios'
 export default {
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
+            alertPath: null,
             pageID: '',
             product: {
                 productName: null,
@@ -256,33 +270,47 @@ export default {
         },
         addFile() {
             if (this.product.productName == null) {
-                alert('상품명을 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '상품명을 입력해주세요';
                 return;
             }
             if (this.typeSelected == null) {
-                alert('상품 타입을 선택해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '상품 타입을 선택해주세요';
                 return;
             }
             if (!(this.product.price > 0 && (this.product.price == Math.round(this.product.price)) && this.product.price != '')) {
-                alert('상품 가격이 유효하지 않습니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '상품 가격이 유효하지 않습니다';
                 this.product.price = 0;
                 return;
             }
             if (!(this.product.amount >= 0 && (this.product.amount == Math.round(this.product.amount)) && this.product.amount != '')) {
-                alert('상품 수량이 유효하지 않습니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '상품 수량이 유효하지 않습니다';
                 this.product.amount = 0;
                 return;
             }
             if (this.colorList.length == 0 && this.sizeList.length == 0) {
-                alert('색상, 사이즈 중 하나를 추가해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '색상, 사이즈 중 하나를 추가해주세요';
                 return;
             }
             if (this.imageFiles.length == 0) {
-                alert('상품 사진을 추가해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '상품 사진을 추가해주세요';
                 return;
             }
             if (this.detailImageFiles.length == 0) {
-                alert('상품 상세 사진을 추가해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '상품 상세 사진을 추가해주세요';
                 return;
             }
 
@@ -312,12 +340,16 @@ export default {
             let imageName = null;
             for (let i = 0; i < this.imageFiles.length; i++) {
                 if (this.imageFiles[i] == null) {
-                    alert('파일을 추가하거나 입력칸을 삭제해주세요')
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '파일을 추가하거나 입력칸을 삭제해주세요';
                     return;
                 }
                 for (let j = 0; j < i; j++) {
                     if (this.imageFiles[i].name == this.imageFiles[j].name) {
-                        alert('이미지 이름이 중복되었습니다');
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '이미지 이름이 중복되었습니다';
                         return;
                     }
                 }
@@ -331,12 +363,16 @@ export default {
             let detailImageName = null;
             for (let i = 0; i < this.detailImageFiles.length; i++) {
                 if (this.detailImageFiles[i] == null) {
-                    alert('파일을 추가하거나 입력칸을 삭제해주세요')
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '파일을 추가하거나 입력칸을 삭제해주세요';
                     return;
                 }
                 for (let j = 0; j < i; j++) {
                     if (this.detailImageFiles[i].name == this.detailImageFiles[j].name) {
-                        alert('상세 이미지 이름이 중복되었습니다');
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '상세 이미지 이름이 중복되었습니다';
                         return;
                     }
                 }
@@ -371,31 +407,42 @@ export default {
                 formData.append(`fileList`, this.detailImageFiles[i])
             }
             axios.post('/api/product/insertProduct', formData)
-                .then(res => {
-                    console.log(res.status);
-                    alert("상품을 추가하셨습니다");
-                    this.$router.go();
+                .then(() => {
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '상품을 추가하셨습니다';
+                    this.alertPath = `/admin/productManage`;
                 }).catch(err => {
                     if (err.response.status === 404)
-                        alert("error")
+                        this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = 'error';
                 })
         },
         updateFile() {
             if (this.product.productName == null) {
-                alert('상품명을 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '상품명을 입력해주세요';
                 return;
             }
             if (this.typeSelected == null) {
-                alert('상품 타입을 선택해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '상품 타입을 선택해주세요';
                 return;
             }
             if (!(this.product.price > 0 && (this.product.price == Math.round(this.product.price)) && this.product.price != '')) {
-                alert('상품 가격이 유효하지 않습니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '상품 가격이 유효하지 않습니다';
                 this.product.price = 0;
                 return;
             }
             if (!(this.product.discount >= 0 && (this.product.discount == Math.round(this.product.discount)))) {
-                alert('할인 가격이 유효하지 않습니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '할인 가격이 유효하지 않습니다';
                 this.product.discount = 0;
                 return;
             }
@@ -403,25 +450,35 @@ export default {
                 this.product.discount = 0;
             }
             if (Number(this.product.discount) > Number(this.product.price)) {
-                alert('할인 가격이 상품 가격보다 높습니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '할인 가격이 상품 가격보다 높습니다';
                 this.product.discount = 0;
                 return;
             }
             if (!(this.product.amount >= 0 && (this.product.amount == Math.round(this.product.amount)) && this.product.amount != '')) {
-                alert('상품 수량이 유효하지 않습니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '상품 수량이 유효하지 않습니다';
                 this.product.amount = 0;
                 return;
             }
             if (this.colorList.length == 0 && this.sizeList.length == 0) {
-                alert('색상, 사이즈 중 하나를 추가해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '색상, 사이즈 중 하나를 추가해주세요';
                 return;
             }
             if (this.imageFiles.length == 0) {
-                alert('상품 사진을 추가해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '상품 사진을 추가해주세요';
                 return;
             }
             if (this.detailImageFiles.length == 0) {
-                alert('상품 상세 사진을 추가해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '상품 상세 사진을 추가해주세요';
                 return;
             }
 
@@ -451,12 +508,16 @@ export default {
             let imageName = null;
             for (let i = 0; i < this.imageFiles.length; i++) {
                 if (this.imageFiles[i] == null) {
-                    alert('파일을 추가하거나 입력칸을 삭제해주세요')
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '파일을 추가하거나 입력칸을 삭제해주세요';
                     return;
                 }
                 for (let j = 0; j < i; j++) {
                     if (this.imageFiles[i].name == this.imageFiles[j].name) {
-                        alert('이미지 이름이 중복되었습니다');
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '이미지 이름이 중복되었습니다';
                         return;
                     }
                 }
@@ -470,12 +531,16 @@ export default {
             let detailImageName = null;
             for (let i = 0; i < this.detailImageFiles.length; i++) {
                 if (this.detailImageFiles[i] == null) {
-                    alert('파일을 추가하거나 입력칸을 삭제해주세요')
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '파일을 추가하거나 입력칸을 삭제해주세요';
                     return;
                 }
                 for (let j = 0; j < i; j++) {
                     if (this.detailImageFiles[i].name == this.detailImageFiles[j].name) {
-                        alert('상세 이미지 이름이 중복되었습니다');
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '상세 이미지 이름이 중복되었습니다';
                         return;
                     }
                 }
@@ -512,13 +577,18 @@ export default {
                 formData.append(`fileList`, this.detailImageFiles[i])
             }
             axios.patch('/api/product/updateProduct', formData)
-                .then(res => {
-                    console.log(res.status);
-                    alert("상품을 수정하셨습니다");
-                    this.$router.go();
+                .then(() => {
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '상품을 수정하셨습니다';
+                    this.alertPath = `/admin/productManage`;
                 }).catch(err => {
-                    if (err.response.status === 404)
-                        alert("error")
+                    if (err.response.status === 404) {
+
+                        this.alertDialog = true;
+                        this.alertType = 'error';
+                        this.alertMessage = 'error';
+                    }
                 })
         },
         async getProduct() {
@@ -574,12 +644,16 @@ export default {
         deleteProduct() {
             axios.delete(`/api/product/deleteProduct/${this.pageID}`)
                 .then(() => {
-                    alert('상품이 삭제되었습니다');
-                    this.$router.push('/admin/productManage');
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '상품이 삭제되었습니다';
+                    this.alertPath = `/admin/productManage`;
                 }).catch(err => {
                     if (err.response.status == 500) {
-                        alert('상품 판매 이력이 있습니다');
-                        this.$router.push('/admin/productManage');
+                        this.alertDialog = true;
+                        this.alertType = 'warmning';
+                        this.alertMessage = '상품 판매 이력이 있습니다';
+                        this.alertPath = `/admin/productManage`;
                     } else {
                         console.log(err);
                     }
@@ -594,14 +668,18 @@ export default {
         imageFiles(val) {
             if (val.length > 4) {
                 this.$nextTick(() => this.imageFiles.pop());
-                alert('상품 이미지는 4개까지 가능합니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '상품 이미지는 4개까지 가능합니다';
             }
         },
 
         detailImageFiles(val) {
             if (val.length > 20) {
                 this.$nextTick(() => this.detailImageFiles.pop());
-                alert('상세 이미지는 20개까지 가능합니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '상세 이미지는 20개까지 가능합니다';
             }
         },
     },

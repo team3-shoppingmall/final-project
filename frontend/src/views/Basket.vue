@@ -56,6 +56,16 @@
             </v-row>
         </v-col>
     </v-row>
+    <v-dialog v-model="alertDialog" :persistent="alertPath != null" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+            <v-row justify="end" v-if="alertPath != null">
+                <v-col cols="auto" class="pr-1 pb-1">
+                    <v-btn text @click="alertDialog=false; alertPath = null; getBasket();">확인</v-btn>
+                </v-col>
+            </v-row>
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -73,6 +83,10 @@ export default {
     name: 'Payment',
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
+            alertPath: null,
             baskets: [],
             selected: [],
             totalPrice: 0,
@@ -133,16 +147,22 @@ export default {
         },
         amountFilter(item) {
             if (!(item.basketAmount > 0 && item.basketAmount == Math.round(item.basketAmount))) {
-                alert('잘못된 입력입니다.');
-                this.$router.go();
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '잘못된 입력입니다';
+                this.alertPath = `/basket`;
                 return;
             } else if (item.basketAmount > 9999) {
-                alert('주문량이 너무 많습니다');
-                this.$router.go();
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '주문량이 너무 많습니다';
+                this.alertPath = `/basket`;
                 return;
             } else if (item.basketAmount > item.amount) {
-                alert('재고보다 주문량이 많습니다');
-                this.$router.go();
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '재고보다 주문량이 많습니다';
+                this.alertPath = `/basket`;
                 return;
             } else {
                 axios({
@@ -154,7 +174,9 @@ export default {
                         }
                     })
                     .catch(err => {
-                        alert('변경에 실패하였습니다')
+                        this.alertDialog = true;
+                        this.alertType = 'error';
+                        this.alertMessage = '변경에 실패하였습니다';
                         console.log(err);
                     })
 
@@ -176,16 +198,22 @@ export default {
                     data: deletes
                 })
                 .then(() => {
-                    alert('선택한 장바구니가 삭제되었습니다.');
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '선택한 장바구니가 삭제되었습니다';
                     this.getBasket();
                 }).catch(err => {
-                    alert('삭제에 실패하였습니다');
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '삭제에 실패하였습니다';
                     console.log(err);
                 })
         },
         goToOrder() {
             if (this.selected.length == 0) {
-                alert('구매할 상품이 없습니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '구매할 상품이 없습니다';
                 return;
             }
             this.$router.push({
@@ -206,10 +234,14 @@ export default {
                 for (let i = 0; i < this.selected.length; i++) {
                     if (this.selected[i].onSale == false || this.selected[i].amount == 0) {
                         this.selected.splice(i, 1);
-                        alert('품절 상품입니다');
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '품절 상품입니다';
                     } else if (this.selected[i].basketAmount > this.selected[i].amount) {
                         this.selected.splice(i, 1);
-                        alert('재고보다 주문량이 많습니다');
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '재고보다 주문량이 많습니다';
                     } else {
                         this.totalPrice += (this.selected[i].price - this.selected[i].discount) * this.selected[i].basketAmount;
                     }

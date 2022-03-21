@@ -111,6 +111,11 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+    <v-dialog v-model="alertDialog" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -133,6 +138,9 @@ export default {
     props: ['productNo'],
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
             editor: ClassicEditor,
             editorConfig: {
                 ckfinder: {},
@@ -244,7 +252,9 @@ export default {
 
         addReview() {
             if (this.content == '') {
-                alert('후기를 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '후기를 입력해주세요';
                 return;
             }
             let image = null;
@@ -269,11 +279,15 @@ export default {
                 .then(() => {
                     this.dialog = false;
                     this.content = '';
-                    alert("리뷰 등록 완료");
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '리뷰 등록 완료';
                     this.resetReview();
                     this.getReview();
                 }).catch((err) => {
-                    alert('리뷰 작성에 실패했습니다.')
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '리뷰 작성에 실패했습니다';
                     console.log(err);
                 })
         },
@@ -287,7 +301,9 @@ export default {
         deleteReview(num) {
             axios.delete(`/api/review/delete/${num}`)
                 .then(() => {
-                    alert("삭제가 완료되었습니다.")
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '삭제가 완료되었습니다';
                     this.getReview();
                 })
         },

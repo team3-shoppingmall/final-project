@@ -64,7 +64,16 @@
             </v-row>
         </v-col>
     </v-row>
-
+    <v-dialog v-model="alertDialog" :persistent="alertPath != null" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+            <v-row justify="end" v-if="alertPath != null">
+                <v-col cols="auto" class="pr-1 pb-1">
+                    <v-btn text @click="$router.go(alertPath)">확인</v-btn>
+                </v-col>
+            </v-row>
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -87,6 +96,10 @@ export default {
     },
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
+            alertPath: null,
             dataLoaded: false,
             pageID: '',
             admin: true,
@@ -127,22 +140,30 @@ export default {
             })
         },
         moveToWriteReply() {
-            if (this.qna.reply == true)
-                alert("이미 답변이 등록된 문의글입니다.");
-            else
+            if (this.qna.reply == true) {
+
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '이미 답변이 등록된 문의글입니다';
+            } else
                 this.$router.push(`/replyPost/${this.qna.type}/${this.qna.qnaNo}`)
         },
         moveToUpdate() {
-            if (this.qna.reply == true)
-                alert("이미 답변이 완료된 문의글이므로 수정이 불가합니다.");
-            else
+            if (this.qna.reply == true) {
+
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '이미 답변이 완료된 문의글이므로 수정이 불가합니다';
+            } else
                 this.$router.push(`/updatePost/qna/${this.qna.qnaNo}`);
         },
         deleteQnA() {
             axios.delete(`/api/qna/deleteqna/${this.qna.qnaNo}`)
                 .then(() => {
-                    alert("삭제되었습니다.");
-                    this.$router.go(this.returnCount);
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '삭제되었습니다';
+                    this.alertPath = this.returnCount;
                 }).catch((err) => {
                     console.log(err);
                 })

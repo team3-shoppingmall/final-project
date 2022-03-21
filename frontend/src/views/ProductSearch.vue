@@ -91,6 +91,11 @@
             </div>
         </v-col>
     </v-row>
+    <v-dialog v-model="alertDialog" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -99,6 +104,9 @@ import axios from 'axios';
 export default {
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
             types: [{
                 text: '기준 선택',
                 value: null,
@@ -256,10 +264,14 @@ export default {
         },
         pricePolicy() {
             if (this.minPrice < 0 || this.minPrice > 9999999 || this.minPrice != Math.round(this.minPrice)) {
-                alert('0원 ~ 9,999,999원의 상품만 검색이 가능합니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '0원 ~ 9,999,999원의 상품만 검색이 가능합니다';
                 this.minPrice = 0;
             } else if (this.maxPrice < 0 || this.maxPrice > 9999999 || this.maxPrice != Math.round(this.maxPrice)) {
-                alert('0원 ~ 9,999,999원의 상품만 검색이 가능합니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '0원 ~ 9,999,999원의 상품만 검색이 가능합니다';
                 this.maxPrice = 9999999;
             }
         },

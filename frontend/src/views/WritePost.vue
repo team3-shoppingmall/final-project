@@ -102,7 +102,16 @@
             </v-form>
         </v-col>
     </v-row>
-
+    <v-dialog v-model="alertDialog" :persistent="alertPath != null" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+            <v-row justify="end" v-if="alertPath != null">
+                <v-col cols="auto" class="pr-1 pb-1">
+                    <v-btn text @click="$router.go(alertPath)">확인</v-btn>
+                </v-col>
+            </v-row>
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -120,6 +129,10 @@ export default {
     },
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
+            alertPath: null,
             editor: ClassicEditor,
             editorConfig: {
                 ckfinder: {},
@@ -260,18 +273,24 @@ export default {
         form() {
             if (this.admin) {
                 if (this.titleDetail == '' && this.originalNo == undefined) {
-                    alert('제목을 입력해주세요');
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '제목을 입력해주세요';
                     return;
                 }
             } else {
                 if (this.titleSelected == 'default') {
-                    alert('제목을 선택해주세요')
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '제목을 선택해주세요';
                     return;
                 }
             }
 
             if (this.content == '') {
-                alert('내용을 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '내용을 입력해주세요';
                 return;
             }
 
@@ -280,7 +299,9 @@ export default {
                 limit = 10000;
             }
             if (this.content.length > limit) {
-                alert('글자 수 제한을 넘기셨습니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '글자 수 제한을 넘기셨습니다';
                 return;
             }
 
@@ -312,19 +333,25 @@ export default {
             if (!(this.pageID == 'qna' && this.admin)) {
                 if (this.admin) {
                     if (this.titleDetail == '') {
-                        alert('제목을 입력해주세요');
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '제목을 입력해주세요';
                         return;
                     }
                 } else {
                     if (this.titleSelected == 'default') {
-                        alert('제목을 선택해주세요')
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '제목을 선택해주세요';
                         return;
                     }
                 }
             }
 
             if (this.content == '') {
-                alert('내용을 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '내용을 입력해주세요';
                 return;
             }
 
@@ -333,7 +360,9 @@ export default {
                 limit = 10000;
             }
             if (this.content.length > limit) {
-                alert('글자 수 제한을 넘기셨습니다');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '글자 수 제한을 넘기셨습니다';
                 return;
             }
 
@@ -351,20 +380,26 @@ export default {
         // 답변 작성
         replyForm() {
             axios({
-                method: 'post',
-                url: `/api/qna/insertReply`,
-                data: {
-                    type: this.pageID + 'Reply',
-                    originalNo: this.originalNo,
-                    content: this.content,
-                    id: this.id,
-                }
-            }).then(() => {
-                alert("답변 등록 완료");
-                this.$router.go(-2);
-            }).catch((err) => {
-                console.log(err);
-            })
+                    method: 'post',
+                    url: `/api/qna/insertReply`,
+                    data: {
+                        type: this.pageID + 'Reply',
+                        originalNo: this.originalNo,
+                        content: this.content,
+                        id: this.id,
+                    }
+                })
+                .then(() => {
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '답변 작성이 완료되었습니다';
+                    this.alertPath = -2;
+                }).catch((err) => {
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '답변 작성에 실패하셨습니다';
+                    console.log(err);
+                })
         },
 
         // 글쓰기
@@ -375,7 +410,9 @@ export default {
                     for (let j = 0; j < i; j++) {
                         if (this.imageFiles[j] != null) {
                             if (this.imageFiles[i].name == this.imageFiles[j].name) {
-                                alert('이미지 이름이 중복되었습니다');
+                                this.alertDialog = true;
+                                this.alertType = 'warning';
+                                this.alertMessage = '이미지 이름이 중복되었습니다';
                                 return;
                             }
                         }
@@ -404,10 +441,14 @@ export default {
             }
             axios.post(`/api/notice/insertNotice`, formData)
                 .then(() => {
-                    alert("공지사항 등록 완료");
-                    this.$router.go(-1);
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '작성이 완료되었습니다';
+                    this.alertPath = -1;
                 }).catch((err) => {
-                    alert("등록 실패");
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '작성에 실패하셨습니다';
                     console.log(err);
                 })
         },
@@ -417,14 +458,17 @@ export default {
                     title: this.titleDetail,
                     content: this.content
                 })
-
                 .then(() => {
-                    alert("FAQ 등록 완료");
-                    this.$router.go(-1);
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '작성이 완료되었습니다';
+                    this.alertPath = -1;
                 }).catch((err) => {
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '작성에 실패하셨습니다';
                     console.log(err);
                 })
-
         },
         qnaForm() {
             let image = null;
@@ -433,7 +477,9 @@ export default {
                     for (let j = 0; j < i; j++) {
                         if (this.imageFiles[j] != null) {
                             if (this.imageFiles[i].name == this.imageFiles[j].name) {
-                                alert('이미지 이름이 중복되었습니다');
+                                this.alertDialog = true;
+                                this.alertType = 'warning';
+                                this.alertMessage = '이미지 이름이 중복되었습니다';
                                 return;
                             }
                         }
@@ -465,9 +511,14 @@ export default {
             }
             axios.post(`/api/qna/insertqna`, formData)
                 .then(() => {
-                    alert("문의글이 등록되었습니다.");
-                    this.$router.go(-1);
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '작성이 완료되었습니다';
+                    this.alertPath = -1;
                 }).catch((err) => {
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '작성에 실패하셨습니다';
                     console.log(err);
                 })
         },
@@ -508,7 +559,9 @@ export default {
                         }
                     }
                 }).catch((err) => {
-                    alert("정보를 불러오는데 실패했습니다.");
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '정보를 불러오는데 실패했습니다';
                     console.log(err);
                 })
         },
@@ -532,7 +585,9 @@ export default {
                             })
                     }
                 }).catch((err) => {
-                    alert("정보를 불러오는데 실패했습니다.");
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '정보를 불러오는데 실패했습니다';
                     console.log(err);
                 })
         },
@@ -543,7 +598,9 @@ export default {
                     this.faqTypeSelected = res.data.type;
                     this.content = res.data.content;
                 }).catch((err) => {
-                    alert("정보를 불러오는데 실패했습니다.");
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '정보를 불러오는데 실패했습니다';
                     console.log(err);
                 })
         },
@@ -586,7 +643,9 @@ export default {
                         }
                     }
                 }).catch((err) => {
-                    alert("정보를 불러오는데 실패했습니다.");
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '정보를 불러오는데 실패했습니다';
                     console.log(err);
                 })
         },
@@ -599,7 +658,9 @@ export default {
                     for (let j = 0; j < i; j++) {
                         if (this.imageFiles[j] != null) {
                             if (this.imageFiles[i].name == this.imageFiles[j].name) {
-                                alert('이미지 이름이 중복되었습니다');
+                                this.alertDialog = true;
+                                this.alertType = 'warning';
+                                this.alertMessage = '이미지 이름이 중복되었습니다';
                                 return;
                             }
                         }
@@ -628,10 +689,14 @@ export default {
             }
             axios.patch(`/api/notice/updateNotice`, formData)
                 .then(() => {
-                    alert("공지사항 수정 완료");
-                    this.$router.go(-1);
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '수정이 완료되었습니다';
+                    this.alertPath = -1;
                 }).catch((err) => {
-                    alert("수정 실패");
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '수정에 실패하셨습니다';
                     console.log(err);
                 })
         },
@@ -654,10 +719,14 @@ export default {
             formData.append(`fileList`, this.imageFiles[0]);
             axios.patch(`/api/review/update`, formData)
                 .then(() => {
-                    alert("수정이 완료되었습니다.")
-                    this.$router.go(-1);
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '수정이 완료되었습니다';
+                    this.alertPath = -1;
                 }).catch((err) => {
-                    alert('수정에 실패하셨습니다.');
+                    this.alertDialog = true;
+                    this.alertType = 'warning';
+                    this.alertMessage = '수정에 실패하셨습니다';
                     console.log(err);
                 })
         },
@@ -672,8 +741,15 @@ export default {
                     content: this.content,
                 }
             }).then(() => {
-                alert("FAQ 수정 완료");
-                this.$router.go(-1);
+                this.alertDialog = true;
+                this.alertType = 'success';
+                this.alertMessage = '수정이 완료되었습니다';
+                this.alertPath = -1;
+            }).catch((err) => {
+                this.alertDialog = true;
+                this.alertType = 'error';
+                this.alertMessage = '수정에 실패하셨습니다';
+                console.log(err);
             })
         },
         qnaFormUpdate() {
@@ -682,7 +758,9 @@ export default {
                 for (let j = 0; j < i; j++) {
                     if (this.imageFiles[j] != null) {
                         if (this.imageFiles[i].name == this.imageFiles[j].name) {
-                            alert('이미지 이름이 중복되었습니다');
+                            this.alertDialog = true;
+                            this.alertType = 'warning';
+                            this.alertMessage = '이미지 이름이 중복되었습니다';
                             return;
                         }
                     }
@@ -714,11 +792,15 @@ export default {
             }
             axios.patch(`/api/qna/updateqna`, formData)
                 .then(() => {
-                    alert("수정이 완료되었습니다.");
-                    this.$router.go(-1);
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '수정이 완료되었습니다';
+                    this.alertPath = -1;
                 }).catch((err) => {
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '수정에 실패하셨습니다';
                     console.log(err);
-                    alert("수정에 실패했습니다.");
                 })
         },
     },

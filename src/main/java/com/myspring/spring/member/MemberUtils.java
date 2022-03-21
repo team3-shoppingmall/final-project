@@ -4,13 +4,19 @@ import org.apache.ibatis.jdbc.SQL;
 
 public class MemberUtils {
 //	@Select("select id, name, tel, email, zipcode, addr1, addr2, terms, point from membertable limit #{perPage} offset #{start}")
-	public String getMembers(int start, int perPage, String condition, Object param) {
+	public String getMembers(int start, int perPage, String condition, Object param, boolean role) {
 		SQL sql = new SQL() {
 			{
-				SELECT("id, name, tel, email, zipcode, addr1, addr2, terms, point");
+				SELECT("id, name, tel, email, zipcode, addr1, addr2, terms, point, authority");
 				FROM("membertable");
-				if (!(param == null || param.equals(""))){
-					WHERE(condition + " like " + "'%" + param + "%'");					
+				if (role) {
+					WHERE("authority != 'ROLE_USER'");
+				} else {
+					WHERE("authority = 'ROLE_USER'");
+				}
+				if (!(param == null || param.equals(""))) {
+					AND();
+					WHERE(condition + " like " + "'%" + param + "%'");
 				}
 				ORDER_BY("authority, name");
 				LIMIT(perPage);
@@ -21,15 +27,21 @@ public class MemberUtils {
 //		System.out.println(sql.toString());
 		return sql.toString();
 	}
-	
+
 //	@Select("select count(id) from membertable")
-	public String getCount(String condition, Object param) {
+	public String getCount(String condition, Object param, boolean role) {
 		SQL sql = new SQL() {
 			{
 				SELECT("count(id)");
 				FROM("membertable");
-				if (!(param == null || param.equals(""))){
-					WHERE(condition + " like " + "'%" + param + "%'");					
+				if (role) {
+					WHERE("authority != 'ROLE_USER'");
+				} else {
+					WHERE("authority = 'ROLE_USER'");
+				}
+				if (!(param == null || param.equals(""))) {
+					AND();
+					WHERE(condition + " like " + "'%" + param + "%'");
 				}
 			}
 		};
@@ -61,7 +73,7 @@ public class MemberUtils {
 				WHERE("id = '" + member.getId() + "'");
 			}
 		};
-//		System.out.println(sql.toString());
+		System.out.println(sql.toString());
 		return sql.toString();
 	}
 }

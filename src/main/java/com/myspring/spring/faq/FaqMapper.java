@@ -32,7 +32,7 @@ public interface FaqMapper {
     @Select("select * from faqtable where faqNo = #{faqNo}")
 	FaqVO getFaqByFaqNo(@Param("faqNo") int faqNo);
     
-    @Insert("insert into faqtable values(#{in.faqNo}, #{in.type}, #{in.title}, #{in.content})")
+    @Insert("insert into faqtable(type, title, content) values(#{in.type}, #{in.title}, #{in.content})")
 	int insertFaq(@Param("in") FaqVO faqVO);
      
     @Update("update faqtable set type = #{type}, title = #{title}, content = #{content} where faqNo = #{faqNo}") 

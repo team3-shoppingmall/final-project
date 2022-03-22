@@ -452,7 +452,7 @@ export default {
                     .then(() => {
                         this.alertDialog = true;
                         this.alertType = 'success';
-                        this.alertMessage = '관심 상품에 저장하셨습니다';
+                        this.alertMessage = '관심 상품에 저장하였습니다';
                     }).catch((err) => {
                         this.alertDialog = true;
                         this.alertType = 'warning';

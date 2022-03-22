@@ -48,24 +48,6 @@ CREATE TABLE membertable (
     UNIQUE KEY member_uk_tel(TEL)
 );
 
-DELIMITER $$
-USE `springdb`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`membertable_BEFORE_INSERT` BEFORE INSERT ON `membertable` FOR EACH ROW
-BEGIN
-set new.point = 2000;
-insert into pointtable(id, point, content) values (new.id, 2000, '회원 가입 축하 포인트');
-END$$
-DELIMITER ;
-
-DELIMITER $$
-USE `springdb`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`membertable_AFTER_DELETE` AFTER DELETE ON `membertable` FOR EACH ROW
-BEGIN
-delete from qnatable where originalNo in (select * from (select qnaNo from qnatable where id = old.id) temp);
-delete from pointtable where id = old.id;
-END$$
-DELIMITER ;
-
 CREATE TABLE producttable(
 	PRODUCTNO INT PRIMARY KEY AUTO_INCREMENT,
 	PRODUCTNAME VARCHAR(100) NOT NULL,
@@ -84,7 +66,7 @@ CREATE TABLE producttable(
 
 CREATE TABLE baskettable (
 	BASKETIDX BIGINT PRIMARY KEY AUTO_INCREMENT,
-	ID VARCHAR(50) NOT NULL,
+	ID VARCHAR(70) NOT NULL,
 	PRODUCTNO INT NOT NULL,
 	SELECTEDCOLOR VARCHAR(50),
 	SELECTEDSIZE VARCHAR(50),
@@ -100,7 +82,7 @@ CREATE TABLE baskettable (
 );
 
 CREATE TABLE wishlisttable (
-	ID VARCHAR(50) NOT NULL,
+	ID VARCHAR(70) NOT NULL,
 	PRODUCTNO INT NOT NULL,
     CONSTRAINT primary_wishlist PRIMARY KEY (ID, PRODUCTNO),
     CONSTRAINT wishList_fk_id FOREIGN KEY (ID)
@@ -115,7 +97,7 @@ CREATE TABLE wishlisttable (
 
 CREATE TABLE ordertable (
 	ORDERIDX BIGINT PRIMARY KEY AUTO_INCREMENT,
-	ID VARCHAR(50) NOT NULL,
+	ID VARCHAR(90) NOT NULL,
 	PRODUCTNO INT NOT NULL,
 	ORDERNO BIGINT,
 	SELECTEDCOLOR VARCHAR(100),
@@ -135,6 +117,85 @@ CREATE TABLE ordertable (
     reviewable BOOLEAN DEFAULT FALSE,
     CONSTRAINT order_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
 );
+
+CREATE TABLE pointtable (
+	NUM BIGINT PRIMARY KEY AUTO_INCREMENT,
+	ID VARCHAR(70) NOT NULL,
+	POINT INT NOT NULL,
+	POINTDATE TIMESTAMP DEFAULT current_timestamp,
+    CONTENT VARCHAR(50)
+);
+
+CREATE TABLE noticetable (
+	NOTICENO INT PRIMARY KEY AUTO_INCREMENT,
+	TITLE VARCHAR(100) NOT NULL,
+	CONTENT VARCHAR(10000) NOT NULL,
+	ID VARCHAR(70) NOT NULL,
+	IMAGE VARCHAR(400),
+    CONSTRAINT notice_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
+        on delete cascade
+        on update cascade
+);
+
+CREATE TABLE faqtable (
+	FAQNO INT PRIMARY KEY AUTO_INCREMENT,
+	TYPE VARCHAR(50) NOT NULL,
+	TITLE VARCHAR(100) NOT NULL,
+	CONTENT VARCHAR(2000) NOT NULL
+);
+
+CREATE TABLE reviewtable(
+	REVIEWNO BIGINT PRIMARY KEY AUTO_INCREMENT,
+	PRODUCTNO INT not NULL,
+	CONTENT VARCHAR(600) NOT NULL,
+	id VARCHAR(70) NOT NULL,
+	REGDATE TIMESTAMP DEFAULT current_timestamp,
+	IMAGE VARCHAR(400),
+	STAR INT NOT NULL,
+    CONSTRAINT review_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
+        on delete cascade
+        on update cascade,
+	CONSTRAINT review_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
+        on delete cascade
+        on update cascade
+);
+
+CREATE TABLE qnatable(
+	QNANO BIGINT PRIMARY KEY auto_increment,
+	PRODUCTNO INT,
+	TYPE VARCHAR(200) NOT NULL,
+	ORIGINALNO BIGINT,
+	REPLY BOOLEAN DEFAULT FALSE,
+	CONTENT VARCHAR(2000) NOT NULL,
+	ID VARCHAR(70) NOT NULL,
+	REGDATE TIMESTAMP DEFAULT current_timestamp,
+	SECRET BOOLEAN NOT NULL,
+	IMAGE VARCHAR(400)
+);
+
+CREATE TABLE bannertable (
+	IMAGE VARCHAR(100) PRIMARY KEY,
+	LINK VARCHAR(100) NOT NULL,
+	NUM INT
+);
+
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`membertable_BEFORE_INSERT` BEFORE INSERT ON `membertable` FOR EACH ROW
+BEGIN
+set new.point = 2000;
+insert into pointtable(id, point, content) values (new.id, 2000, '회원 가입 축하 포인트');
+END$$
+DELIMITER ;
+
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`membertable_AFTER_DELETE` AFTER DELETE ON `membertable` FOR EACH ROW
+BEGIN
+delete from qnatable where originalNo in (select * from (select qnaNo from qnatable where id = old.id) temp);
+delete from pointtable where id = old.id;
+END$$
+DELIMITER ;
 
 DELIMITER $$
 USE `springdb`$$
@@ -192,14 +253,6 @@ EVERY 1 DAY starts '2022-03-06 15:00:00'
 COMMENT '매일 15:00 결제완료 -> 배송준비중(평일), 배송완료 -> 구매확정(7일 경과 시)으로 변경'
 DO Call orderChangeSchedule();
 
-CREATE TABLE pointtable (
-	NUM BIGINT PRIMARY KEY AUTO_INCREMENT,
-	ID VARCHAR(50) NOT NULL,
-	POINT INT NOT NULL,
-	POINTDATE TIMESTAMP DEFAULT (current_timestamp),
-    CONTENT VARCHAR(50)
-);
-
 DELIMITER $$
 USE `springdb`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`pointtable_BEFORE_INSERT` BEFORE INSERT ON `pointtable` FOR EACH ROW
@@ -211,53 +264,6 @@ update membertable
 End if;
 END$$
 DELIMITER ;
-
-CREATE TABLE noticetable (
-	NOTICENO INT PRIMARY KEY AUTO_INCREMENT,
-	TITLE VARCHAR(100) NOT NULL,
-	CONTENT VARCHAR(10000) NOT NULL,
-	ID VARCHAR(50) NOT NULL,
-	IMAGE VARCHAR(400),
-    CONSTRAINT notice_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
-        on delete cascade
-        on update cascade
-);
-
-CREATE TABLE faqtable (
-	FAQNO INT PRIMARY KEY AUTO_INCREMENT,
-	TYPE VARCHAR(50) NOT NULL,
-	TITLE VARCHAR(100) NOT NULL,
-	CONTENT VARCHAR(2000) NOT NULL
-);
-
-CREATE TABLE reviewTable(
-	REVIEWNO BIGINT PRIMARY KEY AUTO_INCREMENT,
-	PRODUCTNO INT not NULL,
-	CONTENT VARCHAR(600) NOT NULL,
-	id VARCHAR(50) NOT NULL,
-	REGDATE TIMESTAMP DEFAULT (current_timestamp),
-	IMAGE VARCHAR(400),
-	STAR INT NOT NULL,
-    CONSTRAINT review_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
-        on delete cascade
-        on update cascade,
-	CONSTRAINT review_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
-        on delete cascade
-        on update cascade
-);
-
-CREATE TABLE qnatable(
-	QNANO BIGINT PRIMARY KEY auto_increment,
-	PRODUCTNO INT,
-	TYPE VARCHAR(200) NOT NULL,
-	ORIGINALNO BIGINT,
-	REPLY BOOLEAN DEFAULT FALSE,
-	CONTENT VARCHAR(2000) NOT NULL,
-	ID VARCHAR(50) NOT NULL,
-	REGDATE TIMESTAMP DEFAULT (current_timestamp),
-	SECRET BOOLEAN NOT NULL,
-	IMAGE VARCHAR(400)
-);
 
 DELIMITER $$
 USE `springdb`$$
@@ -278,12 +284,6 @@ SET getMaxQnaNo = (SELECT max(qnaNo) FROM qnatable) + 1;
 insert into qnatable(QNANO, PRODUCTNO, type, originalNo, content, id, secret, image) values(getMaxQnaNo, qna_productNo, qna_type, qna_originalNo, qna_content, qna_id, qna_secret, qna_image);
 END$$
 DELIMITER ;
-
-CREATE TABLE bannertable (
-	IMAGE VARCHAR(100) PRIMARY KEY,
-	LINK VARCHAR(100) NOT NULL,
-	NUM INT
-);
 
 DELIMITER $$
 USE `springdb`$$
@@ -436,7 +436,7 @@ values('릴리브 골지 슬리브리스', 'top','sleeveless','blouse4.PNG',1300
 insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
 values('비파인 꽈배기 브이 크롭 니트', 'top','knit','blouse5.PNG',36000,2800,'베이지;소라;블랙',null, 100,'2022-01-17 13:24:51','blouse5.PNG', true);
 insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('워린 카라 퍼프 블라우스', 'top','blouse','blouse6.jpg',44000,0,'아이보리;크림;네이비',null, 100,'2022-01-20 13:24:51','blouse6.jpgf', true);
+values('워린 카라 퍼프 블라우스', 'top','blouse','blouse6.jpg',44000,0,'아이보리;크림;네이비',null, 100,'2022-01-20 13:24:51','blouse6.jpg', true);
 insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
 values('쉘리 유넥 티', 'top','tshirts','blouse7.jpg',15000,0,'아이보리;크림;메란지;네이비;블랙',null, 100,'2022-01-24 13:24:51','blouse7.jpg', true);
 insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
@@ -594,23 +594,23 @@ values('shine',7,6,'아이보리','S',1,41000,'2021-12-22 13:24:51','2021-12-26 
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
 values('portal',8,6,'소라',null,1,115000,'2022-02-14 13:24:51','2022-02-14 14:04:51','취소완료','credit','정은지','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',5,6,'오트밀',null,2,87600,'2022-03-05 13:24:51','2022-03-09 05:24:51','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',5,6,'오트밀',null,2,87600,'2022-03-16 13:24:51','2022-03-19 05:24:51','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr, reviewable)
-values('shine',5,6,'오트밀',null,2,87600,'2022-03-05 13:24:51','2022-03-09 13:24:51','교환완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호', true);
+values('shine',5,6,'오트밀',null,2,87600,'2022-03-17 13:24:51','2022-03-20 13:24:51','교환완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호', true);
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr, reviewable)
-values('shine',1,7,'소프트민트','L',1,38000,'2022-03-10 15:24:51','2022-03-13 15:24:51','구매확정','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호', true);
+values('shine',1,7,'소프트민트','L',1,38000,'2022-03-16 15:24:51','2022-03-21 15:24:51','구매확정','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호', true);
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',3,8,'아이보리',null,1,92000,'2022-03-11 20:24:51','2022-03-14 20:24:51','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',3,8,'아이보리',null,1,92000,'2022-03-17 20:24:51','2022-03-22 20:24:51','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',4,9,'크림','M',1,31000,'2022-03-11 00:56:31','2022-03-14 00:56:31','배송중','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',4,9,'크림','M',1,31000,'2022-03-18 00:56:31','2022-03-22 00:56:31','배송중','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',15,9,'네이비',null,1,39600,'2022-03-12 01:56:31','2022-03-15 01:56:31','배송준비중','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',15,9,'네이비',null,1,39600,'2022-03-19 01:56:31','2022-03-22 01:56:31','배송준비중','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('portal',10,10,'블랙','M',1,49000,'2022-03-13 13:24:51','2022-03-15 13:24:21','배송중','credit','정은지','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('portal',10,10,'블랙','M',1,49000,'2022-03-21 13:24:51','2022-03-21 13:24:21','배송중','credit','정은지','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',20,10,'아이보리',null,1,44000,'2022-03-15 12:24:51','2022-03-15 17:24:51','cash','김진우','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('shine',20,10,'아이보리',null,1,44000,'2022-03-22 12:24:51','2022-03-22 17:24:51','cash','김진우','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',20,10,'아이보리',null,1,44000,'2022-03-15 12:24:51','2022-03-15 17:24:51','credit','김진우','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('shine',20,10,'아이보리',null,1,44000,'2022-03-22 12:24:51','2022-03-22 17:24:51','credit','김진우','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
 values('portal',11,11,'퍼플',null,1,17000,'credit','정은지','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 -- 포인트 내역

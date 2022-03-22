@@ -79,9 +79,9 @@
                 </v-row>
                 <v-divider class="mt-8"></v-divider>
                 <v-row class="my-5" justify="center">
-                    <v-btn class="primary text-h5 pa-3" height="100%" @click="goBack">돌아가기</v-btn>
-                    <v-btn class="primary text-h5 pa-3 ml-5" height="100%" @click="signUp" v-if="naverInfo == undefined && kakaoInfo == undefined">가입하기</v-btn>
-                    <v-btn class="primary text-h5 pa-3 ml-5" height="100%" @click="signUpBySocial" v-if="naverInfo != undefined || kakaoInfo != undefined">가입하기</v-btn>
+                    <v-btn class="primary text-h5 pa-3" height="100%" @click="signUp" v-if="naverInfo == undefined && kakaoInfo == undefined">가입하기</v-btn>
+                    <v-btn class="primary text-h5 pa-3" height="100%" @click="signUpBySocial" v-if="naverInfo != undefined || kakaoInfo != undefined">가입하기</v-btn>
+                    <v-btn class="primary text-h5 pa-3 ml-5" height="100%" @click="goBack">돌아가기</v-btn>
                 </v-row>
             </v-form>
         </v-col>
@@ -128,7 +128,7 @@ export default {
                 axios.post('/api/member/insert', member)
                     .then(() => {
                         this.alertDialog = true;
-                        this.alertType = 'warning';
+                        this.alertType = 'success';
                         this.alertMessage = '가입 완료';
                         this.alertPath = `/`;
                     }).catch(() => {
@@ -181,7 +181,7 @@ export default {
                 axios.get(`/api/member/check/${this.id}`)
                     .then(() => {
                         this.alertDialog = true;
-                        this.alertType = 'warning';
+                        this.alertType = 'success';
                         this.alertMessage = '사용 가능합니다';
                         this.check = true;
 

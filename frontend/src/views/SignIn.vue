@@ -284,9 +284,6 @@ export default {
                     }
                 })
                 .then(res => {
-                    this.alertDialog = true;
-                    this.alertType = 'success';
-                    this.alertMessage = '인증 완료';
                     if (res.data == 'yes') {
                         this.alertDialog = true;
                         this.alertType = 'success';
@@ -303,6 +300,7 @@ export default {
             let member;
             if (this.pwd1 == this.pwd2) {
                 member = {
+                    id: this.checkId,
                     password: this.pwd1,
                 }
             }
@@ -314,7 +312,6 @@ export default {
                     this.reset();
                 })
                 .catch(() => {
-
                     this.alertDialog = true;
                     this.alertType = 'error';
                     this.alertMessage = '수정 실패';

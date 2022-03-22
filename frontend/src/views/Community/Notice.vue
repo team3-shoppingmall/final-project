@@ -28,7 +28,7 @@
             </v-row>
         </v-col>
         <v-col cols="auto" v-if="getLogin != null && getLogin.user.authority == 'ROLE_ADMIN'">
-            <v-btn :to="'/writePost/notice'" color="primary">글쓰기</v-btn>
+            <v-btn class="mt-3" :to="'/writePost/notice'" color="primary">글쓰기</v-btn>
         </v-col>
     </v-row>
 </v-container>

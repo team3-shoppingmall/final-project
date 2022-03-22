@@ -56,14 +56,9 @@
             </v-row>
         </v-col>
     </v-row>
-    <v-dialog v-model="alertDialog" :persistent="alertPath != null" max-width="350">
+    <v-dialog v-model="alertDialog" max-width="350">
         <v-alert class="mb-0" :type="alertType">
             {{alertMessage}}
-            <v-row justify="end" v-if="alertPath != null">
-                <v-col cols="auto" class="pr-1 pb-1">
-                    <v-btn text @click="alertDialog=false; alertPath = null; getBasket();">확인</v-btn>
-                </v-col>
-            </v-row>
         </v-alert>
     </v-dialog>
 </v-container>
@@ -86,7 +81,6 @@ export default {
             alertDialog: false,
             alertMessage: '',
             alertType: '',
-            alertPath: null,
             baskets: [],
             selected: [],
             totalPrice: 0,
@@ -150,19 +144,19 @@ export default {
                 this.alertDialog = true;
                 this.alertType = 'warning';
                 this.alertMessage = '잘못된 입력입니다';
-                this.alertPath = `/basket`;
+                this.getBasket();
                 return;
             } else if (item.basketAmount > 9999) {
                 this.alertDialog = true;
                 this.alertType = 'warning';
                 this.alertMessage = '주문량이 너무 많습니다';
-                this.alertPath = `/basket`;
+                this.getBasket();
                 return;
             } else if (item.basketAmount > item.amount) {
                 this.alertDialog = true;
                 this.alertType = 'warning';
                 this.alertMessage = '재고보다 주문량이 많습니다';
-                this.alertPath = `/basket`;
+                this.getBasket();
                 return;
             } else {
                 axios({

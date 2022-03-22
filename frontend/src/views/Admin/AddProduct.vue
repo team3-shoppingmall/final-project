@@ -410,13 +410,13 @@ export default {
                 .then(() => {
                     this.alertDialog = true;
                     this.alertType = 'success';
-                    this.alertMessage = '상품을 추가하셨습니다';
+                    this.alertMessage = '상품을 추가하였습니다';
                     this.alertPath = `/admin/productManage`;
                 }).catch(err => {
                     if (err.response.status === 404)
                         this.alertDialog = true;
                     this.alertType = 'error';
-                    this.alertMessage = 'error';
+                    this.alertMessage = '상품 추가 실패';
                 })
         },
         updateFile() {
@@ -580,14 +580,14 @@ export default {
                 .then(() => {
                     this.alertDialog = true;
                     this.alertType = 'success';
-                    this.alertMessage = '상품을 수정하셨습니다';
+                    this.alertMessage = '상품을 수정하였습니다';
                     this.alertPath = `/admin/productManage`;
                 }).catch(err => {
                     if (err.response.status === 404) {
 
                         this.alertDialog = true;
                         this.alertType = 'error';
-                        this.alertMessage = 'error';
+                        this.alertMessage = '상품 수정 실패';
                     }
                 })
         },

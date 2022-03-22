@@ -97,9 +97,9 @@
                         <td colspan="2">
                             <v-row justify="end">
                                 <v-col cols="auto">
-                                    <v-btn class="error" @click="dialog = false">취소</v-btn>
-                                    <v-btn class="primary ml-3" @click="buyItNow">BUY IT NOW</v-btn>
+                                    <v-btn class="primary" @click="buyItNow">BUY IT NOW</v-btn>
                                     <v-btn class="primary ml-3" @click="addToBasket">ADD TO Basket</v-btn>
+                                    <v-btn class="error ml-3" @click="dialog = false">취소</v-btn>
                                 </v-col>
                             </v-row>
                         </td>

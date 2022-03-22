@@ -37,7 +37,7 @@
 
             <v-row>
                 <v-col cols="7">
-                    <div class="text-t5 mt-10 mb-5">주문 정보</div>
+                    <div class="text-t5 mt-10 mb-5">주문자 정보</div>
                     <v-form ref="form">
                         <v-simple-table>
                             <template slot="default">
@@ -388,7 +388,7 @@ export default {
             if (this.memberInfo.email == '') {
                 this.alertDialog = true;
                 this.alertType = 'warning';
-                this.alertMessage = '주문하시는 분의 전화번호를 입력해주세요';
+                this.alertMessage = '주문하시는 분의 이메일을 입력해주세요';
                 return;
             }
             if (this.delivery.name == '') {
@@ -407,20 +407,6 @@ export default {
                 this.alertDialog = true;
                 this.alertType = 'warning';
                 this.alertMessage = '받으시는 분의 전화번호를 입력해주세요';
-                return;
-            }
-            if (!(this.point >= 0 && (this.point == Math.round(this.point)))) {
-                this.alertDialog = true;
-                this.alertType = 'warning';
-                this.alertMessage = '포인트가 유효하지 않습니다';
-                this.point = 0;
-                return;
-            }
-            if (this.point > this.memberInfo.point) {
-                this.alertDialog = true;
-                this.alertType = 'warning';
-                this.alertMessage = '사용 가능한 포인트보다 많은 포인트를 사용하셨습니다. 포인트를 다시 입력해주세요';
-                this.point = 0;
                 return;
             }
             if (this.orderMethod == 'cash') {

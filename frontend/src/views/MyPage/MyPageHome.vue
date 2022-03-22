@@ -18,16 +18,16 @@
                             <div class="text-h6">{{states[2].state}}</div>
                             <div class="text-subtitle-1">{{states[2].count}}</div>
                         </td>
-                        <td style="text-align: center;">
+                        <td style="text-align: center;" class="v-data-table__divider">
                             <div class="text-h6">{{states[3].state}}</div>
                             <div class="text-subtitle-1">{{states[3].count}}</div>
                         </td>
-                    </tr>
-                    <tr>
-                        <td style="text-align: center;" class="v-data-table__divider">
+                        <td style="text-align: center;">
                             <div class="text-h6">{{states[4].state}}</div>
                             <div class="text-subtitle-1">{{states[4].count}}</div>
                         </td>
+                    </tr>
+                    <tr>
                         <td style="text-align: center;" class="v-data-table__divider">
                             <div class="text-h6">{{states[5].state}}</div>
                             <div class="text-subtitle-1">{{states[5].count}}</div>
@@ -36,14 +36,21 @@
                             <div class="text-h6">{{states[6].state}}</div>
                             <div class="text-subtitle-1">{{states[6].count}}</div>
                         </td>
-                        <td style="text-align: center;">
+                        <td style="text-align: center;" class="v-data-table__divider">
                             <div class="text-h6">{{states[7].state}}</div>
                             <div class="text-subtitle-1">{{states[7].count}}</div>
                         </td>
+                        <td style="text-align: center;" class="v-data-table__divider">
+                            <div class="text-h6">{{states[8].state}}</div>
+                            <div class="text-subtitle-1">{{states[8].count}}</div>
+                        </td>
+                        <td style="text-align: center;">
+                            <div class="text-h6">총 주문</div>
+                            <div class="text-subtitle-1">{{sum}}건</div>
+                        </td>
                     </tr>
                     <tr>
-                        <td style="text-align: center;" class="v-data-table__divider text-h6" colspan="2">총 포인트 : {{AddComma(point)}}P</td>
-                        <td style="text-align: center;" class="text-h6" colspan="2">총 주문 : {{sum}}건</td>
+                        <td style="text-align: center;" class="text-h6" colspan="5">총 포인트 : {{AddComma(point)}}P</td>
                     </tr>
                 </tbody>
             </v-simple-table>
@@ -75,6 +82,9 @@ export default {
                 count: 0,
             }, {
                 state: '배송완료',
+                count: 0,
+            }, {
+                state: '구매확정',
                 count: 0,
             }, {
                 state: '취소완료',

@@ -72,4 +72,8 @@ public interface OrderMapper {
 //  리뷰 가능여부 변경
 	@Update("update ordertable set reviewable = false where orderIdx = #{orderIdx}")
 	int updateReviewable(@Param("orderIdx") long orderIdx);
+
+//	회원 탈퇴 후 주문 변경
+	@Update("update ordertable set id = CONCAT(#{now}, #{id}) where id = #{id}")
+	int updateOrderAfterDeleteMember(@Param("id") String id, @Param("now") String now);
 }

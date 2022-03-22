@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,14 +18,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.myspring.spring.order.OrderMapper;
+
 @Service
 public class MemberService {
 	private MemberMapper memberMapper;
+	private OrderMapper orderMapper;
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 	@Autowired
-	public MemberService(MemberMapper memberMapper) {
+	public MemberService(MemberMapper memberMapper, OrderMapper orderMapper) {
 		this.memberMapper = memberMapper;
+		this.orderMapper = orderMapper;
 	}
 
 	// 멤버 등록
@@ -131,10 +136,12 @@ public class MemberService {
 		MemberVO member = memberMapper.getMemberInfoByTel(tel);
 		String res = null;
 		if (id != null) {
-			if (member.getId().equals(id)) {
-				res = "yes";
-			} else {
-				res = "no";
+			if(member != null) {
+				if (member.getId().equals(id)) {
+					res = "yes";
+				} else {
+					res = "no";
+				}
 			}
 		} else {
 			res = member.getId();
@@ -210,6 +217,7 @@ public class MemberService {
 		if (res == 0) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		} else {
+			res = orderMapper.updateOrderAfterDeleteMember(id, Long.toString(System.currentTimeMillis()));
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
 	}

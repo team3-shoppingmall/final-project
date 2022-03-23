@@ -204,7 +204,8 @@ export default {
                         .catch(() => {
                             this.alertDialog = true;
                             this.alertType = 'warning';
-                            this.alertMessage = '배송중인 상품이 있어 탈퇴에 실패했습니다';
+                            this.alertMessage = '완료되지 않은 주문이 있어 탈퇴에 실패했습니다';
+                            this.alertPath = `/myPage/order`;
                         })
                 })
                 .catch(() => {

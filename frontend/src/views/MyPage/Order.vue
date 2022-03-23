@@ -240,7 +240,7 @@
     </v-dialog>
     <v-dialog v-model="alertDialog" :persistent="alertPath != null" max-width="350">
         <v-alert class="mb-0" :type="alertType">
-            {{alertMessage}}
+            <span v-html="alertMessage"></span>
             <v-row justify="end" v-if="alertPath != null">
                 <v-col cols="auto" class="pr-1 pb-1">
                     <v-btn text :to="alertPath">이동하기</v-btn>
@@ -479,7 +479,7 @@ export default {
                         } else {
                             this.alertDialog = true;
                             this.alertType = 'warning';
-                            this.alertMessage = `미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`;
+                            this.alertMessage = `미완료된 변경(총 ${res.data.length}건)<br>주문번호 : ${res.data}`;
                         }
                     }).catch(err => {
                         console.log(err)
@@ -592,7 +592,7 @@ export default {
                     } else {
                         this.alertDialog = true;
                         this.alertType = 'warning';
-                        this.alertMessage = `미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`;
+                        this.alertMessage = `미완료된 변경(총 ${res.data.length}건)<br>주문번호 : ${res.data}`;
                     }
                 }).catch(err => {
                     console.log(err)

@@ -59,7 +59,7 @@ public interface MemberMapper {
 	@Select("select point from membertable where id = 'tester';")
 	List<MemberVO> getMemberPoint();
 
-	@Delete("delete from membertable where id = #{id} and 0 = (select count(*) from ordertable where id = #{id} and STATE in ('입금전', '결제완료', '배송준비중', '배송중'))")
+	@Delete("delete from membertable where id = #{id} and 0 = (select count(*) from ordertable where id = #{id} and STATE in ('입금전', '결제완료', '배송준비중', '배송중', '배송완료'))")
 	int deleteMember(@Param("id") String id);
 
 }

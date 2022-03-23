@@ -140,13 +140,7 @@ export default {
             })
         },
         moveToWriteReply() {
-            if (this.qna.reply == true) {
-
-                this.alertDialog = true;
-                this.alertType = 'warning';
-                this.alertMessage = '이미 답변이 등록된 문의글입니다';
-            } else
-                this.$router.push(`/replyPost/${this.qna.type}/${this.qna.qnaNo}`)
+            this.$router.push(`/replyPost/${this.qna.type}/${this.qna.qnaNo}`)
         },
         moveToUpdate() {
             if (this.qna.reply == true) {

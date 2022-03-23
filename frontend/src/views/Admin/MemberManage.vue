@@ -112,8 +112,7 @@
                         <td colspan="2">
                             <v-row justify="space-between">
                                 <v-col cols="auto">
-                                    <v-btn class="error ml-3" @click="dialog2 = true" v-if="getLogin.user.authority == 'ROLE_ADMIN' && editItem.authority != 'ROLE_ADMIN'">탈퇴</v-btn>
-                                    <v-btn class="error ml-3" @click="dialog2 = true" v-if="getLogin.user.authority == 'ROLE_MANAGER' && editItem.authority == 'ROLE_USER'">탈퇴</v-btn>
+                                    <v-btn class="error" @click="dialog2 = true" v-if="getLogin.user.id == 'spring' && editItem.id != 'spring'">탈퇴</v-btn>
                                 </v-col>
                                 <v-col cols="auto">
                                     <v-btn class="primary" @click="updateMember">수정</v-btn>
@@ -341,7 +340,7 @@ export default {
                     password: this.manager.pwd1,
                     name: this.manager.name,
                     tel: this.manager.tel,
-                    authority: 'ROLE_MANAGER',
+                    authority: 'ROLE_ADMIN',
                 }
                 axios.post('/api/member/insert', member)
                     .then(() => {
@@ -353,7 +352,7 @@ export default {
                     }).catch(() => {
                         this.alertDialog = true;
                         this.alertType = 'error';
-                        this.alertMessage = '가입 실패';
+                        this.alertMessage = '등록 실패';
                     })
             }
         },

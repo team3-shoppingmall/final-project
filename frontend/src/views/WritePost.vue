@@ -396,8 +396,8 @@ export default {
                     this.alertPath = -2;
                 }).catch((err) => {
                     this.alertDialog = true;
-                    this.alertType = 'warning';
-                    this.alertMessage = '답변 작성에 실패하셨습니다';
+                    this.alertType = 'error';
+                    this.alertMessage = '답변 작성에 실패하였습니다';
                     console.log(err);
                 })
         },
@@ -447,8 +447,8 @@ export default {
                     this.alertPath = -1;
                 }).catch((err) => {
                     this.alertDialog = true;
-                    this.alertType = 'warning';
-                    this.alertMessage = '작성에 실패하셨습니다';
+                    this.alertType = 'error';
+                    this.alertMessage = '작성에 실패하였습니다';
                     console.log(err);
                 })
         },
@@ -465,8 +465,8 @@ export default {
                     this.alertPath = -1;
                 }).catch((err) => {
                     this.alertDialog = true;
-                    this.alertType = 'warning';
-                    this.alertMessage = '작성에 실패하셨습니다';
+                    this.alertType = 'error';
+                    this.alertMessage = '작성에 실패하였습니다';
                     console.log(err);
                 })
         },
@@ -517,8 +517,8 @@ export default {
                     this.alertPath = -1;
                 }).catch((err) => {
                     this.alertDialog = true;
-                    this.alertType = 'warning';
-                    this.alertMessage = '작성에 실패하셨습니다';
+                    this.alertType = 'error';
+                    this.alertMessage = '작성에 실패하였습니다';
                     console.log(err);
                 })
         },
@@ -695,8 +695,8 @@ export default {
                     this.alertPath = -1;
                 }).catch((err) => {
                     this.alertDialog = true;
-                    this.alertType = 'warning';
-                    this.alertMessage = '수정에 실패하셨습니다';
+                    this.alertType = 'error';
+                    this.alertMessage = '수정에 실패하였습니다';
                     console.log(err);
                 })
         },
@@ -726,7 +726,7 @@ export default {
                 }).catch((err) => {
                     this.alertDialog = true;
                     this.alertType = 'warning';
-                    this.alertMessage = '수정에 실패하셨습니다';
+                    this.alertMessage = '수정에 실패하였습니다';
                     console.log(err);
                 })
         },
@@ -748,7 +748,7 @@ export default {
             }).catch((err) => {
                 this.alertDialog = true;
                 this.alertType = 'error';
-                this.alertMessage = '수정에 실패하셨습니다';
+                this.alertMessage = '수정에 실패하였습니다';
                 console.log(err);
             })
         },
@@ -799,7 +799,7 @@ export default {
                 }).catch((err) => {
                     this.alertDialog = true;
                     this.alertType = 'error';
-                    this.alertMessage = '수정에 실패하셨습니다';
+                    this.alertMessage = '수정에 실패하였습니다';
                     console.log(err);
                 })
         },

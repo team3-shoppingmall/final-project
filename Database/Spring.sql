@@ -1,7 +1,8 @@
 drop database if exists springdb;
 create database springdb;
 use springdb;
-
+-- set global sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'; 
+-- set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';
 -- key컬럼이 아닌 컬럼으로 update하기 위함
 set sql_safe_updates=0;
 
@@ -196,7 +197,7 @@ CREATE TABLE pointtable (
 	NUM BIGINT PRIMARY KEY AUTO_INCREMENT,
 	ID VARCHAR(50) NOT NULL,
 	POINT INT NOT NULL,
-	POINTDATE TIMESTAMP DEFAULT (current_timestamp),
+	POINTDATE TIMESTAMP DEFAULT current_timestamp,
     CONTENT VARCHAR(50)
 );
 
@@ -230,12 +231,12 @@ CREATE TABLE faqtable (
 	CONTENT VARCHAR(2000) NOT NULL
 );
 
-CREATE TABLE reviewTable(
+CREATE TABLE reviewtable(
 	REVIEWNO BIGINT PRIMARY KEY AUTO_INCREMENT,
 	PRODUCTNO INT not NULL,
 	CONTENT VARCHAR(600) NOT NULL,
 	id VARCHAR(50) NOT NULL,
-	REGDATE TIMESTAMP DEFAULT (current_timestamp),
+	REGDATE TIMESTAMP DEFAULT current_timestamp,
 	IMAGE VARCHAR(400),
 	STAR INT NOT NULL,
     CONSTRAINT review_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
@@ -254,7 +255,7 @@ CREATE TABLE qnatable(
 	REPLY BOOLEAN DEFAULT FALSE,
 	CONTENT VARCHAR(2000) NOT NULL,
 	ID VARCHAR(50) NOT NULL,
-	REGDATE TIMESTAMP DEFAULT (current_timestamp),
+	REGDATE TIMESTAMP DEFAULT current_timestamp,
 	SECRET BOOLEAN NOT NULL,
 	IMAGE VARCHAR(400)
 );
@@ -436,7 +437,7 @@ values('릴리브 골지 슬리브리스', 'top','sleeveless','blouse4.PNG',1300
 insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
 values('비파인 꽈배기 브이 크롭 니트', 'top','knit','blouse5.PNG',36000,2800,'베이지;소라;블랙',null, 100,'2022-01-17 13:24:51','blouse5.PNG', true);
 insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('워린 카라 퍼프 블라우스', 'top','blouse','blouse6.jpg',44000,0,'아이보리;크림;네이비',null, 100,'2022-01-20 13:24:51','blouse6.jpgf', true);
+values('워린 카라 퍼프 블라우스', 'top','blouse','blouse6.jpg',44000,0,'아이보리;크림;네이비',null, 100,'2022-01-20 13:24:51','blouse6.jpg', true);
 insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
 values('쉘리 유넥 티', 'top','tshirts','blouse7.jpg',15000,0,'아이보리;크림;메란지;네이비;블랙',null, 100,'2022-01-24 13:24:51','blouse7.jpg', true);
 insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
@@ -782,6 +783,10 @@ select * from qnatable;
 select * from bannertable;
 select * from information_schema.events;
 -- select문 실험 및 용도
+SELECT count(*)
+FROM producttable
+WHERE REGEXP_LIKE(productName, '스노우');
+SELECT * FROM producttable WHERE (REGEXP_LIKE(productName, '스노우')) LIMIT 10 OFFSET 0;
 
 -- 글 번호는 최신순이지만 답글이 원글 밑에 오도록 함
 -- select * from qnatable order by originalno desc, qnano asc;
@@ -792,3 +797,5 @@ select * from information_schema.events;
 
 -- select * from producttable p left join ordertable o on p.productNo = o.productNo where p.onSale = true and p.amount > 0 and (orderDate BETWEEN DATE_ADD(NOW(), INTERVAL -1 week) AND NOW()) group by o.productNo order by sum(o.orderAmount) desc limit 8
 -- select sum(o.totalPrice) as priceSum, o.productNo, p.productName from ordertable o left join producttable p on p.productNo = o.productNo group by o.productNo having sum(o.totalPrice) >= 76000;
+use springdb;
+select * from producttable p left join ordertable o on p.productNo = o.productNo where p.onSale = true and p.amount > 0 and (orderDate BETWEEN DATE_ADD(NOW(), INTERVAL -1 week) AND NOW()) group by o.productNo order by sum(o.orderAmount) desc limit 8;

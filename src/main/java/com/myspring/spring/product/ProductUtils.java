@@ -125,7 +125,6 @@ public class ProductUtils {
 				}
 			}
 		};
-//		System.out.println(sql.toString());
 		return sql.toString();
 	}
 
@@ -234,6 +233,7 @@ public class ProductUtils {
 		};		
 //		System.out.println(sqlaaa.toString() + " UNION " + sqlbbb.toString());
 		return sqlaaa.toString() + " UNION " + sqlbbb.toString();
+		
 	}
 
 //	select * from producttable where price>=최소값 and mrice<=최대값 and productName like %검색어% and UPPER(type1) = 대분류 and UPPER(type2) = 소분류

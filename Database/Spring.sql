@@ -2,6 +2,8 @@ drop database if exists springdb;
 create database springdb;
 use springdb;
 
+-- set global sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'; 
+-- set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';
 -- key컬럼이 아닌 컬럼으로 update하기 위함
 set sql_safe_updates=0;
 
@@ -782,6 +784,10 @@ select * from qnatable;
 select * from bannertable;
 select * from information_schema.events;
 -- select문 실험 및 용도
+-- SELECT count(*)
+-- FROM producttable
+-- WHERE REGEXP_LIKE(productName, '스노우');
+-- SELECT * FROM producttable WHERE (REGEXP_LIKE(productName, '스노우')) LIMIT 10 OFFSET 0;
 
 -- 글 번호는 최신순이지만 답글이 원글 밑에 오도록 함
 -- select * from qnatable order by originalno desc, qnano asc;
@@ -792,3 +798,6 @@ select * from information_schema.events;
 
 -- select * from producttable p left join ordertable o on p.productNo = o.productNo where p.onSale = true and p.amount > 0 and (orderDate BETWEEN DATE_ADD(NOW(), INTERVAL -1 week) AND NOW()) group by o.productNo order by sum(o.orderAmount) desc limit 8
 -- select sum(o.totalPrice) as priceSum, o.productNo, p.productName from ordertable o left join producttable p on p.productNo = o.productNo group by o.productNo having sum(o.totalPrice) >= 76000;
+
+-- use springdb;
+-- select * from producttable p left join ordertable o on p.productNo = o.productNo where p.onSale = true and p.amount > 0 and (orderDate BETWEEN DATE_ADD(NOW(), INTERVAL -1 week) AND NOW()) group by o.productNo order by sum(o.orderAmount) desc limit 8;

@@ -58,29 +58,32 @@
             </v-row>
         </v-col>
         <v-col cols="auto" class="mr-3">
-            <v-btn color="primary" @click="dialog = true" v-if="haveOrder">
+            <v-btn color="primary" @click="dialog = true" v-if="orderInfo != null">
                 리뷰 작성하기
             </v-btn>
         </v-col>
     </v-row>
-    <v-dialog v-model="dialog" persistent max-width="750px">
+    <v-dialog v-model="dialog" persistent max-width="750px" v-if="orderInfo != null">
         <v-card>
             <v-card-title>
                 <span class="text-h5">리뷰 작성</span>
             </v-card-title>
             <v-card-text>
                 <v-container>
-                    <v-row>
+                    <v-row justify="center">
                         <v-col cols="12">
-                            상품 정보
+                            <div class="text-h6">상품 정보</div>
                             <ProductDetailDisplay :productNo="productNo" />
                         </v-col>
                         <v-col cols="12">
-                            별점
+                            <div class="black--text text-body-1">구매 옵션 : <span v-if="orderInfo.selectedColor != null">{{orderInfo.selectedColor}}</span><span v-if="orderInfo.selectedColor != null && orderInfo.selectedSize != null">/</span><span>{{orderInfo.selectedSize}}</span></div>
+                        </v-col>
+                        <v-col cols="12">
+                            <div class="text-h6">별점</div>
                             <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" hover length="5" size="64" v-model="star"></v-rating>
                         </v-col>
                         <v-col cols="12">
-                            리뷰
+                            <div class="text-h6">리뷰</div>
                             <ckeditor :editor="editor" v-model="content" :config="editorConfig"></ckeditor>
                             <span :class="contentColor">{{content.length}}/600</span>
                         </v-col>
@@ -108,6 +111,11 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+    <v-dialog v-model="alertDialog" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -130,6 +138,9 @@ export default {
     props: ['productNo'],
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
             editor: ClassicEditor,
             editorConfig: {
                 ckfinder: {},
@@ -139,7 +150,7 @@ export default {
             },
             admin: true,
             dialog: false,
-            haveOrder: false,
+            orderInfo: null,
             totalContents: 0,
             contents: [],
             options: {},
@@ -241,29 +252,42 @@ export default {
 
         addReview() {
             if (this.content == '') {
-                alert('후기를 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '후기를 입력해주세요';
                 return;
+            }
+            let image = null;
+            if (this.imageFile != null) {
+                image = this.imageFile.name;
             }
             let data = {
                 productNo: this.productNo,
                 star: this.star,
                 content: this.content,
-                image: this.imageFile.name,
+                image: image,
                 id: this.getLogin.user.id,
             };
             let formData = new FormData();
             formData.append('data', new Blob([JSON.stringify(data)], {
                 type: "application/json"
             }));
-            formData.append(`fileList`, this.imageFile);
-            axios.post(`/api/review/insert`, formData)
+            if (this.imageFile != null) {
+                formData.append(`fileList`, this.imageFile);
+            }
+            axios.post(`/api/review/insert/${this.orderInfo.orderIdx}`, formData)
                 .then(() => {
                     this.dialog = false;
                     this.content = '';
-                    alert("리뷰 등록 완료");
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '리뷰 등록 완료';
+                    this.resetReview();
                     this.getReview();
                 }).catch((err) => {
-                    alert('리뷰 작성에 실패했습니다.')
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '리뷰 작성에 실패했습니다';
                     console.log(err);
                 })
         },
@@ -277,7 +301,9 @@ export default {
         deleteReview(num) {
             axios.delete(`/api/review/delete/${num}`)
                 .then(() => {
-                    alert("삭제가 완료되었습니다.")
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '삭제가 완료되었습니다';
                     this.getReview();
                 })
         },
@@ -285,20 +311,24 @@ export default {
             this.$router.push(`/updatePost/review/${num}`);
         },
         idCheck() {
-            this.haveOrder = false;
-            axios({
-                    method: 'get',
-                    url: `/api/order/getCountToReview`,
-                    params: {
-                        id: this.getLogin.user.id,
-                        productNo: this.productNo,
-                    }
-                })
-                .then(res => {
-                    if (res.data > 0) {
-                        this.haveOrder = true;
-                    }
-                })
+            this.orderInfo = null;
+            if (this.getLogin == null) {
+                return;
+            } else {
+                axios({
+                        method: 'get',
+                        url: `/api/order/getCountToReview`,
+                        params: {
+                            id: this.getLogin.user.id,
+                            productNo: this.productNo,
+                        }
+                    })
+                    .then(res => {
+                        if (res.data != '') {
+                            this.orderInfo = res.data;
+                        }
+                    })
+            }
         },
 
     },

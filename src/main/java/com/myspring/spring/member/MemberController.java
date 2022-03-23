@@ -51,6 +51,13 @@ public class MemberController {
 		return memberService.checkId(id);
 	}
 
+	// 아이디 중복 체크
+	@GetMapping(value = "/find")
+	public ResponseEntity<?> find(@RequestParam("tel") String tel,
+			@RequestParam(value = "id", required = false) String id) {
+		return memberService.find(tel, id);
+	}
+
 	@PutMapping(value = "/updateMember")
 	public ResponseEntity<?> updateMember(@RequestBody MemberVO member) {
 		return memberService.updateMember(member);
@@ -60,8 +67,9 @@ public class MemberController {
 	@GetMapping(value = "/getMembers")
 	public ResponseEntity<?> getMembers(@RequestParam("page") int page, @RequestParam("perPage") int perPage,
 			@RequestParam(value = "condition", required = false) String condition,
-			@RequestParam(value = "param", required = false) Object param) {
-		return memberService.getMembers(page, perPage, condition, param);
+			@RequestParam(value = "param", required = false) Object param,
+			@RequestParam(value = "role", required = false) boolean role) {
+		return memberService.getMembers(page, perPage, condition, param, role);
 	}
 
 	@GetMapping(value = "/login")
@@ -80,7 +88,7 @@ public class MemberController {
 	public ResponseEntity<?> deleteMember(@PathVariable("id") String id) {
 		return memberService.deleteMember(id);
 	}
-  
+
 	@GetMapping("/getNaverLogin/{token}")
 	public ResponseEntity<?> getNaverLogin(@PathVariable("token") String token) {
 		return memberService.getNaverLogin(token);

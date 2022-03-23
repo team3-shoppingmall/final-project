@@ -97,9 +97,9 @@
                         <td colspan="2">
                             <v-row justify="end">
                                 <v-col cols="auto">
-                                    <v-btn class="error" @click="dialog = false">취소</v-btn>
-                                    <v-btn class="primary ml-3" @click="buyItNow">BUY IT NOW</v-btn>
+                                    <v-btn class="primary" @click="buyItNow">BUY IT NOW</v-btn>
                                     <v-btn class="primary ml-3" @click="addToBasket">ADD TO Basket</v-btn>
+                                    <v-btn class="error ml-3" @click="dialog = false">취소</v-btn>
                                 </v-col>
                             </v-row>
                         </td>
@@ -130,6 +130,11 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+    <v-dialog v-model="alertDialog" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -143,6 +148,9 @@ export default {
     components: {},
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
             dialog: false,
             dialog2: false,
             overlap: 0,
@@ -233,7 +241,6 @@ export default {
                     deletes.push(data);
                 }
             } else {
-                console.log('test');
                 console.log(item);
                 let data = {
                     id: this.getLogin.user.id,
@@ -246,10 +253,14 @@ export default {
                     data: deletes
                 })
                 .then(() => {
-                    alert('선택한 관심상품이 삭제되었습니다.');
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '선택한 관심상품이 삭제되었습니다';
                     this.getWishList();
                 }).catch(err => {
-                    alert('삭제에 실패하였습니다');
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '삭제에 실패하였습니다';
                     console.log(err);
                 })
         },
@@ -311,17 +322,23 @@ export default {
             axios.get(`/api/basket/getBasketCount/${this.getLogin.user.id}`)
                 .then(res => {
                     if (res.data == 50) {
-                        alert('장바구니에는 50개까지만 저장이 가능합니다.')
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '장바구니에는 50개까지만 저장이 가능합니다';
                     } else {
                         axios.post(`/api/basket/insert`, selection)
                             .then(res => {
                                 if (res.data > 0) {
-                                    alert('저장에 실패하셨습니다');
+                                    this.alertDialog = true;
+                                    this.alertType = 'warning';
+                                    this.alertMessage = '저장에 실패하셨습니다';
                                 } else {
                                     this.dialog2 = true;
                                 }
                             }).catch((err) => {
-                                alert('저장에 실패하셨습니다');
+                                this.alertDialog = true;
+                                this.alertType = 'error';
+                                this.alertMessage = '저장에 실패하셨습니다';
                                 console.log(err);
                             })
                     }
@@ -329,7 +346,9 @@ export default {
         },
         amountFilter() {
             if (!(this.basketAmount > 0 && this.basketAmount == Math.round(this.basketAmount))) {
-                alert('잘못된 입력입니다.');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '잘못된 입력입니다';
                 this.basketAmount = 1;
             }
         },

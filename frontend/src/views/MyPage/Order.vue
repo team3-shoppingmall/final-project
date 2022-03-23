@@ -99,7 +99,7 @@
             </v-row>
         </v-col>
     </v-row>
-    <v-dialog v-model="dialog" persistent max-width="290">
+    <v-dialog v-model="dialog" persistent max-width="290" v-if="purchaseItem != null">
         <v-card>
             <v-card-title class="text-body-1">
                 <span>구매 확정 시 포인트가 적립되며 </span>
@@ -110,13 +110,13 @@
                 <v-btn color="green darken-1" text @click="purchaseConfirm()">
                     구매확정
                 </v-btn>
-                <v-btn color="red darken-1" text @click="dialog = false">
+                <v-btn color="red darken-1" text @click="purchaseItem = null; dialog = false">
                     취소
                 </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
-    <v-dialog v-model="dialog2" persistent max-width="290">
+    <v-dialog v-model="dialog2" persistent max-width="290" v-if="purchaseItem != null">
         <v-card>
             <v-card-title class="text-body-1">
                 <span>주문을 취소하시겠습니까?</span>
@@ -126,30 +126,33 @@
                 <v-btn color="green darken-1" text @click="cancelOrder(purchaseItem)">
                     예
                 </v-btn>
-                <v-btn color="red darken-1" text @click="dialog2 = false">
+                <v-btn color="red darken-1" text @click="purchaseItem = null; dialog2 = false">
                     아니오
                 </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
-    <v-dialog v-model="dialog3" persistent max-width="750px">
+    <v-dialog v-model="dialog3" persistent max-width="750px" v-if="purchaseItem != null">
         <v-card>
             <v-card-title>
                 <span class="text-h5">리뷰 작성</span>
             </v-card-title>
             <v-card-text>
                 <v-container>
-                    <v-row>
+                    <v-row justify="center">
                         <v-col cols="12">
-                            상품 정보
+                            <div class="text-h6">상품 정보</div>
                             <ProductDetailDisplay :productNo="purchaseItem.productNo" />
                         </v-col>
                         <v-col cols="12">
-                            별점
+                            <div class="black--text text-body-1">구매 옵션 : <span v-if="purchaseItem.selectedColor != null">{{purchaseItem.selectedColor}}</span><span v-if="purchaseItem.selectedColor != null && purchaseItem.selectedSize != null">/</span><span>{{purchaseItem.selectedSize}}</span></div>
+                        </v-col>
+                        <v-col cols="12">
+                            <div class="text-h6">별점</div>
                             <v-rating background-color="grey lighten-2" color="orange" empty-icon="mdi-star-outline" full-icon="mdi-star" hover length="5" size="64" v-model="star"></v-rating>
                         </v-col>
                         <v-col cols="12">
-                            리뷰
+                            <div class="text-h6">리뷰</div>
                             <ckeditor :editor="editor" v-model="content" :config="editorConfig"></ckeditor>
                             <span :class="contentColor">{{content.length}}/600</span>
                         </v-col>
@@ -177,7 +180,7 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
-    <v-dialog v-model="dialog4" width="600px">
+    <v-dialog v-model="dialog4" width="600px" v-if="purchaseItem != null">
         <v-card class="pa-2">
             <v-simple-table>
                 <thead>
@@ -226,7 +229,7 @@
                         <td colspan="2">
                             <v-row justify="end">
                                 <v-col cols="auto">
-                                    <v-btn class="primary" @click="dialog4 = false">확인</v-btn>
+                                    <v-btn class="primary" @click="purchaseItem = null; dialog4 = false">확인</v-btn>
                                 </v-col>
                             </v-row>
                         </td>
@@ -234,6 +237,17 @@
                 </tbody>
             </v-simple-table>
         </v-card>
+    </v-dialog>
+    <v-dialog v-model="alertDialog" :persistent="alertPath != null" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            <span v-html="alertMessage"></span>
+            <v-row justify="end" v-if="alertPath != null">
+                <v-col cols="auto" class="pr-1 pb-1">
+                    <v-btn text :to="alertPath">이동하기</v-btn>
+                    <v-btn text @click="alertDialog = false; alertPath = null; purchaseItem = null; dialog2 = false">취소</v-btn>
+                </v-col>
+            </v-row>
+        </v-alert>
     </v-dialog>
 </v-container>
 </template>
@@ -254,6 +268,10 @@ export default {
     },
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
+            alertPath: null,
             editor: ClassicEditor,
             editorConfig: {
                 ckfinder: {},
@@ -449,7 +467,9 @@ export default {
                 axios.patch(`/api/order/update`, states)
                     .then(res => {
                         if (res.data.length == 0) {
-                            alert('주문을 취소하셨습니다');
+                            this.alertDialog = true;
+                            this.alertType = 'success';
+                            this.alertMessage = '주문을 취소하셨습니다';
                             this.dialog2 = false;
                             if (this.options.page != 1) {
                                 this.options.page = 1;
@@ -457,14 +477,23 @@ export default {
                                 this.getOrder(this.selectedOrder);
                             }
                         } else {
-                            alert(`미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`)
+                            this.alertDialog = true;
+                            this.alertType = 'warning';
+                            this.alertMessage = `미완료된 변경(총 ${res.data.length}건)<br>주문번호 : ${res.data}`;
                         }
                     }).catch(err => {
                         console.log(err)
                     })
             } else if (item.state == '배송준비중') {
-                alert('배송 준비중인 주문입니다. 배송 전 변경/취소 게시판에서 요청해주시기 바랍니다.');
-                this.$router.push(`/qna/beforeDeliveryQnA`);
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '배송 준비중인 주문입니다. 배송 전 변경/취소 게시판에서 요청해주시기 바랍니다';
+                this.alertPath = `/qna/beforeDeliveryQnA`;
+            } else if (item.state == '배송완료') {
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '배송 후 교환/반품 게시판에서 요청해주시기 바랍니다';
+                this.alertPath = `/qna/afterDeliveryQnA`;
             }
         },
         reset() {
@@ -483,7 +512,7 @@ export default {
             let date = new Date();
             let year = date.getFullYear();
             let month = date.getMonth() + 1;
-            let day = date.getDate()
+            let day = date.getDate();
 
             if (period == '1week') {
                 if (day > 6) {
@@ -519,6 +548,17 @@ export default {
                     month = month + 6;
                 }
             }
+            let lastDay = new Date(year, month, 0).getDate();
+            if (day > lastDay) {
+                if (month != 12) {
+                    month = month + 1;
+                    day = day - lastDay;
+                } else {
+                    year = year + 1;
+                    month = 1;
+                    day = day - lastDay;
+                }
+            }
             this.searchDate1 = `${year}-${month}-${day}`;
             this.searchDate2 = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
 
@@ -541,14 +581,18 @@ export default {
             axios.patch(`/api/order/update`, states)
                 .then(res => {
                     if (res.data.length == 0) {
-                        alert('구매를 확정하셨습니다');
+                        this.alertDialog = true;
+                        this.alertType = 'success';
+                        this.alertMessage = '구매를 확정하셨습니다';
                         if (this.options.page != 1) {
                             this.options.page = 1;
                         } else {
                             this.getOrder(this.selectedOrder);
                         }
                     } else {
-                        alert(`미완료된 변경(총 ${res.data.length}건)\n주문번호 : ${res.data}`)
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = `미완료된 변경(총 ${res.data.length}건)<br>주문번호 : ${res.data}`;
                     }
                 }).catch(err => {
                     console.log(err)
@@ -573,38 +617,53 @@ export default {
 
         addReview() {
             if (this.content == '') {
-                alert('후기를 입력해주세요');
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '후기를 입력해주세요';
                 return;
+            }
+            let image = null;
+            if (this.imageFile != null) {
+                image = this.imageFile.name;
             }
             let data = {
                 productNo: this.purchaseItem.productNo,
                 star: this.star,
                 content: this.content,
-                image: this.imageFile.name,
+                image: image,
                 id: this.getLogin.user.id,
             };
             let formData = new FormData();
             formData.append('data', new Blob([JSON.stringify(data)], {
                 type: "application/json"
             }));
+            if (this.imageFile != null) {
+                formData.append(`fileList`, this.imageFile);
+            }
             formData.append(`fileList`, this.imageFile);
-            axios.post(`/api/review/insert`, formData)
+            axios.post(`/api/review/insert/${this.purchaseItem.orderIdx}`, formData)
                 .then(() => {
                     this.dialog = false;
                     this.content = '';
-                    alert("리뷰 등록 완료");
-                    this.getReview();
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '리뷰 등록 완료';
+                    this.resetReview();
+                    this.getOrder(this.selectedOrder);
                 }).catch((err) => {
-                    alert('리뷰 작성에 실패했습니다.')
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '리뷰 작성에 실패했습니다';
                     console.log(err);
                 })
         },
         resetReview() {
+            this.dialog3 = false;
             this.star = 5;
             this.content = '';
             this.imageFile = null;
             this.imageUrl = null;
-            this.dialog3 = false;
+            this.purchaseItem = null;
         }
     },
     computed: {

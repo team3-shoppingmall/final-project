@@ -449,6 +449,9 @@ export default {
         },
         ...LoginStore.mapActions(['Logout']),
         signOut() {
+            if (this.getLogin.user.id.slice(0, 5) == 'kakao') {
+                window.Kakao.Auth.logout();
+            }
             this.Logout();
             if (this.$route.path !== '/') {
                 this.$router.push('/');

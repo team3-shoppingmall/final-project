@@ -12,13 +12,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.myspring.spring.order.OrderMapper;
+
 @Service
 public class ReviewService {
 	private ReviewMapper reviewMapper;
+	private OrderMapper orderMapper;
 
 	@Autowired
-	public ReviewService(ReviewMapper reviewMapper) {
+	public ReviewService(ReviewMapper reviewMapper, OrderMapper orderMapper) {
 		this.reviewMapper = reviewMapper;
+		this.orderMapper = orderMapper;
 	}
 
 	// 리뷰 전체보기
@@ -44,12 +48,13 @@ public class ReviewService {
 	}
 
 	// 리뷰 작성
-	public ResponseEntity<?> insertReview(ReviewVO requestData, List<MultipartFile> fileList) {
+	public ResponseEntity<?> insertReview(int orderIdx, ReviewVO requestData, List<MultipartFile> fileList) {
 		ReviewVO result = new ReviewVO();
 		ResponseEntity<?> entity = null;
 
 		try {
 			reviewMapper.insertReview(requestData, result);
+			orderMapper.updateReviewable(orderIdx);
 
 			int reviewNo = result.getReviewNo();
 			File file = new File("./images/review/" + reviewNo + "/");

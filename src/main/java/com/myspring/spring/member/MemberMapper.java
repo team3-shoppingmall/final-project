@@ -16,6 +16,10 @@ public interface MemberMapper {
 	@Insert("insert into membertable(id,password,name,tel,email,zipcode,addr1,addr2, terms, authority) values (#{in.id},#{in.password},#{in.name},#{in.tel},#{in.email},#{in.zipcode},#{in.addr1},#{in.addr2}, #{in.terms}, #{in.authority})")
 	int insertMember(@Param("in") MemberVO member);
 
+	// 관리자 등록
+	@Insert("insert into membertable(id,password,name,tel,email,zipcode,addr1,addr2, terms, authority) values (#{in.id},#{in.password},#{in.name},#{in.tel},'','','','',false, #{in.authority})")
+	int insertManager(@Param("in") MemberVO member);
+	
 	// 전체 멤버 조회
 	// @Select("select id, name, tel, email, zipcode, addr1, addr2, terms, point
 	// from membertable limit #{perPage} offset #{start}")
@@ -25,19 +29,22 @@ public interface MemberMapper {
 	// 전체 멤버 수 조회
 	@SelectProvider(type = MemberUtils.class, method = "getCount")
 //	@Select("select count(id) from membertable")
-	int getMemberCount(String condition, Object param);
+	int getMemberCount(String condition, Object param, boolean role);
 
 	// 멤버 조회
 	// select * from membertable where ? like %?%
 
 	@SelectProvider(type = MemberUtils.class, method = "getMembers")
-	List<MemberVO> getMembers(int start, int perPage, String condition, Object param);
+	List<MemberVO> getMembers(int start, int perPage, String condition, Object param, boolean role);
 
 	// 멤버 정보 조회
 	// select ~ from membertable where id ='id'
 	// pointService에서 멤버의 포인트 얻기 위해 호출도 함
 	@Select("select * from membertable where id = #{id}")
 	MemberVO getMemberInfo(@Param("id") String id);
+
+	@Select("select * from membertable where tel = #{tel}")
+	MemberVO getMemberInfoByTel(@Param("tel") String tel);
 
 	// 멤버 정보 수정
 	// update membertable set ? = ?, ... where id = ?
@@ -52,7 +59,7 @@ public interface MemberMapper {
 	@Select("select point from membertable where id = 'tester';")
 	List<MemberVO> getMemberPoint();
 
-	@Delete("delete from membertable where id = #{id} and 0 = (select count(*) from ordertable where id = #{id} and STATE in ('입금전', '결제완료', '배송준비중', '배송중'))")
+	@Delete("delete from membertable where id = #{id} and 0 = (select count(*) from ordertable where id = #{id} and STATE in ('입금전', '결제완료', '배송준비중', '배송중', '배송완료'))")
 	int deleteMember(@Param("id") String id);
 
 }

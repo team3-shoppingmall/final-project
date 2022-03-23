@@ -23,7 +23,17 @@
                         sign Up
                     </v-btn>
                 </v-row>
-                <v-row class="mt-10" justify="center">
+                <v-row class="mt-5" justify="center">
+                    <v-btn class="mr-5 primary pl-2 pr-3" @click="dialog = true">
+                        <v-icon class="pr-1">mdi-magnify</v-icon>
+                        Find ID
+                    </v-btn>
+                    <v-btn class="primary pl-2 pr-3" @click="dialog2 = true">
+                        <v-icon class="pr-1">mdi-magnify</v-icon>
+                        Find PW
+                    </v-btn>
+                </v-row>
+                <v-row class="mt-5" justify="center">
                     <v-col cols="auto" class="mt-1">
                         <div id="naver_id_login"></div>
                     </v-col>
@@ -34,6 +44,129 @@
             </v-form>
         </v-col>
     </v-row>
+    <v-dialog v-model="dialog" persistent max-width="550">
+        <v-card>
+            <v-form ref="form">
+                <v-simple-table>
+                    <template slot="default">
+                        <thead>
+                            <tr>
+                                <th class="text-h5" colspan="2">아이디 찾기</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-if="checkId != null">
+                                <td> 아이디 </td>
+                                <td>
+                                    <v-text-field v-model="checkId" outlined hide-details="auto" dense readonly></v-text-field>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td> 전화번호 </td>
+                                <td>
+                                    <v-text-field v-model="checkTel" :rules="rules.tel" outlined hide-details="auto" dense required></v-text-field>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <v-row justify="end">
+                                        <v-col cols="auto">
+                                            <v-btn class="primary" @click="findPW" v-if="checkId != null">비밀번호 찾기</v-btn>
+                                            <v-btn class="primary" @click="findID" v-if="checkId == null">찾기</v-btn>
+                                            <v-btn class="error ml-3" @click="reset">취소</v-btn>
+                                        </v-col>
+                                    </v-row>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </template>
+                </v-simple-table>
+            </v-form>
+        </v-card>
+    </v-dialog>
+    <v-dialog v-model="dialog2" persistent max-width="550">
+        <v-card>
+            <v-form ref="form">
+                <v-simple-table>
+                    <template slot="default">
+                        <thead>
+                            <tr>
+                                <th class="text-h5" colspan="2">비밀번호 찾기</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td> 아이디 </td>
+                                <td>
+                                    <v-text-field v-model="checkId" :rules="rules.id" outlined hide-details="auto" dense required></v-text-field>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td> 전화번호 </td>
+                                <td>
+                                    <v-text-field v-model="checkTel" :rules="rules.tel" outlined hide-details="auto" dense required></v-text-field>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <v-row justify="end">
+                                        <v-col cols="auto">
+                                            <v-btn class="primary" @click="findPW">찾기</v-btn>
+                                            <v-btn class="error ml-3" @click="reset">취소</v-btn>
+                                        </v-col>
+                                    </v-row>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </template>
+                </v-simple-table>
+            </v-form>
+        </v-card>
+    </v-dialog>
+    <v-dialog v-model="dialog3" persistent max-width="500">
+        <v-card>
+            <v-form ref="form">
+                <v-simple-table>
+                    <template slot="default">
+                        <thead>
+                            <tr>
+                                <th class="text-h5" colspan="2">비밀번호 수정</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td> 비밀번호 </td>
+                                <td>
+                                    <v-text-field v-model="pwd1" :rules="rules.pwd1" type="password" outlined hide-details="auto" dense required></v-text-field>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td> 비밀번호 확인 </td>
+                                <td>
+                                    <v-text-field v-model="pwd2" :rules="rules.pwd2" type="password" outlined hide-details="auto" dense required></v-text-field>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <v-row justify="end">
+                                        <v-col cols="auto">
+                                            <v-btn class="primary" @click="updatePassword">수정</v-btn>
+                                            <v-btn class="error ml-3" @click="reset">취소</v-btn>
+                                        </v-col>
+                                    </v-row>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </template>
+                </v-simple-table>
+            </v-form>
+        </v-card>
+    </v-dialog>
+    <v-dialog v-model="alertDialog" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -47,6 +180,16 @@ const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
+            dialog: false,
+            dialog2: false,
+            dialog3: false,
+            checkId: null,
+            checkTel: null,
+            pwd1: '',
+            pwd2: '',
             id: '',
             password: '',
             rules: {
@@ -54,6 +197,17 @@ export default {
                     v => /^[a-zA-Z0-9]*$/.test(v) || '아이디는 영문+숫자만 입력 가능합니다.',
                 ],
                 pwd: [v => !!v || '비밀번호는 필수 입력사항입니다.', ],
+                pwd1: [v => !!v || '비밀번호는 필수 입력사항입니다.',
+                    v => /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^*+=-]).{0,}$/.test(v) || '비밀번호는 영문 대소문자, 숫자, 특수문자로 구성돼야합니다.',
+                    v => v.length >= 8 || '최소 8글자입니다.',
+                    v => v.length <= 20 || '최대 20글자입니다.',
+                ],
+                pwd2: [v => !!v || '비밀번호확인은 필수 입력사항입니다.',
+                    v => v === this.pwd1 || '비밀번호가 일치하지 않습니다.'
+                ],
+                tel: [v => !!v || '전화번호는 필수 입력사항입니다.',
+                    v => /^(01[016789]{1}|02|0[3-9]{1}[0-9]{1})-?[0-9]{3,4}-?[0-9]{4}$/.test(v) || '전화번호는 숫자만 입력 가능합니다.',
+                ],
             }
         }
     },
@@ -87,11 +241,15 @@ export default {
                     })
                     .catch(err => {
                         if (err.response.data == 'ID NOT FOUND') {
-                            alert("아이디가 존재하지 않습니다.");
+                            this.alertDialog = true;
+                            this.alertType = 'warning';
+                            this.alertMessage = '아이디가 존재하지 않습니다';
                             this.$refs.pwd.reset();
                             this.$refs.id.focus();
                         } else if (err.response.data == 'PASSWORD NOT MATCHED') {
-                            alert("비밀번호가 일치하지 않습니다.");
+                            this.alertDialog = true;
+                            this.alertType = 'warning';
+                            this.alertMessage = '비밀번호가 일치하지 않습니다';
                             this.$refs.pwd.reset();
                             this.$refs.pwd.focus();
                         }
@@ -100,6 +258,71 @@ export default {
         },
         signUp() {
             this.$router.push('/authentication/signUp');
+        },
+        findID() {
+            axios({
+                    method: 'get',
+                    url: `/api/member/find`,
+                    params: {
+                        tel: this.checkTel,
+                    }
+                })
+                .then(res => {
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '인증 완료';
+                    this.checkId = res.data;
+                })
+        },
+        findPW() {
+            axios({
+                    method: 'get',
+                    url: `/api/member/find`,
+                    params: {
+                        tel: this.checkTel,
+                        id: this.checkId,
+                    }
+                })
+                .then(res => {
+                    if (res.data == 'yes') {
+                        this.alertDialog = true;
+                        this.alertType = 'success';
+                        this.alertMessage = '정보가 일치합니다. 비밀번호를 수정해주세요';
+                        this.dialog3 = true;
+                    } else {
+                        this.alertDialog = true;
+                        this.alertType = 'warning';
+                        this.alertMessage = '해당되는 아이디가 없습니다';
+                    }
+                })
+        },
+        updatePassword() {
+            let member;
+            if (this.pwd1 == this.pwd2) {
+                member = {
+                    id: this.checkId,
+                    password: this.pwd1,
+                }
+            }
+            axios.put('/api/member/updateMember', member)
+                .then(() => {
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '수정 성공';
+                    this.reset();
+                })
+                .catch(() => {
+                    this.alertDialog = true;
+                    this.alertType = 'error';
+                    this.alertMessage = '수정 실패';
+                })
+        },
+        reset() {
+            this.dialog3 = false;
+            this.dialog2 = false;
+            this.dialog = false;
+            this.checkTel = null;
+            this.checkId = null;
         },
         loginWithKakao() {
             if (window.Kakao.isInitialized() == false) {
@@ -138,7 +361,6 @@ export default {
                         })
                         .catch(err => {
                             if (err.response.data == 'ID NOT FOUND') {
-                                alert('회원가입되지 않은 아이디입니다. 회원가입 페이지로 이동합니다.')
                                 this.$router.push({
                                     name: "Social",
                                     params: {
@@ -149,7 +371,7 @@ export default {
                         })
                 },
                 fail: error => {
-                    this.$router.push("/errorPage");
+                    this.$router.push("/authentication/signIn");
                     console.log(error);
                 }
             })
@@ -180,7 +402,6 @@ export default {
                         })
                         .catch(err => {
                             if (err.response.data == 'ID NOT FOUND') {
-                                alert('회원가입되지 않은 아이디입니다. 회원가입 페이지로 이동합니다.')
                                 this.$router.push({
                                     name: "Social",
                                     params: {
@@ -194,7 +415,6 @@ export default {
         ...LoginStore.mapActions(['Login']),
         ...LoginStore.mapMutations(['setPath']),
     },
-
     computed: {
         ...LoginStore.mapGetters(['getLogin']),
         ...LoginStore.mapGetters(['getPath'])

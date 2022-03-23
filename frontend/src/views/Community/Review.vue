@@ -65,6 +65,11 @@
             </v-row>
         </v-col>
     </v-row>
+    <v-dialog v-model="alertDialog" max-width="350">
+        <v-alert class="mb-0" :type="alertType">
+            {{alertMessage}}
+        </v-alert>
+    </v-dialog>
 </v-container>
 </template>
 
@@ -83,6 +88,9 @@ export default {
     },
     data() {
         return {
+            alertDialog: false,
+            alertMessage: '',
+            alertType: '',
             totalContents: 0,
             contents: [],
             nameList: [],
@@ -175,7 +183,9 @@ export default {
         deleteReview(num) {
             axios.delete(`/api/review/delete/${num}`)
                 .then(() => {
-                    alert("삭제가 완료되었습니다.")
+                    this.alertDialog = true;
+                    this.alertType = 'success';
+                    this.alertMessage = '삭제가 완료되었습니다';
                     this.getReview();
                 }).catch(err => {
                     console.log(err);

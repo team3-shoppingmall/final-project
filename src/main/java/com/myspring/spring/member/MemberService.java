@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,14 +18,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.myspring.spring.order.OrderMapper;
+
 @Service
 public class MemberService {
 	private MemberMapper memberMapper;
+	private OrderMapper orderMapper;
 	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 	@Autowired
-	public MemberService(MemberMapper memberMapper) {
+	public MemberService(MemberMapper memberMapper, OrderMapper orderMapper) {
 		this.memberMapper = memberMapper;
+		this.orderMapper = orderMapper;
 	}
 
 	// 멤버 등록
@@ -33,8 +38,12 @@ public class MemberService {
 			member.setAuthority("ROLE_USER");
 		String secPwd = encoder.encode(member.getPassword());
 		member.setPassword(secPwd);
-
-		int res = memberMapper.insertMember(member);
+		int res = 0;
+		if (member.getAuthority().equals("ROLE_MANAGER")) {
+			res = memberMapper.insertManager(member);
+		} else {
+			res = memberMapper.insertMember(member);
+		}
 
 		if (res == 1) {
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -44,10 +53,10 @@ public class MemberService {
 	}
 
 	// 멤버 조회
-	public ResponseEntity<?> getMembers(int page, int perPage, String condition, Object param) {
+	public ResponseEntity<?> getMembers(int page, int perPage, String condition, Object param, boolean role) {
 		int start = (page - 1) * perPage;
-		List<MemberVO> res = memberMapper.getMembers(start, perPage, condition, param);
-		int count = memberMapper.getMemberCount(condition, param);
+		List<MemberVO> res = memberMapper.getMembers(start, perPage, condition, param, role);
+		int count = memberMapper.getMemberCount(condition, param, role);
 		Map<String, Object> resMap = new HashMap<>();
 		resMap.put("res", res);
 		resMap.put("count", count);
@@ -123,6 +132,25 @@ public class MemberService {
 
 	}
 
+	public ResponseEntity<?> find(String tel, String id) {
+		MemberVO member = memberMapper.getMemberInfoByTel(tel);
+		String res = null;
+		if (id != null) {
+			if(member != null) {
+				if (member.getId().equals(id)) {
+					res = "yes";
+				} else {
+					res = "no";
+				}
+			}
+		} else {
+			res = member.getId();
+		}
+		
+		return new ResponseEntity<>(res, HttpStatus.OK);
+
+	}
+
 	public ResponseEntity<?> getNaverLogin(String token) {
 		String header = "Bearer " + token; // Bearer 다음에 공백 추가
 
@@ -189,6 +217,7 @@ public class MemberService {
 		if (res == 0) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		} else {
+			res = orderMapper.updateOrderAfterDeleteMember(id, Long.toString(System.currentTimeMillis()));
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
 	}

@@ -44,26 +44,9 @@ CREATE TABLE membertable (
 	ADDR2 VARCHAR(50) NOT NULL,
 	TERMS BOOLEAN DEFAULT FALSE,
 	POINT INT,
-	AUTHORITY VARCHAR(20) NOT NULL
+	AUTHORITY VARCHAR(20) NOT NULL,
+    UNIQUE KEY member_uk_tel(TEL)
 );
-
-DELIMITER $$
-USE `springdb`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`membertable_BEFORE_INSERT` BEFORE INSERT ON `membertable` FOR EACH ROW
-BEGIN
-set new.point = 2000;
-insert into pointtable(id, point, content) values (new.id, 2000, '회원 가입 축하 포인트');
-END$$
-DELIMITER ;
-
-DELIMITER $$
-USE `springdb`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`membertable_AFTER_DELETE` AFTER DELETE ON `membertable` FOR EACH ROW
-BEGIN
-delete from qnatable where originalNo in (select * from (select qnaNo from qnatable where id = old.id) temp);
-delete from pointtable where id = old.id;
-END$$
-DELIMITER ;
 
 CREATE TABLE producttable(
 	PRODUCTNO INT PRIMARY KEY AUTO_INCREMENT,
@@ -83,7 +66,7 @@ CREATE TABLE producttable(
 
 CREATE TABLE baskettable (
 	BASKETIDX BIGINT PRIMARY KEY AUTO_INCREMENT,
-	ID VARCHAR(50) NOT NULL,
+	ID VARCHAR(70) NOT NULL,
 	PRODUCTNO INT NOT NULL,
 	SELECTEDCOLOR VARCHAR(50),
 	SELECTEDSIZE VARCHAR(50),
@@ -99,7 +82,7 @@ CREATE TABLE baskettable (
 );
 
 CREATE TABLE wishlisttable (
-	ID VARCHAR(50) NOT NULL,
+	ID VARCHAR(70) NOT NULL,
 	PRODUCTNO INT NOT NULL,
     CONSTRAINT primary_wishlist PRIMARY KEY (ID, PRODUCTNO),
     CONSTRAINT wishList_fk_id FOREIGN KEY (ID)
@@ -114,7 +97,7 @@ CREATE TABLE wishlisttable (
 
 CREATE TABLE ordertable (
 	ORDERIDX BIGINT PRIMARY KEY AUTO_INCREMENT,
-	ID VARCHAR(50) NOT NULL,
+	ID VARCHAR(90) NOT NULL,
 	PRODUCTNO INT NOT NULL,
 	ORDERNO BIGINT,
 	SELECTEDCOLOR VARCHAR(100),
@@ -135,88 +118,19 @@ CREATE TABLE ordertable (
     CONSTRAINT order_fk_productno FOREIGN KEY (PRODUCTNO) REFERENCES producttable (PRODUCTNO)
 );
 
-DELIMITER $$
-USE `springdb`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`ordertable_BEFORE_INSERT` BEFORE INSERT ON `ordertable` FOR EACH ROW
-BEGIN
-if(new.state is null)
-then
-if(new.ORDERMETHOD = 'credit' || new.ORDERMETHOD = 'mobile')
-then
-	set new.state = '결제완료';
-else
-	set new.state = '입금전';
-END if;
-END if;
-END$$
-DELIMITER ;
-
-DELIMITER $$
-USE `springdb`$$
-CREATE PROCEDURE `orderChangeSchedule` ()
-BEGIN
-UPDATE ordertable set reviewable = false where state in ('구매확정', '교환완료') and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
-UPDATE ordertable set state = '구매확정', reviewable = true where state = '배송완료' and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
-UPDATE ordertable set state = '취소완료' where state = '입금전' and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
-IF( DAYOFWEEK(curdate()) between 2 and 6)
-THEN
-UPDATE ordertable set state = '배송준비중' where state = '결제완료';
-END IF;
-END$$
-DELIMITER ;
-
-create EVENT event_AutoScheduler
-ON schedule 
-EVERY 1 DAY starts '2022-03-06 15:00:00'
-COMMENT '매일 15:00 결제완료 -> 배송준비중(평일), 배송완료 -> 구매확정(7일 경과 시)으로 변경'
-DO Call orderChangeSchedule();
-
 CREATE TABLE pointtable (
 	NUM BIGINT PRIMARY KEY AUTO_INCREMENT,
-	ID VARCHAR(50) NOT NULL,
+	ID VARCHAR(70) NOT NULL,
 	POINT INT NOT NULL,
-	POINTDATE TIMESTAMP DEFAULT (current_timestamp),
+	POINTDATE TIMESTAMP DEFAULT current_timestamp,
     CONTENT VARCHAR(50)
 );
-
-DELIMITER $$
-USE `springdb`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`pointtable_BEFORE_INSERT` BEFORE INSERT ON `pointtable` FOR EACH ROW
-BEGIN
-if(new.content != '회원 가입 축하 포인트')
-Then
-update membertable
-set point = point + New.point
-where id = New.id;
-End if;
-END$$
-DELIMITER ;
-
-DELIMITER $$
-USE `springdb`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`ordertable_BEFORE_UPDATE` BEFORE UPDATE ON `ordertable` FOR EACH ROW
-BEGIN
-if(new.state = '구매확정')
-then
-set new.reviewable = true;
-insert into pointtable(id, point, content) values (old.id, old.totalPrice * 0.02, '구매 확정');
-end if;
-if(new.state = '교환완료')
-then
-set new.reviewable = true;
-end if;
-if(new.state in ('환불완료','취소완료'))
-then
-set new.reviewable = false;
-end if;
-END$$
-DELIMITER ;
 
 CREATE TABLE noticetable (
 	NOTICENO INT PRIMARY KEY AUTO_INCREMENT,
 	TITLE VARCHAR(100) NOT NULL,
 	CONTENT VARCHAR(10000) NOT NULL,
-	ID VARCHAR(50) NOT NULL,
+	ID VARCHAR(70) NOT NULL,
 	IMAGE VARCHAR(400),
     CONSTRAINT notice_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
         on delete cascade
@@ -230,12 +144,12 @@ CREATE TABLE faqtable (
 	CONTENT VARCHAR(2000) NOT NULL
 );
 
-CREATE TABLE reviewTable(
+CREATE TABLE reviewtable(
 	REVIEWNO BIGINT PRIMARY KEY AUTO_INCREMENT,
 	PRODUCTNO INT not NULL,
 	CONTENT VARCHAR(600) NOT NULL,
-	id VARCHAR(50) NOT NULL,
-	REGDATE TIMESTAMP DEFAULT (current_timestamp),
+	id VARCHAR(70) NOT NULL,
+	REGDATE TIMESTAMP DEFAULT current_timestamp,
 	IMAGE VARCHAR(400),
 	STAR INT NOT NULL,
     CONSTRAINT review_fk_id FOREIGN KEY (ID) REFERENCES membertable (ID)
@@ -253,11 +167,103 @@ CREATE TABLE qnatable(
 	ORIGINALNO BIGINT,
 	REPLY BOOLEAN DEFAULT FALSE,
 	CONTENT VARCHAR(2000) NOT NULL,
-	ID VARCHAR(50) NOT NULL,
-	REGDATE TIMESTAMP DEFAULT (current_timestamp),
+	ID VARCHAR(70) NOT NULL,
+	REGDATE TIMESTAMP DEFAULT current_timestamp,
 	SECRET BOOLEAN NOT NULL,
 	IMAGE VARCHAR(400)
 );
+
+CREATE TABLE bannertable (
+	IMAGE VARCHAR(100) PRIMARY KEY,
+	LINK VARCHAR(100) NOT NULL,
+	NUM INT
+);
+
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`membertable_BEFORE_INSERT` BEFORE INSERT ON `membertable` FOR EACH ROW
+BEGIN
+set new.point = 2000;
+insert into pointtable(id, point, content) values (new.id, 2000, '회원 가입 축하 포인트');
+END$$
+DELIMITER ;
+
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`membertable_AFTER_DELETE` AFTER DELETE ON `membertable` FOR EACH ROW
+BEGIN
+delete from qnatable where originalNo in (select * from (select qnaNo from qnatable where id = old.id) temp);
+delete from pointtable where id = old.id;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`ordertable_BEFORE_INSERT` BEFORE INSERT ON `ordertable` FOR EACH ROW
+BEGIN
+if(new.state is null)
+then
+	if(new.ORDERMETHOD = 'credit' || new.ORDERMETHOD = 'mobile')
+	then
+		set new.state = '결제완료';
+	else
+		set new.state = '입금전';
+	END if;
+END if;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`ordertable_BEFORE_UPDATE` BEFORE UPDATE ON `ordertable` FOR EACH ROW
+BEGIN
+if(old.state != '구매확정' and new.state = '구매확정')
+then
+	set new.reviewable = true;
+	insert into pointtable(id, point, content) values (old.id, old.totalPrice * 0.02, '구매 확정');
+end if;
+if(old.state != '교환완료' and new.state = '교환완료')
+then
+	set new.reviewable = true;
+end if;
+if(new.state in ('환불완료','취소완료'))
+then
+	set new.reviewable = false;
+end if;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+USE `springdb`$$
+CREATE PROCEDURE `orderChangeSchedule` ()
+BEGIN
+UPDATE ordertable set reviewable = false where state in ('구매확정', '교환완료') and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
+UPDATE ordertable set state = '구매확정', reviewable = true where state = '배송완료' and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
+UPDATE ordertable set state = '취소완료' where state = '입금전' and updateDate <= (SELECT DATE_ADD(NOW(), INTERVAL -1 WEEK));
+IF( DAYOFWEEK(curdate()) between 2 and 6)
+THEN
+	UPDATE ordertable set state = '배송준비중' where state = '결제완료';
+END IF;
+END$$
+DELIMITER ;
+
+create EVENT event_AutoScheduler
+ON schedule 
+EVERY 1 DAY starts '2022-03-06 15:00:00'
+COMMENT '매일 15:00 결제완료 -> 배송준비중(평일), 배송완료 -> 구매확정(7일 경과 시)으로 변경'
+DO Call orderChangeSchedule();
+
+DELIMITER $$
+USE `springdb`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `springdb`.`pointtable_BEFORE_INSERT` BEFORE INSERT ON `pointtable` FOR EACH ROW
+BEGIN
+if(new.content != '회원 가입 축하 포인트')
+Then
+update membertable
+	set point = point + New.point where id = New.id;
+End if;
+END$$
+DELIMITER ;
 
 DELIMITER $$
 USE `springdb`$$
@@ -279,12 +285,6 @@ insert into qnatable(QNANO, PRODUCTNO, type, originalNo, content, id, secret, im
 END$$
 DELIMITER ;
 
-CREATE TABLE bannertable (
-	IMAGE VARCHAR(100) PRIMARY KEY,
-	LINK VARCHAR(100) NOT NULL,
-	NUM INT
-);
-
 DELIMITER $$
 USE `springdb`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `bannerInsert`(imageTemp varchar(100), linkTemp varchar(100), numTemp int)
@@ -292,17 +292,14 @@ BEGIN
 DECLARE getMaxNum INT;
 if(numTemp is null)
 then
-
-SET getMaxNum = (SELECT max(num) FROM bannertable) + 1;
-insert into bannertable values(imageTemp, linkTemp, getMaxNum);
-
+	SET getMaxNum = (SELECT max(num) FROM bannertable) + 1;
+	insert into bannertable values(imageTemp, linkTemp, getMaxNum);
 else
-
-if((select image from bannertable where num = numTemp) is not null)
-then
-update bannertable set num = num+1 where num in (select * from (select num from bannertable where num >= numTemp) temp);
-end if;
-insert into bannertable values(imageTemp, linkTemp, numTemp);
+	if((select image from bannertable where num = numTemp) is not null)
+	then
+		update bannertable set num = num+1 where num in (select * from (select num from bannertable where num >= numTemp) temp);
+	end if;
+	insert into bannertable values(imageTemp, linkTemp, numTemp);
 
 end if;
 END$$
@@ -314,17 +311,15 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `bannerUpdate`(beforeImage varchar(1
 BEGIN
 DECLARE endTemp INT;
 set endTemp = (select num from bannertable where image = beforeImage);
-
-update bannertable set num = 0 where image = beforeImage;
-
-if((select image from bannertable where num = numTemp) is not null)
-then
-if(endTemp >= numTemp)
-then
-update bannertable set num = num+1 where num in (select * from (select num from bannertable where num >= numTemp and num <= endTemp) temp);
-else
-update bannertable set num = num-1 where num in (select * from (select num from bannertable where num >= endTemp and num <= numTemp) temp);
-end if;
+	update bannertable set num = 0 where image = beforeImage;
+	if((select image from bannertable where num = numTemp) is not null)
+	then
+	if(endTemp >= numTemp)
+	then
+		update bannertable set num = num+1 where num in (select * from (select num from bannertable where num >= numTemp and num <= endTemp) temp);
+	else
+		update bannertable set num = num-1 where num in (select * from (select num from bannertable where num >= endTemp and num <= numTemp) temp);
+	end if;
 end if;
 
 update bannertable set image = imageTemp, link = linkTemp, num = numTemp where num = 0;
@@ -340,7 +335,7 @@ set numTemp = (select num from bannertable where image = imageTemp);
 
 if((select image from bannertable where num = numTemp) is not null)
 then
-update bannertable set num = num-1 where num in (select * from (select num from bannertable where num >= numTemp) temp);
+	update bannertable set num = num-1 where num in (select * from (select num from bannertable where num >= numTemp) temp);
 end if;
 
 delete from bannertable where image = imageTemp;
@@ -351,7 +346,7 @@ DELIMITER ;
 -- 회원
 insert into membertable values('spring','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','Spring','0212345678','spring@gmail.com','12345','서울 강남구 테헤란로 212 (멀티캠퍼스)','2층 201호',false,null,'ROLE_ADMIN');
 insert into membertable values('shine','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','김진우','01098765432','shine@gmail.com','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호',false,null,'ROLE_USER');
-insert into membertable values('portal','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','정은지','01077777777','portal@gmail.com','02000','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
+insert into membertable values('portal','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','정은지','01076543210','portal@gmail.com','02000','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 insert into membertable values('aodremm','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','안동근','01011111111','aodremm@gmail.com','11111','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 insert into membertable values('grimhink','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','정호재','01022222222','grimhink@gmail.com','22222','부산 문현로 56-1 (네이버코리아)','4층 405호',true,null,'ROLE_USER');
 insert into membertable values('madana','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','서기준','01033333333','madana@gmail.com','33333','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
@@ -363,115 +358,199 @@ insert into membertable values('talwyn','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXM
 insert into membertable values('trice','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','성재용','01099999999','trice@gmail.com','99999','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 insert into membertable values('wantin','$2a$10$V63Xuxy9M9oOOMFwQ03L5uA2yaaFoOXMe54bJmBLul0JdeMR4lm/S','한명옥','01000000000','wantin@gmail.com','00000','부산 문현로 56-1 (네이버코리아)','4층 405호',false,null,'ROLE_USER');
 -- 상품
-insert into producttable(productname, type1, type2, imagename, price, color, size, amount, regDate, detailimagename, onSale) 
-values('스노우 버튼 모직스커트', 'skirt','mini','image3.jpg;lake-6641880__340.webp;lake-6701636__340.jpg;water-6706894__340.webp',38000,'그레이지;소프트민트','S;M;L', 100, '2022-01-01 09:00:00', 'photo-1433086966358-54859d0ed716.jfif;milky-way-2695569__340.jpg;photo-1447752875215-b2761acb3c5d.jfif;photo-1469474968028-56623f02e42e.jfif', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate, detailimagename, onSale)
-values('실키 여리핏 히든블라우스', 'top','blouse','photo-1465146344425-f00d5f5c8f07.jfif;photo-1426604966848-d7adac402bff.jfif',34900,5000,'아이보리;피치베이지;워터리블루;블랙',null, 100,'2022-01-02 10:00:00', 'photo-1475924156734-496f6cac6ec1.jfif;photo-1586348943529-beaae6c28db9.jfif', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('비프리 자켓', 'outer','jacket','tourist-attraction-7037967__340.jpg',92000,0,'아이보리;블랙',null, 100,'2022-01-03 13:24:51','tree-6792528__340.jpg', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('루린 코튼 핀턱 숏 팬츠', 'pants','shorts','field-7025238__340.webp',31000,0,'아이보리;크림;베이지;블랙','S;M;L', 100,'2022-01-04 13:24:51','storm-7018311__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('크롭 투웨이 후드 집업', 'outer','jumper','forest-7023487__340.jpg',32000,3200,'아이보리;오트밀;메란지;그레이;블랙',null, 100,'2022-01-05 13:24:51','bird-7016926__340.jpg', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('더윈도우 티', 'top','tshirts','feather-7009025__340.jpg',31000,0,'아이보리;베이지;네이비',null, 100,'2022-01-06 13:24:51','school-6982073__340.jpg', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('하우드 코튼 팬츠', 'pants','cotton','tree-6835828__340.jpg',41000,0,'아이보리','S;M;L', 100,'2022-01-07 13:24:51','roys-peak-7008528__340.jpg', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('포메른 싱글 트렌치 코트', 'outer','coat','landscape-7043420__340.jpg',115000,0,'크림;베이지;소라',null, 100,'2022-01-08 13:24:51','animal-7027635__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('슬리너 롱 스커트', 'skirt','midi-long','peace-7041597__340.webp',44000,0,'아이보리;블랙',null, 100,'2022-01-09 13:24:51','northern-lights-6862969__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('아델르 핀턱 퍼프 원피스', 'dress','ops','bird-6983434__340.webp',49000,0,'블랙','S;M;L', 100,'2022-01-10 13:24:51','tree-blossoms-7022041__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('코디스 골지 가디건', 'outer','cardigan','altai-6943982__340.jpg',17000,0,'아이보리;옐로우;소라;퍼플;메란지;블랙',null, 100,'2022-01-11 13:24:51','passiflora-7027917__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('데저트 크롭 맨투맨', 'top','mtm','travel-7014427__340.jpg',26000,2000,'블루',null, 100,'2022-01-12 13:24:51','chicago-6921297__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('라이트 롤업 점프수트', 'dress','jumpSuit','road-6881040__340.webp',75000,0,'아이보리;핑크;카키','숏;롱', 100,'2022-01-13 13:24:51','sunset-6911736__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('디셈버 핀턱 와이드 슬랙스', 'pants','slacks','monk-7010969__340.webp',37000,3700,'아이보리;핑크;챠콜;블랙','XS;S;M', 100,'2022-01-14 13:24:51','wine-6688901__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('카엘 스트라이프 셔츠', 'top','shirt','lantern-6826687__340.webp',43000,3400,'아이보리;베이지;네이비',null, 100,'2022-01-15 13:24:51','window-7001026__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('릴리브 골지 슬리브리스', 'top','sleeveless','nature-6842159__340.jpg',13000,0,'아이보리;베이지;핑크;카키;브라운;블랙',null, 100,'2022-01-16 13:24:51','year-6786741__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('비파인 꽈배기 브이 크롭 니트', 'top','knit','house-6967908__340.jpg',36000,2800,'베이지;소라;블랙',null, 100,'2022-01-17 13:24:51','sea-6948569__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('조이쉬 피그먼트 와이드 데님', 'pants','denim','port-6587129__340.webp',46000,0,'베이지;머스타드;레드;퍼플;그레이','S;M;L', 100,'2022-01-18 13:24:51','road-6935773__340.jpg', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('블렛 레더 스커트', 'skirt','mini','water-6706894__340.webp',31000,0,'아이보리;모카브라운;블랙','S;M', 100,'2022-01-19 13:24:51','photo-1433086966358-54859d0ed716.jfif', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('워린 카라 퍼프 블라우스', 'top','blouse','photo-1465146344425-f00d5f5c8f07.jfif',44000,0,'아이보리;크림;네이비',null, 100,'2022-01-20 13:24:51','photo-1475924156734-496f6cac6ec1.jfif', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('리턴드 자켓', 'outer','jacket','tourist-attraction-7037967__340.jpg',79000,0,'베이지;소라;카키;블랙',null, 100,'2022-01-21 13:24:51','tree-6792528__340.jpg', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('프리미엄 바이커 숏츠', 'pants','shorts','field-7025238__340.webp',22000,0,'블랙',null, 100,'2022-01-22 13:24:51','storm-7018311__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('카라 투웨이 집업', 'outer','jumper','forest-7023487__340.jpg',32000,0,'아이보리;오트밀;메란지;그레이;블랙',null, 100,'2022-01-23 13:24:51','bird-7016926__340.jpg', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('쉘리 유넥 티', 'top','tshirts','feather-7009025__340.jpg',15000,0,'아이보리;크림;메란지;네이비;블랙',null, 100,'2022-01-24 13:24:51','school-6982073__340.jpg', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('멀드 코튼 팬츠', 'pants','cotton','tree-6835828__340.jpg',43000,0,'아이보리;그린;블랙',null, 100,'2022-01-25 13:24:51','roys-peak-7008528__340.jpg', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('너트번 레더 롱 코트', 'outer','coat','landscape-7043420__340.jpg',129000,0,'베이지;블랙',null, 100,'2022-01-26 13:24:51','animal-7027635__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('라몬드 미디 스커트', 'skirt','midi-long','peace-7041597__340.webp',32000,0,'옐로우;네이비','S;M', 100,'2022-01-27 13:24:51','northern-lights-6862969__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('폴아웃 롱 원피스', 'dress','ops','bird-6983434__340.webp',66000,0,'크림;베이지',null, 100,'2022-01-28 13:24:51','tree-blossoms-7022041__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('노우즈 라운드 가디건', 'outer','cardigan','altai-6943982__340.jpg',48000,0,'크림;레드;블루;네이비',null, 100,'2022-01-29 13:24:51','passiflora-7027917__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('트리플캣 맨투맨', 'top','mtm','travel-7014427__340.jpg',27000,2100,'옐로우;메란지;챠콜',null, 100,'2022-01-30 13:24:51','chicago-6921297__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('튤립 점프수트', 'dress','jumpSuit','road-6881040__340.webp',59000,0,'베이지;네이비',null, 100,'2022-01-31 13:24:51','sunset-6911736__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('포드너 핀턱 하프 슬랙스', 'pants','slacks','monk-7010969__340.webp',46000,0,'베이지;네이비','S;M', 100,'2022-02-01 13:24:51','wine-6688901__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('로밍 카라 셔츠', 'top','shirt','lantern-6826687__340.webp',36000,2800,'아이보리;베이지;그린;소라',null, 100,'2022-02-02 13:24:51','window-7001026__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('페어링 크롭 슬리브리스', 'top','sleeveless','nature-6842159__340.jpg',16000,0,'아이보리;블랙',null, 100,'2022-02-03 13:24:51','year-6786741__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('로빌 울 백 스트랩 니트', 'top','knit','house-6967908__340.jpg',54000,4300,'베이지;카키;블랙',null, 100,'2022-02-04 13:24:51','sea-6948569__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('파코 데님', 'pants','denim','port-6587129__340.webp',31000,0,'연청;중청;진청','S;M;L', 100,'2022-02-05 13:24:51','road-6935773__340.jpg', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('오에스트 핀턱 미니 스커트', 'skirt','mini','water-6706894__340.webp',43000,3400,'베이지;차콜',null, 100,'2022-02-06 13:24:51','photo-1433086966358-54859d0ed716.jfif', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('비마인 레이스 블라우스', 'top','blouse','photo-1465146344425-f00d5f5c8f07.jfif',42000,0,'아이보리;퍼플',null, 100,'2022-02-07 13:24:51','photo-1475924156734-496f6cac6ec1.jfif', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('뉘앙스 카라 트위드 자켓', 'outer','jacket','tourist-attraction-7037967__340.jpg',125000,0,'아이보리;블랙',null, 100,'2022-02-08 13:24:51','tree-6792528__340.jpg', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('에이라인 데님 숏츠', 'pants','shorts','field-7025238__340.webp',29000,0,'중청','XS;S;M;L', 100,'2022-02-09 13:24:51','storm-7018311__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('루니드 야상 점퍼', 'outer','jumper','forest-7023487__340.jpg',66000,0,'베이지',null, 100,'2022-02-10 13:24:51','bird-7016926__340.jpg', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('티유 퍼프 티', 'top','tshirts','feather-7009025__340.jpg',19000,0,'아이보리;핑크;블랙',null, 100,'2022-02-11 13:24:51','school-6982073__340.jpg', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('크롬 코튼 와이드 팬츠', 'pants','cotton','tree-6835828__340.jpg',28000,0,'아이보리','S;M;L', 100,'2022-02-12 13:24:51','roys-peak-7008528__340.jpg', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('데아르 울 더블 롱 코트', 'outer','coat','landscape-7043420__340.jpg',184000,0,'카멜;네이비',null, 100,'2022-02-13 13:24:51','animal-7027635__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('더블 벨트 롱 플레어 스커트', 'skirt','midi-long','peace-7041597__340.webp',46000,0,'크림',null, 100,'2022-02-14 13:24:51','northern-lights-6862969__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('그룸 슬립 롱 원피스', 'dress','ops','bird-6983434__340.webp',42000,0,'옐로우;핑크;블루;블랙',null, 100,'2022-02-15 13:24:51','tree-blossoms-7022041__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('밀키 골지 브이 가디건', 'outer','cardigan','altai-6943982__340.jpg',25000,0,'베이지;옐로우;핑크;소라;퍼플',null, 100,'2022-02-16 13:24:51','passiflora-7027917__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('위아드 카라 롱 맨투맨', 'top','mtm','travel-7014427__340.jpg',49000,0,'아이보리;핑크;블랙',null, 100,'2022-02-17 13:24:51','chicago-6921297__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('블톤 데님 점프수트', 'dress','jumpSuit','road-6881040__340.webp',46000,0,'진청',null, 100,'2022-02-18 13:24:51','sunset-6911736__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('엔츠 슬림핏 슬랙스', 'pants','slacks','monk-7010969__340.webp',33000,3300,null,'숏;롱', 100,'2022-02-19 13:24:51','wine-6688901__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('로말 셔츠', 'top','shirt','lantern-6826687__340.webp',29000,0,'아이보리;베이지;피치;소라;퍼플',null, 100,'2022-02-20 13:24:51','window-7001026__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('팬트리 터틀 슬리브리스', 'top','sleeveless','nature-6842159__340.jpg',16000,0,'아이보리;베이지',null, 100,'2022-02-21 13:24:51','year-6786741__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('뮤지엄 캐시미어 하프 니트', 'top','knit','house-6967908__340.jpg',39000,0,'크림;머스타드;레드;블루;메란지',null, 100,'2022-02-22 13:24:51','sea-6948569__340.webp', true);
-insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
-values('테이스트 부츠컷 데님', 'pants','denim','port-6587129__340.webp',39000,0,'연청;진청','XS;S;M;L', 100,'2022-02-23 13:24:51','road-6935773__340.jpg', true);
 
+-- skirt
+insert into producttable(productname, type1, type2, imagename, price, color, size, amount, regDate, detailimagename, onSale) 
+values('스노우 버튼 모직스커트', 'skirt','mini','skirt1.jpg',38000,'그레이지;소프트민트','S;M;L', 100, '2022-01-01 09:00:00', 'skirt1.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('블렛 레더 스커트', 'skirt','mini','skirt2.jpg',31000,0,'아이보리;모카브라운;블랙','S;M', 100,'2022-01-19 13:24:51','skirt2.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('오에스트 핀턱 미니 스커트', 'skirt','mini','skirt3.jpg',43000,3400,'베이지;차콜',null, 100,'2022-02-06 13:24:51','skirt3.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, color, size, amount, regDate, detailimagename, onSale) 
+values('스노우 버튼 모직스커트', 'skirt','mini','skirt4.jpg',38000,'그레이지;소프트민트','S;M;L', 100, '2022-01-01 09:00:00', 'skirt4.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('블렛 레더 스커트', 'skirt','mini','skirt5.jpg',31000,0,'아이보리;모카브라운;블랙','S;M', 100,'2022-01-19 13:24:51','skirt5.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('오에스트 핀턱 미니 스커트', 'skirt','mini','skirt6.jpg',43000,3400,'베이지;차콜',null, 100,'2022-02-06 13:24:51','skirt6.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('오에스트 핀턱 미니 스커트', 'skirt','mini','skirt7.jpg',43000,3400,'베이지;차콜',null, 100,'2022-02-06 13:24:51','skirt7.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('오에스트 핀턱 미니 스커트', 'skirt','mini','skirt8.jpg',43000,3400,'베이지;차콜',null, 100,'2022-02-06 13:24:51','skirt8.jpg', true);
+
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('더블 벨트 롱 플레어 스커트', 'skirt','midi-long','skirt9.jpg',46000,0,'크림',null, 100,'2022-02-14 13:24:51','skirt9.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('슬리너 롱 스커트', 'skirt','midi-long','skirt10.jpg',44000,0,'아이보리;블랙',null, 100,'2022-01-09 13:24:51','skirt10.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('라몬드 미디 스커트', 'skirt','midi-long','skirt11.jpg',32000,0,'옐로우;네이비','S;M', 100,'2022-01-27 13:24:51','skirt11.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('더블 벨트 롱 플레어 스커트', 'skirt','midi-long','skirt12.jpg',46000,0,'크림',null, 100,'2022-02-14 13:24:51','skirt12.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('슬리너 롱 스커트', 'skirt','midi-long','skirt13.jpg',44000,0,'아이보리;블랙',null, 100,'2022-01-09 13:24:51','skirt13', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('라몬드 미디 스커트', 'skirt','midi-long','skirt14.jpg',32000,0,'옐로우;네이비','S;M', 100,'2022-01-27 13:24:51','skirt14.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('라몬드 미디 스커트', 'skirt','midi-long','skirt15.jpg',32000,0,'옐로우;네이비','S;M', 100,'2022-01-27 13:24:51','skirt15.jpg', true);
+
+-- dress
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('아델르 핀턱 퍼프 원피스', 'dress','ops','dress1.jpg',49000,0,'블랙','S;M;L', 100,'2022-01-10 13:24:51','dress1.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('라이트 롤업 점프수트', 'dress','jumpSuit','dress2.jpg',75000,0,'아이보리;핑크;카키','숏;롱', 100,'2022-01-13 13:24:51','dress2.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('폴아웃 롱 원피스', 'dress','ops','dress3.jpg',66000,0,'크림;베이지',null, 100,'2022-01-28 13:24:51','dress3.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('튤립 점프수트', 'dress','jumpSuit','dress4.jpg',59000,0,'베이지;네이비',null, 100,'2022-01-31 13:24:51','dress4.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('그룸 슬립 롱 원피스', 'dress','ops','dress5.jpg',42000,0,'옐로우;핑크;블루;블랙',null, 100,'2022-02-15 13:24:51','dress5.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('블톤 데님 점프수트', 'dress','jumpSuit','dress6.jpg',46000,0,'진청',null, 100,'2022-02-18 13:24:51','dress6.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('아델르 핀턱 퍼프 원피스', 'dress','ops','dress7.jpg',49000,0,'블랙','S;M;L', 100,'2022-01-10 13:24:51','dress7.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('라이트 롤업 점프수트', 'dress','jumpSuit','dress8.jpg',75000,0,'아이보리;핑크;카키','숏;롱', 100,'2022-01-13 13:24:51','dress8.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('폴아웃 롱 원피스', 'dress','ops','dress9.jpg',66000,0,'크림;베이지',null, 100,'2022-01-28 13:24:51','dress9.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('튤립 점프수트', 'dress','jumpSuit','dress10.jpg',59000,0,'베이지;네이비',null, 100,'2022-01-31 13:24:51','dress10.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('그룸 슬립 롱 원피스', 'dress','ops','dress11.jpg',42000,0,'옐로우;핑크;블루;블랙',null, 100,'2022-02-15 13:24:51','dress11.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('블톤 데님 점프수트', 'dress','jumpSuit','dress12.jpg',46000,0,'진청',null, 100,'2022-02-18 13:24:51', 'dress12.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('튤립 점프수트', 'dress','jumpSuit','dress13.jpg',59000,0,'베이지;네이비',null, 100,'2022-01-31 13:24:51','dress13.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('그룸 슬립 롱 원피스', 'dress','ops','dress14.jpg',42000,0,'옐로우;핑크;블루;블랙',null, 100,'2022-02-15 13:24:51','dress14.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('블톤 데님 점프수트', 'dress','jumpSuit','dress15.jpg',46000,0,'진청',null, 100,'2022-02-18 13:24:51','dress15.jpg', true);
+
+-- top
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate, detailimagename, onSale)
+values('실키 여리핏 히든블라우스', 'top','blouse','blouse1.PNG',34900,5000,'아이보리;피치베이지;워터리블루;블랙',null, 100,'2022-01-02 10:00:00', 'blouse1.PNG', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('데저트 크롭 맨투맨', 'top','mtm','blouse2.PNG',26000,2000,'블루',null, 100,'2022-01-12 13:24:51','blouse2.PNG', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('카엘 스트라이프 셔츠', 'top','shirt','blouse3.PNG',43000,3400,'아이보리;베이지;네이비',null, 100,'2022-01-15 13:24:51','blouse3.PNG', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('릴리브 골지 슬리브리스', 'top','sleeveless','blouse4.PNG',13000,0,'아이보리;베이지;핑크;카키;브라운;블랙',null, 100,'2022-01-16 13:24:51','blouse4.PNG', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('비파인 꽈배기 브이 크롭 니트', 'top','knit','blouse5.PNG',36000,2800,'베이지;소라;블랙',null, 100,'2022-01-17 13:24:51','blouse5.PNG', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('워린 카라 퍼프 블라우스', 'top','blouse','blouse6.jpg',44000,0,'아이보리;크림;네이비',null, 100,'2022-01-20 13:24:51','blouse6.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('쉘리 유넥 티', 'top','tshirts','blouse7.jpg',15000,0,'아이보리;크림;메란지;네이비;블랙',null, 100,'2022-01-24 13:24:51','blouse7.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('로밍 카라 셔츠', 'top','shirt','blouse8.jpg',36000,2800,'아이보리;베이지;그린;소라',null, 100,'2022-02-02 13:24:51','blouse8.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('트리플캣 맨투맨', 'top','mtm','blouse9.jpg',27000,2100,'옐로우;메란지;챠콜',null, 100,'2022-01-30 13:24:51','blouse9.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('페어링 크롭 슬리브리스', 'top','sleeveless','blouse10.jpg',16000,0,'아이보리;블랙',null, 100,'2022-02-03 13:24:51','blouse10.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('로빌 울 백 스트랩 니트', 'top','knit','blouse11.jpg',54000,4300,'베이지;카키;블랙',null, 100,'2022-02-04 13:24:51','blouse11.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('비마인 레이스 블라우스', 'top','blouse','blouse12.jpg',42000,0,'아이보리;퍼플',null, 100,'2022-02-07 13:24:51','blouse12.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('티유 퍼프 티', 'top','tshirts','blouse13.jpg',19000,0,'아이보리;핑크;블랙',null, 100,'2022-02-11 13:24:51','blouse13.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('위아드 카라 롱 맨투맨', 'top','mtm','blouse14.jpg',49000,0,'아이보리;핑크;블랙',null, 100,'2022-02-17 13:24:51','blouse14.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('팬트리 터틀 슬리브리스', 'top','sleeveless','blouse15.jpg',16000,0,'아이보리;베이지',null, 100,'2022-02-21 13:24:51','blouse15.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('뮤지엄 캐시미어 하프 니트', 'top','knit','blouse16.jpg',39000,0,'크림;머스타드;레드;블루;메란지',null, 100,'2022-02-22 13:24:51','blouse16.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('더윈도우 티', 'top','tshirts','blouse17.jpg',31000,0,'아이보리;베이지;네이비',null, 100,'2022-01-06 13:24:51','blouse17.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('로말 셔츠', 'top','shirt','blouse18.jpg',29000,0,'아이보리;베이지;피치;소라;퍼플',null, 100,'2022-02-20 13:24:51','blouse18.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('로말 셔츠', 'top','shirt','blouse19.jpg',29000,0,'아이보리;베이지;피치;소라;퍼플',null, 100,'2022-02-20 13:24:51','blouse19.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('로말 셔츠', 'top','shirt','blouse20.jpg',29000,0,'아이보리;베이지;피치;소라;퍼플',null, 100,'2022-02-20 13:24:51','blouse20.jpg', true);
+
+-- pants
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('포드너 핀턱 하프 슬랙스', 'pants','slacks','pants1.jpg',46000,0,'베이지;네이비','S;M', 100,'2022-02-01 13:24:51','pants1.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('루린 코튼 핀턱 숏 팬츠', 'pants','shorts','pants2.jpg',31000,0,'아이보리;크림;베이지;블랙','S;M;L', 100,'2022-01-04 13:24:51','pants2.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('하우드 코튼 팬츠', 'pants','cotton','pants3.jpg',41000,0,'아이보리','S;M;L', 100,'2022-01-07 13:24:51','pants3.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('디셈버 핀턱 와이드 슬랙스', 'pants','slacks','pants4.jpg',37000,3700,'아이보리;핑크;챠콜;블랙','XS;S;M', 100,'2022-01-14 13:24:51','pants4.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('조이쉬 피그먼트 와이드 슬랙스', 'pants','slacks','pants5.jpg',46000,0,'베이지;머스타드;레드;퍼플;그레이','S;M;L', 100,'2022-01-18 13:24:51','pants5.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('프리미엄 바이커 숏츠', 'pants','shorts','pants6.jpg',22000,0,'블랙',null, 100,'2022-01-22 13:24:51','pants6.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('멀드 코튼 팬츠', 'pants','cotton','pants7.jpg',43000,0,'아이보리;그린;블랙',null, 100,'2022-01-25 13:24:51','pants7.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('파코 팬츠', 'pants','cotton','pants8.jpg',31000,0,'연청;중청;진청','S;M;L', 100,'2022-02-05 13:24:51','pants8.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('에이라인 숏츠', 'pants','shorts','pants9.jpg',29000,0,'중청','XS;S;M;L', 100,'2022-02-09 13:24:51','pants9.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('크롬 코튼 와이드 팬츠', 'pants','cotton','pants10.jpg',28000,0,'아이보리','S;M;L', 100,'2022-02-12 13:24:51','pants10.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('엔츠 슬림핏 슬랙스', 'pants','slacks','pants11.jpg',33000,3300,null,'숏;롱', 100,'2022-02-19 13:24:51','pants11.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('테이스트 부츠컷 슬랙스', 'pants','slacks','pants12.jpg',39000,0,'연청;진청','XS;S;M;L', 100,'2022-02-23 13:24:51','pants12.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('하우드 코튼 팬츠', 'pants','cotton','pants13.jpg',41000,0,'아이보리','S;M;L', 100,'2022-01-07 13:24:51','pants13.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('디셈버 핀턱 와이드 슬랙스', 'pants','slacks','pants14.jpg',37000,3700,'아이보리;핑크;챠콜;블랙','XS;S;M', 100,'2022-01-14 13:24:51','pants14.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('조이쉬 피그먼트 와이드 슬랙스', 'pants','slacks','pants15.jpg',46000,0,'베이지;머스타드;레드;퍼플;그레이','S;M;L', 100,'2022-01-18 13:24:51','pants15.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('프리미엄 바이커 숏츠', 'pants','shorts','pants16.jpg',22000,0,'블랙',null, 100,'2022-01-22 13:24:51','pants16.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('멀드 코튼 팬츠', 'pants','cotton','pants17.jpg',43000,0,'아이보리;그린;블랙',null, 100,'2022-01-25 13:24:51','pants17.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('파코 팬츠', 'pants','cotton','pants18.jpg',31000,0,'연청;중청;진청','S;M;L', 100,'2022-02-05 13:24:51','pants18.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('에이라인 숏츠', 'pants','shorts','pants19.jpg',29000,0,'중청','XS;S;M;L', 100,'2022-02-09 13:24:51','pants19.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('크롬 코튼 와이드 팬츠', 'pants','cotton','pants20.jpg',28000,0,'아이보리','S;M;L', 100,'2022-02-12 13:24:51','pants20.jpg', true);
+
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('프리미엄 바이커 데님', 'pants','denim','denim_jean1.jpg',22000,0,'블랙',null, 100,'2022-01-22 13:24:51','denim_jean1.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('멀드 데님 팬츠', 'pants','denim','denim_jean2.jpg',43000,0,'아이보리;그린;블랙',null, 100,'2022-01-25 13:24:51','denim_jean2.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('파코 데님', 'pants','denim','denim_jean3.jpg',31000,0,'연청;중청;진청','S;M;L', 100,'2022-02-05 13:24:51','denim_jean3.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('에이라인 데님 숏츠', 'pants','denim','denim_jean4.jpg',29000,0,'중청','XS;S;M;L', 100,'2022-02-09 13:24:51','denim_jean4.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('크롬 코튼 와이드 데님', 'pants','denim','denim_jean5.jpg',28000,0,'아이보리','S;M;L', 100,'2022-02-12 13:24:51','denim_jean5.jpg', true);
+
+
+-- outer
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('비프리 자켓', 'outer','jacket','outer1.jpg',92000,0,'아이보리;블랙',null, 100,'2022-01-03 13:24:51','outer1.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('크롭 투웨이 후드 집업', 'outer','jumper','outer2.jpg',32000,3200,'아이보리;오트밀;메란지;그레이;블랙',null, 100,'2022-01-05 13:24:51','outer2.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('포메른 싱글 트렌치 코트', 'outer','coat','outer3.jpg',115000,0,'크림;베이지;소라',null, 100,'2022-01-08 13:24:51','outer3.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('코디스 골지 가디건', 'outer','cardigan','outer4.jpg',17000,0,'아이보리;옐로우;소라;퍼플;메란지;블랙',null, 100,'2022-01-11 13:24:51','outer4.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('리턴드 자켓', 'outer','jacket','outer5.jpg',79000,0,'베이지;소라;카키;블랙',null, 100,'2022-01-21 13:24:51','outer5.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('카라 투웨이 집업', 'outer','jumper','outer6.jpg',32000,0,'아이보리;오트밀;메란지;그레이;블랙',null, 100,'2022-01-23 13:24:51','outer6.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('너트번 레더 롱 코트', 'outer','coat','outer7.jpg',129000,0,'베이지;블랙',null, 100,'2022-01-26 13:24:51','outer7.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('노우즈 라운드 가디건', 'outer','cardigan','outer8.jpg',48000,0,'크림;레드;블루;네이비',null, 100,'2022-01-29 13:24:51','outer8.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('뉘앙스 카라 트위드 자켓', 'outer','jacket','outer9.jpg',125000,0,'아이보리;블랙',null, 100,'2022-02-08 13:24:51','outer9.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('루니드 야상 점퍼', 'outer','jumper','outer10.jpg',66000,0,'베이지',null, 100,'2022-02-10 13:24:51','outer10.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('데아르 울 더블 롱 코트', 'outer','coat','outer11.jpg',184000,0,'카멜;네이비',null, 100,'2022-02-13 13:24:51','outer11.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('밀키 골지 브이 가디건', 'outer','cardigan','outer12.jpg',25000,0,'베이지;옐로우;핑크;소라;퍼플',null, 100,'2022-02-16 13:24:51','outer12.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('비프리 자켓', 'outer','jacket','outer13.jpg',92000,0,'아이보리;블랙',null, 100,'2022-01-03 13:24:51','outer13.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('크롭 투웨이 후드 집업', 'outer','jumper','outer14.jpg',32000,3200,'아이보리;오트밀;메란지;그레이;블랙',null, 100,'2022-01-05 13:24:51','outer14.jpg', true);
+insert into producttable(productname, type1, type2, imagename, price, discount, color, size, amount, regDate,  detailimagename, onSale)
+values('포메른 싱글 트렌치 코트', 'outer','coat','outer15.jpg',115000,0,'크림;베이지;소라',null, 100,'2022-01-08 13:24:51','outer15.jpg', true);
 -- 장바구니
 insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('portal',1,'소프트민트','S',2);
 insert into baskettable(id, productno, selectedcolor, selectedsize, basketAmount) values('shine',2,'아이보리',null,1);
@@ -515,23 +594,23 @@ values('shine',7,6,'아이보리','S',1,41000,'2021-12-22 13:24:51','2021-12-26 
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
 values('portal',8,6,'소라',null,1,115000,'2022-02-14 13:24:51','2022-02-14 14:04:51','취소완료','credit','정은지','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',5,6,'오트밀',null,2,87600,'2022-03-05 13:24:51','2022-03-09 05:24:51','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',5,6,'오트밀',null,2,87600,'2022-03-16 13:24:51','2022-03-19 05:24:51','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr, reviewable)
-values('shine',5,6,'오트밀',null,2,87600,'2022-03-05 13:24:51','2022-03-09 13:24:51','교환완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호', true);
+values('shine',5,6,'오트밀',null,2,87600,'2022-03-17 13:24:51','2022-03-20 13:24:51','교환완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호', true);
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr, reviewable)
-values('shine',1,7,'소프트민트','L',1,38000,'2022-03-10 15:24:51','2022-03-13 15:24:51','구매확정','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호', true);
+values('shine',1,7,'소프트민트','L',1,38000,'2022-03-16 15:24:51','2022-03-21 15:24:51','구매확정','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호', true);
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',3,8,'아이보리',null,1,92000,'2022-03-11 20:24:51','2022-03-14 20:24:51','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',3,8,'아이보리',null,1,92000,'2022-03-17 20:24:51','2022-03-22 20:24:51','배송완료','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',4,9,'크림','M',1,31000,'2022-03-11 00:56:31','2022-03-14 00:56:31','배송중','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',4,9,'크림','M',1,31000,'2022-03-18 00:56:31','2022-03-22 00:56:31','배송중','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',15,9,'네이비',null,1,39600,'2022-03-12 01:56:31','2022-03-15 01:56:31','배송준비중','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
+values('shine',15,9,'네이비',null,1,39600,'2022-03-19 01:56:31','2022-03-22 01:56:31','배송준비중','credit','김진우','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, state, ordermethod, name, tel, zipcode, address, detailaddr)
-values('portal',10,10,'블랙','M',1,49000,'2022-03-13 13:24:51','2022-03-15 13:24:21','배송중','credit','정은지','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('portal',10,10,'블랙','M',1,49000,'2022-03-21 13:24:51','2022-03-21 13:24:21','배송중','credit','정은지','01045614561','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',20,10,'아이보리',null,1,44000,'2022-03-15 12:24:51','2022-03-15 17:24:51','cash','김진우','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('shine',20,10,'아이보리',null,1,44000,'2022-03-22 12:24:51','2022-03-22 17:24:51','cash','김진우','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, orderDate, updateDate, ordermethod, name, tel, zipcode, address, detailaddr)
-values('shine',20,10,'아이보리',null,1,44000,'2022-03-15 12:24:51','2022-03-15 17:24:51','credit','김진우','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
+values('shine',20,10,'아이보리',null,1,44000,'2022-03-22 12:24:51','2022-03-22 17:24:51','credit','김진우','01098765432','54321','부산 남구 문현로 56-1 (네이버코리아)','5층 502호');
 insert into ordertable(id, productno, orderno, selectedcolor, selectedsize, orderAmount, totalprice, ordermethod, name, tel, zipcode, address, detailaddr)
 values('portal',11,11,'퍼플',null,1,17000,'credit','정은지','01045614561','24241','부산 문현로 56-1 (네이버코리아)','4층 405호');
 -- 포인트 내역

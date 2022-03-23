@@ -53,10 +53,6 @@ public interface OrderMapper {
 	int getOrderByIdCount(String pageInfo, String state, String searchWord, String searchDate1, String searchDate2,
 			String id);
 
-//	리뷰 가능 주문 개수 조회
-	@Select("select count(*) from ordertable where id = #{id} and productNo = #{productNo} and reviewable = true")
-	int getOrderToReview(@Param("id") String id, @Param("productNo") int productNo);
-
 //	마이 페이지 메인 각각 주문 개수 조회
 	@Select("select state, count(*) as orderNo from ordertable where id = #{id} group by state")
 	List<OrderVO> getOrdersByIdGroupByState(@Param("id") String id);
@@ -68,4 +64,16 @@ public interface OrderMapper {
 //  주문 상태 변경
 	@Update("update ordertable set state = #{state} where orderIdx = #{orderIdx}")
 	int updateOrder(@Param("orderIdx") long orderIdx, @Param("state") String state);
+
+//	리뷰 가능 주문 개수 조회
+	@Select("select * from ordertable where id = #{id} and productNo = #{productNo} and reviewable = true limit 1")
+	OrderVO getOrderToReview(@Param("id") String id, @Param("productNo") int productNo);
+	
+//  리뷰 가능여부 변경
+	@Update("update ordertable set reviewable = false where orderIdx = #{orderIdx}")
+	int updateReviewable(@Param("orderIdx") long orderIdx);
+
+//	회원 탈퇴 후 주문 변경
+	@Update("update ordertable set id = CONCAT(#{now}, #{id}) where id = #{id}")
+	int updateOrderAfterDeleteMember(@Param("id") String id, @Param("now") String now);
 }

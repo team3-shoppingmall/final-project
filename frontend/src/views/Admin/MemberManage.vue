@@ -23,7 +23,7 @@
         <v-col cols="2" align-self="center">
             <v-row justify="end">
                 <v-col cols="auto">
-                    <v-btn class="primary " @click="dialog3 = true" v-if="getLogin.user.id != 'spring'">관리자 추가</v-btn>
+                    <v-btn class="primary " @click="dialog3 = true" v-if="getLogin.user.id == 'spring'">관리자 추가</v-btn>
                 </v-col>
             </v-row>
         </v-col>

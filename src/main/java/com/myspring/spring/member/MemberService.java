@@ -39,7 +39,7 @@ public class MemberService {
 		String secPwd = encoder.encode(member.getPassword());
 		member.setPassword(secPwd);
 		int res = 0;
-		if (member.getAuthority().equals("ROLE_MANAGER")) {
+		if (member.getAuthority().equals("ROLE_ADMIN")) {
 			res = memberMapper.insertManager(member);
 		} else {
 			res = memberMapper.insertMember(member);

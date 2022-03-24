@@ -23,7 +23,7 @@
         <v-col cols="2" align-self="center">
             <v-row justify="end">
                 <v-col cols="auto">
-                    <v-btn class="primary " @click="dialog3 = true">관리자 추가</v-btn>
+                    <v-btn class="primary " @click="dialog3 = true" v-if="getLogin.user.id != 'spring'">관리자 추가</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -69,43 +69,43 @@
                     <tr>
                         <td class="text-h6">이름</td>
                         <td>
-                            <v-text-field v-model="editItem.name" hide-details></v-text-field>
+                            <v-text-field v-model="editItem.name" hide-details :readonly="editItem.id == 'spring' && getLogin.user.id != 'spring'"></v-text-field>
                         </td>
                     </tr>
                     <tr>
                         <td class="text-h6">전화번호</td>
                         <td>
-                            <v-text-field v-model="editItem.tel" hide-details></v-text-field>
+                            <v-text-field v-model="editItem.tel" hide-details :readonly="editItem.id == 'spring' && getLogin.user.id != 'spring'"></v-text-field>
                         </td>
                     </tr>
                     <tr>
                         <td class="text-h6">이메일</td>
                         <td>
-                            <v-text-field v-model="editItem.email" hide-details></v-text-field>
+                            <v-text-field v-model="editItem.email" hide-details :readonly="editItem.id == 'spring' && getLogin.user.id != 'spring'"></v-text-field>
                         </td>
                     </tr>
                     <tr>
                         <td class="text-h6">우편번호</td>
                         <td>
-                            <v-text-field v-model="editItem.zipcode" hide-details></v-text-field>
+                            <v-text-field v-model="editItem.zipcode" hide-details :readonly="editItem.id == 'spring' && getLogin.user.id != 'spring'"></v-text-field>
                         </td>
                     </tr>
                     <tr>
                         <td class="text-h6">주소1</td>
                         <td>
-                            <v-text-field v-model="editItem.addr1" hide-details></v-text-field>
+                            <v-text-field v-model="editItem.addr1" hide-details :readonly="editItem.id == 'spring' && getLogin.user.id != 'spring'"></v-text-field>
                         </td>
                     </tr>
                     <tr>
                         <td class="text-h6">주소2</td>
                         <td>
-                            <v-text-field v-model="editItem.addr2" hide-details></v-text-field>
+                            <v-text-field v-model="editItem.addr2" hide-details :readonly="editItem.id == 'spring' && getLogin.user.id != 'spring'"></v-text-field>
                         </td>
                     </tr>
                     <tr>
                         <td class="text-h6">포인트</td>
                         <td>
-                            <v-text-field v-model="editItem.point" hide-details :readonly="getLogin.user.authority != 'ROLE_ADMIN'"></v-text-field>
+                            <v-text-field v-model="editItem.point" hide-details :readonly="getLogin.user.id != 'spring'" @change="pointCheck"></v-text-field>
                         </td>
                     </tr>
                     <tr>
@@ -293,6 +293,7 @@ export default {
                 addr1: temp.addr1,
                 addr2: temp.addr2,
                 point: temp.point,
+                pointTemp: temp.point,
                 authority: temp.authority
             }
         },
@@ -380,6 +381,15 @@ export default {
                         this.check = false;
 
                     })
+            }
+        },
+        pointCheck() {
+            if (!(this.editItem.point >= 0 && (this.editItem.point == Math.round(this.editItem.point)) && this.editItem.point != '')) {
+                this.alertDialog = true;
+                this.alertType = 'warning';
+                this.alertMessage = '포인트가 유효하지 않습니다';
+                this.editItem.point = this.editItem.pointTemp;
+                return;
             }
         },
         managerReset() {

@@ -426,8 +426,7 @@ export default {
         else
             this.setPath('/')
 
-        // const naver_id_login = new window.naver_id_login("INmTkpuK5mPhbhHfYG_Q", "http://localhost:9000/authentication/signIn/naver");
-        const naver_id_login = new window.naver_id_login("INmTkpuK5mPhbhHfYG_Q", "http://localhost:8085/authentication/signIn/naver");
+        const naver_id_login = new window.naver_id_login("INmTkpuK5mPhbhHfYG_Q", "http://118.67.128.121:8085/authentication/signIn/naver");
         let link = document.location.href;
         if (link.indexOf('access_token') != -1) {
             this.naverLogin(naver_id_login.getAccessToken());

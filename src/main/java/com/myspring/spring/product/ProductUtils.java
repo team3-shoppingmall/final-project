@@ -290,6 +290,8 @@ public class ProductUtils {
 						WHERE("UPPER(type2) = UPPER('" + type2 + "')");
 					}
 				}
+				AND();
+				WHERE("o.orderAmount > 0");
 				GROUP_BY("o.productno");
 				ORDER_BY("sum(o.orderAmount) desc");
 				LIMIT(4);

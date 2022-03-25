@@ -161,7 +161,7 @@ export default {
                 axios.post('/api/member/insert', member)
                     .then(() => {
                         this.alertDialog = true;
-                        this.alertType = 'warning';
+                        this.alertType = 'success';
                         this.alertMessage = '가입 완료';
                         this.alertPath = `/`;
                     }).catch(() => {

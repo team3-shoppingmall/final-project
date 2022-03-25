@@ -69,7 +69,8 @@
                     </v-btn>
                 </template>
                 <template v-slot:[`item.stateChange`]="{index}">
-                    <v-select :items="states" v-model="stateChanges[index]" item-key="value" hide-details="hide-details" v-if="orders[index].state != '구매확정' && orders[index].state != '교환완료' && orders[index].state != '환불완료' && orders[index].state != '취소완료'"></v-select>
+                    <v-select :items="states" v-model="stateChanges[index]" item-key="value" hide-details="hide-details" v-if="getLogin.user.id != 'spring' && orders[index].state != '구매확정' && orders[index].state != '교환완료' && orders[index].state != '환불완료' && orders[index].state != '취소완료'"></v-select>
+                    <v-select :items="statesSpring" v-model="stateChanges[index]" item-key="value" hide-details="hide-details" v-if="getLogin.user.id == 'spring'"></v-select>
                 </template>
                 <template v-slot:[`header.stateChange`]=" {}">
                     <v-row class="ma-0" justify="center">
@@ -151,6 +152,10 @@
 <script>
 import axios from 'axios'
 import DateDisplay from '@/components/DateDisplay.vue'
+import {
+    createNamespacedHelpers
+} from 'vuex'
+const LoginStore = createNamespacedHelpers('LoginStore')
 export default {
     components: {
         DateDisplay,
@@ -268,6 +273,41 @@ export default {
             }, {
                 text: '배송완료',
                 value: '배송완료',
+            }, {
+                text: '취소완료',
+                value: '취소완료',
+            }, {
+                text: '교환완료',
+                value: '교환완료',
+            }, {
+                text: '환불완료',
+                value: '환불완료',
+            }, ],
+
+            
+            statesSpring: [{
+                text: '기준 선택',
+                value: null,
+                disabled: true,
+            }, {
+                text: '입금전',
+                value: '입금전',
+                disabled: true,
+            }, {
+                text: '결제완료',
+                value: '결제완료',
+            }, {
+                text: '배송준비중',
+                value: '배송준비중',
+            }, {
+                text: '배송중',
+                value: '배송중',
+            }, {
+                text: '배송완료',
+                value: '배송완료',
+            }, {
+                text: '구매확정',
+                value: '구매확정',
             }, {
                 text: '취소완료',
                 value: '취소완료',
@@ -396,6 +436,9 @@ export default {
                 })
 
         },
+    },
+    computed: {
+        ...LoginStore.mapGetters(['getLogin']),
     },
     watch: { //변수 값이 변경될 때 연산을 처리하거나 변수 값에 따라 화면을 제어할 때 사용
         options: {

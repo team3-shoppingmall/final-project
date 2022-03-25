@@ -233,6 +233,10 @@ if(new.state in ('환불완료','취소완료'))
 then
 	set new.reviewable = false;
 end if;
+if(old.state = '구매확정' and new.state = '환불완료')
+then
+	insert into pointtable(id, point, content) values (old.id, -old.totalPrice * 0.02, '환불 완료');
+end if;
 END$$
 DELIMITER ;
 

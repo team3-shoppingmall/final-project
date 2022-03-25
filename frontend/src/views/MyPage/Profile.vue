@@ -212,7 +212,6 @@ export default {
                     this.alertDialog = true;
                     this.alertType = 'warning';
                     this.alertMessage = '비밀번호가 일치하지 않습니다';
-
                 })
                 .finally(this.$refs.password.reset())
         },

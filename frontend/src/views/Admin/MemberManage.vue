@@ -305,7 +305,7 @@ export default {
                 })
         },
         deleteMember() {
-            axios.delete(`/api/member/delete/${this.id}`)
+            axios.delete(`/api/member/delete/${this.editItem.id}`)
                 .then(() => {
                     this.alertDialog = true;
                     this.alertType = 'success';
@@ -318,7 +318,7 @@ export default {
                 .catch(() => {
                     this.alertDialog = true;
                     this.alertType = 'warning';
-                    this.alertMessage = '배송중인 상품이 있어 탈퇴에 실패했습니다';
+                    this.alertMessage = '완료되지 않은 주문이 있어 탈퇴에 실패했습니다';
                 })
         },
         reset() {

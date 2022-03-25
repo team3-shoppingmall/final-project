@@ -96,8 +96,9 @@ export default {
         insertBanner() {
             if (this.link == null)
                 this.link = '';
-            if (this.num == null)
-                this.num = 1;
+            if (this.num == null) {
+                this.num = this.banners.length + 1;
+            }
             let data = {
                 image: this.file.name,
                 link: this.link,

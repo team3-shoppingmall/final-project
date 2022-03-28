@@ -1,5 +1,5 @@
 <template>
-<v-container >
+<v-container>
     <v-row justify="center" class="mt-1">
         <v-col xs="12" sm="12" md="12" lg="9" xl="9">
             <div class="text-h3">{{pagename}}</div>
@@ -32,8 +32,8 @@ export default {
     },
     methods: {
         currentURL() {
-            let link = document.location.href;
-            link = link.substring(26, link.length);
+            let link = this.$route.path;
+            link = link.slice(5, link.length);
             let pageList = [{
                 text: '상품문의',
                 value: 'productQnA',
